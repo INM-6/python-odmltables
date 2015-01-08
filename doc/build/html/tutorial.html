@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tutorial &mdash; odmlviz 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="odmlviz 1.0 documentation" href="index.html" />
+    <link rel="next" title="code documentation" href="documentation.html" />
+    <link rel="prev" title="introduction" href="introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="documentation.html" title="code documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">odmlviz 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>In general there are two different kinds of tables you can create yet: a table with an overview of your whole odML or a table comparing different sections of the odML due to their properties. How they exactly look like will be shown later. But you should know, that only the first table can be converted back to an odML-file.</p>
+<div class="section" id="odml-table">
+<h2>odML-table<a class="headerlink" href="#odml-table" title="Permalink to this headline">¶</a></h2>
+<p>This table is basically just a flat version of the odML-file. Every row of the table represents a value of the odML (as you will see later, that does not mean you have to print every value) and gives all available information about this value. Those are:</p>
+<ul class="simple">
+<li><strong>Path</strong> The Path to the Section next to the Value. Every Value belongs to exactly one Property, and every Property to exactly one Section. So, by giving the Path to the Section you automatically get the Path to the Value by adding the Name of the Property and the Value. This must be in the table, if you want to convert it back to an odML-file, otherwise it will be impossible to recreate the hierarchic structure of the odML.</li>
+<li><strong>SectionName</strong> The Name of the Section next to the Value. This one is optional, as the name of the Section is already given in the Path.</li>
+<li><strong>SectionDefinition</strong> The Definition of the Section next to the Value. This is an optional attribute in odML, so it is also optional in the table.</li>
+<li><strong>SectionType</strong> The type of the Section.</li>
+<li><strong>PropertyName</strong> The Name of the Property the Value belongs to. This one is not optional, if you want to convert the table back to an odML.</li>
+<li><strong>PropertyDefinition</strong> The Definition of the Property.</li>
+<li><strong>Value</strong> The metadata-Value itself. A Property without Values cannot exist, so this has to be in the table to create an odML from it.</li>
+<li><strong>ValueDefinition</strong> The definition of the Value (optional).</li>
+<li><strong>DataUnit</strong> The Unit of the Value (optional).</li>
+<li><strong>DataUncertainty</strong> The uncertainty of the Value (optional).</li>
+<li><strong>odmlDatatype</strong> The odML data Type of the Value. This is important, because it might be different from the datatype in Python or Excel. This one must be given in the table if you want to convert it back to odML.</li>
+</ul>
+<p>Those are many options, and in most cases you dont need all those information. The default columns of an odML-Table are &#8216;Path&#8217;, &#8216;Property Name&#8217;, &#8216;Value&#8217; and &#8216;odML Data Type&#8217;, as those are the information needed to create an odML from the information in the table.</p>
+<div class="section" id="csv">
+<h3>csv<a class="headerlink" href="#csv" title="Permalink to this headline">¶</a></h3>
+<p>As already mentioned in the introduction there are different formats you can save your files to; at the moment those are csv or xls. Since xls provides much more possibilities concerning the appearance of the table we will start with the easier csv-format.</p>
+<div class="section" id="create-the-first-table">
+<h4>create the first table<a class="headerlink" href="#create-the-first-table" title="Permalink to this headline">¶</a></h4>
+<p>To create a csv table from an odML-file you have to import the class <a class="reference internal" href="documentation.html#odml_csv_table.OdmlCsvTable" title="odml_csv_table.OdmlCsvTable"><tt class="xref py py-class docutils literal"><span class="pre">odml_csv_table.OdmlCsvTable</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">odml_csv_table</span> <span class="kn">import</span> <span class="n">OdmlCsvTable</span>
+
+<span class="n">myFirstTable</span> <span class="o">=</span> <span class="n">OdmlCsvTable</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then you can load your odML-file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">load_from_file</span><span class="p">(</span><span class="s">&#39;testfile.odml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you can already write it to a csv-file by using the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">write2file</span><span class="p">(</span><span class="s">&#39;testtable.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You will get a table with the four columns; &#8216;Path&#8217;, &#8216;Property Name&#8217;, &#8216;Value&#8217; and &#8216;odML Data Type&#8217;.</p>
+</div>
+<div class="section" id="load-the-odml">
+<h4>load the odML<a class="headerlink" href="#load-the-odml" title="Permalink to this headline">¶</a></h4>
+<p>You can not only, as shown in the example above, load the odML from an odML-file. There are several other possibilities:</p>
+<ol class="arabic">
+<li><p class="first">load from an <tt class="xref py py-class docutils literal"><span class="pre">odml.Document</span></tt> (class of the odML-Python-library):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">odml</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Document</span><span class="p">()</span>
+<span class="c"># now append some sections, properties and values to the document</span>
+
+<span class="n">myTable</span> <span class="o">=</span> <span class="n">OdmlCsvTable</span><span class="p">()</span>
+<span class="n">myTable</span><span class="o">.</span><span class="n">load_from_odmldoc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">load from a python function that creates an <tt class="xref py py-class docutils literal"><span class="pre">odml.Document</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">odml</span>
+
+<span class="k">def</span> <span class="nf">function1</span><span class="p">():</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Document</span><span class="p">()</span>
+    <span class="c"># now append some sections, properties and values to the document</span>
+
+    <span class="k">return</span> <span class="n">doc</span>
+
+<span class="n">myTable</span> <span class="o">=</span> <span class="n">odmlCsvTable</span><span class="p">()</span>
+<span class="n">myTable</span><span class="o">.</span><span class="n">load_from_function</span><span class="p">(</span><span class="n">function1</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">load from a table (this option will be explained later)</p>
+</li>
+</ol>
+</div>
+<div class="section" id="changing-the-header">
+<h4>changing the header<a class="headerlink" href="#changing-the-header" title="Permalink to this headline">¶</a></h4>
+<p>Next step is to change the header in favor of your plans for the table. You can choose, which of the possible columns given above will be in the table and also what their name is.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If you miss out one of the columns &#8216;Path&#8217;, &#8216;Property Name&#8217;, &#8216;Value&#8217; and &#8216;odML Data Type&#8217; in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back.</p>
+</div>
+<p>By using the function <a class="reference internal" href="documentation.html#odml_table.OdmlTable.change_header_titles" title="odml_table.OdmlTable.change_header_titles"><tt class="xref py py-func docutils literal"><span class="pre">odml_table.OdmlTable.change_header_titles()</span></tt></a> you can choose an own title for every column:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">change_header_titles</span><span class="p">(</span><span class="n">Path</span><span class="o">=</span><span class="s">&#39;my path&#39;</span><span class="p">,</span>
+                                  <span class="n">PropertyName</span><span class="o">=</span><span class="s">&#39;my property&#39;</span><span class="p">,</span>
+                                  <span class="n">Value</span><span class="o">=</span><span class="s">&#39;my value&#39;</span><span class="p">,</span>
+                                  <span class="n">odmlDatatype</span><span class="o">=</span><span class="s">&#39;my datatype&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The table should now look exactly as the old one, with the only difference that the names of the columns have changed. If you want to print some more information, you can adjust this by using the function <a class="reference internal" href="documentation.html#odml_table.OdmlTable.change_header" title="odml_table.OdmlTable.change_header"><tt class="xref py py-func docutils literal"><span class="pre">odml_table.OdmlTable.change_header()</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">change_header</span><span class="p">(</span><span class="n">Path</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">SectionName</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                           <span class="n">SectionDefinition</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                           <span class="n">PropertyName</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                           <span class="n">Value</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you can see, in this function you can not only decide the columns but also their order, by giving them numbers from 1 on. If, for some reason, you want to have an empty column inside your table, you will have to set the option <tt class="docutils literal"><span class="pre">odml_table.OdmlTable.allow_empty_columns</span></tt> to True</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">allow_empty_columns</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>After this command, a code as the following should work fine:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">change_header</span><span class="p">(</span><span class="n">Path</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">PropertyName</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                           <span class="n">Value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                           <span class="n">SectionDefinition</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+                           <span class="n">DataUncertainty</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="avoiding-unnessaccery-entries">
+<h4>avoiding unnessaccery entries<a class="headerlink" href="#avoiding-unnessaccery-entries" title="Permalink to this headline">¶</a></h4>
+<p>You might already have notized, that not every cell of the tables is filled. To make a table better humanreadable, some information about the Section (Path, SectionName and SectionDefinition) or the Property (PropertyName, PropertyDefinition) wont be printed in the table if they dont change. To change this behaviour use the options <tt class="docutils literal"><span class="pre">showall_sections</span></tt> and <tt class="docutils literal"><span class="pre">showall_properties</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myFirstTable</span><span class="o">.</span><span class="n">showall_sections</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">myFirstTable</span><span class="o">.</span><span class="n">showall_properties</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>Now everything should be there.</p>
+</div>
+</div>
+<div class="section" id="xls">
+<h3>xls<a class="headerlink" href="#xls" title="Permalink to this headline">¶</a></h3>
+<p>All those functions already shown for the csv-table also work with xls. But there are some additional features concerning the Style of cells. First you need import the modul and create a new table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">odml_xls_table</span> <span class="kn">import</span> <span class="n">OdmlXlsTable</span>
+<span class="n">myXlsTable</span> <span class="o">=</span> <span class="n">OdmlXlsTable</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="choosing-styles">
+<h4>choosing styles<a class="headerlink" href="#choosing-styles" title="Permalink to this headline">¶</a></h4>
+<p>There are some styles you can easily change in the table. First, there is the style of the header. You can choose the backcolor and fontcolor and the style of the font:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myXlsTable</span><span class="o">.</span><span class="n">header_style</span><span class="o">.</span><span class="n">backcolor</span> <span class="o">=</span> <span class="s">&#39;blue&#39;</span>
+<span class="n">myXlsTable</span><span class="o">.</span><span class="n">header_style</span><span class="o">.</span><span class="n">fontcolor</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">myXlsTable</span><span class="o">.</span><span class="n">header_style</span><span class="o">.</span><span class="n">fontstyle</span> <span class="o">=</span> <span class="s">&#39;bold 1&#39;</span>
+</pre></div>
+</div>
+<p>The same way you can adapt the styles <tt class="docutils literal"><span class="pre">first_style</span></tt> and <tt class="docutils literal"><span class="pre">second_style</span></tt>. Those are the styles used for the normal rows of the table. For a better overview there are those two styles, which are used alternating (for more information see section about <a class="reference internal" href="#changing-pattern">changing pattern</a>.</p>
+<p>You can find a table with all possible colors and their names <a class="reference download internal" href="_downloads/colors.xls"><tt class="xref download docutils literal"><span class="pre">here</span></tt></a>.</p>
+</div>
+<div class="section" id="marking-columns">
+<h4>marking columns<a class="headerlink" href="#marking-columns" title="Permalink to this headline">¶</a></h4>
+<p>Sometimes there might be columns you want to lay a special focus on. So, to mark columns that they differ from the other, there is the option <tt class="docutils literal"><span class="pre">mark_columns</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myXlsTable</span><span class="o">.</span><span class="n">mark_columns</span><span class="p">(</span><span class="s">&#39;Path&#39;</span><span class="p">,</span> <span class="s">&#39;Value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Those marked columns will have a different style, which is determined by the attributes <tt class="docutils literal"><span class="pre">first_marked_style</span></tt> and <tt class="docutils literal"><span class="pre">second_marked_style</span></tt> (those can also be changed).</p>
+</div>
+<div class="section" id="changing-pattern">
+<h4>changing pattern<a class="headerlink" href="#changing-pattern" title="Permalink to this headline">¶</a></h4>
+<p>By default the two different styles for the rows will alternate when a new section starts. But you can also change this behavior to a new property or a new value and, if you dont want different colors at all, just turn it off. This works by setting <tt class="docutils literal"><span class="pre">changing_point</span></tt> to either &#8216;sections&#8217;, &#8216;properties&#8217;, &#8216;values&#8217; or None:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myXlsTable</span><span class="o">.</span><span class="n">changing_point</span> <span class="o">=</span> <span class="s">&#39;values&#39;</span>
+</pre></div>
+</div>
+<p>Also, for a better distinctness between the columns , you can choose a &#8216;chessfield&#8217;- pattern, so the styles will switch with every row.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myXlsTable</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="s">&#39;chessfield&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="table-to-compare-sections">
+<h2>table to compare sections<a class="headerlink" href="#table-to-compare-sections" title="Permalink to this headline">¶</a></h2>
+<p>It might happen, that you have several sections with similar properties, for example TODO: example . To create a table, in which you can easily compare different sections of an odml, you can use this classes.</p>
+<div class="section" id="id1">
+<h3>csv<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The easiest format here is, again, csv. So for the beginning, here is how you create a table to compare sections due to their properties in csv.</p>
+<div class="section" id="the-beginning">
+<h4>the beginning<a class="headerlink" href="#the-beginning" title="Permalink to this headline">¶</a></h4>
+<p>to create a csv-file with the table, import the class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">compare_section_csv_table</span> <span class="kn">import</span> <span class="n">CompareSectionCsvTable</span>
+<span class="n">myCompareTable</span> <span class="o">=</span> <span class="n">CompareSectionCsvTable</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now you can load the table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myCompareTable</span><span class="o">.</span><span class="n">load_from_file</span><span class="p">(</span><span class="s">&#39;somefile.odml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="choosing-sections">
+<h4>choosing sections<a class="headerlink" href="#choosing-sections" title="Permalink to this headline">¶</a></h4>
+<p>Next you have to decide, which sections of the table you want to compare. You can either just choose all sections out of a list of sectionnames or you can select all sections with a specific beginning:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myCompareTable</span><span class="o">.</span><span class="n">choose_sections</span><span class="p">(</span><span class="s">&#39;s1&#39;</span><span class="p">,</span> <span class="s">&#39;s2&#39;</span><span class="p">,</span> <span class="s">&#39;s3&#39;</span><span class="p">)</span>
+
+<span class="c"># or</span>
+
+<span class="n">myCompareTable</span><span class="o">.</span><span class="n">choose_sections_startwith</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can already write this table to a file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myCompareTable</span><span class="o">.</span><span class="n">write2file</span><span class="p">(</span><span class="s">&#39;compare.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="switch-the-table">
+<h4>switch the table<a class="headerlink" href="#switch-the-table" title="Permalink to this headline">¶</a></h4>
+<p>Now the section names should be in the header and the property names in the first column. This can be inverted by using the command <tt class="docutils literal"><span class="pre">switch</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myCompareTable</span><span class="o">.</span><span class="n">switch</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>This time the property names should be in the header and the names of the sections in the first column. For example if you have many sections to compare you might get a better overview by switching the table this way.</p>
+</div>
+<div class="section" id="include-all">
+<h4>include all<a class="headerlink" href="#include-all" title="Permalink to this headline">¶</a></h4>
+<p>If the sections you compare dont have exactly the same structure there might be properties appearing in one section but not in another. If you only want to compare those properties that are present in all of your chosen sections, use the option include_all:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">myCompareTable</span><span class="o">.</span><span class="n">include_all</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>xls<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>In this part you will find the additional options for an xls-table.</p>
+<div class="section" id="first-table">
+<h4>first table<a class="headerlink" href="#first-table" title="Permalink to this headline">¶</a></h4>
+<p>to create a new table use the command:</p>
+<div class="highlight-python"><div class="highlight"><pre>from compare_section_xls_table import CompareSectionXlsTable()
+xlsCompareTable = CompareSectionXlsTable()
+</pre></div>
+</div>
+</div>
+<div class="section" id="changing-styles">
+<h4>changing styles<a class="headerlink" href="#changing-styles" title="Permalink to this headline">¶</a></h4>
+<p>there are different styles you can adjust in this table:</p>
+<ol class="arabic simple">
+<li><strong>headerstyle</strong> The style used for the captions of rows and columns</li>
+<li><strong>first_style</strong> The style used for the values inside the table</li>
+<li><strong>second_style</strong> The second style used for the values inside the table</li>
+<li><strong>missing_value_style</strong> If <tt class="docutils literal"><span class="pre">include_all</span></tt> is True, this style will be used if a property doesnt exist in the section, so they distinguish from properties with empty values</li>
+</ol>
+<p>You can, as already shown for the odml-table (<a class="reference internal" href="#choosing-styles">choosing styles</a>), adjust backcolor, fontcolor and fontstyle for each of the styles.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">tutorial</a><ul>
+<li><a class="reference internal" href="#odml-table">odML-table</a><ul>
+<li><a class="reference internal" href="#csv">csv</a><ul>
+<li><a class="reference internal" href="#create-the-first-table">create the first table</a></li>
+<li><a class="reference internal" href="#load-the-odml">load the odML</a></li>
+<li><a class="reference internal" href="#changing-the-header">changing the header</a></li>
+<li><a class="reference internal" href="#avoiding-unnessaccery-entries">avoiding unnessaccery entries</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#xls">xls</a><ul>
+<li><a class="reference internal" href="#choosing-styles">choosing styles</a></li>
+<li><a class="reference internal" href="#marking-columns">marking columns</a></li>
+<li><a class="reference internal" href="#changing-pattern">changing pattern</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#table-to-compare-sections">table to compare sections</a><ul>
+<li><a class="reference internal" href="#id1">csv</a><ul>
+<li><a class="reference internal" href="#the-beginning">the beginning</a></li>
+<li><a class="reference internal" href="#choosing-sections">choosing sections</a></li>
+<li><a class="reference internal" href="#switch-the-table">switch the table</a></li>
+<li><a class="reference internal" href="#include-all">include all</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">xls</a><ul>
+<li><a class="reference internal" href="#first-table">first table</a></li>
+<li><a class="reference internal" href="#changing-styles">changing styles</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="documentation.html"
+                        title="next chapter">code documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="documentation.html" title="code documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">odmlviz 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Jana Pick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

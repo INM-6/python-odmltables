@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>odml_xls_table &mdash; odmlviz 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="odmlviz 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for odml_xls_table</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mon May  4 08:39:42 2015</span>
+
+<span class="sd">@author: pick</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">odml_table</span> <span class="kn">import</span> <span class="n">OdmlTable</span>
+<span class="kn">import</span> <span class="nn">xlwt</span>
+<span class="kn">from</span> <span class="nn">xls_style</span> <span class="kn">import</span> <span class="n">XlsStyle</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<div class="viewcode-block" id="OdmlXlsTable"><a class="viewcode-back" href="../documentation.html#odml_xls_table.OdmlXlsTable">[docs]</a><span class="k">class</span> <span class="nc">OdmlXlsTable</span><span class="p">(</span><span class="n">OdmlTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to create a csv-file from an odml-file</span>
+
+
+<span class="sd">    :param sheetname: name of the excel sheet; default is &#39;sheet1&#39;</span>
+<span class="sd">    :param header_style: style used for the header of the table</span>
+<span class="sd">    :param first_style: default style used for the rows</span>
+<span class="sd">    :param second_style: used to switch styles of the rows if changing_point</span>
+<span class="sd">        is not None</span>
+<span class="sd">    :param first_marked_style: default style used in marked columns</span>
+<span class="sd">    :param second_marked_style: used to switch styles of the rows in marked</span>
+<span class="sd">        columns if changing_point is not None</span>
+<span class="sd">    :param pattern: can be &#39;alternating&#39; or &#39;chessfield&#39;</span>
+<span class="sd">    :param changing_point: select the point for changing styles. this can be</span>
+<span class="sd">        when a new section, property or value starts (&#39;sections&#39;, &#39;properties&#39;,</span>
+<span class="sd">        &#39;values&#39; or None)</span>
+<span class="sd">    :type sheetname: string</span>
+<span class="sd">    :type header_style: XlsStyle</span>
+<span class="sd">    :type first_style: XlsStyle</span>
+<span class="sd">    :type second_style: XlsStyle</span>
+<span class="sd">    :type first_marked_style: XlsStyle</span>
+<span class="sd">    :type second_marked_style: XlsStyle</span>
+<span class="sd">    :type pattern: string</span>
+<span class="sd">    :type changing_point: string</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">OdmlTable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sheetname</span> <span class="o">=</span> <span class="s">&quot;sheet1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marked_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Value&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_style</span> <span class="o">=</span> <span class="n">XlsStyle</span><span class="p">(</span><span class="n">backcolor</span><span class="o">=</span><span class="s">&#39;gray80&#39;</span><span class="p">,</span> <span class="n">fontcolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                                     <span class="n">fontstyle</span><span class="o">=</span><span class="s">&#39;bold 1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_style</span> <span class="o">=</span> <span class="n">XlsStyle</span><span class="p">(</span><span class="n">backcolor</span><span class="o">=</span><span class="s">&#39;dark_blue&#39;</span><span class="p">,</span> <span class="n">fontcolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                                    <span class="n">fontstyle</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">second_style</span> <span class="o">=</span> <span class="n">XlsStyle</span><span class="p">(</span><span class="n">backcolor</span><span class="o">=</span><span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="n">fontcolor</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+                                     <span class="n">fontstyle</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_marked_style</span> <span class="o">=</span> <span class="n">XlsStyle</span><span class="p">(</span><span class="n">backcolor</span><span class="o">=</span><span class="s">&#39;light_blue&#39;</span><span class="p">,</span>
+                                           <span class="n">fontcolor</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontstyle</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">second_marked_style</span> <span class="o">=</span> <span class="n">XlsStyle</span><span class="p">(</span><span class="n">backcolor</span><span class="o">=</span><span class="s">&#39;lime&#39;</span><span class="p">,</span>
+                                            <span class="n">fontcolor</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">fontstyle</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span> <span class="o">=</span> <span class="s">&#39;alternating&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="o">=</span> <span class="s">&#39;sections&#39;</span>
+
+    <span class="c">#TODO: python properties??</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">changing_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span>
+
+    <span class="nd">@changing_point.setter</span>
+    <span class="k">def</span> <span class="nf">changing_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">point</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;sections&quot;</span><span class="p">,</span> <span class="s">&quot;properties&quot;</span><span class="p">,</span> <span class="s">&quot;values&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="o">=</span> <span class="n">point</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Your changing point must be &#39;sections&#39;, &quot;</span> <span class="o">+</span>
+                            <span class="s">&quot;&#39;properties&#39;, &#39;values&#39; or None&quot;</span><span class="p">)</span>
+        <span class="c"># TODO: exceptions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span>
+
+    <span class="nd">@pattern.setter</span>
+    <span class="k">def</span> <span class="nf">pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pat</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pat</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;alternating&#39;</span><span class="p">,</span> <span class="s">&#39;chessfield&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span> <span class="o">=</span> <span class="n">pat</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;This pattern does not exist&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OdmlXlsTable.mark_columns"><a class="viewcode-back" href="../documentation.html#odml_xls_table.OdmlXlsTable.mark_columns">[docs]</a>    <span class="k">def</span> <span class="nf">mark_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        choose the columns of the table you want to highlight by giving them</span>
+<span class="sd">        another style (for example a different color).</span>
+<span class="sd">        Possible Arguments are:</span>
+
+<span class="sd">          - &#39;Path&#39;</span>
+<span class="sd">          - &#39;SectionName&#39;</span>
+<span class="sd">          - &#39;SectionType&#39;</span>
+<span class="sd">          - &#39;SectionDefinition&#39;</span>
+<span class="sd">          - &#39;PropertyName&#39;</span>
+<span class="sd">          - &#39;PropertyDefinition&#39;</span>
+<span class="sd">          - &#39;Value&#39;</span>
+<span class="sd">          - &#39;ValueDefinition&#39;</span>
+<span class="sd">          - &#39;DataUnit&#39;</span>
+<span class="sd">          - &#39;DataUncertainty&#39;</span>
+<span class="sd">          - &#39;odmlDatatype&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;wrong argument&quot;</span><span class="p">)</span>
+                <span class="c"># TODO: exception...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marked_cols</span> <span class="o">=</span> <span class="n">cols</span>
+</div>
+<div class="viewcode-block" id="OdmlXlsTable.write2file"><a class="viewcode-back" href="../documentation.html#odml_xls_table.OdmlXlsTable.write2file">[docs]</a>    <span class="k">def</span> <span class="nf">write2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        writes the data from the odml-file to a xls-file</span>
+
+<span class="sd">        :param save_to: name of the xls-file</span>
+<span class="sd">        :type save_to: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">styles</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;header&quot;</span><span class="p">:</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header_style</span><span class="o">.</span><span class="n">get_style_string</span><span class="p">()),</span>
+                  <span class="s">&quot;row0col0&quot;</span><span class="p">:</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_style</span><span class="o">.</span><span class="n">get_style_string</span><span class="p">()),</span>
+                  <span class="s">&quot;row1col0&quot;</span><span class="p">:</span>
+                  <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_style</span><span class="o">.</span><span class="n">get_style_string</span><span class="p">()),</span>
+                  <span class="s">&quot;row0col1&quot;</span><span class="p">:</span>
+                  <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_marked_style</span><span class="o">.</span><span class="n">get_style_string</span><span class="p">()),</span>
+                  <span class="s">&quot;row1col1&quot;</span><span class="p">:</span>
+                  <span class="n">xlwt</span><span class="o">.</span><span class="n">easyxf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_marked_style</span><span class="o">.</span><span class="n">get_style_string</span><span class="p">())</span>
+                  <span class="p">}</span>
+        <span class="n">workbook</span> <span class="o">=</span> <span class="n">xlwt</span><span class="o">.</span><span class="n">Workbook</span><span class="p">()</span>
+        <span class="n">sheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="o">.</span><span class="n">add_sheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sheetname</span><span class="p">)</span>
+
+        <span class="n">oldpath</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">oldprop</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">oldrow</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">max_col_len</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">[</span><span class="n">h</span><span class="p">])</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">]</span>
+        <span class="n">col_style</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">row_style</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c"># write the header</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">):</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">styles</span><span class="p">[</span><span class="s">&#39;header&#39;</span><span class="p">])</span>
+
+        <span class="c"># write the rows</span>
+        <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="p">:</span>
+
+            <span class="c"># make a copy of the actual dic</span>
+            <span class="n">row_dic</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="c"># removing unneccessary entries</span>
+            <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldpath</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_all_sections</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                        <span class="n">row_dic</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># start of a new section</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="ow">is</span> <span class="s">&#39;sections&#39;</span><span class="p">:</span>
+                    <span class="n">row_style</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_style</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>     <span class="c"># switch row-color</span>
+                <span class="n">oldpath</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">]</span>
+                <span class="n">oldprop</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;PropertyName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldprop</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_all_properties</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTY_INF</span><span class="p">:</span>
+                        <span class="n">row_dic</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># start of a new property</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="ow">is</span> <span class="s">&#39;properties&#39;</span><span class="p">:</span>
+                    <span class="n">row_style</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_style</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>     <span class="c"># switch row-color</span>
+                <span class="n">oldprop</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;PropertyName&quot;</span><span class="p">]</span>
+
+            <span class="c"># check the changing point</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="ow">is</span> <span class="s">&#39;values&#39;</span><span class="p">:</span>
+                <span class="n">row_style</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_style</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_changing_point</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;sections&#39;</span><span class="p">,</span> <span class="s">&#39;properties&#39;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid argument for changing_point: Your &quot;</span> <span class="o">+</span>
+                                <span class="s">&quot;changing_point must be &#39;sections&#39;, &quot;</span> <span class="o">+</span>
+                                <span class="s">&quot;&#39;properties&#39;, &#39;values&#39; or None&quot;</span><span class="p">)</span>
+                <span class="c"># TODO: change exception</span>
+
+            <span class="c"># row_content: only those elements of row_dic, that will be</span>
+            <span class="c"># visible in the table</span>
+            <span class="n">row_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">row_dic</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">]</span>
+
+            <span class="c"># check, if row would be empty or same as the row before;</span>
+            <span class="c"># if so, skip the row</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">row_content</span> <span class="o">==</span> <span class="n">oldrow</span><span class="p">)</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="n">row_content</span> <span class="o">==</span> <span class="p">[</span><span class="s">&#39;&#39;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">])):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">oldrow</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">row_content</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span> <span class="ow">is</span> <span class="s">&quot;chessfield&quot;</span><span class="p">:</span>
+                    <span class="n">row_style</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_style</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span> <span class="ow">is</span> <span class="s">&quot;alternating&quot;</span><span class="p">:</span>
+                    <span class="n">row_style</span> <span class="o">=</span> <span class="n">row_style</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;this is not a valid argument&quot;</span><span class="p">)</span>
+                    <span class="c"># TODO: better exception</span>
+
+                <span class="c"># adjust column style</span>
+                <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_cols</span><span class="p">:</span>
+                    <span class="n">col_style</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">col_style</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="n">stylestring</span> <span class="o">=</span> <span class="s">&quot;row&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">row_style</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;col&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_style</span><span class="p">)</span>
+
+                <span class="n">style</span> <span class="o">=</span> <span class="n">styles</span><span class="p">[</span><span class="n">stylestring</span><span class="p">]</span>
+                <span class="n">cell_content</span> <span class="o">=</span> <span class="n">row_dic</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+
+                <span class="c">#special style for datetime-objects</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_content</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">num_format_str</span> <span class="o">=</span> <span class="s">&quot;DD-MM-YYYY HH:MM:SS&quot;</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_content</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">num_format_str</span> <span class="o">=</span> <span class="s">&quot;DD-MM-YYYY&quot;</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_content</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">num_format_str</span> <span class="o">=</span> <span class="s">&quot;HH:MM:SS&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">style</span><span class="o">.</span><span class="n">num_format_str</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+                <span class="c"># finding longest string in the column</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cell_content</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">max_col_len</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                    <span class="n">max_col_len</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cell_content</span><span class="p">))</span>
+
+                <span class="n">sheet</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">cell_content</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+
+            <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c"># adjust the size of the columns due to the max length of the content</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">max_col_len</span><span class="p">):</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">*</span> <span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">workbook</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">save_to</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Jana Pick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
