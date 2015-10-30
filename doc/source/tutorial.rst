@@ -1,5 +1,13 @@
-tutorial
-========
+odMLviz Tutorial
+================
+
+:Authors:
+	Jana Pick and Lyuba Zehl
+:Release:
+	0.1
+:License:
+	Creative Commons Attribution-ShareAlike 4.0 International 
+	`License <http://creativecommons.org/licenses/by-sa/4.0/>`_
 
 In general there are two different kinds of tables you can create yet: a table with an overview of your whole odML or a table comparing different sections of the odML due to their properties. How they exactly look like will be shown later. But you should know, that only the first table can be converted back to an odML-file.
 
