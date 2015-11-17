@@ -6,9 +6,10 @@ Created on Fri Apr 17 08:11:32 2015
 """
 
 import odml
-from odml_table import OdmlTable
-from odml_csv_table import OdmlCsvTable
-from odml_xls_table import OdmlXlsTable
+from odmlviz.odml_table import OdmlTable
+from odmlviz.odml_csv_table import OdmlCsvTable
+from odmlviz.odml_xls_table import OdmlXlsTable
+
 import unittest
 from create_test_odmls import create_small_test_odml
 from create_test_odmls import create_showall_test_odml
@@ -108,8 +109,8 @@ class TestLoadSaveOdml(unittest.TestCase):
         """
         test writing the odmldict back to an odml-file
         """
-        file1 = '../../data/testresults/test.odml'
-        file2 = '../../data/testresults/test2.odml'
+        file1 = 'test.odml'
+        file2 = 'test2.odml'
         doc = create_showall_test_odml()
         self.test_table.load_from_odmldoc(doc)
         odml.tools.xmlparser.XMLWriter(doc).write_file(file1)
