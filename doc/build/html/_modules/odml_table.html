@@ -1,0 +1,642 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>odml_table &mdash; odmlviz 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="odmlviz 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for odml_table</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue Mar 31 15:43:40 2015</span>
+
+<span class="sd">@author: pick</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">odml</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">xlrd</span>
+
+
+<div class="viewcode-block" id="OdmlTable"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable">[docs]</a><span class="k">class</span> <span class="nc">OdmlTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to create tables in different formats from odml-files</span>
+
+
+<span class="sd">    :param show_all_sections: if set to False, information about the section</span>
+<span class="sd">        like the path or name of the section wont be in the table again, if</span>
+<span class="sd">        they are same as in the line before</span>
+<span class="sd">    :param show_all_properties: if set to False, information about the property</span>
+<span class="sd">        like the name or definition of the property wont be in the table again,</span>
+<span class="sd">        if they are same as in the line before</span>
+<span class="sd">    :param allow_empty_columns: if set to False it is forbidden to create</span>
+<span class="sd">        tables with an emptycolumn</span>
+<span class="sd">    :type show_all_sections: bool</span>
+<span class="sd">    :type show_all_properties: bool</span>
+<span class="sd">    :type allow_empty_columns: bool</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">,</span> <span class="s">&quot;PropertyName&quot;</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="s">&quot;odmlDatatype&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;Path to Section&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;Section Name&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;Section Type&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;Section Definition&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyName&quot;</span><span class="p">:</span> <span class="s">&quot;Property Name&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;Property Definition&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;Value&quot;</span><span class="p">:</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;ValueDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;Value Definition&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUnit&quot;</span><span class="p">:</span> <span class="s">&quot;Data Unit&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;Data Uncertainty&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;odML Data Type&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all_sections</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all_properties</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">,</span> <span class="s">&quot;SectionName&quot;</span><span class="p">,</span> <span class="s">&quot;SectionType&quot;</span><span class="p">,</span>
+                             <span class="s">&quot;SectionDefinition&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTY_INF</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;PropertyName&quot;</span><span class="p">,</span> <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">]</span>
+        <span class="c"># TODO: remove option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">__create_odmldict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        function to create the odml-dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odmldict</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&#39;Path&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_path</span><span class="p">(),</span>
+                     <span class="s">&#39;SectionName&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                     <span class="s">&#39;SectionType&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                     <span class="s">&#39;SectionDefinition&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span>
+                     <span class="s">&#39;PropertyName&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                     <span class="s">&#39;PropertyDefinition&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span>
+                     <span class="s">&#39;Value&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span> <span class="k">else</span>
+                     <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+                     <span class="s">&#39;ValueDefinition&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span>
+                     <span class="s">&#39;DataUnit&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                     <span class="s">&#39;DataUncertainty&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">,</span>
+                     <span class="s">&#39;odmlDatatype&#39;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">}</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">itervalues</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">odmldict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">allow_empty_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span>
+
+    <span class="nd">@allow_empty_columns.setter</span>
+    <span class="k">def</span> <span class="nf">allow_empty_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">allow</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">allow</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                <span class="n">errmsg</span> <span class="o">=</span> <span class="s">&quot;Your header already contains empty columns!&quot;</span> <span class="o">+</span>\
+                         <span class="s">&quot; Please change that before using this option!&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;invalid argument!!&#39;</span><span class="p">)</span>
+
+        <span class="c">#TODO: better exception</span>
+
+<div class="viewcode-block" id="OdmlTable.load_from_file"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        loads the odml-data from an odml-file</span>
+
+<span class="sd">        :param load_from: the path to the odml-file</span>
+<span class="sd">        :type load_from: string</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_from</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.load_from_odmldoc"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_odmldoc">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_odmldoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        loads the odml-data from an odml-document</span>
+
+<span class="sd">        :param load_from: the odml-document</span>
+<span class="sd">        :type load_from: odml-document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.load_from_function"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_function">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odmlfct</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        loads the odml-data by using a function that creates an odml-document</span>
+
+<span class="sd">        :param load_from: function that returns an odml-document</span>
+<span class="sd">        :type load_from: function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">odmlfct</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.load_from_xls_table"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_xls_table">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_xls_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        loads the odml-data from a xls-file. To load the odml, at least Value,</span>
+<span class="sd">        Path, PropertyName and odmlDatatype must be given in the table. Also,</span>
+<span class="sd">        the header_titles must be correct</span>
+
+<span class="sd">        :param load_from: name(path) of the xls-file</span>
+<span class="sd">        :type load_from: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># create a inverted header_titles dictionary for an inverted lookup</span>
+        <span class="n">inv_header_titles</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">workbook</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">open_workbook</span><span class="p">(</span><span class="n">load_from</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sheet_name</span> <span class="ow">in</span> <span class="n">workbook</span><span class="o">.</span><span class="n">sheet_names</span><span class="p">():</span>
+            <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="o">.</span><span class="n">sheet_by_name</span><span class="p">(</span><span class="n">sheet_name</span><span class="p">)</span>
+
+            <span class="c"># read the header</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="n">inv_header_titles</span><span class="p">[</span><span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">col_n</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">)]</span>
+            <span class="n">old_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;PropertyName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;Value&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;ValueDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;DataUnit&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">row_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
+                <span class="n">current_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;Value&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;ValueDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUnit&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row_n</span><span class="p">,</span> <span class="n">col_n</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">value</span>
+
+                    <span class="n">current_dic</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">[</span><span class="n">col_n</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">or</span>
+                   <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">old_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]):</span>
+                        <span class="c"># it is not the start of a new section</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">or</span>
+                            <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span> <span class="o">==</span>
+                                <span class="n">old_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]):</span>
+                            <span class="c"># old section, old property</span>
+                            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                                <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTY_INF</span><span class="p">:</span>
+                                <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c"># old section, new property</span>
+                            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                                <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="c"># new section, =&gt; new property</span>
+                        <span class="k">pass</span>
+
+                <span class="n">old_dic</span> <span class="o">=</span> <span class="n">current_dic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="c"># convert to python datatypes</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;float&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;boolean&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime&#39;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;time&#39;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">value</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;person&#39;</span><span class="p">]:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;unknown datatype!!&#39;</span><span class="p">)</span>
+                    <span class="c"># TODO: change exception?!</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_dic</span><span class="p">)</span>
+
+    <span class="c">#TODO: use normal reader instead of dictreader =&gt; much easier!!</span></div>
+<div class="viewcode-block" id="OdmlTable.load_from_csv_table"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_csv_table">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_csv_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        loads the odmldict from a csv-file containing an odml-table. To load</span>
+<span class="sd">        the odml, at least Value, Path, PropertyName and odmlDatatype must be</span>
+<span class="sd">        given in the table. Also, the header_titles must be correct</span>
+
+<span class="sd">        :param load_from: name(path) of the csv-file</span>
+<span class="sd">        :type load_from: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># create a inverted header_titles dictionary for an inverted lookup</span>
+        <span class="n">inv_header_titles</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">load_from</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+            <span class="n">csvreader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="n">inv_header_titles</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">csvreader</span><span class="o">.</span><span class="n">next</span><span class="p">()]</span>
+
+            <span class="n">must_haves</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">,</span> <span class="s">&quot;PropertyName&quot;</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="s">&quot;odmlDatatype&quot;</span><span class="p">]</span>
+
+            <span class="c"># check, if all of the needed information are in the table</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">([(</span><span class="n">m</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">must_haves</span><span class="p">]):</span>
+                <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;your table has to contain all of the following &quot;</span> <span class="o">+</span>
+                           <span class="s">&quot; attributes: {0}&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">must_haves</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+                <span class="c"># TODO: exception??</span>
+            <span class="n">old_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;SectionDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;PropertyName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;Value&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;ValueDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;DataUnit&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                       <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csvreader</span><span class="p">:</span>
+
+                <span class="n">current_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;SectionDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;PropertyDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;Value&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;ValueDefinition&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUnit&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+                               <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
+
+                <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)):</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">[</span><span class="n">col_n</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col_n</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">or</span>
+                        <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">old_dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]):</span>
+                    <span class="c"># it is not the start of a new section</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span>
+                        <span class="ow">or</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span> <span class="o">==</span>
+                            <span class="n">old_dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]):</span>
+                        <span class="c"># old section, old property</span>
+                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                            <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTY_INF</span><span class="p">:</span>
+                            <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c"># old section, new property</span>
+                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                                <span class="n">current_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># new section, =&gt; new property</span>
+                    <span class="k">pass</span>
+
+                <span class="n">old_dic</span> <span class="o">=</span> <span class="n">current_dic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="c"># convert to python datatypes</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;float&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;boolean&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;time&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span><span class="p">:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;person&#39;</span><span class="p">]:</span>
+                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;unknown datatype!!&#39;</span><span class="p">)</span>
+                    <span class="c"># TODO: change exception?!</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_dic</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.change_header_titles"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.change_header_titles">[docs]</a>    <span class="k">def</span> <span class="nf">change_header_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to change the Name of a column in your table. Be careful with</span>
+<span class="sd">        this function if you want to convert the table back to an odml.</span>
+
+
+<span class="sd">        :param Path: Name of the &#39;Path&#39;-Column in the table</span>
+<span class="sd">        :param SectionName: Name of the &#39;Section Name&#39;-Column in the table</span>
+<span class="sd">        :param SectionType: Name of the &#39;Section Type&#39;-Column in the table</span>
+<span class="sd">        :param SectionDefinition: Name of the &#39;Section Definition&#39;-Column in</span>
+<span class="sd">            the table</span>
+<span class="sd">        :param ProgertyName: Name of the &#39;Property Name&#39;-Column in the table</span>
+<span class="sd">        :param PropertyDefinition: Name of the &#39;Property Definition&#39;-Column in</span>
+<span class="sd">            the table</span>
+<span class="sd">        :param Value: Name of the &#39;Value&#39;-Column in the table</span>
+<span class="sd">        :param ValueDefinition: Name of the &#39;Value Definition&#39;-Column in the</span>
+<span class="sd">            table</span>
+<span class="sd">        :param DataUnit: Name of the &#39;Data Unit&#39;-Column in the table</span>
+<span class="sd">        :param DataUncertainty: Name of the &#39;Data Uncertainty&#39;-Column in the</span>
+<span class="sd">            table</span>
+<span class="sd">        :param odmlDatatype: Name of the &#39;odML Data Type&#39;-Column in the table</span>
+<span class="sd">        :type Path: string, optional</span>
+<span class="sd">        :type SectionName: string, optional</span>
+<span class="sd">        :type SectionType: string, optional</span>
+<span class="sd">        :type SectionDefinition: string, optional</span>
+<span class="sd">        :type ProgertyName: string, optional</span>
+<span class="sd">        :type PropertyDefinition: string, optional</span>
+<span class="sd">        :type Value: string, optional</span>
+<span class="sd">        :type ValueDefinition: string, optional</span>
+<span class="sd">        :type DataUnit: string, optional</span>
+<span class="sd">        :type DataUncertainty: string, optional</span>
+<span class="sd">        :type odmlDatatype: string, optional</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">errmsg</span> <span class="o">=</span> <span class="s">&quot;{0} is not in the header_title-dictionary&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+                <span class="c"># TODO: better exception</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.change_header"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.change_header">[docs]</a>    <span class="k">def</span> <span class="nf">change_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to change the header of the table.</span>
+
+<span class="sd">        The keywordarguments of the function are the possible columns you can</span>
+<span class="sd">        include into your table; they are listed below, you can also check the</span>
+<span class="sd">        possible options bei looking at the keys of the header_titles</span>
+<span class="sd">        dictionary. They take the number of their position in the table,</span>
+<span class="sd">        starting from left with 1.</span>
+<span class="sd">        The default-header is [&#39;Path&#39;, &#39;Property Name&#39;, &#39;Value&#39;, &#39;odML Data</span>
+<span class="sd">        Type&#39;]. These are the columns you need to be able to convert your table</span>
+<span class="sd">        back to an odml-file. Important: You can create tables wich dont</span>
+<span class="sd">        contain any of those four, but they cant be converted back to odml.</span>
+
+<span class="sd">        :param Path: Position of the &#39;Path&#39;-Column in the table.</span>
+<span class="sd">        :param SectionName: Position of the &#39;Section Name&#39;-Column in the table</span>
+<span class="sd">        :param SectionType: Position of the &#39;Section Type&#39;-Column in the table</span>
+<span class="sd">        :param SectionDefinition: Position of the &#39;Section Definition&#39;-Column</span>
+<span class="sd">            in the table</span>
+<span class="sd">        :param PropertyName: Position of the &#39;Property Name&#39;-Column in the</span>
+<span class="sd">            table</span>
+<span class="sd">        :param PropertyDefinition: Position of the &#39;Property Definition&#39;-Column</span>
+<span class="sd">            in the table</span>
+<span class="sd">        :param Value: Position of the &#39;Value&#39;-Column in the table</span>
+<span class="sd">        :param ValueDefinition: Position of the &#39;Value Definition&#39;-Column in</span>
+<span class="sd">            the table</span>
+<span class="sd">        :param DataUnit: Position of the &#39;Data Unit&#39;-Column in the table</span>
+<span class="sd">        :param DataUncertainty: Position of the &#39;Data Uncertainty&#39;-Column in</span>
+<span class="sd">            the table</span>
+<span class="sd">        :param odmlDatatype: Position of the &#39;odML Data Type&#39;-Column in the</span>
+<span class="sd">            table</span>
+<span class="sd">        :type Path: int, optional</span>
+<span class="sd">        :type SectionName: int, optional</span>
+<span class="sd">        :type SectionType: int, optional</span>
+<span class="sd">        :type SectionDefinition: int, optional</span>
+<span class="sd">        :type PropertyName: int, optional</span>
+<span class="sd">        :type PropertyDefinition: int, optional</span>
+<span class="sd">        :type Value: int, optional</span>
+<span class="sd">        :type ValueDefinition: int, optional</span>
+<span class="sd">        :type DataUnit: int, optional</span>
+<span class="sd">        :type DataUncertainty: int, optional</span>
+<span class="sd">        :type odmlDatatype: int, optional</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">            mytable.change_header(Path=1, Value=3, odmlDataType=2)</span>
+<span class="sd">                =&gt; outcoming header: [&#39;Path&#39;, &#39;odML Data Type&#39;, &#39;Value&#39;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># sortieren nach values</span>
+        <span class="n">keys_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+
+        <span class="c">#check if first element is in range</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">errmsg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;Your smallest argument is {}, but the columns start&quot;</span> <span class="o">+</span>
+                      <span class="s">&quot; at 1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+            <span class="c"># TODO: better Exception</span>
+
+        <span class="n">max_col</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="c"># check if there are empty columns</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_col</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">errmsg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;column {0} is empty. if you want to have &quot;</span> <span class="o">+</span>
+                              <span class="s">&quot;empty columns in your table, you have to set&quot;</span> <span class="o">+</span>
+                              <span class="s">&quot; allow_empty_columns = True&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+                    <span class="c"># TODO: better exception</span>
+
+        <span class="c">#initialize header with enough elements</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">max_col</span> <span class="o">*</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">:</span>
+                <span class="n">header</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">keys_sorted</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;not in header_titles&quot;</span><span class="p">)</span>
+            <span class="c"># TODO: better Exception</span>
+
+        <span class="c">#check if there are two keys with the same value</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys_sorted</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span> <span class="o">==</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]]:</span>
+                <span class="n">errmsg</span> <span class="o">=</span> <span class="s">&quot;The keys {0} and {1} both have the value {2}&quot;</span>\
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keys_sorted</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="n">keys_sorted</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="n">keys_sorted</span><span class="p">[</span><span class="n">index</span><span class="p">]])</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errmsg</span><span class="p">)</span>
+                <span class="c"># TODO: better exception</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">:</span>
+                    <span class="n">header</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s">&quot;not in header_titles&quot;</span><span class="p">)</span>
+                    <span class="c"># TODO: better Exception</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">header</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.write2file"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.write2file">[docs]</a>    <span class="k">def</span> <span class="nf">write2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write the table to the specific file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.write2odml"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.write2odml">[docs]</a>    <span class="k">def</span> <span class="nf">write2odml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        writes the loaded odmldict (e.g. from an csv-file) to an odml-file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Document</span><span class="p">()</span>
+        <span class="n">oldpath</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">oldpropname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">oldpropdef</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">valuelist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="p">:</span>
+
+            <span class="c"># get the actual Value</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s">&#39;ValueDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ValueDefinition&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;DataUnit&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;DataUnit&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;DataUncertainty&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">uncertainty</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;DataUncertainty&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldpath</span><span class="p">:</span>
+                <span class="c"># parent is still the same</span>
+                <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldpropname</span><span class="p">:</span>
+                    <span class="c"># still the same property</span>
+                    <span class="n">valuelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prop</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">oldpropname</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">valuelist</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s">&#39;PropertyDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                        <span class="n">prop</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">oldpropdef</span>
+                    <span class="n">parent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                    <span class="n">valuelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">parent</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">prop</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">oldpropname</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">valuelist</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s">&#39;PropertyDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                        <span class="n">prop</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">oldpropdef</span>
+                    <span class="n">parent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                    <span class="n">valuelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">valuelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">doc</span>
+                <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="n">parent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">odml</span><span class="o">.</span><span class="n">Section</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">section</span><span class="p">))</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s">&#39;SectionType&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                    <span class="n">parent</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;SectionType&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s">&#39;SectionDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                    <span class="n">parent</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;SectionDefinition&#39;</span><span class="p">]</span>
+
+            <span class="n">oldpath</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">]</span>
+            <span class="n">oldpropname</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;PropertyName&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s">&#39;PropertyDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+                <span class="n">oldpropdef</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;PropertyDefinition&#39;</span><span class="p">]</span>
+
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">oldpropname</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">valuelist</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;PropertyDefinition&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">:</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">oldpropdef</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+
+        <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">XMLWriter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">save_to</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Jana Pick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>compare_section_table &mdash; odmlviz 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="odmlviz 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for compare_section_table</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue May 26 09:51:20 2015</span>
+
+<span class="sd">@author: pick</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">odml</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<div class="viewcode-block" id="CompareSectionTable"><a class="viewcode-back" href="../documentation.html#compare_section_table.CompareSectionTable">[docs]</a><span class="k">class</span> <span class="nc">CompareSectionTable</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to create a table in which you compare different sections of a odml-</span>
+<span class="sd">    file wich have the same properties</span>
+
+<span class="sd">    :param include_all: if set to false, only those properties which exist in</span>
+<span class="sd">        every chosen section will be shown</span>
+<span class="sd">    :param switch: when set to True, the table will be switched so the</span>
+<span class="sd">        sections are in the rows and the properties in the columns</span>
+<span class="sd">    :type include_all: bool</span>
+<span class="sd">    :type switch: bool</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldoc</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sel_fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">&quot;Development&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">get_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_all</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switch</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_build_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        function to build the table with the names of the sections in the</span>
+<span class="sd">        header</span>
+
+<span class="sd">        :return fieldnames: header of the table</span>
+<span class="sd">        :return table: nested dictionary of the rows in the table</span>
+<span class="sd">        :type fieldnames: list</span>
+<span class="sd">        :type table: dictionary</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">prop_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sec_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sec_ind</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+        <span class="k">for</span> <span class="n">sect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldoc</span><span class="o">.</span><span class="n">itersections</span><span class="p">(</span><span class="n">filter_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sel_fun</span><span class="p">):</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sect</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">sect</span><span class="o">.</span><span class="n">iterproperties</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                    <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">sec_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
+        <span class="n">prop_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prop_num</span><span class="p">)]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sec_num</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">sect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldoc</span><span class="o">.</span><span class="n">itersections</span><span class="p">(</span><span class="n">filter_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sel_fun</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">sect</span><span class="o">.</span><span class="n">iterproperties</span><span class="p">():</span>
+                <span class="n">table</span><span class="p">[</span><span class="n">sec_ind</span><span class="p">][</span><span class="n">properties</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">sec_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">properties</span><span class="p">,</span> <span class="n">sections</span><span class="p">,</span> <span class="n">table</span>
+
+<div class="viewcode-block" id="CompareSectionTable.load_from_file"><a class="viewcode-back" href="../documentation.html#compare_section_table.CompareSectionTable.load_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load the data for the table from an odml-file</span>
+
+<span class="sd">        :param load_from: Name of the odml-file to load from</span>
+<span class="sd">        :type load_from: string</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldoc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_from</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CompareSectionTable.choose_sections_startwith"><a class="viewcode-back" href="../documentation.html#compare_section_table.CompareSectionTable.choose_sections_startwith">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sections_startwith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startwith</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        choose all sections with the same beginning</span>
+
+<span class="sd">        :param startwith: beginning of the sectionname of the sections that</span>
+<span class="sd">            will be compared</span>
+<span class="sd">        :type startwith: string</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sel_fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">startwith</span><span class="p">)</span>
+
+    <span class="c"># TODO: change from args to list for easier use of functions</span></div>
+<div class="viewcode-block" id="CompareSectionTable.choose_sections"><a class="viewcode-back" href="../documentation.html#compare_section_table.CompareSectionTable.choose_sections">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        choose all sections out of the list of sectionnames you give this</span>
+<span class="sd">        function</span>
+
+<span class="sd">        :param args: names of the sections</span>
+<span class="sd">        :type args: strings</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">             a.choose_sections(&#39;section1&#39;, &#39;section2&#39;, &#39;section4&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sel_fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">args</span>
+</div>
+<div class="viewcode-block" id="CompareSectionTable.write2file"><a class="viewcode-back" href="../documentation.html#compare_section_table.CompareSectionTable.write2file">[docs]</a>    <span class="k">def</span> <span class="nf">write2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write the table to the specific file</span>
+
+<span class="sd">        :param save_to: path and name where the file will be saved</span>
+<span class="sd">        :type save_to: string</span>
+
+<span class="sd">        :raise NotImplementedError: Implemented in the subclass</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#TODO: Error Message if no document loaded!!</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Jana Pick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

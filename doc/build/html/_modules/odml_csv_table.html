@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>odml_csv_table &mdash; odmlviz 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="odmlviz 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for odml_csv_table</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Fri Apr 10 16:17:02 2015</span>
+
+<span class="sd">@author: pick</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">odml_table</span> <span class="kn">import</span> <span class="n">OdmlTable</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+
+<div class="viewcode-block" id="OdmlCsvTable"><a class="viewcode-back" href="../documentation.html#odml_csv_table.OdmlCsvTable">[docs]</a><span class="k">class</span> <span class="nc">OdmlCsvTable</span><span class="p">(</span><span class="n">OdmlTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to create a csv-file from an odml-file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">OdmlTable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OdmlCsvTable.write2file"><a class="viewcode-back" href="../documentation.html#odml_csv_table.OdmlCsvTable.write2file">[docs]</a>    <span class="k">def</span> <span class="nf">write2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        writes the data from the odml-file to a csv-file.</span>
+<span class="sd">        Each line of the table represents one Value of the odml-file. By</span>
+<span class="sd">        changing the header of the table you can choose, which informations</span>
+<span class="sd">        about those values will be shown in the table.</span>
+<span class="sd">        You can also decide, not to include information about every specific</span>
+<span class="sd">        value in your header, for example if you just want to get an overview</span>
+<span class="sd">        of your odml-structur. Then rows, that would be empty will be skipped</span>
+<span class="sd">        and not printed in the table.</span>
+
+<span class="sd">        :param save_to: name of the csv-file</span>
+<span class="sd">        :type save_to: string</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">save_to</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+
+            <span class="n">fieldnames</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="s">&quot;&quot;</span>
+                          <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span><span class="p">]</span>
+
+            <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">fieldnames</span><span class="p">,</span>
+                                       <span class="n">dialect</span><span class="o">=</span><span class="s">&#39;excel&#39;</span><span class="p">,</span>
+                                       <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONNUMERIC</span><span class="p">)</span>
+            <span class="n">oldpath</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="n">oldprop</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+            <span class="n">csvwriter</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="p">:</span>
+                <span class="c"># create a copy of the dictionary, so nothing in the odml_dict</span>
+                <span class="c"># will be changed</span>
+                <span class="n">tmp_row</span> <span class="o">=</span> <span class="n">dic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="c"># removing section entries (if neccessary)</span>
+
+                <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldpath</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_all_sections</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SECTION_INF</span><span class="p">:</span>
+                            <span class="n">tmp_row</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">oldpath</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">]</span>
+                    <span class="c"># if a new section begins all property- and value-</span>
+                    <span class="c"># information should be written, even if its the same as</span>
+                    <span class="c"># in the line before, so oldvalinf and oldprop are resetted</span>
+                    <span class="n">oldprop</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+                <span class="c"># removing property entries (if neccessary)</span>
+
+                <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;PropertyName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldprop</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_all_properties</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROPERTY_INF</span><span class="p">:</span>
+                            <span class="n">tmp_row</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">oldprop</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&quot;PropertyName&quot;</span><span class="p">]</span>
+
+                <span class="c"># eliminate those fields that wont show up in the table</span>
+
+                <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span><span class="p">[</span><span class="n">h</span><span class="p">]:</span> <span class="n">tmp_row</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">}</span>
+
+                <span class="c"># check if row is empty, otherwise write it to the csv-file</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="s">&#39;&#39;</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]):</span>
+                    <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Jana Pick.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
