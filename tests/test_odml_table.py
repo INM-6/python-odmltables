@@ -6,9 +6,9 @@ Created on Fri Apr 17 08:11:32 2015
 """
 
 import odml
-from odmlviz.odml_table import OdmlTable
-from odmlviz.odml_csv_table import OdmlCsvTable
-from odmlviz.odml_xls_table import OdmlXlsTable
+from odmltables.odml_table import OdmlTable
+from odmltables.odml_csv_table import OdmlCsvTable
+from odmltables.odml_xls_table import OdmlXlsTable
 
 import unittest
 from create_test_odmls import create_small_test_odml

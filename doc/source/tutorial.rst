@@ -1,5 +1,5 @@
-odMLviz Tutorial
-================
+odMLtables Tutorial
+===================
 
 :Authors:
 	Jana Pick and Lyuba Zehl

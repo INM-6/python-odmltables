@@ -6,9 +6,9 @@ Created on Tue Jun  9 09:54:02 2015
 """
 
 
-from compare_section_table import CompareSectionTable
-from compare_section_csv_table import CompareSectionCsvTable
-from compare_section_xls_table import CompareSectionXlsTable
+from odmltables.compare_section_table import CompareSectionTable
+from odmltables.compare_section_csv_table import CompareSectionCsvTable
+from odmltables.compare_section_xls_table import CompareSectionXlsTable
 import odml
 from create_test_odmls import create_compare_test
 import os
@@ -31,7 +31,8 @@ class TestCompareSectionTable(unittest.TestCase):
         self.assertEqual(self.doc, self.test_table._odmldoc)
 
     def test_choose(self):
-        self.test_table.choose_sections('Section3', 'Section1', 'One more Section')
+        self.test_table.choose_sections(
+            'Section3', 'Section1', 'One more Section')
         expected = [section.name for section in
                     self.doc.itersections(filter_func=lambda x:
                                           x.name in ['Section1', 'Section3', 'One more Section'])]
@@ -63,6 +64,7 @@ switch_expected = [['', 'Property1', 'Property2', 'Property3'],
                    ['Section2', '1', '2', '3'],
                    ['Section3', '2', '', '4'],
                    ['One more Section', '', '11', '']]
+
 
 class TestCompareCsv(unittest.TestCase):
 

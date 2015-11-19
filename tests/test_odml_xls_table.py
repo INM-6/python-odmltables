@@ -5,7 +5,7 @@ Created on Mon May  4 13:49:47 2015
 @author: pick
 """
 
-from odml_xls_table import OdmlXlsTable
+from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 import os
 from create_test_odmls import create_2samerows_test_odml

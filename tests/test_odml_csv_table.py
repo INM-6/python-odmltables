@@ -6,7 +6,7 @@ Created on Mon Apr 20 15:01:13 2015
 """
 
 
-from odml_csv_table import OdmlCsvTable
+from odmltables.odml_csv_table import OdmlCsvTable
 import unittest
 from create_test_odmls import create_showall_test_odml
 from create_test_odmls import create_2samerows_test_odml
@@ -229,28 +229,3 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
