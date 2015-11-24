@@ -326,7 +326,7 @@ class OdmlTable(object):
                 elif dtype in ['string', 'text', 'person', 'url']:
                     current_dic['Value'] = str(current_dic['Value'])
                 else:
-                    raise Exception('unknown datatype!!')
+                    raise Exception('Unknown datatype {0}!!'.format(dtype))
                     # TODO: change exception?!
 
                 self._odmldict.append(current_dic)
