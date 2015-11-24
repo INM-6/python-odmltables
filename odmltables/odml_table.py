@@ -323,7 +323,7 @@ class OdmlTable(object):
                 elif dtype == 'date':
                     current_dic['Value'] = \
                         datetime.datetime.strptime(value, '%Y-%m-%d').date()
-                elif dtype in ['string', 'text', 'person']:
+                elif dtype in ['string', 'text', 'person', 'url']:
                     current_dic['Value'] = str(current_dic['Value'])
                 else:
                     raise Exception('unknown datatype!!')
