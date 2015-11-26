@@ -200,28 +200,9 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                if dtype == 'int':
-                    current_dic['Value'] = int(value)
-                elif dtype == 'float':
-                    current_dic['Value'] = float(value)
-                elif dtype == 'boolean':
-                    if value in [1, 0]:
-                        value = int(value)
-                    current_dic['Value'] = str(value)
-                elif dtype == 'datetime':
+                if 'date' in dtype or 'time' in dtype:
                     value = xlrd.xldate_as_tuple(value, 0)
-                    current_dic['Value'] = datetime.datetime(value)
-                elif dtype == 'time':
-                    value = xlrd.xldate_as_tuple(value, 0)
-                    current_dic['Value'] = datetime.time(value[3:])
-                elif dtype == 'date':
-                    value = xlrd.xldate_as_tuple(value, 0)
-                    current_dic['Value'] = datetime.date(value[:3])
-                elif dtype in ['string', 'text', 'person']:
-                    current_dic['Value'] = str(current_dic['Value'])
-                else:
-                    raise Exception('unknown datatype!!')
-                    # TODO: change exception?!
+                current_dic['Value'] = OdmlDtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
 
@@ -308,28 +289,10 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                if dtype == 'int':
-                    current_dic['Value'] = int(value)
-                elif dtype == 'float':
-                    current_dic['Value'] = float(value)
-                elif dtype == 'boolean':
-                    current_dic['Value'] = str(value)
-                elif dtype == 'datetime':
-                    current_dic['Value'] = \
-                        datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-                elif dtype == 'time':
-                    current_dic['Value'] = \
-                        datetime.datetime.strptime(value, '%H:%M:%S').time()
-                elif dtype == 'date':
-                    current_dic['Value'] = \
-                        datetime.datetime.strptime(value, '%Y-%m-%d').date()
-                elif dtype in ['string', 'text', 'person', 'url']:
-                    current_dic['Value'] = str(current_dic['Value'])
-                else:
-                    raise Exception('Unknown datatype {0}!!'.format(dtype))
-                    # TODO: change exception?!
+                current_dic['Value'] = OdmlDtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
+
 
     def change_header_titles(self, **kwargs):
         """
@@ -473,11 +436,21 @@ class OdmlTable(object):
 
         self._header = header
 
+    def consistency_check(self):
+        """
+        check odmldict for consistency regarding dtypes to ensure that data can be loaded again.
+        """
+        for property_dict in self._odmldict:
+            if property_dict['odmlDatatype'] not in OdmlDtypes.get_valid_dtypes():
+                raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],OdmlDtypes.get_valid_dtypes()))
+
     def write2file(self, save_to):
         """
         write the table to the specific file
         """
         raise NotImplementedError()
+
+        self.consistency_check()
 
     def write2odml(self, save_to):
         """
@@ -490,6 +463,8 @@ class OdmlTable(object):
         oldpropdef = ''
         valuelist = []
         parent = ''
+
+        self.consistency_check()
 
         for dic in self._odmldict:
 
@@ -548,3 +523,50 @@ class OdmlTable(object):
         parent.append(prop)
 
         odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)
+
+
+class OdmlDtypes(object):
+
+    basedtypes = {'int':-1,
+                  'float':-1.0,
+                  'bool':None,
+                  'datetime':datetime.datetime(1111,11,11,11,11,11),
+                  'datetime.date':datetime.datetime(1111,11,11).date(),
+                  'datetime.time':datetime.datetime(1111,11,11,11,11,11).time(),
+                  'str':'-',
+                  'text':'-',
+                  'person':'-','url':'file://-'}
+    synonyms = {'boolean':'bool','date':'datetime.date','time':'datetime.time',
+                'integer':'int','string':'str','url':'str','text':'str','person':'str'}
+
+    _validDtypes = None
+
+    @staticmethod
+    def to_odml_value(value,dtype):
+        if dtype in OdmlDtypes.synonyms:
+            dtype = OdmlDtypes.synonyms[dtype]
+
+        if dtype == 'datetime':
+            result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        elif dtype ==  'datetime.date':
+            result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+        elif dtype == 'datetime.time':
+            result = datetime.datetime.strptime(value, '%H:%M:%S').time()
+        elif dtype in OdmlDtypes.basedtypes or dtype in OdmlDtypes.synonyms:
+            result = eval('%s("%s")'%(dtype,value))
+        else:
+            raise TypeError('Unkown dtype {0}'.format(dtype))
+
+        return result
+
+    @staticmethod
+    def get_valid_dtypes():
+        # if not done yet: generate validDtype list with unique entries
+        if OdmlDtypes._validDtypes == None:
+            validDtypes = OdmlDtypes.basedtypes.keys()
+            for syn in OdmlDtypes.synonyms.keys():
+                if syn not in validDtypes:
+                    validDtypes.append(syn)
+            OdmlDtypes._validDtypes = validDtypes
+
+        return OdmlDtypes._validDtypes

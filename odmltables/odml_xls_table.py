@@ -145,6 +145,8 @@ class OdmlXlsTable(OdmlTable):
             sheet.write(0, col, self._header_titles[h] if h in
                         self._header_titles else "", styles['header'])
 
+        self.consistency_check()
+
         # write the rows
         for dic in self._odmldict:
 
