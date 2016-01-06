@@ -444,6 +444,68 @@ class OdmlTable(object):
             if property_dict['odmlDatatype'] not in OdmlDtypes.get_valid_dtypes():
                 raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],OdmlDtypes.get_valid_dtypes()))
 
+    def _filter(self, filter_func):
+        """
+        remove odmldict entries which do not match filter_func.
+        """
+        new_odmldict = [d for d in self._odmldict if filter_func(d)]
+        deleted_properties = [d for d in self._odmldict if not filter_func(d)]
+
+        self._odmldict = new_odmldict
+        return new_odmldict, deleted_properties
+
+    def filter(self,mode='and',invert=False,recursive=False,comparison_func=lambda x,y: x==y,**kwargs):
+        """
+        filters odml properties according to provided kwargs.
+
+        :param mode: Possible values: 'and', 'or'. For 'and' all keyword arguments
+                must be satisfied for a property to be selected. For 'or' only one
+                of the keyword arguments must be satisfied for the property to be
+                selected. Default: 'and'
+        :param invert: Inverts filter function. Previously accepted properties
+                are rejected and the other way round. Default: False
+        :param recursive: Delete also properties attached to subsections of the
+                mother section and therefore complete branch
+        :param comparison_func: Function used to compare dictionary entry to
+                keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings.
+                Default: lambda x,y: x==y
+        :param kwargs: keywords and values used for filtering
+        :return: None
+        """
+        if not kwargs:
+            raise ValueError('No filter keywords provided for property filtering.')
+        if mode not in ['and','or']:
+            raise ValueError('Invalid operation mode "%s". Allowed values are "and","or".'%(mode))
+
+        def filter_func(dict_prop):
+            keep_property = False
+            for filter_key, filter_value in kwargs.iteritems():
+                if filter_key not in dict_prop:
+                    raise ValueError('Key "%s" is missing in property dictionary %s'%(filter_key,dict_prop))
+
+                if comparison_func(dict_prop[filter_key],filter_value):
+                    keep_property = True
+                else:
+                    keep_property = False
+
+                if mode=='or' and keep_property:
+                    break
+                if mode=='and' and not keep_property:
+                    break
+
+            if invert:
+                keep_property = not keep_property
+
+            return keep_property
+
+
+        _, del_props = self._filter(filter_func=filter_func)
+
+        if recursive and len(del_props)>0:
+            for del_prop in del_props:
+                self.filter(invert=True,recursive=True,comparison_func= lambda x,y: x.startswith(y),Path=del_prop['Path'])
+
+
     def write2file(self, save_to):
         """
         write the table to the specific file

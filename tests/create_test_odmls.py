@@ -197,29 +197,47 @@ def create_datatype_test_odml():
     return doc
 
 
-def create_compare_test(sections=3, properties=3):
+def create_compare_test(sections=3, properties=3,levels=1):
     """
     """
 
     doc = odml.Document()
 
-    for i in range(sections):
-        doc.append(odml.Section(name='Section' + str(i+1)))
-        parent = doc['Section' + str(i+1)]
-        if(i != 2):
-            for j in range(properties):
-                parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
-        else:
-            for j in range(properties-2):
-                parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
-            parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
+    def append_children(sec,level):
+        if level < levels:
+            for i in range(sections):
+                sec.append(odml.Section(name='Section' + str(i+1)))
+                parent = sec['Section' + str(i+1)]
+                append_children(parent,level+1)
+                if(i != 2):
+                    for j in range(properties):
+                        parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
+                else:
+                    for j in range(properties-2):
+                        parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
+                    parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
+
+    # sec = doc
+    # for l in range(levels):
+    #     for i in range(sections):
+    #         doc.append(odml.Section(name='Section' + str(i+1)))
+    #         parent = doc['Section' + str(i+1)]
+    #         if(i != 2):
+    #             for j in range(properties):
+    #                 parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
+    #         else:
+    #             for j in range(properties-2):
+    #                 parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
+    #             parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
+
+
+    append_children(doc,0)
 
     doc.append(odml.Section(name='One more Section'))
     parent = doc['One more Section']
     parent.append(odml.Property(name='Property2', value=11))
 
     return doc
-
 
 
 

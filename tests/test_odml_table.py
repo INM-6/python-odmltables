@@ -13,6 +13,7 @@ from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 from create_test_odmls import create_small_test_odml
 from create_test_odmls import create_showall_test_odml
+from create_test_odmls import create_compare_test
 import os
 
 
@@ -248,6 +249,86 @@ class TestOdmlTable(unittest.TestCase):
         # TODO: Exception aendern
         with self.assertRaises(Exception):
             self.test_table.allow_empty_columns = False
+
+
+class TestFilter(unittest.TestCase):
+    """
+    class to test the other functions of the OdmlTable-class
+    """
+
+    def setUp(self):
+        self.test_table = OdmlTable()
+        self.test_table.load_from_odmldoc(create_compare_test(levels=2))
+
+    def test_filter_errors(self):
+        """
+        test filter function for exceptions
+        """
+
+        with self.assertRaises(ValueError):
+            self.test_table.filter()
+
+        with self.assertRaises(ValueError):
+            self.test_table.filter(mode='wrongmode',Property='Property')
+
+    def test_filter_mode_and(self):
+        """
+        testing mode='and' setting of filter function
+        """
+
+        self.test_table.filter(mode='and',invert=False,SectionName='Section2',PropertyName='Property2')
+        num_props_new = len(self.test_table._odmldict)
+
+        self.assertEqual(4,num_props_new)
+
+    def test_filter_mode_or(self):
+        """
+        testing mode='or' setting of filter function
+        """
+
+        self.test_table.filter(mode='or',invert=False,SectionName='Section2',PropertyName='Property2')
+        num_props_new = len(self.test_table._odmldict)
+
+        self.assertEqual(17,num_props_new)
+
+    def test_filter_invert(self):
+        """
+        testing invert setting of filter function
+        """
+
+        num_props_original = len(self.test_table._odmldict)
+        self.test_table.filter(mode='or',invert=True,SectionName='Section2',PropertyName='Property2')
+        num_props_new = len(self.test_table._odmldict)
+
+        self.assertEqual(num_props_original-17,num_props_new)
+
+    def test_filter_recursive(self):
+        """
+        testing recursive setting of filter function
+        """
+
+        self.test_table.filter(mode='and',recursive=True,invert=True,SectionName='Section2')
+        num_props_new = len(self.test_table._odmldict)
+
+        self.assertEqual(16,num_props_new)
+
+
+    def test_filter_comparison_func_false(self):
+        """
+        keeping/removing all properties by providing True/False as comparison function
+        """
+
+        num_props_original = len(self.test_table._odmldict)
+        self.test_table.filter(comparison_func=lambda x,y:True,PropertyName='')
+        self.assertEqual(len(self.test_table._odmldict),num_props_original)
+
+        self.test_table.filter(comparison_func=lambda x,y:False,PropertyName='')
+        self.assertEqual(len(self.test_table._odmldict),0)
+
+
+
+
+
 
 
 if __name__ == '__main__':
