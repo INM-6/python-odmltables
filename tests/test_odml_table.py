@@ -7,6 +7,7 @@ Created on Fri Apr 17 08:11:32 2015
 
 import odml
 from odmltables.odml_table import OdmlTable
+from odmltables.odml_table import OdmlDtypes
 from odmltables.odml_csv_table import OdmlCsvTable
 from odmltables.odml_xls_table import OdmlXlsTable
 
@@ -324,6 +325,64 @@ class TestFilter(unittest.TestCase):
 
         self.test_table.filter(comparison_func=lambda x,y:False,PropertyName='')
         self.assertEqual(len(self.test_table._odmldict),0)
+
+
+class TestOdmlDtypes(unittest.TestCase):
+    """
+    class to test the other functions of the OdmlDtype-class
+    """
+
+    def setUp(self):
+        self.test_dtypes = OdmlDtypes()
+
+    def test_defaults(self):
+
+        expected_basedtypes = self.test_dtypes.default_basedtypes.keys()
+        self.assertItemsEqual(expected_basedtypes,self.test_dtypes.basedtypes)
+
+        expected_synonyms = self.test_dtypes.default_synonyms
+        self.assertEqual(expected_synonyms,self.test_dtypes.synonyms)
+
+    def test_valid_dtypes(self):
+        expected_dtypes = self.test_dtypes.default_basedtypes.keys() + self.test_dtypes.default_synonyms.keys()
+        self.assertItemsEqual(expected_dtypes,self.test_dtypes.valid_dtypes)
+
+    def test_default_values(self):
+        basedefaults = self.test_dtypes.default_basedtypes
+        syndefaults = dict([(syn,basedefaults[base]) for syn,base in self.test_dtypes.default_synonyms.iteritems()])
+        expected_defaults = basedefaults.copy()
+        expected_defaults.update(syndefaults)
+
+        self.assertEqual(expected_defaults,self.test_dtypes.default_values)
+
+        for dtype,expected_default in expected_defaults.iteritems():
+            self.assertEqual(expected_default,self.test_dtypes.default_value(dtype))
+
+    def test_synonym_adder(self):
+        basedtype, synonym = ('int','testsyn1')
+        self.test_dtypes.add_synonym(basedtype,synonym)
+
+        expected_synonyms = self.test_dtypes.default_synonyms.copy()
+        expected_synonyms.update({synonym:basedtype})
+        self.assertEqual(self.test_dtypes.synonyms, expected_synonyms)
+        self.assertEqual(self.test_dtypes.default_value('testsyn1'),self.test_dtypes.default_value('int'))
+
+    def test_basedtype_adder(self):
+        basedtype, default = 'testbasetype','testdefault'
+        self.test_dtypes.add_basedtypes(basedtype,default)
+
+        expected_basedtypes = self.test_dtypes.default_basedtypes.copy()
+        expected_basedtypes.update({basedtype:default})
+        self.assertItemsEqual(self.test_dtypes.basedtypes,expected_basedtypes)
+
+    def test_default_value_setter(self):
+        default_value = 1
+        self.test_dtypes.set_default_value('int',default_value)
+
+        self.test_dtypes.default_value('int')
+
+        self.assertEqual(self.test_dtypes.default_value('int'),default_value)
+
 
 
 

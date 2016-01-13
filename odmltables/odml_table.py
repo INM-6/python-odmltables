@@ -32,6 +32,7 @@ class OdmlTable(object):
     def __init__(self):
 
         self._odmldict = None
+        self.odtypes = OdmlDtypes()
         self._header = ["Path", "PropertyName", "Value", "odmlDatatype"]
         self._header_titles = {"Path": "Path to Section",
                                "SectionName": "Section Name",
@@ -202,7 +203,7 @@ class OdmlTable(object):
 
                 if 'date' in dtype or 'time' in dtype:
                     value = xlrd.xldate_as_tuple(value, 0)
-                current_dic['Value'] = OdmlDtypes.to_odml_value(value,dtype)
+                current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
 
@@ -289,7 +290,7 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                current_dic['Value'] = OdmlDtypes.to_odml_value(value,dtype)
+                current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
 
@@ -441,8 +442,8 @@ class OdmlTable(object):
         check odmldict for consistency regarding dtypes to ensure that data can be loaded again.
         """
         for property_dict in self._odmldict:
-            if property_dict['odmlDatatype'] not in OdmlDtypes.get_valid_dtypes():
-                raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],OdmlDtypes.get_valid_dtypes()))
+            if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
+                raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -475,7 +476,7 @@ class OdmlTable(object):
         if not kwargs:
             raise ValueError('No filter keywords provided for property filtering.')
         if mode not in ['and','or']:
-            raise ValueError('Invalid operation mode "%s". Allowed values are "and","or".'%(mode))
+            raise ValueError('Invalid operation mode "%s". Accepted values are "and","or".'%(mode))
 
         def filter_func(dict_prop):
             keep_property = False
@@ -588,25 +589,110 @@ class OdmlTable(object):
 
 
 class OdmlDtypes(object):
+    """
+    Class to handle odml data types, synonyms and default values.
+    :param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.
+            Default: None
+    :param synonyms_dict: Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.
+            Default: None
+    :return: None
+    """
 
-    basedtypes = {'int':-1,
+    default_basedtypes = {'int':-1,
                   'float':-1.0,
-                  'bool':None,
+                  'bool':False,
                   'datetime':datetime.datetime(1111,11,11,11,11,11),
                   'datetime.date':datetime.datetime(1111,11,11).date(),
                   'datetime.time':datetime.datetime(1111,11,11,11,11,11).time(),
                   'str':'-',
-                  'text':'-',
-                  'person':'-','url':'file://-'}
-    synonyms = {'boolean':'bool','date':'datetime.date','time':'datetime.time',
-                'integer':'int','string':'str','url':'str','text':'str','person':'str'}
+                  'url':'file://-'}
+    default_synonyms = {'boolean':'bool','date':'datetime.date','time':'datetime.time',
+                'integer':'int','string':'str','text':'str','person':'str'}
 
-    _validDtypes = None
 
-    @staticmethod
-    def to_odml_value(value,dtype):
-        if dtype in OdmlDtypes.synonyms:
-            dtype = OdmlDtypes.synonyms[dtype]
+    def __init__(self,basedtypes_dict=None,synonyms_dict=None):
+        self._basedtypes = self.default_basedtypes.copy()
+        self._synonyms = self.default_synonyms.copy()
+        self._validDtypes = None
+
+        # update default values with used defined defaults
+        if basedtypes_dict is not None:
+            self._basedtypes.update(basedtypes_dict)
+        if synonyms_dict is not None:
+            self._synonyms.update(synonyms_dict)
+
+
+    @property
+    def valid_dtypes(self):
+        # if not done yet: generate validDtype list with unique entries
+        if self._validDtypes == None:
+            validDtypes = self._basedtypes.keys()
+            for syn in self._synonyms.keys():
+                if syn not in validDtypes:
+                    validDtypes.append(syn)
+            self._validDtypes = validDtypes
+
+        return self._validDtypes
+
+
+    @property
+    def synonyms(self):
+        return self._synonyms
+
+    def add_synonym(self,basedtype, synonym):
+        """
+        Setting user specific default synonyms
+        :param basedtype: Accepted basedtype of OdmlDtypes or None. None delete already existing synonym
+        :param synonym: Synonym to be connected to basedtype
+        :return: None
+        """
+        if basedtype not in self._basedtypes:
+            if basedtype is None and synonym in self._synonyms:
+                self._synonyms.pop(synonym)
+            else:
+                raise ValueError('Can not add synonym "%s=%s". %s is not a base dtype.'
+                                 'Valid basedtypes are %s.'%(basedtype,synonym,basedtype,self.basedtypes))
+
+        elif synonym is None or synonym == '':
+            raise ValueError('"%s" is not a valid synonym.'%synonym)
+        else:
+            self._synonyms.update({synonym:basedtype})
+
+    @property
+    def basedtypes(self):
+        return self._basedtypes.keys()
+
+    def add_basedtypes(self,basedtype,default_value):
+        if basedtype in self._basedtypes:
+            raise ValueError('Basedtype "%s" already exists. Can not be added. '
+                             'To customize the default value use "customize_default".')
+        else:
+            self._basedtypes.update({basedtype:default_value})
+
+    @property
+    def default_values(self):
+        def_values = self._basedtypes.copy()
+        for syn,base in self._synonyms.iteritems():
+            def_values[syn] = self._basedtypes[base]
+        return def_values
+
+    def default_value(self,basedtype):
+        if basedtype in self.default_values:
+            return self.default_values[basedtype]
+        else:
+            raise ValueError('"%s" is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
+
+
+    def set_default_value(self,basedtype,default_value):
+        if basedtype in self.basedtypes:
+            self._basedtypes[basedtype] = default_value
+        else:
+            raise ValueError('Can not set default value for basedtype "%s". '
+                             'This is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
+
+    def to_odml_value(self,value,dtype):
+        if dtype in self._synonyms:
+            dtype = self._synonyms[dtype]
 
         if dtype == 'datetime':
             result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
@@ -614,21 +700,9 @@ class OdmlDtypes(object):
             result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
         elif dtype == 'datetime.time':
             result = datetime.datetime.strptime(value, '%H:%M:%S').time()
-        elif dtype in OdmlDtypes.basedtypes or dtype in OdmlDtypes.synonyms:
+        elif dtype in self._basedtypes or dtype in self._synonyms:
             result = eval('%s("%s")'%(dtype,value))
         else:
             raise TypeError('Unkown dtype {0}'.format(dtype))
 
         return result
-
-    @staticmethod
-    def get_valid_dtypes():
-        # if not done yet: generate validDtype list with unique entries
-        if OdmlDtypes._validDtypes == None:
-            validDtypes = OdmlDtypes.basedtypes.keys()
-            for syn in OdmlDtypes.synonyms.keys():
-                if syn not in validDtypes:
-                    validDtypes.append(syn)
-            OdmlDtypes._validDtypes = validDtypes
-
-        return OdmlDtypes._validDtypes
