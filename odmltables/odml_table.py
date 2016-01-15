@@ -641,9 +641,9 @@ class OdmlDtypes(object):
     default_basedtypes = {'int':-1,
                   'float':-1.0,
                   'bool':False,
-                  'datetime':datetime.datetime(1111,11,11,11,11,11),
-                  'datetime.date':datetime.datetime(1111,11,11).date(),
-                  'datetime.time':datetime.datetime(1111,11,11,11,11,11).time(),
+                  'datetime':datetime.datetime(1900,01,01,01,01,01),
+                  'datetime.date':datetime.datetime(1900,01,01).date(),
+                  'datetime.time':datetime.datetime(1900,01,01,01,01,01).time(),
                   'str':'-',
                   'url':'file://-'}
     default_synonyms = {'boolean':'bool','date':'datetime.date','time':'datetime.time',
