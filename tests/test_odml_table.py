@@ -16,6 +16,7 @@ from create_test_odmls import create_small_test_odml
 from create_test_odmls import create_showall_test_odml
 from create_test_odmls import create_compare_test
 import os
+import copy
 
 
 class TestLoadOdmlFromTable(unittest.TestCase):
@@ -250,6 +251,34 @@ class TestOdmlTable(unittest.TestCase):
         # TODO: Exception aendern
         with self.assertRaises(Exception):
             self.test_table.allow_empty_columns = False
+
+    def test_merge(self):
+        doc1 = create_compare_test(sections=2,properties=2,levels=2)
+        # generate one additional Property, which is not present in doc2
+        doc1.sections[0].append(odml.Property(name='Doc1Property2',value=5))
+        #generate one additional Section, which is not present in doc2
+        new_prop = odml.Property(name='Doc1Property2',value=10)
+        new_sec = odml.Section(name='Doc1Section')
+        new_sec.append(new_prop)
+        doc1.sections[0].append(new_sec)
+        self.test_table.load_from_odmldoc(doc1)
+
+        doc2 = create_compare_test(sections=3,properties=3,levels=3)
+        table2 = OdmlTable()
+        table2.load_from_odmldoc(doc2)
+
+        backup_table = copy.deepcopy(self.test_table)
+
+        self.test_table.merge(doc2)
+        backup_table.merge(table2)
+
+        self.assertListEqual(self.test_table._odmldict,backup_table._odmldict)
+
+        expected = len(table2._odmldict) + 2
+
+        self.assertEqual(len(self.test_table._odmldict),expected)
+
+        pass
 
 
 class TestFilter(unittest.TestCase):

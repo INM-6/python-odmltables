@@ -506,6 +506,37 @@ class OdmlTable(object):
             for del_prop in del_props:
                 self.filter(invert=True,recursive=True,comparison_func= lambda x,y: x.startswith(y),Path=del_prop['Path'])
 
+    def merge(self,odmltable):
+        """
+        Merge odmltable into current odmltable.
+        :param odmltable: OdmlTable object or Odml document object
+        :return:
+        """
+        if hasattr(odmltable,'_convert2odml'):
+            doc2 = odmltable._convert2odml()
+        else:
+            # assuming odmltable is already an odml document
+            doc2 = odmltable
+        doc1 = self._convert2odml()
+
+        for sec in doc2:
+            if sec.name in doc1.sections:
+                doc1.sections[sec.name].merge(sec)
+            else:
+                doc1.append(sec)
+
+
+        #TODO: What should happen to the document properties?
+        """
+        'author'
+        'date'
+        'version'
+        'repository'
+        """
+
+        #TODO: Check what happens to original odmldict...
+        self.load_from_odmldoc(doc1)
+
 
     def write2file(self, save_to):
         """
@@ -515,11 +546,12 @@ class OdmlTable(object):
 
         self.consistency_check()
 
-    def write2odml(self, save_to):
-        """
-        writes the loaded odmldict (e.g. from an csv-file) to an odml-file
-        """
 
+    def _convert2odml(self):
+        """
+        Generates odml representation of odmldict and return it as odml document.
+        :return:
+        """
         doc = odml.Document()
         oldpath = []
         oldpropname = ''
@@ -585,6 +617,14 @@ class OdmlTable(object):
             prop.definition = oldpropdef
         parent.append(prop)
 
+        return doc
+
+
+    def write2odml(self, save_to):
+        """
+        writes the loaded odmldict (e.g. from an csv-file) to an odml-file
+        """
+        doc = self._convert2odml()
         odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)
 
 
