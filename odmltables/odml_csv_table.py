@@ -46,6 +46,8 @@ class OdmlCsvTable(OdmlTable):
 
             csvwriter.writeheader()
 
+            self.consistency_check()
+
             for dic in self._odmldict:
                 # create a copy of the dictionary, so nothing in the odml_dict
                 # will be changed
