@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# odmlviz documentation build configuration file, created by
+# odmltables documentation build configuration file, created by
 # sphinx-quickstart on Mon Aug 17 13:22:00 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -20,8 +20,8 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../../src'))
-sys.path.insert(0, os.path.abspath('../../../../python-odml/'))
-
+sys.path.insert(0, os.path.abspath('../../../python-odml/'))
+sys.path.insert(0, os.path.abspath('../../odmltables'))
 
 # -- General configuration ------------------------------------------------
 
@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'odmlviz'
+project = u'odmltables'
 copyright = u'2015, Jana Pick'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -105,7 +105,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -183,7 +183,7 @@ html_static_path = ['.static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'odmlvizdoc'
+htmlhelp_basename = 'odmltablesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -203,7 +203,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'odmlviz.tex', u'odmlviz Documentation',
+  ('index', 'odmltables.tex', u'odmltables Documentation',
    u'Jana Pick', 'manual'),
 ]
 
@@ -233,7 +233,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'odmlviz', u'odmlviz Documentation',
+    ('index', 'odmltables', u'odmltables Documentation',
      [u'Jana Pick'], 1)
 ]
 
@@ -247,8 +247,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'odmlviz', u'odmlviz Documentation',
-   u'Jana Pick', 'odmlviz', 'One line description of project.',
+  ('index', 'odmltables', u'odmltables Documentation',
+   u'Jana Pick', 'odmltables', 'One line description of project.',
    'Miscellaneous'),
 ]
 
