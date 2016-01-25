@@ -51,9 +51,12 @@ class OdmlXlsTable(OdmlTable):
         self.second_style = XlsStyle(backcolor='green', fontcolor='white',
                                      fontstyle='')
         self.first_marked_style = XlsStyle(backcolor='light_blue',
-                                           fontcolor='black', fontstyle='',)
+                                           fontcolor='black', fontstyle='')
         self.second_marked_style = XlsStyle(backcolor='lime',
-                                            fontcolor='black', fontstyle='',)
+                                            fontcolor='black', fontstyle='')
+        self.highlight_style = XlsStyle(backcolor='red',
+                                            fontcolor='black', fontstyle='')
+        self._highlight_defaults = False
         self._pattern = 'alternating'
         self._changing_point = 'sections'
 
@@ -82,6 +85,23 @@ class OdmlXlsTable(OdmlTable):
             self._pattern = pat
         else:
             raise Exception("This pattern does not exist")
+
+    @property
+    def highlight_defaults(self):
+        return self._highlight_defaults
+
+    @highlight_defaults.setter
+    def highlight_defaults(self, mode):
+        if mode in [True,False]:
+            self._highlight_defaults = mode
+        else:
+            try:
+                self._highlight_defaults = bool(mode)
+            except:
+                raise TypeError('Mode "{}" can not be'
+                                'converted to boolean.'
+                                ''.format(str(mode)))
+
 
     def mark_columns(self, *args):
         """
@@ -126,8 +146,9 @@ class OdmlXlsTable(OdmlTable):
                   "row0col1":
                   xlwt.easyxf(self.first_marked_style.get_style_string()),
                   "row1col1":
-                  xlwt.easyxf(self.second_marked_style.get_style_string())
-                  }
+                  xlwt.easyxf(self.second_marked_style.get_style_string()),
+                  "highlight":
+                  xlwt.easyxf(self.highlight_style.get_style_string())}
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheetname)
 
@@ -215,6 +236,11 @@ class OdmlXlsTable(OdmlTable):
                     col_style = 0
 
                 stylestring = "row" + str(row_style) + "col" + str(col_style)
+
+                #special style for highlighting default values
+                if (h == 'Value' and self._highlight_defaults
+                    and row_dic['Value'] == self.odtypes.default_value(row_dic['odmlDatatype'])):
+                    stylestring = 'highlight'
 
                 style = styles[stylestring]
                 cell_content = row_dic[h]
