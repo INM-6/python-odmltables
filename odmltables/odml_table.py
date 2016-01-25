@@ -202,7 +202,7 @@ class OdmlTable(object):
                 value = current_dic['Value']
 
                 if 'date' in dtype or 'time' in dtype:
-                    value = xlrd.xldate_as_tuple(value, 0)
+                    value = xlrd.xldate_as_tuple(value, workbook.datemode)
                 current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
@@ -638,15 +638,16 @@ class OdmlDtypes(object):
     :return: None
     """
 
+
     default_basedtypes = {'int':-1,
                   'float':-1.0,
                   'bool':False,
-                  'datetime':datetime.datetime(1900,01,01,01,01,01),
-                  'datetime.date':datetime.datetime(1900,01,01).date(),
-                  'datetime.time':datetime.datetime(1900,01,01,01,01,01).time(),
+                  'datetime':datetime.datetime(1900,11,11,00,00,00),
+                  'datetime.date':datetime.datetime(1900,11,11).date(),
+                  'datetime.time':datetime.datetime(1900,11,11,00,00,00).time(),
                   'str':'-',
                   'url':'file://-'}
-    default_synonyms = {'boolean':'bool','date':'datetime.date','time':'datetime.time',
+    default_synonyms = {'boolean':'bool','binary':'bool','date':'datetime.date','time':'datetime.time',
                 'integer':'int','string':'str','text':'str','person':'str'}
 
 
@@ -737,11 +738,20 @@ class OdmlDtypes(object):
         if dtype == 'datetime':
             result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         elif dtype ==  'datetime.date':
-            result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+            try:
+                result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+            except TypeError:
+                result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':
-            result = datetime.datetime.strptime(value, '%H:%M:%S').time()
-        elif dtype in self._basedtypes or dtype in self._synonyms:
-            result = eval('%s("%s")'%(dtype,value))
+            try:
+                result = datetime.datetime.strptime(value, '%H:%M:%S').time()
+            except TypeError:
+                result = datetime.datetime(*value).time()
+        elif dtype in self._basedtypes:
+            try:
+                result = eval('%s("%s")'%(dtype,value))
+            except ValueError:
+                result = eval('%s(%s)'%(dtype,value))
         else:
             raise TypeError('Unkown dtype {0}'.format(dtype))
 
