@@ -44,18 +44,27 @@ class OdmlXlsTable(OdmlTable):
         OdmlTable.__init__(self)
         self.sheetname = "sheet1"
         self._marked_cols = ["Value"]
-        self.header_style = XlsStyle(backcolor='gray80', fontcolor='white',
+        self.document_info_style = XlsStyle(backcolor='white',
+                                            fontcolor='gray80',
+                                            fontstyle='bold 1')
+        self.header_style = XlsStyle(backcolor='gray80',
+                                     fontcolor='white',
                                      fontstyle='bold 1')
-        self.first_style = XlsStyle(backcolor='dark_blue', fontcolor='white',
+        self.first_style = XlsStyle(backcolor='dark_blue',
+                                    fontcolor='white',
                                     fontstyle='')
-        self.second_style = XlsStyle(backcolor='green', fontcolor='white',
+        self.second_style = XlsStyle(backcolor='green',
+                                     fontcolor='white',
                                      fontstyle='')
         self.first_marked_style = XlsStyle(backcolor='light_blue',
-                                           fontcolor='black', fontstyle='')
+                                           fontcolor='black',
+                                           fontstyle='')
         self.second_marked_style = XlsStyle(backcolor='lime',
-                                            fontcolor='black', fontstyle='')
+                                            fontcolor='black',
+                                            fontstyle='')
         self.highlight_style = XlsStyle(backcolor='red',
-                                            fontcolor='black', fontstyle='')
+                                        fontcolor='black',
+                                        fontstyle='')
         self._highlight_defaults = False
         self._pattern = 'alternating'
         self._changing_point = 'sections'
@@ -139,7 +148,10 @@ class OdmlXlsTable(OdmlTable):
         :type save_to: string
         """
 
-        styles = {"header": xlwt.easyxf(self.header_style.get_style_string()),
+        self.consistency_check()
+
+        styles = {"document_info": xlwt.easyxf(self.document_info_style.get_style_string()),
+                  "header": xlwt.easyxf(self.header_style.get_style_string()),
                   "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
                   "row1col0":
                   xlwt.easyxf(self.second_style.get_style_string()),
@@ -155,20 +167,28 @@ class OdmlXlsTable(OdmlTable):
         oldpath = ""
         oldprop = ""
         oldrow = []
-        row = 1
+        row = 0
 
         max_col_len = [len(self._header_titles[h]) for h in self._header]
         col_style = 0
         row_style = 0
 
+        # add document information in first row
+        sheet.write(row,0,'Document Information',styles["document_info"])
+        for a, attribute in enumerate(sorted(self._docdict)):
+            sheet.write(row, 2*a+1, attribute, styles["document_info"])
+            sheet.write(row, 2*a+2, self._docdict[attribute], styles["document_info"])
+
+        row += 1
+
         # write the header
         for col, h in enumerate(self._header):
-            sheet.write(0, col, self._header_titles[h] if h in
+            sheet.write(row, col, self._header_titles[h] if h in
                         self._header_titles else "", styles['header'])
 
-        self.consistency_check()
+        row += 1
 
-        # write the rows
+        # write the rest of the rows
         for dic in self._odmldict:
 
             # make a copy of the actual dic

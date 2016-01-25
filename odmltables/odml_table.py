@@ -32,6 +32,7 @@ class OdmlTable(object):
     def __init__(self):
 
         self._odmldict = None
+        self._docdict = None
         self.odtypes = OdmlDtypes()
         self._header = ["Path", "PropertyName", "Value", "odmlDatatype"]
         self._header_titles = {"Path": "Path to Section",
@@ -72,6 +73,12 @@ class OdmlTable(object):
                     for v in doc.itervalues()]
         return odmldict
 
+    def _create_documentdict(self,doc):
+        attributes = ['author','date','repository','version']
+        docdict = {att:getattr(doc,att) for att in attributes}
+        return docdict
+
+
     @property
     def allow_empty_columns(self):
         return self._allow_empty_columns
@@ -103,6 +110,7 @@ class OdmlTable(object):
         """
         doc = odml.tools.xmlparser.load(load_from)
         self._odmldict = self.__create_odmldict(doc)
+        self._docdict =  self._create_documentdict(doc)
 
     def load_from_odmldoc(self, doc):
         """
@@ -112,6 +120,7 @@ class OdmlTable(object):
         :type load_from: odml-document
         """
         self._odmldict = self.__create_odmldict(doc)
+        self._docdict =  self._create_documentdict(doc)
 
     def load_from_function(self, odmlfct):
         """
@@ -122,6 +131,7 @@ class OdmlTable(object):
         """
         doc = odmlfct()
         self._odmldict = self.__create_odmldict(doc)
+        self._docdict =  self._create_documentdict(doc)
 
     def load_from_xls_table(self, load_from):
         """
@@ -141,9 +151,30 @@ class OdmlTable(object):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
+            row = 0
+
+            # read document information if present
+            if worksheet.cell(0,0).value ==  'Document Information':
+                self._docdict = {}
+                doc_row = worksheet.row(row)
+                for col_id in range(len(doc_row)/2):
+                    if doc_row[2*col_id+1].value != '':
+                        key = doc_row[2*col_id+1].value
+                        value = doc_row[2*col_id+2].value
+                        self._docdict[key] = value
+                row += 1
+
+            # get number of non-empty odml colums
+            header_row = worksheet.row(row)
+            n_cols =  len(header_row) - len(['empty_col' for col in header_row
+                                             if col.ctype == 0])
+
             # read the header
-            self._header = [inv_header_titles[worksheet.cell(0, col_n).value]
-                            for col_n in range(worksheet.ncols)]
+            self._header = [inv_header_titles[worksheet.cell(row, col_n).value]
+                            for col_n in range(n_cols)]
+
+            row += 1
+
             old_dic = {"Path": "",
                        "SectionName": "",
                        "SectionType": "",
@@ -156,7 +187,7 @@ class OdmlTable(object):
                        "DataUncertainty": "",
                        "odmlDatatype": ""}
 
-            for row_n in range(1, worksheet.nrows):
+            for row_n in range(row, worksheet.nrows):
                 current_dic = {"Path": "",
                                "SectionName": "",
                                "SectionType": "",
@@ -169,7 +200,7 @@ class OdmlTable(object):
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
 
-                for col_n in range(worksheet.ncols):
+                for col_n in range(n_cols):
                     cell = worksheet.cell(row_n, col_n)
                     value = cell.value
 
