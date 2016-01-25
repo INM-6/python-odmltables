@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>odml_table &mdash; odmlviz 1.0 documentation</title>
+    <title>odml_table &mdash; odmltables 1.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,11 +23,11 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="odmlviz 1.0 documentation" href="../index.html" />
+    <link rel="top" title="odmltables 1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -36,15 +36,15 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">odmltables 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <h1>Source code for odml_table</h1><div class="highlight"><pre>
 <span class="c"># -*- coding: utf-8 -*-</span>
@@ -81,6 +81,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span> <span class="o">=</span> <span class="n">OdmlDtypes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">,</span> <span class="s">&quot;PropertyName&quot;</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="s">&quot;odmlDatatype&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;Path to Section&quot;</span><span class="p">,</span>
                                <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;Section Name&quot;</span><span class="p">,</span>
@@ -249,28 +250,9 @@
                 <span class="n">dtype</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">]</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
 
-                <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;float&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;boolean&#39;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
-                        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime&#39;</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;time&#39;</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">value</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;person&#39;</span><span class="p">]:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;unknown datatype!!&#39;</span><span class="p">)</span>
-                    <span class="c"># TODO: change exception?!</span>
+                <span class="k">if</span> <span class="s">&#39;date&#39;</span> <span class="ow">in</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="s">&#39;time&#39;</span> <span class="ow">in</span> <span class="n">dtype</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">xlrd</span><span class="o">.</span><span class="n">xldate_as_tuple</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">workbook</span><span class="o">.</span><span class="n">datemode</span><span class="p">)</span>
+                <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span><span class="o">.</span><span class="n">to_odml_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">dtype</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_dic</span><span class="p">)</span>
 
@@ -357,28 +339,10 @@
                 <span class="n">dtype</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">]</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
 
-                <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;float&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;boolean&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;time&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;date&#39;</span><span class="p">:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-                <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="s">&#39;person&#39;</span><span class="p">]:</span>
-                    <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;unknown datatype!!&#39;</span><span class="p">)</span>
-                    <span class="c"># TODO: change exception?!</span>
+                <span class="n">current_dic</span><span class="p">[</span><span class="s">&#39;Value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span><span class="o">.</span><span class="n">to_odml_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">dtype</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_dic</span><span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="OdmlTable.change_header_titles"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.change_header_titles">[docs]</a>    <span class="k">def</span> <span class="nf">change_header_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -522,23 +486,129 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="n">header</span>
 </div>
+<div class="viewcode-block" id="OdmlTable.consistency_check"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.consistency_check">[docs]</a>    <span class="k">def</span> <span class="nf">consistency_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check odmldict for consistency regarding dtypes to ensure that data can be loaded again.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">property_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">property_dict</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span><span class="o">.</span><span class="n">valid_dtypes</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Non valid dtype &quot;{0}&quot; in odmldict. Valid types are {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">property_dict</span><span class="p">[</span><span class="s">&#39;odmlDatatype&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span><span class="o">.</span><span class="n">valid_dtypes</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        remove odmldict entries which do not match filter_func.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_odmldict</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="k">if</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+        <span class="n">deleted_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">filter_func</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="n">new_odmldict</span>
+        <span class="k">return</span> <span class="n">new_odmldict</span><span class="p">,</span> <span class="n">deleted_properties</span>
+
+<div class="viewcode-block" id="OdmlTable.filter"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;and&#39;</span><span class="p">,</span><span class="n">invert</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">recursive</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">comparison_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">==</span><span class="n">y</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        filters odml properties according to provided kwargs.</span>
+
+<span class="sd">        :param mode: Possible values: &#39;and&#39;, &#39;or&#39;. For &#39;and&#39; all keyword arguments</span>
+<span class="sd">                must be satisfied for a property to be selected. For &#39;or&#39; only one</span>
+<span class="sd">                of the keyword arguments must be satisfied for the property to be</span>
+<span class="sd">                selected. Default: &#39;and&#39;</span>
+<span class="sd">        :param invert: Inverts filter function. Previously accepted properties</span>
+<span class="sd">                are rejected and the other way round. Default: False</span>
+<span class="sd">        :param recursive: Delete also properties attached to subsections of the</span>
+<span class="sd">                mother section and therefore complete branch</span>
+<span class="sd">        :param comparison_func: Function used to compare dictionary entry to</span>
+<span class="sd">                keyword. Eg. &#39;lambda x,y: x.startswith(y)&#39; in case of strings.</span>
+<span class="sd">                Default: lambda x,y: x==y</span>
+<span class="sd">        :param kwargs: keywords and values used for filtering</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;No filter keywords provided for property filtering.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;and&#39;</span><span class="p">,</span><span class="s">&#39;or&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Invalid operation mode &quot;</span><span class="si">%s</span><span class="s">&quot;. Accepted values are &quot;and&quot;,&quot;or&quot;.&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">filter_func</span><span class="p">(</span><span class="n">dict_prop</span><span class="p">):</span>
+            <span class="n">keep_property</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">filter_key</span><span class="p">,</span> <span class="n">filter_value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_prop</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Key &quot;</span><span class="si">%s</span><span class="s">&quot; is missing in property dictionary </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span><span class="n">dict_prop</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">comparison_func</span><span class="p">(</span><span class="n">dict_prop</span><span class="p">[</span><span class="n">filter_key</span><span class="p">],</span><span class="n">filter_value</span><span class="p">):</span>
+                    <span class="n">keep_property</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">keep_property</span> <span class="o">=</span> <span class="bp">False</span>
+
+                <span class="k">if</span> <span class="n">mode</span><span class="o">==</span><span class="s">&#39;or&#39;</span> <span class="ow">and</span> <span class="n">keep_property</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">mode</span><span class="o">==</span><span class="s">&#39;and&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keep_property</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+                <span class="n">keep_property</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">keep_property</span>
+
+            <span class="k">return</span> <span class="n">keep_property</span>
+
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">del_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span><span class="p">(</span><span class="n">filter_func</span><span class="o">=</span><span class="n">filter_func</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">del_props</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">del_prop</span> <span class="ow">in</span> <span class="n">del_props</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">recursive</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">comparison_func</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">Path</span><span class="o">=</span><span class="n">del_prop</span><span class="p">[</span><span class="s">&#39;Path&#39;</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="OdmlTable.merge"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">odmltable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge odmltable into current odmltable.</span>
+<span class="sd">        :param odmltable: OdmlTable object or Odml document object</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">odmltable</span><span class="p">,</span><span class="s">&#39;_convert2odml&#39;</span><span class="p">):</span>
+            <span class="n">doc2</span> <span class="o">=</span> <span class="n">odmltable</span><span class="o">.</span><span class="n">_convert2odml</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># assuming odmltable is already an odml document</span>
+            <span class="n">doc2</span> <span class="o">=</span> <span class="n">odmltable</span>
+        <span class="n">doc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert2odml</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">doc2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">doc1</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+                <span class="n">doc1</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">doc1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+
+
+        <span class="c">#TODO: What should happen to the document properties?</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &#39;author&#39;</span>
+<span class="sd">        &#39;date&#39;</span>
+<span class="sd">        &#39;version&#39;</span>
+<span class="sd">        &#39;repository&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c">#TODO: Check what happens to original odmldict...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_from_odmldoc</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
+
+</div>
 <div class="viewcode-block" id="OdmlTable.write2file"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.write2file">[docs]</a>    <span class="k">def</span> <span class="nf">write2file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        write the table to the specific file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="OdmlTable.write2odml"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.write2odml">[docs]</a>    <span class="k">def</span> <span class="nf">write2odml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        writes the loaded odmldict (e.g. from an csv-file) to an odml-file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">consistency_check</span><span class="p">()</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_convert2odml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates odml representation of odmldict and return it as odml document.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">Document</span><span class="p">()</span>
         <span class="n">oldpath</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">oldpropname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="n">oldpropdef</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="n">valuelist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">consistency_check</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span><span class="p">:</span>
 
@@ -596,15 +666,153 @@
             <span class="n">prop</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">oldpropdef</span>
         <span class="n">parent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
 
-        <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">XMLWriter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">save_to</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">doc</span>
+
+
+<div class="viewcode-block" id="OdmlTable.write2odml"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.write2odml">[docs]</a>    <span class="k">def</span> <span class="nf">write2odml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_to</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        writes the loaded odmldict (e.g. from an csv-file) to an odml-file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert2odml</span><span class="p">()</span>
+        <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">XMLWriter</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">save_to</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="OdmlDtypes"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlDtypes">[docs]</a><span class="k">class</span> <span class="nc">OdmlDtypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to handle odml data types, synonyms and default values.</span>
+<span class="sd">    :param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.</span>
+<span class="sd">            Default: None</span>
+<span class="sd">    :param synonyms_dict: Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.</span>
+<span class="sd">            Default: None</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">default_basedtypes</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;int&#39;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="s">&#39;float&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+                  <span class="s">&#39;bool&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span>
+                  <span class="s">&#39;datetime&#39;</span><span class="p">:</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">),</span>
+                  <span class="s">&#39;datetime.date&#39;</span><span class="p">:</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+                  <span class="s">&#39;datetime.time&#39;</span><span class="p">:</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mo">00</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                  <span class="s">&#39;str&#39;</span><span class="p">:</span><span class="s">&#39;-&#39;</span><span class="p">,</span>
+                  <span class="s">&#39;url&#39;</span><span class="p">:</span><span class="s">&#39;file://-&#39;</span><span class="p">}</span>
+    <span class="n">default_synonyms</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;boolean&#39;</span><span class="p">:</span><span class="s">&#39;bool&#39;</span><span class="p">,</span><span class="s">&#39;binary&#39;</span><span class="p">:</span><span class="s">&#39;bool&#39;</span><span class="p">,</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="s">&#39;datetime.date&#39;</span><span class="p">,</span><span class="s">&#39;time&#39;</span><span class="p">:</span><span class="s">&#39;datetime.time&#39;</span><span class="p">,</span>
+                <span class="s">&#39;integer&#39;</span><span class="p">:</span><span class="s">&#39;int&#39;</span><span class="p">,</span><span class="s">&#39;string&#39;</span><span class="p">:</span><span class="s">&#39;str&#39;</span><span class="p">,</span><span class="s">&#39;text&#39;</span><span class="p">:</span><span class="s">&#39;str&#39;</span><span class="p">,</span><span class="s">&#39;person&#39;</span><span class="p">:</span><span class="s">&#39;str&#39;</span><span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">basedtypes_dict</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">synonyms_dict</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_basedtypes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_synonyms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validDtypes</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># update default values with used defined defaults</span>
+        <span class="k">if</span> <span class="n">basedtypes_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">basedtypes_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">synonyms_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">synonyms_dict</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">valid_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># if not done yet: generate validDtype list with unique entries</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validDtypes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">validDtypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">syn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">validDtypes</span><span class="p">:</span>
+                    <span class="n">validDtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validDtypes</span> <span class="o">=</span> <span class="n">validDtypes</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validDtypes</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">synonyms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span>
+
+<div class="viewcode-block" id="OdmlDtypes.add_synonym"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlDtypes.add_synonym">[docs]</a>    <span class="k">def</span> <span class="nf">add_synonym</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">basedtype</span><span class="p">,</span> <span class="n">synonym</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setting user specific default synonyms</span>
+<span class="sd">        :param basedtype: Accepted basedtype of OdmlDtypes or None. None delete already existing synonym</span>
+<span class="sd">        :param synonym: Synonym to be connected to basedtype</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">basedtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">basedtype</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">synonym</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">synonym</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Can not add synonym &quot;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&quot;. </span><span class="si">%s</span><span class="s"> is not a base dtype.&#39;</span>
+                                 <span class="s">&#39;Valid basedtypes are </span><span class="si">%s</span><span class="s">.&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">basedtype</span><span class="p">,</span><span class="n">synonym</span><span class="p">,</span><span class="n">basedtype</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basedtypes</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">synonym</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">synonym</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; is not a valid synonym.&#39;</span><span class="o">%</span><span class="n">synonym</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">synonym</span><span class="p">:</span><span class="n">basedtype</span><span class="p">})</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">basedtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add_basedtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">basedtype</span><span class="p">,</span><span class="n">default_value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">basedtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Basedtype &quot;</span><span class="si">%s</span><span class="s">&quot; already exists. Can not be added. &#39;</span>
+                             <span class="s">&#39;To customize the default value use &quot;customize_default&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">basedtype</span><span class="p">:</span><span class="n">default_value</span><span class="p">})</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">def_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">syn</span><span class="p">,</span><span class="n">base</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">def_values</span><span class="p">[</span><span class="n">syn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">def_values</span>
+
+    <span class="k">def</span> <span class="nf">default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">basedtype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">basedtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_values</span><span class="p">[</span><span class="n">basedtype</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; is not a basedtype. Valid basedtypes are </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">basedtype</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basedtypes</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">set_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">basedtype</span><span class="p">,</span><span class="n">default_value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">basedtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basedtypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="p">[</span><span class="n">basedtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Can not set default value for basedtype &quot;</span><span class="si">%s</span><span class="s">&quot;. &#39;</span>
+                             <span class="s">&#39;This is not a basedtype. Valid basedtypes are </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">basedtype</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">basedtypes</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">to_odml_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">dtype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synonyms</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span>  <span class="s">&#39;datetime.date&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s">&#39;datetime.time&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="o">*</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basedtypes</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">(&quot;</span><span class="si">%s</span><span class="s">&quot;)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">(</span><span class="si">%s</span><span class="s">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;Unkown dtype {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
@@ -621,7 +829,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -630,13 +838,13 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">odmlviz 1.0 documentation</a> &raquo;</li>
-          <li><a href="index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">odmltables 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Jana Pick.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

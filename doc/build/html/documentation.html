@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>code documentation &mdash; odmlviz 1.0 documentation</title>
+    <title>code documentation &mdash; odmltables 1.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,11 +23,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="odmlviz 1.0 documentation" href="index.html" />
-    <link rel="prev" title="tutorial" href="tutorial.html" /> 
+    <link rel="top" title="odmltables 1.0 documentation" href="index.html" />
+    <link rel="prev" title="odMLtables Tutorial" href="tutorial.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -37,16 +37,16 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="tutorial"
+          <a href="tutorial.html" title="odMLtables Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">odmlviz 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">odmltables 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="code-documentation">
 <h1>code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
@@ -56,8 +56,37 @@
 <p>Created on Tue Mar 31 15:43:40 2015</p>
 <p>&#64;author: pick</p>
 <dl class="class">
+<dt id="odml_table.OdmlDtypes">
+<em class="property">class </em><code class="descclassname">odml_table.</code><code class="descname">OdmlDtypes</code><span class="sig-paren">(</span><em>basedtypes_dict=None</em>, <em>synonyms_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlDtypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlDtypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to handle odml data types, synonyms and default values.
+:param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.</p>
+<blockquote>
+<div>Default: None</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>synonyms_dict</strong> &#8211; Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.
+Default: None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="odml_table.OdmlDtypes.add_synonym">
+<code class="descname">add_synonym</code><span class="sig-paren">(</span><em>basedtype</em>, <em>synonym</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlDtypes.add_synonym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlDtypes.add_synonym" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting user specific default synonyms
+:param basedtype: Accepted basedtype of OdmlDtypes or None. None delete already existing synonym
+:param synonym: Synonym to be connected to basedtype
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="odml_table.OdmlTable">
-<em class="property">class </em><tt class="descclassname">odml_table.</tt><tt class="descname">OdmlTable</tt><a class="reference internal" href="_modules/odml_table.html#OdmlTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">odml_table.</code><code class="descname">OdmlTable</code><a class="reference internal" href="_modules/odml_table.html#OdmlTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to create tables in different formats from odml-files</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -79,7 +108,7 @@ tables with an emptycolumn</li>
 </table>
 <dl class="method">
 <dt id="odml_table.OdmlTable.change_header">
-<tt class="descname">change_header</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.change_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.change_header" title="Permalink to this definition">¶</a></dt>
+<code class="descname">change_header</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.change_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.change_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to change the header of the table.</p>
 <p>The keywordarguments of the function are the possible columns you can
 include into your table; they are listed below, you can also check the
@@ -128,7 +157,7 @@ table</li>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.change_header_titles">
-<tt class="descname">change_header_titles</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.change_header_titles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.change_header_titles" title="Permalink to this definition">¶</a></dt>
+<code class="descname">change_header_titles</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.change_header_titles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.change_header_titles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to change the Name of a column in your table. Be careful with
 this function if you want to convert the table back to an odml.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -159,8 +188,45 @@ table</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="odml_table.OdmlTable.consistency_check">
+<code class="descname">consistency_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.consistency_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.consistency_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>check odmldict for consistency regarding dtypes to ensure that data can be loaded again.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml_table.OdmlTable.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>mode='and'</em>, <em>invert=False</em>, <em>recursive=False</em>, <em>comparison_func=&lt;function &lt;lambda&gt;&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>filters odml properties according to provided kwargs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mode</strong> &#8211; Possible values: &#8216;and&#8217;, &#8216;or&#8217;. For &#8216;and&#8217; all keyword arguments
+must be satisfied for a property to be selected. For &#8216;or&#8217; only one
+of the keyword arguments must be satisfied for the property to be
+selected. Default: &#8216;and&#8217;</li>
+<li><strong>invert</strong> &#8211; Inverts filter function. Previously accepted properties
+are rejected and the other way round. Default: False</li>
+<li><strong>recursive</strong> &#8211; Delete also properties attached to subsections of the
+mother section and therefore complete branch</li>
+<li><strong>comparison_func</strong> &#8211; Function used to compare dictionary entry to
+keyword. Eg. &#8216;lambda x,y: x.startswith(y)&#8217; in case of strings.
+Default: lambda x,y: x==y</li>
+<li><strong>kwargs</strong> &#8211; keywords and values used for filtering</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="odml_table.OdmlTable.load_from_csv_table">
-<tt class="descname">load_from_csv_table</tt><big>(</big><em>load_from</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_csv_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_csv_table" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_csv_table</code><span class="sig-paren">(</span><em>load_from</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_csv_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_csv_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads the odmldict from a csv-file containing an odml-table. To load
 the odml, at least Value, Path, PropertyName and odmlDatatype must be
 given in the table. Also, the header_titles must be correct</p>
@@ -176,7 +242,7 @@ given in the table. Also, the header_titles must be correct</p>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.load_from_file">
-<tt class="descname">load_from_file</tt><big>(</big><em>load_from</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_file</code><span class="sig-paren">(</span><em>load_from</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads the odml-data from an odml-file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -190,7 +256,7 @@ given in the table. Also, the header_titles must be correct</p>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.load_from_function">
-<tt class="descname">load_from_function</tt><big>(</big><em>odmlfct</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_function" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_function</code><span class="sig-paren">(</span><em>odmlfct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads the odml-data by using a function that creates an odml-document</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -204,7 +270,7 @@ given in the table. Also, the header_titles must be correct</p>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.load_from_odmldoc">
-<tt class="descname">load_from_odmldoc</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_odmldoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_odmldoc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_odmldoc</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_odmldoc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_odmldoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads the odml-data from an odml-document</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -218,7 +284,7 @@ given in the table. Also, the header_titles must be correct</p>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.load_from_xls_table">
-<tt class="descname">load_from_xls_table</tt><big>(</big><em>load_from</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_xls_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_xls_table" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_xls_table</code><span class="sig-paren">(</span><em>load_from</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.load_from_xls_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.load_from_xls_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>loads the odml-data from a xls-file. To load the odml, at least Value,
 Path, PropertyName and odmlDatatype must be given in the table. Also,
 the header_titles must be correct</p>
@@ -233,14 +299,22 @@ the header_titles must be correct</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="odml_table.OdmlTable.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>odmltable</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge odmltable into current odmltable.
+:param odmltable: OdmlTable object or Odml document object
+:return:</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="odml_table.OdmlTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>write the table to the specific file</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="odml_table.OdmlTable.write2odml">
-<tt class="descname">write2odml</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/odml_table.html#OdmlTable.write2odml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.write2odml" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2odml</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlTable.write2odml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlTable.write2odml" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes the loaded odmldict (e.g. from an csv-file) to an odml-file</p>
 </dd></dl>
 
@@ -250,11 +324,11 @@ the header_titles must be correct</p>
 <p>&#64;author: pick</p>
 <dl class="class">
 <dt id="odml_csv_table.OdmlCsvTable">
-<em class="property">class </em><tt class="descclassname">odml_csv_table.</tt><tt class="descname">OdmlCsvTable</tt><a class="reference internal" href="_modules/odml_csv_table.html#OdmlCsvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_csv_table.OdmlCsvTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">odml_csv_table.</code><code class="descname">OdmlCsvTable</code><a class="reference internal" href="_modules/odml_csv_table.html#OdmlCsvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_csv_table.OdmlCsvTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to create a csv-file from an odml-file</p>
 <dl class="method">
 <dt id="odml_csv_table.OdmlCsvTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/odml_csv_table.html#OdmlCsvTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_csv_table.OdmlCsvTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_csv_table.html#OdmlCsvTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_csv_table.OdmlCsvTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes the data from the odml-file to a csv-file.
 Each line of the table represents one Value of the odml-file. By
 changing the header of the table you can choose, which informations
@@ -279,7 +353,7 @@ and not printed in the table.</p>
 <p>&#64;author: pick</p>
 <dl class="class">
 <dt id="odml_xls_table.OdmlXlsTable">
-<em class="property">class </em><tt class="descclassname">odml_xls_table.</tt><tt class="descname">OdmlXlsTable</tt><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">odml_xls_table.</code><code class="descname">OdmlXlsTable</code><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to create a csv-file from an odml-file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -305,7 +379,7 @@ when a new section, property or value starts (&#8216;sections&#8217;, &#8216;pro
 </table>
 <dl class="method">
 <dt id="odml_xls_table.OdmlXlsTable.mark_columns">
-<tt class="descname">mark_columns</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable.mark_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable.mark_columns" title="Permalink to this definition">¶</a></dt>
+<code class="descname">mark_columns</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable.mark_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable.mark_columns" title="Permalink to this definition">¶</a></dt>
 <dd><p>choose the columns of the table you want to highlight by giving them
 another style (for example a different color).
 Possible Arguments are:</p>
@@ -328,7 +402,7 @@ Possible Arguments are:</p>
 
 <dl class="method">
 <dt id="odml_xls_table.OdmlXlsTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_xls_table.html#OdmlXlsTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_xls_table.OdmlXlsTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes the data from the odml-file to a xls-file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -349,7 +423,7 @@ Possible Arguments are:</p>
 <p>&#64;author: pick</p>
 <dl class="class">
 <dt id="compare_section_table.CompareSectionTable">
-<em class="property">class </em><tt class="descclassname">compare_section_table.</tt><tt class="descname">CompareSectionTable</tt><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">compare_section_table.</code><code class="descname">CompareSectionTable</code><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>class to create a table in which you compare different sections of a odml-
 file wich have the same properties</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -368,7 +442,7 @@ sections are in the rows and the properties in the columns</li>
 </table>
 <dl class="method">
 <dt id="compare_section_table.CompareSectionTable.choose_sections">
-<tt class="descname">choose_sections</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.choose_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.choose_sections" title="Permalink to this definition">¶</a></dt>
+<code class="descname">choose_sections</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.choose_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.choose_sections" title="Permalink to this definition">¶</a></dt>
 <dd><p>choose all sections out of the list of sectionnames you give this
 function</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -385,7 +459,7 @@ function</p>
 
 <dl class="method">
 <dt id="compare_section_table.CompareSectionTable.choose_sections_startwith">
-<tt class="descname">choose_sections_startwith</tt><big>(</big><em>startwith</em><big>)</big><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.choose_sections_startwith"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.choose_sections_startwith" title="Permalink to this definition">¶</a></dt>
+<code class="descname">choose_sections_startwith</code><span class="sig-paren">(</span><em>startwith</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.choose_sections_startwith"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.choose_sections_startwith" title="Permalink to this definition">¶</a></dt>
 <dd><p>choose all sections with the same beginning</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -400,7 +474,7 @@ will be compared</td>
 
 <dl class="method">
 <dt id="compare_section_table.CompareSectionTable.load_from_file">
-<tt class="descname">load_from_file</tt><big>(</big><em>load_from</em><big>)</big><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.load_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.load_from_file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_from_file</code><span class="sig-paren">(</span><em>load_from</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.load_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.load_from_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>load the data for the table from an odml-file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -414,7 +488,7 @@ will be compared</td>
 
 <dl class="method">
 <dt id="compare_section_table.CompareSectionTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_table.html#CompareSectionTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_table.CompareSectionTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>write the table to the specific file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -435,7 +509,7 @@ will be compared</td>
 <p>&#64;author: pick</p>
 <dl class="class">
 <dt id="compare_section_xls_table.CompareSectionXlsTable">
-<em class="property">class </em><tt class="descclassname">compare_section_xls_table.</tt><tt class="descname">CompareSectionXlsTable</tt><a class="reference internal" href="_modules/compare_section_xls_table.html#CompareSectionXlsTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_xls_table.CompareSectionXlsTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">compare_section_xls_table.</code><code class="descname">CompareSectionXlsTable</code><a class="reference internal" href="_modules/compare_section_xls_table.html#CompareSectionXlsTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_xls_table.CompareSectionXlsTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>class to write a CompareSectionTable to a xls-file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -456,7 +530,7 @@ properties with empty values</li>
 </table>
 <dl class="method">
 <dt id="compare_section_xls_table.CompareSectionXlsTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/compare_section_xls_table.html#CompareSectionXlsTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_xls_table.CompareSectionXlsTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_xls_table.html#CompareSectionXlsTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_xls_table.CompareSectionXlsTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes the table to an xls-file</p>
 </dd></dl>
 
@@ -466,11 +540,11 @@ properties with empty values</li>
 <p>&#64;author: pick</p>
 <dl class="class">
 <dt id="compare_section_csv_table.CompareSectionCsvTable">
-<em class="property">class </em><tt class="descclassname">compare_section_csv_table.</tt><tt class="descname">CompareSectionCsvTable</tt><a class="reference internal" href="_modules/compare_section_csv_table.html#CompareSectionCsvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_csv_table.CompareSectionCsvTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">compare_section_csv_table.</code><code class="descname">CompareSectionCsvTable</code><a class="reference internal" href="_modules/compare_section_csv_table.html#CompareSectionCsvTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_csv_table.CompareSectionCsvTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>class to write a CompareSectionTable to a csv-file</p>
 <dl class="method">
 <dt id="compare_section_csv_table.CompareSectionCsvTable.write2file">
-<tt class="descname">write2file</tt><big>(</big><em>save_to</em><big>)</big><a class="reference internal" href="_modules/compare_section_csv_table.html#CompareSectionCsvTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_csv_table.CompareSectionCsvTable.write2file" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write2file</code><span class="sig-paren">(</span><em>save_to</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/compare_section_csv_table.html#CompareSectionCsvTable.write2file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#compare_section_csv_table.CompareSectionCsvTable.write2file" title="Permalink to this definition">¶</a></dt>
 <dd><p>saves the table as a csv-file</p>
 </dd></dl>
 
@@ -483,7 +557,7 @@ properties with empty values</li>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -496,13 +570,15 @@ properties with empty values</li>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="tutorial.html"
-                        title="previous chapter">tutorial</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/documentation.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="previous chapter">odMLtables Tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/documentation.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -519,7 +595,7 @@ properties with empty values</li>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -529,14 +605,14 @@ properties with empty values</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="tutorial"
+          <a href="tutorial.html" title="odMLtables Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">odmlviz 1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">odmltables 1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Jana Pick.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>
