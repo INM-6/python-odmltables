@@ -10,9 +10,9 @@ extras_require = {'docs': ['sphinx>=1.2.2'],
                   'odml': ['python-odml>=0.1.0']}
 
 setup(
-    name="python-odmlviz",
+    name="python-odmltables",
     version='0.1.0',
-    packages=['odmlviz', 'odmlviz.tests'],
+    packages=['odmltables', 'odmltables.tests'],
     install_requires=install_requires,
     extras_require=extras_require,
 
@@ -21,7 +21,7 @@ setup(
     description="",
     long_description=long_description,
     license="BSD",
-    url='https://github.com/j-pick/python-odmlviz',
+    url='https://github.com/INM-6/python-odmltables',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',

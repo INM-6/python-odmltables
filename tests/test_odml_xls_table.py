@@ -55,6 +55,19 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
         self.test_xls_table.mark_columns('DataUnit')
         self.assertItemsEqual(self.test_xls_table._marked_cols, ['DataUnit'])
 
+    def test_highlight_defaults(self):
+        self.test_xls_table.highlight_defaults = True
+        self.assertTrue(self.test_xls_table._highlight_defaults)
+        self.assertTrue(self.test_xls_table.highlight_defaults)
+
+        self.test_xls_table.highlight_defaults = False
+        self.assertFalse(self.test_xls_table._highlight_defaults)
+        self.assertFalse(self.test_xls_table.highlight_defaults)
+
+        self.test_xls_table.highlight_defaults = 'True'
+        self.assertTrue(self.test_xls_table._highlight_defaults)
+        self.assertTrue(self.test_xls_table.highlight_defaults)
+
 
 class TestOdmlXlsTable(unittest.TestCase):
 
