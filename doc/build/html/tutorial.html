@@ -184,8 +184,8 @@
 <p>Now everything should be there.</p>
 </div>
 </div>
-<div class="section" id="xls">
-<h3>xls<a class="headerlink" href="#xls" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>xls<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>All those functions already shown for the csv-table also work with xls. But there are some additional features concerning the Style of cells. First you need import the modul and create a new table:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">odml_xls_table</span> <span class="kn">import</span> <span class="n">OdmlXlsTable</span>
 <span class="n">myXlsTable</span> <span class="o">=</span> <span class="n">OdmlXlsTable</span><span class="p">()</span>
@@ -226,8 +226,8 @@
 <div class="section" id="table-to-compare-sections">
 <h2>table to compare sections<a class="headerlink" href="#table-to-compare-sections" title="Permalink to this headline">¶</a></h2>
 <p>It might happen, that you have several sections with similar properties, for example TODO: example . To create a table, in which you can easily compare different sections of an odml, you can use this classes.</p>
-<div class="section" id="id1">
-<h3>csv<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>csv<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>The easiest format here is, again, csv. So for the beginning, here is how you create a table to compare sections due to their properties in csv.</p>
 <div class="section" id="the-beginning">
 <h4>the beginning<a class="headerlink" href="#the-beginning" title="Permalink to this headline">¶</a></h4>
@@ -272,8 +272,8 @@
 </div>
 </div>
 </div>
-<div class="section" id="id2">
-<h3>xls<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>xls<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>In this part you will find the additional options for an xls-table.</p>
 <div class="section" id="first-table">
 <h4>first table<a class="headerlink" href="#first-table" title="Permalink to this headline">¶</a></h4>
@@ -296,6 +296,58 @@ xlsCompareTable = CompareSectionXlsTable()
 </div>
 </div>
 </div>
+<div class="section" id="practical-examples">
+<h2>practical examples<a class="headerlink" href="#practical-examples" title="Permalink to this headline">¶</a></h2>
+<p>TODO: add example description here</p>
+<div class="section" id="example-3-creating-an-overview-sheet-filtering">
+<h3>example 3: Creating an overview sheet / Filtering<a class="headerlink" href="#example-3-creating-an-overview-sheet-filtering" title="Permalink to this headline">¶</a></h3>
+<p>In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
+This feature can be used to create a summary table to be included in a laboratory notebook.</p>
+<p>To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odml, which you can generate by executing the example3.py script in the odmltables/example folder:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&#39;python example3.py&#39;</span>
+</pre></div>
+</div>
+<p>This generates the file <em>example3.xls</em>, which should look like this:</p>
+<div class="figure" id="id4">
+<a class="reference internal image-reference" href="_images/example3-1.png"><img alt="Example 3: Xls representation of the complete odml structure." src="_images/example3-1.png" style="width: 543.5px; height: 399.0px;" /></a>
+<p class="caption"><span class="caption-text">Example 3: Xls representation of the complete odml structure.</span></p>
+</div>
+<p>This example structure contains only the branch of an odml describing the animal and its development. The previously known information about the animal are saved in properties directly attached to the &#8216;/Animal&#8217; section. To capture the developmental data measured a subsection &#8216;/Animal/Development&#8217; exists, which contains developmental properties only consisting of a single measurement value. In addition several &#8216;dev_measures_x&#8217; subsections are attached to the &#8216;Animal/Development&#8217; section, which each contain a set of values measured on one day. These sections are copies of the &#8216;/Animal/Development/dev_measures_template&#8217; section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).</p>
+<p>For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we are now focusing on the &#8216;DevelopmentalAge&#8217; and &#8216;Weight&#8217; properties.
+To get an odmltables representation of the xls file we are generating an OdmlXlsTable object and loading the data from the xls file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">odmltables.odml_xls_table</span> <span class="kn">as</span> <span class="nn">odxlstable</span>
+<span class="c"># create OdmlXlsTable object</span>
+<span class="n">xlstable</span> <span class="o">=</span> <span class="n">odxlstable</span><span class="o">.</span><span class="n">OdmlXlsTable</span><span class="p">()</span>
+
+<span class="c"># loading the data</span>
+<span class="n">xlstable</span><span class="o">.</span><span class="n">load_from_xls_table</span><span class="p">(</span><span class="s">&#39;Example3.xls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we are going to apply a filter, which only leaves the properties with name &#8216;DevelopmentalAge&#8217; or &#8216;Weight&#8217; in the table:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">PropertyName</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;DevelopmentalAge&#39;</span><span class="p">,</span><span class="s">&#39;Weight&#39;</span><span class="p">],</span> <span class="n">comparison_func</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>If we save it as &#8216;Example3_Output.xls&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">write2file</span><span class="p">(</span><span class="s">&#39;Example3_Output.xls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>this looks as following:</p>
+<div class="figure" id="id5">
+<a class="reference internal image-reference" href="_images/example3-2.png"><img alt="Example 3: Xls representation of the odml structure after first filtering." src="_images/example3-2.png" style="width: 526.0px; height: 118.0px;" /></a>
+<p class="caption"><span class="caption-text">Example 3: Xls representation of the odml structure after first filtering.</span></p>
+</div>
+<p>However, the resulting table still contains the &#8216;dev_measures_template&#8217; section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">SectionName</span><span class="o">=</span><span class="s">&#39;template&#39;</span><span class="p">,</span> <span class="n">comparison_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This operation only leaves properties in the table, whose parent section name does not end with &#8216;template&#8217; and therefore removes the &#8216;dev_measures_template&#8217; section and all its properties.</p>
+<div class="figure" id="id6">
+<a class="reference internal image-reference" href="_images/example3-3.png"><img alt="Example 3: Xls representation of the odml structure after second filtering." src="_images/example3-3.png" style="width: 500.5px; height: 101.0px;" /></a>
+<p class="caption"><span class="caption-text">Example 3: Xls representation of the odml structure after second filtering.</span></p>
+</div>
+<p>This filtered representation of the original xls file can also be further adapted in terms of the layout of the table (see <a class="reference internal" href="#xls">XLS</a>) and finally printed or converted to pdf using a spreadsheet software.</p>
+</div>
+</div>
 </div>
 
 
@@ -315,7 +367,7 @@ xlsCompareTable = CompareSectionXlsTable()
 <li><a class="reference internal" href="#avoiding-unnessaccery-entries">avoiding unnessaccery entries</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#xls">xls</a><ul>
+<li><a class="reference internal" href="#id1">xls</a><ul>
 <li><a class="reference internal" href="#choosing-styles">choosing styles</a></li>
 <li><a class="reference internal" href="#marking-columns">marking columns</a></li>
 <li><a class="reference internal" href="#changing-pattern">changing pattern</a></li>
@@ -324,18 +376,22 @@ xlsCompareTable = CompareSectionXlsTable()
 </ul>
 </li>
 <li><a class="reference internal" href="#table-to-compare-sections">table to compare sections</a><ul>
-<li><a class="reference internal" href="#id1">csv</a><ul>
+<li><a class="reference internal" href="#id2">csv</a><ul>
 <li><a class="reference internal" href="#the-beginning">the beginning</a></li>
 <li><a class="reference internal" href="#choosing-sections">choosing sections</a></li>
 <li><a class="reference internal" href="#switch-the-table">switch the table</a></li>
 <li><a class="reference internal" href="#include-all">include all</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2">xls</a><ul>
+<li><a class="reference internal" href="#id3">xls</a><ul>
 <li><a class="reference internal" href="#first-table">first table</a></li>
 <li><a class="reference internal" href="#changing-styles">changing styles</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a class="reference internal" href="#practical-examples">practical examples</a><ul>
+<li><a class="reference internal" href="#example-3-creating-an-overview-sheet-filtering">example 3: Creating an overview sheet / Filtering</a></li>
 </ul>
 </li>
 </ul>

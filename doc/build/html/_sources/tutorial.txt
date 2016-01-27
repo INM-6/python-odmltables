@@ -136,7 +136,7 @@ You might already have notized, that not every cell of the tables is filled. To 
 
 Now everything should be there.
 
-
+.. _XLS:
 xls
 +++
 
@@ -266,8 +266,76 @@ there are different styles you can adjust in this table:
 3. **second_style** The second style used for the values inside the table
 4. **missing_value_style** If ``include_all`` is True, this style will be used if a property doesnt exist in the section, so they distinguish from properties with empty values
 
-You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles. 
+You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles.
 
+
+practical examples
+******************
+
+TODO: add example description here
+
+
+example 3: Creating an overview sheet / Filtering
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
+This feature can be used to create a summary table to be included in a laboratory notebook.
+
+To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odml, which you can generate by executing the example3.py script in the odmltables/example folder::
+
+    'python example3.py'
+
+This generates the file *example3.xls*, which should look like this:
+
+.. figure:: screenshots/example3-1.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the complete odml structure.
+
+    Example 3: Xls representation of the complete odml structure.
+
+This example structure contains only the branch of an odml describing the animal and its development. The previously known information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data measured a subsection '/Animal/Development' exists, which contains developmental properties only consisting of a single measurement value. In addition several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
+
+For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we are now focusing on the 'DevelopmentalAge' and 'Weight' properties.
+To get an odmltables representation of the xls file we are generating an OdmlXlsTable object and loading the data from the xls file::
+
+    import odmltables.odml_xls_table as odxlstable
+    # create OdmlXlsTable object
+    xlstable = odxlstable.OdmlXlsTable()
+
+    # loading the data
+    xlstable.load_from_xls_table('Example3.xls')
+
+Now we are going to apply a filter, which only leaves the properties with name 'DevelopmentalAge' or 'Weight' in the table::
+
+    xlstable.filter(PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
+
+If we save it as 'Example3_Output.xls'::
+
+    xlstable.write2file('Example3_Output.xls')
+
+this looks as following:
+
+.. figure:: screenshots/example3-2.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the odml structure after first filtering.
+
+    Example 3: Xls representation of the odml structure after first filtering.
+
+
+However, the resulting table still contains the 'dev_measures_template' section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter::
+
+    xlstable.filter(invert=True,SectionName='template', comparison_func=lambda x,y: x.endswith(y))
+
+This operation only leaves properties in the table, whose parent section name does not end with 'template' and therefore removes the 'dev_measures_template' section and all its properties.
+
+.. figure:: screenshots/example3-3.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the odml structure after second filtering.
+
+    Example 3: Xls representation of the odml structure after second filtering.
+
+
+This filtered representation of the original xls file can also be further adapted in terms of the layout of the table (see XLS_) and finally printed or converted to pdf using a spreadsheet software.
 
 
 

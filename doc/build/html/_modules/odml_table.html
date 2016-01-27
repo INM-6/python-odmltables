@@ -81,6 +81,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">odtypes</span> <span class="o">=</span> <span class="n">OdmlDtypes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Path&quot;</span><span class="p">,</span> <span class="s">&quot;PropertyName&quot;</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="s">&quot;odmlDatatype&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_titles</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;Path to Section&quot;</span><span class="p">,</span>
@@ -121,6 +122,12 @@
                     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">itervalues</span><span class="p">()]</span>
         <span class="k">return</span> <span class="n">odmldict</span>
 
+    <span class="k">def</span> <span class="nf">_create_documentdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">doc</span><span class="p">):</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;author&#39;</span><span class="p">,</span><span class="s">&#39;date&#39;</span><span class="p">,</span><span class="s">&#39;repository&#39;</span><span class="p">,</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+        <span class="n">docdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">att</span><span class="p">:</span><span class="nb">getattr</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">att</span><span class="p">)</span> <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">docdict</span>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">allow_empty_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_empty_columns</span>
@@ -152,6 +159,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">odml</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">xmlparser</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_from</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_create_documentdict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="OdmlTable.load_from_odmldoc"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_odmldoc">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_odmldoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -161,6 +169,7 @@
 <span class="sd">        :type load_from: odml-document</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_create_documentdict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="OdmlTable.load_from_function"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_function">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odmlfct</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -171,6 +180,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">odmlfct</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_odmldict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_odmldict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_create_documentdict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="OdmlTable.load_from_xls_table"><a class="viewcode-back" href="../documentation.html#odml_table.OdmlTable.load_from_xls_table">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_xls_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -190,9 +200,30 @@
         <span class="k">for</span> <span class="n">sheet_name</span> <span class="ow">in</span> <span class="n">workbook</span><span class="o">.</span><span class="n">sheet_names</span><span class="p">():</span>
             <span class="n">worksheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="o">.</span><span class="n">sheet_by_name</span><span class="p">(</span><span class="n">sheet_name</span><span class="p">)</span>
 
+            <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c"># read document information if present</span>
+            <span class="k">if</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span>  <span class="s">&#39;Document Information&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">doc_row</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">col_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc_row</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">doc_row</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">col_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">doc_row</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">col_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">doc_row</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">col_id</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_docdict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c"># get number of non-empty odml colums</span>
+            <span class="n">header_row</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">n_cols</span> <span class="o">=</span>  <span class="nb">len</span><span class="p">(</span><span class="n">header_row</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">([</span><span class="s">&#39;empty_col&#39;</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">header_row</span>
+                                             <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">ctype</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+
             <span class="c"># read the header</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="n">inv_header_titles</span><span class="p">[</span><span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">col_n</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
-                            <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header</span> <span class="o">=</span> <span class="p">[</span><span class="n">inv_header_titles</span><span class="p">[</span><span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col_n</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cols</span><span class="p">)]</span>
+
+            <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
             <span class="n">old_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                        <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                        <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
@@ -205,7 +236,7 @@
                        <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                        <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
 
-            <span class="k">for</span> <span class="n">row_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">row_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">current_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Path&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                                <span class="s">&quot;SectionName&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                                <span class="s">&quot;SectionType&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
@@ -218,7 +249,7 @@
                                <span class="s">&quot;DataUncertainty&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
                                <span class="s">&quot;odmlDatatype&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}</span>
 
-                <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">worksheet</span><span class="o">.</span><span class="n">ncols</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">col_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cols</span><span class="p">):</span>
                     <span class="n">cell</span> <span class="o">=</span> <span class="n">worksheet</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row_n</span><span class="p">,</span> <span class="n">col_n</span><span class="p">)</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">value</span>
 
