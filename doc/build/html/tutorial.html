@@ -299,6 +299,194 @@ xlsCompareTable = CompareSectionXlsTable()
 <div class="section" id="practical-examples">
 <h2>practical examples<a class="headerlink" href="#practical-examples" title="Permalink to this headline">¶</a></h2>
 <p>TODO: add example description here</p>
+<div class="section" id="example-1-generating-a-template-odml">
+<h3>example 1: Generating a template odml<a class="headerlink" href="#example-1-generating-a-template-odml" title="Permalink to this headline">¶</a></h3>
+<p>In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file &#8216;Example1.xls&#8217; and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table (&#8216;Path to Section&#8217;, &#8216;Property Name&#8217;, &#8216;Value&#8217; and &#8216;odML Data Type&#8217;). Here we use two additional header titles (&#8216;Data Unit&#8217;, &#8216;Property Definition&#8217;) as this information is important for the later understanding of the metadata structure. The table should now look like this:</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="29%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Path to Section</td>
+<td>Property Name</td>
+<td>Value</td>
+<td>Data Unit</td>
+<td>odML Data Type</td>
+<td>Property Definition</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Next, you need to decide on a structure of your odml. Here, we are implementing only a small branch of an odml, which is describing an animal, its attributes and surgery. First of all, we are choosing properties we want to cover in the odml to describe</p>
+<p><strong>The animal</strong></p>
+<ul class="simple">
+<li><strong>AnimalID</strong> ID of the animal used for this experiment</li>
+<li><strong>Species</strong> Species of the animal</li>
+<li><strong>Sex</strong> Sex of the animal</li>
+<li><strong>Birthdate</strong> Birthdate of the animal</li>
+<li><strong>Litter</strong> ID of the litter</li>
+<li><strong>Seizures</strong> Occurrence of seizures (observed / not observed)</li>
+</ul>
+<p><strong>The surgery</strong></p>
+<ul class="simple">
+<li><strong>Surgeon</strong> Name of the surgeon</li>
+<li><strong>Date</strong> Date of surgery conduction (yyyy-mm-dd)</li>
+<li><strong>Weight</strong> Weight of the animal (g)</li>
+<li><strong>Quality</strong> Quality of the surgery (good / ok / bad)</li>
+<li><strong>Anesthetic</strong> Type of anaesthetic</li>
+<li><strong>Painkiller</strong> Name of painkiller, if used</li>
+<li><strong>Link</strong> URL or folder containing surgery protocol</li>
+</ul>
+<p>By describing the meaning of the properties, we already also covered the property definition we need to provide. As the surgery is typically specific to the animal, we are going to use one main section for the animal (&#8216;/Animal&#8217;) and a subsection for the description of the surgery (&#8216;/Animal/Surgery&#8217;). These are the &#8216;Path to Section&#8217; values we need to provide in the xls table. In the next step we need to define the data types of the values we are going to put in the odml. For most of the values a string is the best option (AnimalID, Species, Sex, Litter, Seizures, Surgeon, Quality, Anaesthestic, Painkiller), however some properties need different datatypes:</p>
+<ul class="simple">
+<li><strong>Birthdate / Date</strong> date</li>
+<li><strong>Weight</strong> float, this can be an arbitrary non-integer number</li>
+<li><strong>Link</strong> url, this basically a string, but with special formatting.</li>
+</ul>
+<p>Finally we are also able to define units for the values we are going to enter in this odml. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
+If you now enter all the information discussed above in the xls table, this should look like below:</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="29%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Path to Section</td>
+<td>Property Name</td>
+<td>Value</td>
+<td>Data Unit</td>
+<td>odML Data Type</td>
+<td>Property Definition</td>
+</tr>
+<tr class="row-even"><td>/Animal</td>
+<td>AnimalID</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>ID of the animal used for this experiment</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Species</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Species of the animal</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>Sex</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Sex of the animal</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Birthdate</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>date</td>
+<td>Birthdate of the animal</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>Litter</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>ID of the litter</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Seizures</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Occurrence of seizures (observed / not observed)</td>
+</tr>
+<tr class="row-even"><td>/Animal/Surgery</td>
+<td>Surgeon</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Name of the surgeon</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Date</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>date</td>
+<td>Date of surgery conduction</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>Weight</td>
+<td>&nbsp;</td>
+<td>g</td>
+<td>float</td>
+<td>Weight of the animal</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Quality</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Quality of the surgery (good / ok / bad)</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>Anaesthetic</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Type of anaesthetic</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Painkiller</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>string</td>
+<td>Name of painkiller, if used</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>Link</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>url</td>
+<td>URL or folder containing surgery protocol</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>For the conversion of the xls file to an odml template file, you need to generate an OdmlXlsTable object and load the your xls file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">odmltables.odml_xls_table</span> <span class="kn">as</span> <span class="nn">odxlstable</span>
+<span class="c"># create OdmlXlsTable object</span>
+<span class="n">xlstable</span> <span class="o">=</span> <span class="n">odxlstable</span><span class="o">.</span><span class="n">OdmlXlsTable</span><span class="p">()</span>
+
+<span class="c"># loading the data</span>
+<span class="n">xlstable</span><span class="o">.</span><span class="n">load_from_xls_table</span><span class="p">(</span><span class="s">&#39;Example1.xls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you can save it directly as odml file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">write2odml</span><span class="p">(</span><span class="s">&#39;example1.odml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you now open the odml file in the browser or save it again as in the tabular format, you will see that also value have appeared for the properties. These values are default values defined in the odml-table OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odml. The default values can be customized via the OdmlDtypes class (<a class="reference internal" href="documentation.html#odml_table.OdmlDtypes" title="odml_table.OdmlDtypes"><code class="xref py py-class docutils literal"><span class="pre">odml_table.OdmlDtypes</span></code></a>).</p>
+<p>This new odml file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.</p>
+</div>
 <div class="section" id="example-3-creating-an-overview-sheet-filtering">
 <h3>example 3: Creating an overview sheet / Filtering<a class="headerlink" href="#example-3-creating-an-overview-sheet-filtering" title="Permalink to this headline">¶</a></h3>
 <p>In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
@@ -337,7 +525,7 @@ To get an odmltables representation of the xls file we are generating an OdmlXls
 <p class="caption"><span class="caption-text">Example 3: Xls representation of the odml structure after first filtering.</span></p>
 </div>
 <p>However, the resulting table still contains the &#8216;dev_measures_template&#8217; section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">SectionName</span><span class="o">=</span><span class="s">&#39;template&#39;</span><span class="p">,</span> <span class="n">comparison_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xlstable</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">invert</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">Path</span><span class="o">=</span><span class="s">&#39;template&#39;</span><span class="p">,</span> <span class="n">comparison_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This operation only leaves properties in the table, whose parent section name does not end with &#8216;template&#8217; and therefore removes the &#8216;dev_measures_template&#8217; section and all its properties.</p>
@@ -391,6 +579,7 @@ To get an odmltables representation of the xls file we are generating an OdmlXls
 </ul>
 </li>
 <li><a class="reference internal" href="#practical-examples">practical examples</a><ul>
+<li><a class="reference internal" href="#example-1-generating-a-template-odml">example 1: Generating a template odml</a></li>
 <li><a class="reference internal" href="#example-3-creating-an-overview-sheet-filtering">example 3: Creating an overview sheet / Filtering</a></li>
 </ul>
 </li>

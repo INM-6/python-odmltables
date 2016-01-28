@@ -274,6 +274,73 @@ practical examples
 
 TODO: add example description here
 
+example 1: Generating a template odml
++++++++++++++++++++++++++++++++++++++
+In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file 'Example1.xls' and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important for the later understanding of the metadata structure. The table should now look like this:
+
+|
+
+.. csv-table::
+   :file: csv/example1-1.csv
+   :widths: 10,10,10,10,10,20
+
+|
+
+Next, you need to decide on a structure of your odml. Here, we are implementing only a small branch of an odml, which is describing an animal, its attributes and surgery. First of all, we are choosing properties we want to cover in the odml to describe
+
+**The animal**
+
+* **AnimalID** ID of the animal used for this experiment
+* **Species** Species of the animal
+* **Sex** Sex of the animal
+* **Birthdate** Birthdate of the animal
+* **Litter** ID of the litter
+* **Seizures** Occurrence of seizures (observed / not observed)
+
+**The surgery**
+
+* **Surgeon** Name of the surgeon
+* **Date** Date of surgery conduction (yyyy-mm-dd)
+* **Weight** Weight of the animal (g)
+* **Quality** Quality of the surgery (good / ok / bad)
+* **Anesthetic** Type of anaesthetic
+* **Painkiller** Name of painkiller, if used
+* **Link** URL or folder containing surgery protocol
+
+By describing the meaning of the properties, we already also covered the property definition we need to provide. As the surgery is typically specific to the animal, we are going to use one main section for the animal ('/Animal') and a subsection for the description of the surgery ('/Animal/Surgery'). These are the 'Path to Section' values we need to provide in the xls table. In the next step we need to define the data types of the values we are going to put in the odml. For most of the values a string is the best option (AnimalID, Species, Sex, Litter, Seizures, Surgeon, Quality, Anaesthestic, Painkiller), however some properties need different datatypes:
+
+* **Birthdate / Date** date
+* **Weight** float, this can be an arbitrary non-integer number
+* **Link** url, this basically a string, but with special formatting.
+
+Finally we are also able to define units for the values we are going to enter in this odml. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
+If you now enter all the information discussed above in the xls table, this should look like below:
+
+|
+.. csv-table::
+   :file: csv/example1-2.csv
+   :widths: 10,10,10,10,10,20
+|
+
+For the conversion of the xls file to an odml template file, you need to generate an OdmlXlsTable object and load the your xls file::
+
+    import odmltables.odml_xls_table as odxlstable
+    # create OdmlXlsTable object
+    xlstable = odxlstable.OdmlXlsTable()
+
+    # loading the data
+    xlstable.load_from_xls_table('Example1.xls')
+
+Now you can save it directly as odml file::
+
+    xlstable.write2odml('example1.odml')
+
+If you now open the odml file in the browser or save it again as in the tabular format, you will see that also value have appeared for the properties. These values are default values defined in the odml-table OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odml. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
+
+This new odml file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
+
+
+
 
 example 3: Creating an overview sheet / Filtering
 +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -324,7 +391,7 @@ this looks as following:
 
 However, the resulting table still contains the 'dev_measures_template' section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter::
 
-    xlstable.filter(invert=True,SectionName='template', comparison_func=lambda x,y: x.endswith(y))
+    xlstable.filter(invert=True,Path='template', comparison_func=lambda x,y: x.endswith(y))
 
 This operation only leaves properties in the table, whose parent section name does not end with 'template' and therefore removes the 'dev_measures_template' section and all its properties.
 

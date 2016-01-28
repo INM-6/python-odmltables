@@ -3,13 +3,13 @@ import copy
 
 import odml
 from odml import DType
-import odmltables.odml_xls_table as odxlstable
+import odmltables.odml_xls_table as odml_xls_table
 
 
 # EXAMPLE
 def run_example():
     # generating OdmlXlsTable object
-    xlstable = odxlstable.OdmlXlsTable()
+    xlstable = odml_xls_table.OdmlXlsTable()
 
     # loading data from xls file
     xlstable.load_from_xls_table('Example3.xls')
@@ -28,7 +28,7 @@ def run_example():
 def setup_example():
 
     # generate OdmlTable object
-    xlstable = odxlstable.OdmlXlsTable()
+    xlstable = odml_xls_table.OdmlXlsTable()
 
     # customize odmldtypes to use
     xlstable.odtypes.add_synonym('str','pers')
