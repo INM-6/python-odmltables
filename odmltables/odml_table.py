@@ -232,7 +232,7 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                if 'date' in dtype or 'time' in dtype:
+                if ('date' in dtype or 'time' in dtype) and (value!=''):
                     value = xlrd.xldate_as_tuple(value, workbook.datemode)
                 current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
@@ -764,6 +764,10 @@ class OdmlDtypes(object):
                              'This is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
 
     def to_odml_value(self,value,dtype):
+        # return default value of dtype if value is empty
+        if value == '':
+            return self.default_value(dtype)
+
         if dtype in self._synonyms:
             dtype = self._synonyms[dtype]
 
@@ -779,6 +783,9 @@ class OdmlDtypes(object):
                 result = datetime.datetime.strptime(value, '%H:%M:%S').time()
             except TypeError:
                 result = datetime.datetime(*value).time()
+        elif dtype == 'url':
+            result = str(value)
+
         elif dtype in self._basedtypes:
             try:
                 result = eval('%s("%s")'%(dtype,value))
