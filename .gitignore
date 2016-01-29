@@ -67,3 +67,6 @@ target/
 *.csv
 *.xls
 *.odml
+
+# include single odml file for tutorial
+!examples/example1/example1-2.odml
