@@ -137,6 +137,9 @@ You might already have notized, that not every cell of the tables is filled. To 
 Now everything should be there.
 
 
+
+.. _XLS:
+
 xls
 +++
 
@@ -266,18 +269,213 @@ there are different styles you can adjust in this table:
 3. **second_style** The second style used for the values inside the table
 4. **missing_value_style** If ``include_all`` is True, this style will be used if a property doesnt exist in the section, so they distinguish from properties with empty values
 
-You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles. 
+You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles.
+
+
+practical examples
+******************
+
+TODO: add example description here
+
+.. _example1:
+
+example 1: Generating a template odml
++++++++++++++++++++++++++++++++++++++
+In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file 'Example1.xls' and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important for the later understanding of the metadata structure. The table should now look like this:
+
+|
+
+.. csv-table::
+   :file: csv/example1-1.csv
+   :widths: 10,10,10,10,10,20
+
+|
+
+Next, you need to decide on a structure of your odml. Here, we are implementing only a small branch of an odml, which is describing an animal, its attributes and surgery. First of all, we are choosing properties we want to cover in the odml to describe
+
+**The animal**
+
+* **AnimalID** ID of the animal used for this experiment
+* **Species** Species of the animal
+* **Sex** Sex of the animal
+* **Birthdate** Birthdate of the animal
+* **Litter** ID of the litter
+* **Seizures** Occurrence of seizures (observed / not observed)
+
+**The surgery**
+
+* **Surgeon** Name of the surgeon
+* **Date** Date of surgery conduction (yyyy-mm-dd)
+* **Weight** Weight of the animal (g)
+* **Quality** Quality of the surgery (good / ok / bad)
+* **Anesthetic** Type of anaesthetic
+* **Painkiller** Name of painkiller, if used
+* **Link** URL or folder containing surgery protocol
+
+By describing the meaning of the properties, we already also covered the property definition we need to provide. As the surgery is typically specific to the animal, we are going to use one main section for the animal ('/Animal') and a subsection for the description of the surgery ('/Animal/Surgery'). These are the 'Path to Section' values we need to provide in the xls table. In the next step we need to define the data types of the values we are going to put in the odml. For most of the values a string is the best option (AnimalID, Species, Sex, Litter, Seizures, Surgeon, Quality, Anaesthestic, Painkiller), however some properties need different datatypes:
+
+* **Birthdate / Date** date
+* **Weight** float, this can be an arbitrary non-integer number
+* **Link** url, this basically a string, but with special formatting.
+
+Finally we are also able to define units for the values we are going to enter in this odml. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
+If you now enter all the information discussed above in the xls table, this should look like below:
+
+
+|
+
+
+.. csv-table::
+   :file: csv/example1-2.csv
+   :widths: 10,10,10,10,10,20
+
+
+|
+
+
+For the conversion of the xls file to an odml template file, you need to generate an OdmlXlsTable object and load the your xls file::
+
+    import odmltables.odml_xls_table as odxlstable
+    # create OdmlXlsTable object
+    xlstable = odxlstable.OdmlXlsTable()
+
+    # loading the data
+    xlstable.load_from_xls_table('Example1.xls')
+
+Now you can save it directly as odml file::
+
+    xlstable.write2odml('example1.odml')
+
+If you now open the odml file in the browser or save it again as in the tabular format, you will see that also value have appeared for the properties. These values are default values defined in the odml-table OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odml. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
+
+This new odml file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
 
 
 
+example 2: Manual enrichment of odml
+++++++++++++++++++++++++++++++++++++
+
+In this example you are going to manually add data to an already existing odml document (see :ref:`example1`). In the best case, this odml document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odml. However, in principle the manual enrichment method presented here can also be used to start from an empty template odml and manually enter all values of the odml.
+
+First of all, we are going to start from the odml generated in :ref:`example1`. If you don't have the resulting file from :ref:`example1`, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
+
+    'python example2.py'
+
+To generate an OdmlTables object, load the odml and save it again as xls file::
+
+    import odmltables.odml_xls_table as odml_xls_table
+
+    # create OdmlXlsTable object
+    xlstable = odml_xls_table.OdmlXlsTable()
+
+    # loading data from odml
+    xlstable.load_from_file(pre_enriched_file)
+
+    # save in xls format
+    xlstable.write2file('automatically_enriched.xls')
+
+Now you need to manually enter the data you generated during the surgery into the xls file using your preferred spreadsheet software:
+
+|
 
 
+=============== ============== =====================================  ==============
+Path to Section Property Name  Value                                  odML Data Type
+=============== ============== =====================================  ==============
+/Animal	        AnimalID       2A                                     string
+\               Species        Meriones unguiculatus                  string
+\               Sex            female                                 string
+\               Birthdate      21-10-2015                             date
+\               Litter         1A-01                                  string
+\               Seizures       not observed                           string
+/Animal/Surgery	Surgeon        Surgeon1	                              string
+\               Date	       29-01-2016	                          date
+\               Weight	       100	                                  float
+\               Quality	       good	                                  string
+\               Anaesthetic	   urethane	                              string
+\               Painkiller	                                          string
+\               Link	       ../../surgery/protocols/protocol1.pdf  url
+=============== ============== =====================================  ==============
 
 
+|
+
+The completed xls file can then be saved as 'manually_enriched.xls' and converted back to the odml format via::
+
+    import odmltables.odml_xls_table as odml_xls_table
+
+    # create OdmlXlsTable object
+    xlstable = odml_xls_table.OdmlXlsTable()
+
+    # load data from manually enriched xls file
+    xlstable.load_from_xls_table('manually_enriched.xls')
+
+    # save data as odml document
+    xlstable.write2odml('example2-2.odml')
+
+The 'example2-2.odml' file is now complete and can used for long term metadata storage and easy and fast metadata access for further analyses.
 
 
+example 3: Creating an overview sheet / Filtering
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
+This feature can be used to create a summary table to be included in a laboratory notebook.
+
+To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odml, which you can generate by executing the example3.py script in the odmltables/example folder::
+
+    'python example3.py'
+
+This generates the file *example3.xls*, which should look like this:
+
+.. figure:: screenshots/example3-1.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the complete odml structure.
+
+    Example 3: Xls representation of the complete odml structure.
+
+This example structure contains only the branch of an odml describing the animal and its development. The previously known information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data measured a subsection '/Animal/Development' exists, which contains developmental properties only consisting of a single measurement value. In addition several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
+
+For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we are now focusing on the 'DevelopmentalAge' and 'Weight' properties.
+To get an odmltables representation of the xls file we are generating an OdmlXlsTable object and loading the data from the xls file::
+
+    import odmltables.odml_xls_table as odxlstable
+    # create OdmlXlsTable object
+    xlstable = odxlstable.OdmlXlsTable()
+
+    # loading the data
+    xlstable.load_from_xls_table('Example3.xls')
+
+Now we are going to apply a filter, which only leaves the properties with name 'DevelopmentalAge' or 'Weight' in the table::
+
+    xlstable.filter(PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
+
+If we save it as 'Example3_Output.xls'::
+
+    xlstable.write2file('Example3_Output.xls')
+
+this looks as following:
+
+.. figure:: screenshots/example3-2.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the odml structure after first filtering.
+
+    Example 3: Xls representation of the odml structure after first filtering.
 
 
+However, the resulting table still contains the 'dev_measures_template' section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter::
 
+    xlstable.filter(invert=True,Path='template', comparison_func=lambda x,y: x.endswith(y))
+
+This operation only leaves properties in the table, whose parent section name does not end with 'template' and therefore removes the 'dev_measures_template' section and all its properties.
+
+.. figure:: screenshots/example3-3.png
+    :scale: 50 %
+    :alt: Example 3: Xls representation of the odml structure after second filtering.
+
+    Example 3: Xls representation of the odml structure after second filtering.
+
+
+This filtered representation of the original xls file can also be further adapted in terms of the layout of the table (see XLS_) and finally printed or converted to pdf using a spreadsheet software.
 

@@ -1,47 +1,30 @@
 import datetime
-import copy
 
 import odml
 from odml import DType
-import odmltables.odml_table as odmltable
-import odmltables.odml_xls_table as odxlstable
+import odmltables.odml_xls_table as odml_xls_table
 
 
 # EXAMPLE
 def run_example():
     # generating OdmlXlsTable object
-    xlstable = odxlstable.OdmlXlsTable()
+    xlstable = odml_xls_table.OdmlXlsTable()
 
     # loading data from xls file
-    xlstable.load_from_xls_table('Example3.xls')
-
-    xlstable1 = copy.deepcopy(xlstable)
+    xlstable.load_from_xls_table('example3.xls')
 
     # filtering only for developmental age and body weight properties
-    xlstable1.filter(mode='and', invert=False, PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
+    xlstable.filter(PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
 
     # removing templates
-    xlstable.filter(invert=True,SectionType='template')
-    xlstable1.write2file('Example3_Output.xls')
-
-    # TODO: Idea of sorted weight and developmentalage entries in xls sheet.
-    # TODO
-
-    # xlstable2 = copy.deepcopy(xlstable)
-    # xlstable2.filter(PropertyName='DevelopmentalAge')
-    # xlstable3 = copy.deepcopy(xlstable)
-    # xlstable3.filter(PropertyName='Weight')
-    #
-    # xlstable2.merge(xlstable3)
-    # xlstable2.write2file('Example3_mergedOutput.xls')
-
-
+    xlstable.filter(invert=True,Path='template', comparison_func=lambda x,y: x.endswith(y))
+    xlstable.write2file('example3_Output.xls')
 
 
 def setup_example():
 
     # generate OdmlTable object
-    xlstable = odxlstable.OdmlXlsTable()
+    xlstable = odml_xls_table.OdmlXlsTable()
 
     # customize odmldtypes to use
     xlstable.odtypes.add_synonym('str','pers')
@@ -65,17 +48,20 @@ def setup_example():
     # adapt header of excel file to be written
     xlstable.change_header(Path=1, PropertyName=2, Value=3, DataUnit=4, odmlDatatype=5,PropertyDefinition=6)
 
-    xlstable.write2file('Example3.xls')
-    xlstable.write2odml('Example3.odml')
+    xlstable.write2file('example3.xls')
+    xlstable.write2odml('example3.odml')
 
 
 
 def get_odml_doc(dtypes):
     # CREATE A DOCUMENT
     doc = odml.Document(version='0.0.1')
+    doc.author = 'Author1'
+    doc.date = datetime.date.today()
+    doc.version = '0.0.1'
+    doc.repository = ''
 
     # APPEND MAIN SECTIONS
-
     doc.append(odml.Section(name='Animal', definition = 'Information about the animal used'))
 
     parent = doc['Animal']

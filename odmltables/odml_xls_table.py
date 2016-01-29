@@ -173,13 +173,15 @@ class OdmlXlsTable(OdmlTable):
         col_style = 0
         row_style = 0
 
-        # add document information in first row
-        sheet.write(row,0,'Document Information',styles["document_info"])
-        for a, attribute in enumerate(sorted(self._docdict)):
-            sheet.write(row, 2*a+1, attribute, styles["document_info"])
-            sheet.write(row, 2*a+2, self._docdict[attribute], styles["document_info"])
+        if self._docdict:
+            # add document information in first row
+            sheet.write(row,0,'Document Information',styles["document_info"])
 
-        row += 1
+            for a, attribute in enumerate(sorted(self._docdict)):
+                sheet.write(row, 2*a+1, attribute, styles["document_info"])
+                sheet.write(row, 2*a+2, self._docdict[attribute], styles["document_info"])
+
+            row += 1
 
         # write the header
         for col, h in enumerate(self._header):

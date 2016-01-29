@@ -12,7 +12,7 @@ extras_require = {'docs': ['sphinx>=1.2.2'],
 setup(
     name="python-odmltables",
     version='0.1.0',
-    packages=['odmltables', 'odmltables.tests'],
+    packages=['odmltables', 'tests'],
     install_requires=install_requires,
     extras_require=extras_require,
 
@@ -29,5 +29,15 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
-        'Topic :: Scientific/Engineering']
+        'Topic :: Scientific/Engineering'],
+
+    entry_points={
+    # 'console_scripts': [
+    #     'foo = my_package.some_module:main_func',
+    #     'bar = other_module:some_func',
+    # ],
+    'gui_scripts': [
+        'gui = wizard.main:run []',
+    ]
+}
 )

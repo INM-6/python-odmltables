@@ -210,9 +210,12 @@ selected. Default: &#8216;and&#8217;</li>
 are rejected and the other way round. Default: False</li>
 <li><strong>recursive</strong> &#8211; Delete also properties attached to subsections of the
 mother section and therefore complete branch</li>
-<li><strong>comparison_func</strong> &#8211; Function used to compare dictionary entry to
-keyword. Eg. &#8216;lambda x,y: x.startswith(y)&#8217; in case of strings.
-Default: lambda x,y: x==y</li>
+<li><strong>comparison_func</strong> &#8211; <p>Function used to compare dictionary entry to
+keyword. Eg. &#8216;lambda x,y: x.startswith(y)&#8217; in case of strings or</p>
+<blockquote>
+<div>&#8216;lambda x,y: x in y&#8217; in case of multiple permitted values.</div></blockquote>
+<p>Default: lambda x,y: x==y</p>
+</li>
 <li><strong>kwargs</strong> &#8211; keywords and values used for filtering</li>
 </ul>
 </td>

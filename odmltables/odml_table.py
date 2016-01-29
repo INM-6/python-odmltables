@@ -160,7 +160,13 @@ class OdmlTable(object):
                 for col_id in range(len(doc_row)/2):
                     if doc_row[2*col_id+1].value != '':
                         key = doc_row[2*col_id+1].value
-                        value = doc_row[2*col_id+2].value
+                        # in case last entry was empty and document
+                        # info is longer than header, this cell will
+                        # not be present
+                        if 2*col_id+2 == len(doc_row):
+                            value = ''
+                        else:
+                            value = doc_row[2*col_id+2].value
                         self._docdict[key] = value
                 row += 1
 
@@ -232,7 +238,7 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                if 'date' in dtype or 'time' in dtype:
+                if ('date' in dtype or 'time' in dtype) and (value!=''):
                     value = xlrd.xldate_as_tuple(value, workbook.datemode)
                 current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
@@ -499,7 +505,8 @@ class OdmlTable(object):
         :param recursive: Delete also properties attached to subsections of the
                 mother section and therefore complete branch
         :param comparison_func: Function used to compare dictionary entry to
-                keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings.
+                keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings or
+                 'lambda x,y: x in y' in case of multiple permitted values.
                 Default: lambda x,y: x==y
         :param kwargs: keywords and values used for filtering
         :return: None
@@ -763,6 +770,10 @@ class OdmlDtypes(object):
                              'This is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
 
     def to_odml_value(self,value,dtype):
+        # return default value of dtype if value is empty
+        if value == '':
+            return self.default_value(dtype)
+
         if dtype in self._synonyms:
             dtype = self._synonyms[dtype]
 
@@ -778,6 +789,9 @@ class OdmlDtypes(object):
                 result = datetime.datetime.strptime(value, '%H:%M:%S').time()
             except TypeError:
                 result = datetime.datetime(*value).time()
+        elif dtype == 'url':
+            result = str(value)
+
         elif dtype in self._basedtypes:
             try:
                 result = eval('%s("%s")'%(dtype,value))
