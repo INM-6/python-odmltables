@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet  type="text/xsl" href="odmlTerms.xsl"?>
+<?xml-stylesheet  type="text/xsl" href="odml.xsl"?>
+<odML version="1">
+  <section>
+    <property>
+      <definition>ID of the animal used for this experiment</definition>
+      <value>-<unit></unit><type>string</type></value>
+      <name>AnimalID</name>
+    </property>
+    <property>
+      <definition>Species of the animal</definition>
+      <value>-<unit></unit><type>string</type></value>
+      <name>Species</name>
+    </property>
+    <property>
+      <definition>Sex of the animal</definition>
+      <value>-<unit></unit><type>string</type></value>
+      <name>Sex</name>
+    </property>
+    <property>
+      <definition>Birthdate of the animal </definition>
+      <value>1900-11-11<unit></unit><type>date</type></value>
+      <name>Birthdate</name>
+    </property>
+    <property>
+      <definition>ID of the litter</definition>
+      <value>-<unit></unit><type>string</type></value>
+      <name>Litter</name>
+    </property>
+    <property>
+      <definition>Occurrence of seizures (observed / not observed)</definition>
+      <value>-<unit></unit><type>string</type></value>
+      <name>Seizures</name>
+    </property>
+    <name>Animal</name>
+    <section>
+      <property>
+        <definition>Name of the surgeon</definition>
+        <value>-<unit></unit><type>string</type></value>
+        <name>Surgeon</name>
+      </property>
+      <property>
+        <definition>Date of surgery conduction</definition>
+        <value>1900-11-11<unit></unit><type>date</type></value>
+        <name>Date</name>
+      </property>
+      <property>
+        <definition>Weight of the animal</definition>
+        <value>-1.0<unit>g</unit><type>float</type></value>
+        <name>Weight</name>
+      </property>
+      <property>
+        <definition>Quality of the surgery (good / ok / bad)</definition>
+        <value>-<unit></unit><type>string</type></value>
+        <name>Quality</name>
+      </property>
+      <property>
+        <definition>Type of anaesthetic</definition>
+        <value>-<unit></unit><type>string</type></value>
+        <name>Anaesthetic</name>
+      </property>
+      <property>
+        <definition>Name of painkiller, if used</definition>
+        <value>-<unit></unit><type>string</type></value>
+        <name>Painkiller</name>
+      </property>
+      <property>
+        <definition>URL or folder containing surgery protocol</definition>
+        <value>file://-<unit></unit><type>url</type></value>
+        <name>Link</name>
+      </property>
+      <name>Surgery</name>
+      <type>undefined</type>
+    </section>
+    <type>undefined</type>
+  </section>
+</odML>

@@ -160,7 +160,13 @@ class OdmlTable(object):
                 for col_id in range(len(doc_row)/2):
                     if doc_row[2*col_id+1].value != '':
                         key = doc_row[2*col_id+1].value
-                        value = doc_row[2*col_id+2].value
+                        # in case last entry was empty and document
+                        # info is longer than header, this cell will
+                        # not be present
+                        if 2*col_id+2 == len(doc_row):
+                            value = ''
+                        else:
+                            value = doc_row[2*col_id+2].value
                         self._docdict[key] = value
                 row += 1
 

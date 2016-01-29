@@ -37,5 +37,5 @@ def setup_example():
     xlstable.write2file('example1-2.xls')
 
 if __name__=='__main__':
-    #setup_example()
+    setup_example()
     run_example()

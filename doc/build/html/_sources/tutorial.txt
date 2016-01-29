@@ -136,7 +136,10 @@ You might already have notized, that not every cell of the tables is filled. To 
 
 Now everything should be there.
 
+
+
 .. _XLS:
+
 xls
 +++
 
@@ -274,6 +277,8 @@ practical examples
 
 TODO: add example description here
 
+.. _example1:
+
 example 1: Generating a template odml
 +++++++++++++++++++++++++++++++++++++
 In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file 'Example1.xls' and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important for the later understanding of the metadata structure. The table should now look like this:
@@ -316,11 +321,17 @@ By describing the meaning of the properties, we already also covered the propert
 Finally we are also able to define units for the values we are going to enter in this odml. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
 If you now enter all the information discussed above in the xls table, this should look like below:
 
+
 |
+
+
 .. csv-table::
    :file: csv/example1-2.csv
    :widths: 10,10,10,10,10,20
+
+
 |
+
 
 For the conversion of the xls file to an odml template file, you need to generate an OdmlXlsTable object and load the your xls file::
 
@@ -340,6 +351,70 @@ If you now open the odml file in the browser or save it again as in the tabular 
 This new odml file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
 
+
+
+example 2: Manual enrichment of odml
+++++++++++++++++++++++++++++++++++++
+
+In this example you are going to manually add data to an already existing odml document (see :ref:`example1`). In the best case, this odml document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odml. However, in principle the manual enrichment method presented here can also be used to start from an empty template odml and manually enter all values of the odml.
+
+First of all, we are going to start from the odml generated in :ref:`example1`. If you don't have the resulting file from :ref:`example1`, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
+
+    'python example2.py'
+
+To generate an OdmlTables object, load the odml and save it again as xls file::
+
+    import odmltables.odml_xls_table as odml_xls_table
+
+    # create OdmlXlsTable object
+    xlstable = odml_xls_table.OdmlXlsTable()
+
+    # loading data from odml
+    xlstable.load_from_file(pre_enriched_file)
+
+    # save in xls format
+    xlstable.write2file('automatically_enriched.xls')
+
+Now you need to manually enter the data you generated during the surgery into the xls file using your preferred spreadsheet software:
+
+|
+
+
+=============== ============== =====================================  ==============
+Path to Section Property Name  Value                                  odML Data Type
+=============== ============== =====================================  ==============
+/Animal	        AnimalID       2A                                     string
+\               Species        Meriones unguiculatus                  string
+\               Sex            female                                 string
+\               Birthdate      21-10-2015                             date
+\               Litter         1A-01                                  string
+\               Seizures       not observed                           string
+/Animal/Surgery	Surgeon        Surgeon1	                              string
+\               Date	       29-01-2016	                          date
+\               Weight	       100	                                  float
+\               Quality	       good	                                  string
+\               Anaesthetic	   urethane	                              string
+\               Painkiller	                                          string
+\               Link	       ../../surgery/protocols/protocol1.pdf  url
+=============== ============== =====================================  ==============
+
+
+|
+
+The completed xls file can then be saved as 'manually_enriched.xls' and converted back to the odml format via::
+
+    import odmltables.odml_xls_table as odml_xls_table
+
+    # create OdmlXlsTable object
+    xlstable = odml_xls_table.OdmlXlsTable()
+
+    # load data from manually enriched xls file
+    xlstable.load_from_xls_table('manually_enriched.xls')
+
+    # save data as odml document
+    xlstable.write2odml('example2-2.odml')
+
+The 'example2-2.odml' file is now complete and can used for long term metadata storage and easy and fast metadata access for further analyses.
 
 
 example 3: Creating an overview sheet / Filtering
@@ -403,16 +478,4 @@ This operation only leaves properties in the table, whose parent section name do
 
 
 This filtered representation of the original xls file can also be further adapted in terms of the layout of the table (see XLS_) and finally printed or converted to pdf using a spreadsheet software.
-
-
-
-
-
-
-
-
-
-
-
-
 

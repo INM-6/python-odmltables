@@ -1,5 +1,4 @@
 import datetime
-import copy
 
 import odml
 from odml import DType
@@ -12,17 +11,14 @@ def run_example():
     xlstable = odml_xls_table.OdmlXlsTable()
 
     # loading data from xls file
-    xlstable.load_from_xls_table('Example3.xls')
+    xlstable.load_from_xls_table('example3.xls')
 
     # filtering only for developmental age and body weight properties
     xlstable.filter(PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
 
     # removing templates
     xlstable.filter(invert=True,Path='template', comparison_func=lambda x,y: x.endswith(y))
-    xlstable.write2file('Example3_Output.xls')
-
-    # TODO: Idea of sorted weight and developmentalage entries in xls sheet.
-
+    xlstable.write2file('example3_Output.xls')
 
 
 def setup_example():
@@ -52,8 +48,8 @@ def setup_example():
     # adapt header of excel file to be written
     xlstable.change_header(Path=1, PropertyName=2, Value=3, DataUnit=4, odmlDatatype=5,PropertyDefinition=6)
 
-    xlstable.write2file('Example3.xls')
-    xlstable.write2odml('Example3.odml')
+    xlstable.write2file('example3.xls')
+    xlstable.write2odml('example3.odml')
 
 
 
