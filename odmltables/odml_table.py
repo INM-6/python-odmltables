@@ -505,9 +505,9 @@ class OdmlTable(object):
         :param recursive: Delete also properties attached to subsections of the
                 mother section and therefore complete branch
         :param comparison_func: Function used to compare dictionary entry to
-                keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings or
-                 'lambda x,y: x in y' in case of multiple permitted values.
-                Default: lambda x,y: x==y
+               keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings or
+               'lambda x,y: x in y' in case of multiple permitted values.
+               Default: lambda x,y: x==y
         :param kwargs: keywords and values used for filtering
         :return: None
         """
@@ -669,6 +669,7 @@ class OdmlTable(object):
 class OdmlDtypes(object):
     """
     Class to handle odml data types, synonyms and default values.
+
     :param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.
             Default: None
     :param synonyms_dict: Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.

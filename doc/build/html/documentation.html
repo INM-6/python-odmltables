@@ -58,18 +58,21 @@
 <dl class="class">
 <dt id="odml_table.OdmlDtypes">
 <em class="property">class </em><code class="descclassname">odml_table.</code><code class="descname">OdmlDtypes</code><span class="sig-paren">(</span><em>basedtypes_dict=None</em>, <em>synonyms_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odml_table.html#OdmlDtypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#odml_table.OdmlDtypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to handle odml data types, synonyms and default values.
-:param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.</p>
-<blockquote>
-<div>Default: None</div></blockquote>
+<dd><p>Class to handle odml data types, synonyms and default values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>synonyms_dict</strong> &#8211; Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.
-Default: None</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>basedtypes_dict</strong> &#8211; Dictionary containing additional basedtypes to use as keys and default values as values.
+Default: None</li>
+<li><strong>synonyms_dict</strong> &#8211; Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.
+Default: None</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -210,12 +213,10 @@ selected. Default: &#8216;and&#8217;</li>
 are rejected and the other way round. Default: False</li>
 <li><strong>recursive</strong> &#8211; Delete also properties attached to subsections of the
 mother section and therefore complete branch</li>
-<li><strong>comparison_func</strong> &#8211; <p>Function used to compare dictionary entry to
-keyword. Eg. &#8216;lambda x,y: x.startswith(y)&#8217; in case of strings or</p>
-<blockquote>
-<div>&#8216;lambda x,y: x in y&#8217; in case of multiple permitted values.</div></blockquote>
-<p>Default: lambda x,y: x==y</p>
-</li>
+<li><strong>comparison_func</strong> &#8211; Function used to compare dictionary entry to
+keyword. Eg. &#8216;lambda x,y: x.startswith(y)&#8217; in case of strings or
+&#8216;lambda x,y: x in y&#8217; in case of multiple permitted values.
+Default: lambda x,y: x==y</li>
 <li><strong>kwargs</strong> &#8211; keywords and values used for filtering</li>
 </ul>
 </td>
