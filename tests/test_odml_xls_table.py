@@ -83,35 +83,37 @@ class TestOdmlXlsTable(unittest.TestCase):
         test for all datatypes, if the information in the table is right
         """
 
-        expected = [['Path to Section', 'Property Name', 'Value',
-                     'odML Data Type'],
-                    ['/numbers', 'Integer', -10, 'int'],
-                    ['/numbers', 'Integer', 0, 'int'],
-                    ['/numbers', 'Integer', 10, 'int'],
-                    ['/numbers', 'Float', -1.234, 'float'],
-                    ['/numbers', 'Float', 0.0, 'float'],
-                    ['/numbers', 'Float', 1.234, 'float'],
-                    ['/other', 'Boolean', 'true', 'boolean'],
-                    ['/other', 'Boolean', 'false', 'boolean'],
-                    ['/other', 'Boolean', 'True', 'boolean'],
-                    ['/other', 'Boolean', 'False', 'boolean'],
-                    ['/other', 'Boolean', 't', 'boolean'],
-                    ['/other', 'Boolean', 'f', 'boolean'],
-                    ['/other', 'Boolean', 'T', 'boolean'],
-                    ['/other', 'Boolean', 'F', 'boolean'],
-                    ['/other', 'Boolean', 1, 'boolean'],
-                    ['/other', 'Boolean', 0, 'boolean'],
+        expected = [['Document Information', 'author', '', 'date',
+                     '', 'repository', '', 'version', '0.1'],
+                    ['Path to Section', 'Property Name', 'Value',
+                     'odML Data Type', '', '', '', '', ''],
+                    ['/numbers', 'Integer', -10, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 0, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 10, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
+                    ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
+                    ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 't', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 1, 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 0, 'boolean', '', '', '', '', ''],
                     ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0),
-                     'datetime'],
+                     'datetime', '', '', '', '', ''],
                     ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0),
-                     'date'],
-                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time'],
+                     'date', '', '', '', '', ''],
+                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
                     ['/texts/string-like', 'String', 'this is a string',
-                     'string'],
+                     'string', '', '', '', '', ''],
                     ['/texts/string-like', 'Text', 'this is a text. It is ' +
                      'longer than a string and contains punctuation marks!',
-                     'text'],
-                    ['/texts/string-like', 'Person', 'Jana Pick', 'person']]
+                     'text', '', '', '', '', ''],
+                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -138,9 +140,11 @@ class TestOdmlXlsTable(unittest.TestCase):
         """
         test, if emtpy rows appear in the table
         """
-        expected = [['Path to Section', 'Section Name', 'Property Name'],
-                    ['/section1', 'section1', 'property1'],
-                    ['/section2', 'section2', 'property1']]
+        expected = [['Document Information', 'author', '', 'date',
+                     '', 'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
+                    ['/section1', 'section1', 'property1','','','','','','',''],
+                    ['/section2', 'section2', 'property1','','','','','','','']]
 
         self.test_xls_table.load_from_function(create_2samerows_test_odml)
 

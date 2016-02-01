@@ -169,7 +169,7 @@ class OdmlXlsTable(OdmlTable):
         oldrow = []
         row = 0
 
-        max_col_len = [len(self._header_titles[h]) for h in self._header]
+        max_col_len = [len(self._header_titles[h]) if h!= None else 1 for h in self._header]
         col_style = 0
         row_style = 0
 
@@ -180,6 +180,12 @@ class OdmlXlsTable(OdmlTable):
             for a, attribute in enumerate(sorted(self._docdict)):
                 sheet.write(row, 2*a+1, attribute, styles["document_info"])
                 sheet.write(row, 2*a+2, self._docdict[attribute], styles["document_info"])
+
+                #adjusting cell widths
+                if len(attribute) > max_col_len[2*a+1]:
+                    max_col_len[2*a+1] = len(attribute)
+                if len(self._docdict[attribute]) > max_col_len[2*a+1]:
+                    max_col_len[2*a+1] = len(self._docdict[attribute])
 
             row += 1
 
@@ -231,7 +237,7 @@ class OdmlXlsTable(OdmlTable):
 
             # row_content: only those elements of row_dic, that will be
             # visible in the table
-            row_content = [row_dic[h] for h in self._header]
+            row_content = [row_dic[h] if h!=None else '' for h in self._header]
 
             # check, if row would be empty or same as the row before;
             # if so, skip the row
@@ -265,7 +271,10 @@ class OdmlXlsTable(OdmlTable):
                     stylestring = 'highlight'
 
                 style = styles[stylestring]
-                cell_content = row_dic[h]
+                if h != None:
+                    cell_content = row_dic[h]
+                else:
+                    cell_content = ''
 
                 #special style for datetime-objects
 

@@ -21,11 +21,9 @@ class OdmlTable(object):
     :param show_all_properties: if set to False, information about the property
         like the name or definition of the property wont be in the table again,
         if they are same as in the line before
-    :param allow_empty_columns: if set to False it is forbidden to create
         tables with an emptycolumn
     :type show_all_sections: bool
     :type show_all_properties: bool
-    :type allow_empty_columns: bool
 
     """
 
@@ -51,8 +49,6 @@ class OdmlTable(object):
         self._SECTION_INF = ["Path", "SectionName", "SectionType",
                              "SectionDefinition"]
         self._PROPERTY_INF = ["PropertyName", "PropertyDefinition"]
-        # TODO: remove option
-        self._allow_empty_columns = False
 
     def __create_odmldict(self, doc):
         """
@@ -78,25 +74,6 @@ class OdmlTable(object):
         docdict = {att:getattr(doc,att) for att in attributes}
         return docdict
 
-
-    @property
-    def allow_empty_columns(self):
-        return self._allow_empty_columns
-
-    @allow_empty_columns.setter
-    def allow_empty_columns(self, allow):
-
-        if allow is True:
-            self._allow_empty_columns = True
-        elif allow is False:
-            if None in self._header:
-                errmsg = "Your header already contains empty columns!" +\
-                         " Please change that before using this option!"
-                raise Exception(errmsg)
-            else:
-                self._allow_empty_columns = False
-        else:
-            raise Exception('invalid argument!!')
 
         #TODO: better exception
 
@@ -133,6 +110,27 @@ class OdmlTable(object):
         self._odmldict = self.__create_odmldict(doc)
         self._docdict =  self._create_documentdict(doc)
 
+    def _get_docdict(self,row):
+        '''
+        supplementory function to reconstruct self._docdict from first row in table
+
+        :param row: list of values in first row of table
+        :return: None
+        '''
+        if self._docdict == None:
+            self._docdict = {}
+        for col_id in range(len(row)/2):
+            if row[2*col_id+1] != '':
+                key = row[2*col_id+1]
+                # in case last entry was empty and document
+                # info is longer than header, this cell will
+                # not be present
+                if 2*col_id+2 == len(row):
+                    value = ''
+                else:
+                    value = row[2*col_id+2]
+                self._docdict[key] = value
+
     def load_from_xls_table(self, load_from):
         """
         loads the odml-data from a xls-file. To load the odml, at least Value,
@@ -155,30 +153,24 @@ class OdmlTable(object):
 
             # read document information if present
             if worksheet.cell(0,0).value ==  'Document Information':
-                self._docdict = {}
-                doc_row = worksheet.row(row)
-                for col_id in range(len(doc_row)/2):
-                    if doc_row[2*col_id+1].value != '':
-                        key = doc_row[2*col_id+1].value
-                        # in case last entry was empty and document
-                        # info is longer than header, this cell will
-                        # not be present
-                        if 2*col_id+2 == len(doc_row):
-                            value = ''
-                        else:
-                            value = doc_row[2*col_id+2].value
-                        self._docdict[key] = value
+                doc_row = [r.value for r in worksheet.row(row)]
+                self._get_docdict(doc_row)
                 row += 1
 
             # get number of non-empty odml colums
             header_row = worksheet.row(row)
-            n_cols =  len(header_row) - len(['empty_col' for col in header_row
-                                             if col.ctype == 0])
 
             # read the header
-            self._header = [inv_header_titles[worksheet.cell(row, col_n).value]
-                            for col_n in range(n_cols)]
+            header = [h.value for h in header_row]
+            # strip trailing empty cells from header
+            for i in range(len(header_row)-1,-1,-1):
+                if header_row[i].ctype == 0:
+                    header.pop(i)
+                else:
+                    break
 
+            n_cols =  len(header)
+            self._header = [inv_header_titles[h] if h!='' else None for h in header]
             row += 1
 
             old_dic = {"Path": "",
@@ -262,7 +254,23 @@ class OdmlTable(object):
         with open(load_from, 'rb') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            self._header = [inv_header_titles[h] for h in csvreader.next()]
+            row = csvreader .next()
+
+            # check if first line contains document information
+            if row[0] == 'Document Information':
+                self._get_docdict(row)
+                try:
+                    row = csvreader.next()
+                except StopIteration():
+                    raise IOError('Csv file does not contain header row.'
+                                  ' Filename "%s"'%load_from)
+
+            # get column ids of non-empty header cells
+            header_title_ids = {inv_header_titles[h]:id for id,h in enumerate(row) if h!=''}
+            header_title_order = {id:inv_header_titles[h] for id,h in enumerate(row) if h!=''}
+
+            # reconstruct headers
+            self._header = [inv_header_titles[h] if h!='' else None for h in row]
 
             must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
@@ -271,7 +279,7 @@ class OdmlTable(object):
                 err_msg = ("your table has to contain all of the following " +
                            " attributes: {0}").format(must_haves)
                 raise Exception(err_msg)
-                # TODO: exception??
+
             old_dic = {"Path": "",
                        "SectionName": "",
                        "SectionType": "",
@@ -299,7 +307,9 @@ class OdmlTable(object):
                                "odmlDatatype": ""}
 
                 for col_n in range(len(row)):
-                    current_dic[self._header[col_n]] = row[col_n]
+                    # using only columns with header
+                    if col_n in header_title_order:
+                        current_dic[header_title_order[col_n]] = row[col_n]
 
                 if (current_dic['Path'] == '' or
                         current_dic['Path'] == old_dic['Path']):
@@ -413,7 +423,7 @@ class OdmlTable(object):
         :type PropertyName: int, optional
         :type PropertyDefinition: int, optional
         :type Value: int, optional
-        :type ValueDefinition: int, optional
+        :type ValueDefinition: int,
         :type DataUnit: int, optional
         :type DataUncertainty: int, optional
         :type odmlDatatype: int, optional
@@ -436,16 +446,6 @@ class OdmlTable(object):
             # TODO: better Exception
 
         max_col = kwargs[keys_sorted[-1]]
-
-        # check if there are empty columns
-        if self._allow_empty_columns is False:
-            for i in range(1, max_col+1):
-                if kwargs[keys_sorted[i-1]] != i:
-                    errmsg = ("column {0} is empty. if you want to have " +
-                              "empty columns in your table, you have to set" +
-                              " allow_empty_columns = True").format(i)
-                    raise Exception(errmsg)
-                    # TODO: better exception
 
         #initialize header with enough elements
         header = max_col * [None]
