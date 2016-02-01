@@ -6,7 +6,7 @@ odMLtables Tutorial
 :Release:
 	0.1
 :License:
-	Creative Commons Attribution-ShareAlike 4.0 International 
+	Creative Commons Attribution-ShareAlike 4.0 International
 	`License <http://creativecommons.org/licenses/by-sa/4.0/>`_
 
 In general there are two different kinds of tables you can create yet: a table with an overview of your whole odML or a table comparing different sections of the odML due to their properties. How they exactly look like will be shown later. But you should know, that only the first table can be converted back to an odML-file.
@@ -21,7 +21,7 @@ This table is basically just a flat version of the odML-file. Every row of the t
 * **SectionDefinition** The Definition of the Section next to the Value. This is an optional attribute in odML, so it is also optional in the table.
 * **SectionType** The type of the Section.
 * **PropertyName** The Name of the Property the Value belongs to. This one is not optional, if you want to convert the table back to an odML.
-* **PropertyDefinition** The Definition of the Property. 
+* **PropertyDefinition** The Definition of the Property.
 * **Value** The metadata-Value itself. A Property without Values cannot exist, so this has to be in the table to create an odML from it.
 * **ValueDefinition** The definition of the Value (optional).
 * **DataUnit** The Unit of the Value (optional).
@@ -66,11 +66,11 @@ load the odML
 You can not only, as shown in the example above, load the odML from an odML-file. There are several other possibilities:
 
 1. load from an :class:`odml.Document` (class of the odML-Python-library)::
-    
-    import odml    
+
+    import odml
 
     doc = odml.Document()
-    # now append some sections, properties and values to the document    
+    # now append some sections, properties and values to the document
 
     myTable = OdmlCsvTable()
     myTable.load_from_odmldoc(doc)
@@ -81,37 +81,37 @@ You can not only, as shown in the example above, load the odML from an odML-file
 
     def function1():
         doc = odml.Document()
-        # now append some sections, properties and values to the document 
-        
+        # now append some sections, properties and values to the document
+
         return doc
 
     myTable = odmlCsvTable()
     myTable.load_from_function(function1)
-        
+
 
 3. load from a table (this option will be explained later)
 
 changing the header
 -------------------
 
-Next step is to change the header in favor of your plans for the table. You can choose, which of the possible columns given above will be in the table and also what their name is. 
+Next step is to change the header in favor of your plans for the table. You can choose, which of the possible columns given above will be in the table and also what their name is.
 
 .. warning::
-   If you miss out one of the columns 'Path', 'Property Name', 'Value' and 'odML Data Type' in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back. 
+   If you miss out one of the columns 'Path', 'Property Name', 'Value' and 'odML Data Type' in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back.
 
 By using the function :func:`odml_table.OdmlTable.change_header_titles` you can choose an own title for every column::
 
-    myFirstTable.change_header_titles(Path='my path', 
-                                      PropertyName='my property', 
-                                      Value='my value', 
+    myFirstTable.change_header_titles(Path='my path',
+                                      PropertyName='my property',
+                                      Value='my value',
                                       odmlDatatype='my datatype')
 
 The table should now look exactly as the old one, with the only difference that the names of the columns have changed. If you want to print some more information, you can adjust this by using the function :func:`odml_table.OdmlTable.change_header`::
 
-    myFirstTable.change_header(Path=1, 
-                               SectionName=2, 
-                               SectionDefinition=3, 
-                               PropertyName=4, 
+    myFirstTable.change_header(Path=1,
+                               SectionName=2,
+                               SectionDefinition=3,
+                               PropertyName=4,
                                Value=5)
 
 As you can see, in this function you can not only decide the columns but also their order, by giving them numbers from 1 on. If, for some reason, you want to have an empty column inside your table, you will have to set the option ``odml_table.OdmlTable.allow_empty_columns`` to True ::
@@ -120,10 +120,10 @@ As you can see, in this function you can not only decide the columns but also th
 
 After this command, a code as the following should work fine::
 
-    myFirstTable.change_header(Path=1, 
-                               PropertyName=3, 
-                               Value=4, 
-                               SectionDefinition=7, 
+    myFirstTable.change_header(Path=1,
+                               PropertyName=3,
+                               Value=4,
+                               SectionDefinition=7,
                                DataUncertainty=8)
 
 avoiding unnessaccery entries
@@ -144,7 +144,7 @@ xls
 +++
 
 All those functions already shown for the csv-table also work with xls. But there are some additional features concerning the Style of cells. First you need import the modul and create a new table::
-    
+
     from odml_xls_table import OdmlXlsTable
     myXlsTable = OdmlXlsTable()
 
@@ -161,7 +161,7 @@ There are some styles you can easily change in the table. First, there is the st
 
 The same way you can adapt the styles ``first_style`` and ``second_style``. Those are the styles used for the normal rows of the table. For a better overview there are those two styles, which are used alternating (for more information see section about `changing pattern`_.
 
-You can find a table with all possible colors and their names :download:`here <colors.xls>`. 
+You can find a table with all possible colors and their names :download:`here <colors.xls>`.
 
 marking columns
 ---------------
@@ -170,7 +170,7 @@ Sometimes there might be columns you want to lay a special focus on. So, to mark
 
     myXlsTable.mark_columns('Path', 'Value')
 
-Those marked columns will have a different style, which is determined by the attributes ``first_marked_style`` and ``second_marked_style`` (those can also be changed). 
+Those marked columns will have a different style, which is determined by the attributes ``first_marked_style`` and ``second_marked_style`` (those can also be changed).
 
 
 changing pattern
@@ -205,7 +205,7 @@ to create a csv-file with the table, import the class::
     myCompareTable = CompareSectionCsvTable()
 
 Now you can load the table::
-    
+
     myCompareTable.load_from_file('somefile.odml')
 
 choosing sections
@@ -213,8 +213,8 @@ choosing sections
 
 Next you have to decide, which sections of the table you want to compare. You can either just choose all sections out of a list of sectionnames or you can select all sections with a specific beginning::
 
-    myCompareTable.choose_sections('s1', 's2', 's3') 
-   
+    myCompareTable.choose_sections('s1', 's2', 's3')
+
     # or
 
     myCompareTable.choose_sections_startwith('s')

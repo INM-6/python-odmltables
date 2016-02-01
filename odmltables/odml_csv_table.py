@@ -33,10 +33,12 @@ class OdmlCsvTable(OdmlTable):
 
         """
 
+        self.consistency_check()
+
         with open(save_to, 'wb') as csvfile:
 
-            fieldnames = [self._header_titles[h] if h is not None else ""
-                          for h in self._header]
+            len_docdict = 0 if not self._docdict else len(self._docdict)
+            fieldnames = range(max(len(self._header),len_docdict*2+1))
 
             csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames,
                                        dialect='excel',
@@ -44,16 +46,26 @@ class OdmlCsvTable(OdmlTable):
             oldpath = ""
             oldprop = ""
 
-            csvwriter.writeheader()
+            # writing document info
+            if self._docdict:
+                doc_list = ['Document Information']
+                for doc_key in sorted(self._docdict):
+                    doc_list = doc_list + [doc_key,self._docdict[doc_key]]
+                csvwriter.writerow(dict(zip(range(len(doc_list)),doc_list)))
 
-            self.consistency_check()
+
+            # writing document headers
+            header_list = [self._header_titles[h] if h is not None else ""
+                           for h in self._header]
+            csvwriter.writerow(dict(zip(range(len(header_list)),header_list)))
+
 
             for dic in self._odmldict:
                 # create a copy of the dictionary, so nothing in the odml_dict
                 # will be changed
                 tmp_row = dic.copy()
 
-                # removing section entries (if neccessary)
+                # removing section entries (if necessary)
 
                 if dic["Path"] == oldpath:
                     if not self.show_all_sections:
@@ -63,7 +75,7 @@ class OdmlCsvTable(OdmlTable):
                     oldpath = dic["Path"]
                     # if a new section begins all property- and value-
                     # information should be written, even if its the same as
-                    # in the line before, so oldvalinf and oldprop are resetted
+                    # in the line before, so oldvalinf and oldprop are reset
                     oldprop = ""
 
                 # removing property entries (if neccessary)
@@ -77,7 +89,7 @@ class OdmlCsvTable(OdmlTable):
 
                 # eliminate those fields that wont show up in the table
 
-                row = {self._header_titles[h]: tmp_row[h]
+                row = {header_list.index(self._header_titles[h]): tmp_row[h]
                        for h in self._header if h is not None}
 
                 # check if row is empty, otherwise write it to the csv-file

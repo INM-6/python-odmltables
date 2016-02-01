@@ -30,9 +30,11 @@ class TestOdmlCsvTable(unittest.TestCase):
         test if a row that would be empty will appear in the table
         """
 
-        expected = [['Path to Section', 'Section Name', 'Property Name'],
-                    ['/section1', 'section1', 'property1'],
-                    ['/section2', 'section2', 'property1']]
+        expected = [['Document Information', 'author', '', 'date', '',
+                     'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
+                    ['/section1', 'section1', 'property1','','','','','',''],
+                    ['/section2', 'section2', 'property1','','','','','','']]
 
         self.test_csv_table.load_from_function(create_2samerows_test_odml)
 
@@ -83,7 +85,9 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_properties=True
         """
 
-        expected = [['Path to Section', 'Section Name', 'Section Definition',
+        expected = [['Document Information', 'author', '', 'date', '',
+                     'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition',
                      'Property Name', 'Property Definition', 'Value',
                      'Data Unit', 'Data Uncertainty', 'odML Data Type'],
                     ['/section1', 'section1', 'sec1', 'property1', 'prop1',
@@ -120,7 +124,9 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=False
         showall_properties=False
         """
-        expected = [['Path to Section', 'Section Name', 'Section Definition',
+        expected = [['Document Information', 'author', '', 'date', '',
+                     'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition',
                      'Property Name', 'Property Definition', 'Value',
                      'Data Unit', 'Data Uncertainty', 'odML Data Type'],
                     ['/section1', 'section1', 'sec1', 'property1', 'prop1',
@@ -157,7 +163,9 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=False
         showall_properties=True
         """
-        expected = [['Path to Section', 'Section Name', 'Section Definition',
+        expected = [['Document Information', 'author', '', 'date', '',
+                     'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition',
                      'Property Name', 'Property Definition', 'Value',
                      'Data Unit', 'Data Uncertainty', 'odML Data Type'],
                     ['/section1', 'section1', 'sec1', 'property1', 'prop1',
@@ -194,7 +202,9 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=True
         showall_properties=False
         """
-        expected = [['Path to Section', 'Section Name', 'Section Definition',
+        expected = [['Document Information', 'author', '', 'date', '',
+                     'repository', '', 'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition',
                      'Property Name', 'Property Definition', 'Value',
                      'Data Unit', 'Data Uncertainty', 'odML Data Type'],
                     ['/section1', 'section1', 'sec1', 'property1', 'prop1',

@@ -172,14 +172,14 @@ class TestChangeHeader(unittest.TestCase):
         self.assertEqual(self.test_table._header, ["Path", None, "SectionType",
                                                    "Value"])
 
-    def test_empty_cols_forbidden(self):
-        """
-        Test change_header leaving empty columns, while this is forbidden
-        """
-        self.test_table.allow_empty_columns = False
-        # TODO: exception
-        with self.assertRaises(Exception):
-            self.test_table.change_header(Path=1, SectionType=3, Value=4)
+    # def test_empty_cols_forbidden(self):
+    #     """
+    #     Test change_header leaving empty columns, while this is forbidden
+    #     """
+    #     self.test_table.allow_empty_columns = False
+    #     # TODO: exception
+    #     with self.assertRaises(Exception):
+    #         self.test_table.change_header(Path=1, SectionType=3, Value=4)
 
     def test_same_indizes(self):
         """
@@ -227,18 +227,18 @@ class TestOdmlTable(unittest.TestCase):
                                              odmlDatatype="Datentyp")
         self.assertEqual(self.test_table._header_titles, expected)
 
-    def test_change_allow_free_cols(self):
-        """
-        set allow_free_columns
-        """
-
-        self.test_table.allow_empty_columns = True
-        self.assertEqual(self.test_table._allow_empty_columns, True)
-        self.test_table.allow_empty_columns = False
-        self.assertEqual(self.test_table._allow_empty_columns, False)
-        # TODO: Exception
-        with self.assertRaises(Exception):
-            self.test_table.allow_empty_columns = 4
+    # def test_change_allow_free_cols(self):
+    #     """
+    #     set allow_free_columns
+    #     """
+    #
+    #     # self.test_table.allow_empty_columns = True
+    #     # self.assertEqual(self.test_table._allow_empty_columns, True)
+    #     # self.test_table.allow_empty_columns = False
+    #     # self.assertEqual(self.test_table._allow_empty_columns, False)
+    #     # # TODO: Exception
+    #     # with self.assertRaises(Exception):
+    #     #     self.test_table.allow_empty_columns = 4
 
     def test_forbid_free_cols(self):
         """
@@ -249,8 +249,8 @@ class TestOdmlTable(unittest.TestCase):
         self.test_table.allow_empty_columns = True
         self.test_table.change_header(Path=1, PropertyDefinition=3, Value=4)
         # TODO: Exception aendern
-        with self.assertRaises(Exception):
-            self.test_table.allow_empty_columns = False
+        # with self.assertRaises(Exception):
+        #     self.test_table.allow_empty_columns = False
 
     def test_merge(self):
         doc1 = create_compare_test(sections=2,properties=2,levels=2)
