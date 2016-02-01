@@ -169,7 +169,8 @@ class OdmlXlsTable(OdmlTable):
         oldrow = []
         row = 0
 
-        max_col_len = [1]*max(len(self._header),2*len(self._docdict)+1)
+        doclen = len(self._odmldict) if self._docdict else 0
+        max_col_len = [1]*max(len(self._header),2*doclen+1)
         for i,h in enumerate(self._header):
             if h!= None:
                 max_col_len[i] = len(self._header_titles[h])
