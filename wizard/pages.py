@@ -61,21 +61,382 @@ SavePage           - Class generating a dialog page, where the user defines the
 @author: zehl
 """
 
-
+import os
+import copy
 from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
-                         QRadioButton, QVBoxLayout, QLineEdit, QGridLayout,
+                         QRadioButton, QVBoxLayout, QHBoxLayout, QLineEdit, QGridLayout,
                          QRegExpValidator, QCheckBox, QPrinter, QPrintDialog,
-                         QMessageBox)
-from PyQt4.QtCore import (pyqtSlot, QRegExp)
+                         QMessageBox,QWidget,QPushButton, QFileDialog, QComboBox,QListWidget,
+                         QListWidgetItem,
+                         QToolButton)
+from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty)
 
+import odmltables.odml_table
 
-class WelcomePage(QWizardPage):
+class LoadFilePage(QWizardPage):
     def __init__(self,parent=None):
-        super(WelcomePage,self).__init__(parent)
+        super(LoadFilePage,self).__init__(parent)
 
-        self.setTitle(self.tr("Create your table"))
-        self.setPixmap(QWizard.WatermarkPixmap,QPixmap(":/graphics/icon.svg"))
-        topLable = QLabel(self.tr('Select an output format:'))
+        # Set up layout
+        vbox = QVBoxLayout()
+
+        # Adding input part
+        topLabel = QLabel(self.tr("Choose a file to load"))
+        topLabel.setWordWrap(True)
+        vbox.addWidget(topLabel)
+        vbox.addSpacing(20)
+
+        # Add first horizontal box
+        self.buttonbrowse = QPushButton("Browse")
+        self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
+        self.inputfile = QLabel("")
+        self.inputfile.setWordWrap(True)
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(self.buttonbrowse)
+        hbox1.addWidget(self.inputfile)
+
+        hbox1.addStretch()
+        vbox.addLayout(hbox1)
+
+        self.cbcustominput = QCheckBox('I changed the column names in the input table.')
+        self.cbcustominput.setEnabled(False)
+        self.registerField('CBcustominput',self.cbcustominput)
+        vbox.addWidget(self.cbcustominput)
+        vbox.addStretch()
+
+        # Adding output part
+        bottomLabel = QLabel(self.tr("Select an output format"))
+        bottomLabel.setWordWrap(True)
+        vbox.addWidget(bottomLabel)
+        vbox.addWidget(bottomLabel)
+
+        # Add second horizontal box
+        self.rbuttonxls = QRadioButton(self.tr("xls"))
+        self.rbuttoncsv = QRadioButton(self.tr("csv"))
+        self.rbuttonodml = QRadioButton(self.tr("odml"))
+        self.registerField('RBxls',self.rbuttonxls)
+        self.registerField('RBcsv',self.rbuttoncsv)
+        self.registerField('RBodml',self.rbuttonodml)
+
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(self.rbuttonxls)
+        hbox2.addSpacing(50)
+        hbox2.addWidget(self.rbuttoncsv)
+        hbox2.addSpacing(50)
+        hbox2.addWidget(self.rbuttonodml)
+        hbox2.addStretch()
+        vbox.addLayout(hbox2)
+        vbox.addStretch()
+
+        self.setLayout(vbox)
+
+
+    def handlebuttonbrowse(self):
+        filename = QFileDialog().getOpenFileName()
+        self.inputpath = QLineEdit(filename)
+        self.registerField('Linputfile',self.inputpath)
+        # filename = QFileDialog.getOpenFileName()
+        short_filename = self._shorten_path(str(filename))
+        self.inputfile.setText(short_filename)
+
+        if str(filename[-4:]) in ['.xls','.csv']:
+            self.cbcustominput.setEnabled(True)
+        else:
+            self.cbcustominput.setEnabled(False)
+
+        if str(filename[-4:]) in ['.xls','.csv']:
+            self.rbuttonodml.setChecked(True)
+        elif str(filename[-5:]) in ['.odml']:
+            self.rbuttonxls.setChecked(True)
+
+    def validatePage(self):
+        if not any((self.field('RBxls').toBool(),
+                    self.field('RBcsv').toBool(),
+                    self.field('RBodml').toBool())):
+            QMessageBox.warning(self,'Select a format','You need to select a table format to continue.')
+            return 0
+
+        if not self.field('Linputfile').toString():
+            QMessageBox.warning(self,'Select an input file','You need to select an inupt file to continue.')
+            return 0
+
+        if self.field('Linputfile').toString().split('.')[-1] not in ['xls','csv','odml']:
+            QMessageBox.warning(self,'Wrong input format','The input file has to be an ".xls", ".csv" or ".odml" file.')
+            return 0
+
+        return 1
+
+    def _shorten_path(self,path):
+        sep = os.path.sep
+        if path.count(sep)>2:
+            id = path.rfind(sep)
+            id = path.rfind(sep,0,id)
+        else:
+            id = 0
+
+        if path == '':
+            return path
+        else:
+            return "...%s" % (path[id:])
+
+
+    def nextId(self):
+        if self.wizard().field('CBcustominput').toBool():
+            return self.wizard().PageCustomInputHeader
+        else:
+            return self.wizard().currentId()+2
+
+
+
+class CustomInputHeaderPage(QWizardPage):
+    def __init__(self,parent=None):
+        super(CustomInputHeaderPage, self).__init__(parent)
+
+        # Set up layout
+        vbox = QVBoxLayout()
+
+        # Adding input part
+        topLabel = QLabel(self.tr("Provide the column types used in the input table"))
+        topLabel.setWordWrap(True)
+        vbox.addWidget(topLabel)
+        vbox.addSpacing(20)
+
+        self.grid = QGridLayout()
+        vbox.addLayout(self.grid)
+
+        self.setLayout(vbox)
+
+
+
+
+
+    def initializePage(self):
+        # get header names from input file
+        load_from = str(self.wizard().field('Linputfile').toString())
+        if load_from.endswith('.xls'):
+            customheaders = odmltables.odml_table.OdmlTable.get_xls_header(load_from)
+        elif load_from.endswith('.csv'):
+            customheaders = odmltables.odml_table.OdmlTable.get_csv_header(load_from)
+        else:
+            raise TypeError('Header can be only read for xls or csv files.')
+
+
+        odtables = odmltables.odml_table.OdmlTable()
+        header_names = odtables._header_titles.values()
+
+        self.n_headers = QLineEdit(str(len(customheaders)))
+        self.registerField('LEn_headers',self.n_headers)
+
+        for h, header in enumerate(customheaders):
+            #set up individual row for header association
+            h_label = QLabel(header)
+            dd_list = QComboBox()
+            dd_list.addItems(header_names)
+            # Preselect fitting header name if possible
+            if header in header_names:
+                ind = header_names.index(header)
+                dd_list.setCurrentIndex(ind)
+            self.grid.addWidget(h_label,h,0)
+            self.grid.addWidget(dd_list,h,1)
+            self.registerField('Lheader_%i'%(h),h_label)
+            self.registerField('CBheadernames_%i'%(h),dd_list)
+
+        self.update()
+
+    def validatePage(self):
+        header_names = []
+        for h in range(int(self.wizard().field('LEn_headers').toString())):
+            # header = self.wizard().field('Lheader_%i'%h).toString
+            header_id = int(self.wizard().field('CBheadernames_%i'%h).toString())
+
+            odtables = odmltables.odml_table.OdmlTable()
+            header_name = odtables._header_titles.values()[header_id]
+
+            if header_name in header_names:
+                QMessageBox.warning(self, self.tr("Non-unique headers"), self.tr("Header assignment has"
+                                                  " to be unique. '%s' has been"
+                                                  " assigned multiple times"%header_name))
+                return 0
+
+            header_names.append(header_name)
+
+        return 1
+
+
+class QIListWidget(QListWidget):
+    def __init__(self,parent=None):
+        super(QIListWidget, self).__init__(parent)
+
+    @pyqtProperty(list)
+    def currentItemData(self):
+        items = []
+        for index in xrange(self.count()):
+             items.append(self.item(index))
+        labels = [i.text() for i in items]
+        return items
+
+
+class HeaderOrderPage(QWizardPage):
+    def __init__(self,parent=None):
+        super(HeaderOrderPage, self).__init__(parent)
+
+        # Set up layout
+        vbox = QVBoxLayout()
+
+        # Adding input part
+        topLabel = QLabel(self.tr("Select the columns for the output table"))
+        topLabel.setWordWrap(True)
+        vbox.addWidget(topLabel)
+        vbox.addSpacing(20)
+
+
+        odtables = odmltables.odml_table.OdmlTable()
+        header_names = odtables._header_titles.values()
+
+        # generating selection lists
+        self.header_list = QListWidget()
+        self.header_list.setSelectionMode(3)
+        self.selection_list = QIListWidget()
+        self.selection_list.setSelectionMode(3)
+        self.registerField('LWcolumnselection',self.selection_list,'currentItemData') #TODO: Check how fields work properly
+        toright = QToolButton()
+        toright.setArrowType(Qt.RightArrow)
+        toright.clicked.connect(self.toright)
+        toleft = QToolButton()
+        toleft.setArrowType(Qt.LeftArrow)
+        toleft.clicked.connect(self.toleft)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.header_list)
+        vboxbuttons = QVBoxLayout()
+        vboxbuttons.addStretch()
+        vboxbuttons.addWidget(toright)
+        vboxbuttons.addSpacing(30)
+        vboxbuttons.addWidget(toleft)
+        vboxbuttons.addStretch()
+        hbox.addLayout(vboxbuttons)
+
+
+        vbox.addLayout(hbox)
+
+
+        self.itemsleft = []
+        self.itemsright= []
+        default_selection_list = ['Path to Section',
+                                  'Property Name',
+                                  'Value',
+                                  'odML Data Type']
+        for i,h in enumerate(header_names):
+            if h not in default_selection_list:
+                item = QListWidgetItem()
+                item.setText(h)
+                self.header_list.addItem(item)
+                self.itemsleft.append(item)
+                # if h in default_selection_list:
+                #     self.header_list.setItemHidden(item,True)
+            else:
+                item = QListWidgetItem()
+                item.setText(h)
+                self.itemsright.append(item)
+                self.selection_list.addItem(item)
+                # if h not in default_selection_list:
+                #     self.selection_list.setItemHidden(item,True)
+
+        hbox.addWidget(self.selection_list)
+
+        # adding up and down buttons
+        up = QToolButton()
+        up.setArrowType(Qt.UpArrow)
+        up.clicked.connect(self.up)
+        down = QToolButton()
+        down.setArrowType(Qt.DownArrow)
+        down.clicked.connect(self.down)
+
+        vboxbuttons2 = QVBoxLayout()
+        vboxbuttons2.addStretch()
+        vboxbuttons2.addWidget(up)
+        vboxbuttons2.addSpacing(30)
+        vboxbuttons2.addWidget(down)
+        vboxbuttons2.addStretch()
+        hbox.addLayout(vboxbuttons2)
+
+        vbox.addSpacing(20)
+
+        self.cbcustomheader = QCheckBox('I want to change the names of my columns.')
+        self.registerField('CBcustomheader',self.cbcustomheader)
+        vbox.addWidget(self.cbcustomheader)
+
+        self.setLayout(vbox)
+
+    def toright(self):
+        # sort rows in descending order in order to compensate shifting due to takeItem
+        rows = sorted([index.row() for index in self.header_list.selectedIndexes()],
+                      reverse=True)
+        for row in rows:
+            self.selection_list.addItem(self.header_list.takeItem(row))
+
+    def toleft(self):
+        # sort rows in descending order in order to compensate shifting due to takeItem
+        rows = sorted([index.row() for index in self.selection_list.selectedIndexes()],
+                      reverse=True)
+        for row in rows:
+            self.header_list.addItem(self.selection_list.takeItem(row))
+
+    def up(self):
+        currentRow = self.selection_list.currentRow()
+        currentItem = self.selection_list.takeItem(currentRow)
+        self.selection_list.insertItem(currentRow - 1, currentItem)
+        self.selection_list.setCurrentRow(currentRow-1)
+
+    def down(self):
+        currentRow = self.selection_list.currentRow()
+        currentItem = self.selection_list.takeItem(currentRow)
+        self.selection_list.insertItem(currentRow + 1, currentItem)
+        self.selection_list.setCurrentRow(currentRow+1)
+
+    def nextId(self):
+        if self.wizard().field('CBcustomheader').toBool:
+            return self.wizard().PageCustomColumNames
+        else:
+            return self.wizard().currentId+1
+
+    def validatePage(self):
+        self.wizard().field('LWcolumnselection')
+
+
+class CustomColumnNamesPage(QWizardPage):
+    def __init__(self,parent=None):
+        super(CustomColumnNamesPage, self).__init__(parent)
+
+        # Set up layout
+        vbox = QVBoxLayout()
+
+        # Adding input part
+        topLabel = QLabel(self.tr("Select the columns for the output table"))
+        topLabel.setWordWrap(True)
+        vbox.addWidget(topLabel)
+        vbox.addSpacing(20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
