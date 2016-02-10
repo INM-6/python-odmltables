@@ -5,32 +5,46 @@ Created on Tue Jan 26 12:58:23 2016
 @author: zehl
 """
 
-
+import os
 from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
-from wizard.pages import (LoadFilePage,CustomInputHeaderPage,HeaderOrderPage,CustomColumnNamesPage,RegisterPage,DetailsPage,
-                         ConclusionPage)
 
+from wizard.pages import (LoadFilePage,CustomInputHeaderPage,HeaderOrderPage,CustomColumnNamesPage,
+                          ColorPatternPage,ChangeStyleOverviewPage,SaveFilePage)
+from wizard.pages import Settings
 class odml2tableWizard(QWizard):
-    NUM_PAGES = 6
+    NUM_PAGES = 7
 
-    (PageLoadFile, PageCustomInputHeader,PageHeaderOrder, PageCustomColumNames, PageRegister, PageDetails) = range(NUM_PAGES)
+    (PageLoadFile, PageCustomInputHeader,PageHeaderOrder, PageCustomColumNames,
+     PageColorPattern,PageChangeStyleOverview,PageSaveFile) = range(NUM_PAGES)
+
+    settings = {}
+
+    settingsfile = 'odmlconverter.conf'
 
     def __init__(self, parent=None):
         super(odml2tableWizard, self).__init__(parent)
+        settings = Settings(self.settingsfile)
 
-        self.setPage(self.PageLoadFile, LoadFilePage(self))
-        self.setPage(self.PageCustomInputHeader, CustomInputHeaderPage())
-        self.setPage(self.PageHeaderOrder, HeaderOrderPage())
-        self.setPage(self.PageCustomColumNames, CustomColumnNamesPage())
-        self.setPage(self.PageRegister, RegisterPage())
-        self.setPage(self.PageDetails, DetailsPage())
-        # self.setPage(self.PageConclusion, ConclusionPage())
+        self.setPage(self.PageLoadFile, LoadFilePage(settings))
+        self.setPage(self.PageCustomInputHeader, CustomInputHeaderPage(settings))
+        self.setPage(self.PageHeaderOrder, HeaderOrderPage(settings))
+        self.setPage(self.PageCustomColumNames, CustomColumnNamesPage(settings))
+        # self.setPage(self.PageColumnMarking, ColumnMarkingPage(settings))
+        self.setPage(self.PageColorPattern, ColorPatternPage(settings))
+        self.setPage(self.PageChangeStyleOverview, ChangeStyleOverviewPage(settings))
+        self.setPage(self.PageSaveFile, SaveFilePage(settings))
 
-        # Saving settings
-        self.settings = dict(zip(range(self.NUM_PAGES),[{}]*self.NUM_PAGES))
+        # # initialize settings
+        # for pageid in self.pageIds():
+        #     page = self.page(pageid)
+        #     self.settings[page.__class__.split('.')[-1]] = {}
+        #
+        # # Saving settings
+        # self.settings = dict(zip(range(self.NUM_PAGES),[{}]*self.NUM_PAGES))
 
         self.setStartId(self.PageLoadFile)
+        # self.setStartId(self.PageChangeStyleOverview)
 
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
@@ -43,6 +57,7 @@ class odml2tableWizard(QWizard):
         self.helpRequested.connect(self._showHelp)
 
         self.setWindowTitle(self.tr("conversion wizard"))
+
 
     def _createHelpMsgs(self):
         msgs = {}
@@ -64,9 +79,9 @@ class odml2tableWizard(QWizard):
         # msgs[self.PageEvaluate] = self.tr(
         #     "Make sure to provide a valid email address, such as "
         #     "toni.buddenbrook@example.de.")
-        msgs[self.PageRegister] = self.tr(
-            "If you don't provide an upgrade key, you will be "
-            "asked to fill in your details.")
+        # msgs[self.PageRegister] = self.tr(
+        #     "If you don't provide an upgrade key, you will be "
+        #     "asked to fill in your details.")
         # msgs[self.PageDetails] = self.tr(
         #     "Make sure to provide a valid email address, such as "
         #     "thomas.gradgrind@example.co.uk.")
@@ -91,10 +106,9 @@ class odml2tableWizard(QWizard):
                                 msg)
         self._lastHelpMsg = msg
 
-    def convert(self):
+    def convert(self): #TODO: Actual odml<=> tables conversion depending on user settings
         params = get_wizard_parameters(self)
         convertodml2table(**params)
-
 
 
 def get_wizard_parameters(wiz):
