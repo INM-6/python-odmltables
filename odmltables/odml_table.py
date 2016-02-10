@@ -131,6 +131,32 @@ class OdmlTable(object):
                     value = row[2*col_id+2]
                 self._docdict[key] = value
 
+    @staticmethod
+    def get_xls_header(load_from):
+        '''
+        Providing non-empty xls header entries of first sheet for odml tables gui only
+        :return:
+        '''
+        workbook = xlrd.open_workbook(load_from)
+
+        for sheet_name in workbook.sheet_names():
+            worksheet = workbook.sheet_by_name(sheet_name)
+
+            row = 0
+            # read document information if present
+            if worksheet.cell(0,0).value ==  'Document Information':
+                # doc_row = [r.value for r in worksheet.row(row)]
+                # self._get_docdict(doc_row)
+                row += 1
+
+            # get number of non-empty odml colums
+            header_row = worksheet.row(row)
+
+            # read the header
+            header = [h.value for h in header_row if h.ctype !=0 ]
+
+            return header
+
     def load_from_xls_table(self, load_from):
         """
         loads the odml-data from a xls-file. To load the odml, at least Value,
@@ -235,6 +261,31 @@ class OdmlTable(object):
                 current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
 
                 self._odmldict.append(current_dic)
+
+    @staticmethod
+    def get_csv_header(load_from):
+        '''
+        Providing non-empty csv header entries of first sheet for odml tables gui only
+        :return:
+        '''
+        with open(load_from, 'rb') as csvfile:
+            csvreader = csv.reader(csvfile)
+
+            row = csvreader.next()
+
+            # check if first line contains document information
+            if row[0] == 'Document Information':
+                try:
+                    row = csvreader.next()
+                except StopIteration():
+                    raise IOError('Csv file does not contain header row.'
+                                  ' Filename "%s"'%load_from)
+
+            # get column ids of non-empty header cells
+            header = [h for h in row if h!='']
+
+            return header
+
 
     #TODO: use normal reader instead of dictreader => much easier!!
     def load_from_csv_table(self, load_from):

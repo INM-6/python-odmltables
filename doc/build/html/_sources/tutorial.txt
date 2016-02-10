@@ -275,7 +275,11 @@ You can, as already shown for the odml-table (`choosing styles`_), adjust backco
 practical examples
 ******************
 
-TODO: add example description here
+In these three short examples you will learn how to:
+
+1. Generate a template odml starting from a table, which will then be used to
+2. Manually enrich the odml via a tabular representation like it could be done in a daily workflow and finally how to
+3. Reduce an odml, such that it can be used for a laboratory notebook or specific overviews
 
 .. _example1:
 
