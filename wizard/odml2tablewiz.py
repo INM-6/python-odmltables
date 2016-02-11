@@ -9,9 +9,9 @@ import os
 from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
 
-from wizard.pages import (LoadFilePage,CustomInputHeaderPage,HeaderOrderPage,CustomColumnNamesPage,
-                          ColorPatternPage,ChangeStyleOverviewPage,SaveFilePage)
-from wizard.pages import Settings
+from pages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
+                   ColorPatternPage, ChangeStylePage, SaveFilePage)
+from settings import Settings
 class odml2tableWizard(QWizard):
     NUM_PAGES = 7
 
@@ -32,7 +32,7 @@ class odml2tableWizard(QWizard):
         self.setPage(self.PageCustomColumNames, CustomColumnNamesPage(settings))
         # self.setPage(self.PageColumnMarking, ColumnMarkingPage(settings))
         self.setPage(self.PageColorPattern, ColorPatternPage(settings))
-        self.setPage(self.PageChangeStyleOverview, ChangeStyleOverviewPage(settings))
+        self.setPage(self.PageChangeStyleOverview, ChangeStylePage(settings))
         self.setPage(self.PageSaveFile, SaveFilePage(settings))
 
         # # initialize settings

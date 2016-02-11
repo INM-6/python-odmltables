@@ -64,12 +64,13 @@ SavePage           - Class generating a dialog page, where the user defines the
 import os
 import pickle
 import copy
+import xlwt
 from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
                          QRadioButton, QVBoxLayout, QHBoxLayout, QLineEdit, QGridLayout,
                          QRegExpValidator, QCheckBox, QPrinter, QPrintDialog,
                          QMessageBox,QWidget,QPushButton, QFileDialog, QComboBox,QListWidget,
                          QListWidgetItem, QTableView,QFont,QPalette,QFrame,QSizePolicy,
-                         QToolButton)
+                         QToolButton,QColor,QItemEditorCreatorBase)
 from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
 
 import odmltables.odml_table
@@ -149,7 +150,7 @@ class LoadFilePage(QIWizardPage):
         self.settings.register('inputfilename', self.inputfilename)
         # self.registerField('Linputfile',self.inputpath)
         # filename = QFileDialog.getOpenFileName()
-        short_filename = self._shorten_path(self.inputfilename)
+        short_filename = _shorten_path(self.inputfilename)
         self.inputfile.setText(short_filename)
 
         if str(self.inputfilename[-4:]) in ['.xls','.csv']:
@@ -179,18 +180,6 @@ class LoadFilePage(QIWizardPage):
 
         return 1
 
-    def _shorten_path(self,path):
-        sep = os.path.sep
-        if path.count(sep)>2:
-            id = path.rfind(sep)
-            id = path.rfind(sep,0,id)
-        else:
-            id = 0
-
-        if path == '':
-            return path
-        else:
-            return "...%s" % (path[id:])
 
 
     def nextId(self):
@@ -198,7 +187,7 @@ class LoadFilePage(QIWizardPage):
             if self.settings.get_object('CBcustominput').isChecked():
                 return self.wizard().PageCustomInputHeader
             else:
-                return self.wizard().currentId()+2
+                return self.wizard().PageHeaderOrder
         else:
             if (self.settings.get_object('RBoutputxls').isChecked() or
                 self.settings.get_object('RBoutputcsv').isChecked()):
@@ -206,8 +195,8 @@ class LoadFilePage(QIWizardPage):
                 return self.wizard().PageHeaderOrder
 
             else:
-                #TODO: Fix this.
-                raise NotImplementedError('No odml output implemented yet.')
+                return self.wizard().PageSaveFile
+
 
 
 
@@ -286,20 +275,6 @@ class CustomInputHeaderPage(QIWizardPage):
             header_names.append(header_name)
 
         return 1
-
-
-# class QIListWidget(QListWidget):
-#     def __init__(self,parent=None):
-#         super(QIListWidget, self).__init__(parent)
-#
-#     @pyqtProperty(list)
-#     def currentItemData(self):
-#         items = []
-#         for index in xrange(self.count()):
-#              items.append(self.item(index))
-#         labels = [i.text() for i in items]
-#         return items
-
 
 class HeaderOrderPage(QIWizardPage):
     def __init__(self,parent=None):
@@ -660,9 +635,9 @@ class ColorPatternPage(QIWizardPage):
 
 
 
-class ChangeStyleOverviewPage(QIWizardPage):
+class ChangeStylePage(QIWizardPage):
     def __init__(self,parent=None):
-        super(ChangeStyleOverviewPage, self).__init__(parent)
+        super(ChangeStylePage, self).__init__(parent)
 
         # Set up layout
         vbox = QVBoxLayout()
@@ -699,6 +674,8 @@ class ChangeStyleOverviewPage(QIWizardPage):
             gridtable.addWidget(self.tablebuttons[i],*positions[i])
             # self.tablebuttons[i].setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Maximum)
 
+        self.settings.register('GLtablegrid',gridtable)
+
         gridtable.setSpacing(0)
 
         vstretcher = QVBoxLayout()
@@ -716,13 +693,10 @@ class ChangeStyleOverviewPage(QIWizardPage):
         hbox.addWidget(verticalLine)
 
 
-        self.colorlist = ['red','green','blue','yellow','orange','black','white','gray']
-        self.cbbgcolor = QComboBox()
-        self.cbbgcolor.addItems(self.colorlist)
+        self.cbbgcolor = ColorListWidget()
         self.cbbgcolor.currentIndexChanged.connect(self.updatetable)
 
-        self.cbfontcolor = QComboBox()
-        self.cbfontcolor.addItems(self.colorlist)
+        self.cbfontcolor = ColorListWidget()
         self.cbfontcolor.currentIndexChanged.connect(self.updatetable)
 
         self.cbboldfont = QCheckBox('bold')
@@ -785,13 +759,19 @@ class ChangeStyleOverviewPage(QIWizardPage):
 
     def updatetable(self):
         # get current settings from settings dialog
-        style = ''
-        style += 'background-color:%s;'%(self.cbbgcolor.currentText())
-        style += 'color:%s;'%(self.cbfontcolor.currentText())
-        if self.cbboldfont.isChecked(): style += 'font:bold;'
-        if self.cbitalicfont.isChecked(): style += 'font:italic;'
-        print 'Update Table'
-        pass
+        style = ';'
+        style += 'background-color:rgb%s;'%(str(self.cbbgcolor.get_current_rgb()))
+        style += 'color:rgb%s;'%(str(self.cbfontcolor.get_current_rgb()))
+        if self.cbboldfont.isChecked():
+            style += 'font:bold'
+            if self.cbitalicfont.isChecked():
+                style.rstrip(';')
+                style += ' italic;'
+        elif self.cbitalicfont.isChecked(): style += 'font:italic;'
+
+        old_style = self.removestyle(self.currentbutton.styleSheet(),'font')
+
+        self.currentbutton.setStyleSheet(old_style + style)
 
     def removestyle(self,style,property):
         styles = [str(s) for s in style.split(';')]
@@ -801,13 +781,57 @@ class ChangeStyleOverviewPage(QIWizardPage):
                 styles.pop(s)
             else:
                 s += 1
-        return ' '.join([s + ';' for s in styles])
+        return '; '.join(styles)
 
     def get_property(self,style,property):
         styles = [str(s) for s in style.split(';')]
         for s in styles:
             if s.strip(' ').startswith(property+':'):
                 return s.replace(property+':','')
+
+
+
+class ColorListWidget(QComboBox):
+
+    _xlwt_rgbcolors=[
+    (0,0,0), (255,255,255), (255,0,0), (0,255,0), (0,0,255), (255,255,0),
+    (255,0,255), (0,255,255), (0,0,0), (255,255,255), (255,0,0), (0,255,0),
+    (0,0,255), (255,255,0), (255,0,255), (0,255,255), (128,0,0), (0,128,0),
+    (0,0,128), (128,128,0), (128,0,128), (0,128,128), (192,192,192),
+    (128,128,128), (153,153,255), (153,51,102), (255,255,204),
+    (204,255,255), (102,0,102), (255,128,128), (0,102,204), (204,204,255),
+    (0,0,128), (255,0,255), (255,255,0), (0,255,255), (128,0,128),
+    (128,0,0), (0,128,128), (0,0,255), (0,204,255), (204,255,255),
+    (204,255,204), (255,255,153), (153,204,255), (255,153,204),
+    (204,153,255), (255,204,153), (51,102,255), (51,204,204), (153,204,0),
+    (255,204,0), (255,153,0), (255,102,0), (102,102,153), (150,150,150),
+    (0,51,102), (51,153,102), (0,51,0), (51,51,0), (153,51,0), (153,51,102),
+    (51,51,153), (51,51,51)
+    ]
+
+    def __init__(self):
+        super(ColorListWidget, self).__init__()
+        cmap = xlwt.Style.colour_map
+        self.xlwt_colornames = []
+        self.xlwt_color_index = []
+        self.xlwt_rgbcolors = []
+        for i in range(64):
+            cnames = [name for name, index in cmap.items() if index == i]
+            if cnames != []:
+                self.xlwt_colornames.append(', '.join(cnames))
+                self.xlwt_color_index.append(i)
+                self.xlwt_rgbcolors.append(self._xlwt_rgbcolors[i])
+
+        for i,xlwtcolor in enumerate(self.xlwt_colornames):
+            self.insertItem(i, xlwtcolor)
+            self.setItemData(i, QColor(*self.xlwt_rgbcolors[i]), Qt.DecorationRole)
+
+    def get_current_rgb(self):
+        return self.xlwt_rgbcolors[self.currentIndex()]
+
+
+
+
 
 
 
@@ -820,54 +844,75 @@ class SaveFilePage(QIWizardPage):
         vbox = QVBoxLayout()
 
         # adding pattern selection part
-        topLabel = QLabel(self.tr("Click on a field to choose the style for this field"))
+        topLabel = QLabel(self.tr("Where do you want to save your file?"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
-        vbox.addSpacing(20)
+        vbox.addSpacing(40)
 
+        # Add first horizontal box
+        self.buttonbrowse = QPushButton("Browse")
+        self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
+        self.outputfilename = ''
+        self.outputfile = QLabel(self.outputfilename)
+        self.outputfile.setWordWrap(True)
         hbox = QHBoxLayout()
+        hbox.addWidget(self.buttonbrowse)
+        hbox.addWidget(self.outputfile)
 
+        hbox.addStretch()
 
+        vbox.addLayout(hbox)
+        self.setLayout(vbox)
 
+        self.outputfilename = ''
 
+    def handlebuttonbrowse(self):
+        self.outputfilename = str(QFileDialog.getSaveFileName(self, self.tr("Save File"),
+                            os.path.dirname(self.settings.get_object('inputfilename')),""))
 
+        self.settings.register('outputfilename', self.outputfilename)
+        short_filename = _shorten_path(self.outputfilename)
+        self.outputfile.setText(short_filename)
 
-class Settings():
-    compressable_types = [QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,QListWidget,
-                         QListWidgetItem, QTableView]
-    def __init__(self,filename):
-        if os.path.isfile(filename):
-            self.settings = pickle.load(filename)
+    def validatePage(self):
+        if self.settings.get_object('RBoutputxls').isChecked():
+            expected_extension = '.xls'
+        elif self.settings.get_object('RBoutputcsv').isChecked():
+            expected_extension = '.csv'
+        elif self.settings.get_object('RBoutputodml').isChecked():
+            expected_extension = '.odml'
         else:
-            self.settings = {}
-        self.config = {}
-        self.config_name = 'new configuration'
+            raise ValueError('Can not save file without selection of output format.')
 
-    def load_config(self,config_name):
-        if config_name in self.settings:
-            self.config = self.settings[config_name]
-            self.config_name = config_name
-        else:
-            raise ValueError('Configuration %s does not exist'%config_name)
+        if self.outputfilename == '':
+            QMessageBox.warning(self,'No output file','You need to select an output file.')
+        elif ((os.path.splitext(self.outputfilename)[1]!=expected_extension) and
+                  (os.path.splitext(self.outputfilename)[1]!='')):
+            QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
+                                                         ' but you selected "%s"'
+                                                         ''%(expected_extension,
+                                                             os.path.splitext(self.outputfilename)[1]))
 
-    def save_config(self):
-        self.settings[self.config_name] = self.config
-        pickle.dump(self.settings)
 
-    def register(self,name,obj):
-        self.config[name] = obj
+        
 
-    def set_pageobjects(self, page):
-        for name in self.config:
-            if hasattr(page,name):
-                setattr(page,name,self.config[name])
-                # page_attr = getattr(page,name)
 
-    def get_object(self, name):
-        return self.config[name]
+#######################################################
+# Supplementory functions
+def _shorten_path(path):
+    sep = os.path.sep
+    if path.count(sep)>2:
+        id = path.rfind(sep)
+        id = path.rfind(sep,0,id)
+    else:
+        id = 0
+    if path == '':
+        return path
+    else:
+        return "...%s" % (path[id:])
 
-    def is_registered(self,name):
-        return name in self.config
+
+
 
 
 
