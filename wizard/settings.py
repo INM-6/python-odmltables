@@ -12,7 +12,7 @@ class Settings():
             self.settings = pickle.load(filename)
         else:
             self.settings = {}
-        self.config = {}
+        self.config = {'attributes':{},'objects':{}}
         self.config_name = 'new configuration'
 
     def load_config(self,config_name):
@@ -26,8 +26,21 @@ class Settings():
         self.settings[self.config_name] = self.config
         pickle.dump(self.settings)
 
+    def register_object(self,name,obj):
+        if type(obj) in ['str','float','int','long','complex']:
+            raise TypeError('You should only register mutable objects.')
+        else:
+            self.config['objects'][name] = obj
+
     def register(self,name,obj):
-        self.config[name] = obj
+        if hasattr(obj,name):
+            self.config['attributes'][name] = obj
+        else:
+            if type(obj) in ['str','float','int','long','complex']:
+                raise TypeError('You should only register mutable objects.')
+            else:
+                self.config['objects'][name] = obj
+
 
     def set_pageobjects(self, page):
         for name in self.config:
@@ -36,7 +49,14 @@ class Settings():
                 # page_attr = getattr(page,name)
 
     def get_object(self, name):
-        return self.config[name]
+        if name in self.config['attributes']:
+            return getattr(self.config['attributes'][name],name)
+        elif name in self.config['objects']:
+            return self.config['objects'][name]
+        else:
+            raise ValueError('"%s" is not registered'%name)
+
 
     def is_registered(self,name):
-        return name in self.config
+        return ((name in self.config['attributes'])
+                and (name in self.config['objects']))

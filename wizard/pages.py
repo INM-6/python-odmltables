@@ -73,7 +73,8 @@ from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
                          QToolButton,QColor,QItemEditorCreatorBase)
 from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
 
-import odmltables.odml_table
+from  odmltables import odml_table, odml_xls_table, odml_csv_table
+
 
 
 class QIWizardPage(QWizardPage):
@@ -147,7 +148,7 @@ class LoadFilePage(QIWizardPage):
     def handlebuttonbrowse(self):
         self.inputfilename = str(QFileDialog().getOpenFileName())
 
-        self.settings.register('inputfilename', self.inputfilename)
+        self.settings.register('inputfilename', self)
         # self.registerField('Linputfile',self.inputpath)
         # filename = QFileDialog.getOpenFileName()
         short_filename = _shorten_path(self.inputfilename)
@@ -223,14 +224,14 @@ class CustomInputHeaderPage(QIWizardPage):
         # get header names from input file
         load_from = str(self.settings.get_object('inputfilename'))
         if load_from.endswith('.xls'):
-            inputxlsheaders = odmltables.odml_table.OdmlTable.get_xls_header(load_from)
+            inputxlsheaders = odml_table.OdmlTable.get_xls_header(load_from)
         elif load_from.endswith('.csv'):
-            inputxlsheaders = odmltables.odml_table.OdmlTable.get_csv_header(load_from)
+            inputxlsheaders = odml_table.OdmlTable.get_csv_header(load_from)
         else:
             raise TypeError('Header can be only read for xls or csv files.')
 
 
-        odtables = odmltables.odml_table.OdmlTable()
+        odtables = odml_table.OdmlTable()
         header_names = odtables._header_titles.values()
 
         # self.n_headers = QLineEdit(str(len(customheaders)))
@@ -292,7 +293,7 @@ class HeaderOrderPage(QIWizardPage):
         vbox.addSpacing(20)
 
 
-        odtables = odmltables.odml_table.OdmlTable()
+        odtables = odml_table.OdmlTable()
         header_names = odtables._header_titles.values()
 
         # generating selection lists
@@ -870,7 +871,7 @@ class SaveFilePage(QIWizardPage):
         self.outputfilename = str(QFileDialog.getSaveFileName(self, self.tr("Save File"),
                             os.path.dirname(self.settings.get_object('inputfilename')),""))
 
-        self.settings.register('outputfilename', self.outputfilename)
+        self.settings.register('outputfilename', self)
         short_filename = _shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
@@ -892,9 +893,52 @@ class SaveFilePage(QIWizardPage):
                                                          ' but you selected "%s"'
                                                          ''%(expected_extension,
                                                              os.path.splitext(self.outputfilename)[1]))
+        # extending filename if no extension is present
+        if os.path.splitext(self.outputfilename)[1]=='':
+            self.outputfilename += expected_extension
+
+        convert(self.settings)
 
 
-        
+def convert(settings):
+
+    # generate odmltables object
+    table = None
+    if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
+        table = odml_xls_table.OdmlXlsTable()
+    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.csv':
+        table = odml_csv_table.OdmlCsvTable()
+    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
+        table = odml_table.OdmlTable()
+    else:
+        raise ValueError('Unknown output file extension "%s"'
+                         ''%os.path.splitext(settings.get_object('outputfilename'))[1])
+
+    # setting xls_table or csv_table headers if necessary
+    if ((os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
+            (settings.get_object('CBcustominput').isChecked())):
+        headerlabels = [l.text() for l in settings.get_object('headerlabels')]
+        customheaders = [cb.getCurrentItem().text() for cb in settings.get_object('customheaders')]
+
+        table.change_header_titles(**zip(customheaders,headerlabels))
+
+    # loading input file
+    if os.path.splitext(settings.get_object('inputfilename'))[1] == '.xls':
+        table.load_from_xls_table(settings.get_object('inputfilename'))
+    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.csv':
+        table.load_from_csv_table(settings.get_object('inputfilename'))
+    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.odml':
+        table.load_from_file(settings.get_object('inputfilename'))
+    else:
+        raise ValueError('Unknown input file extension "%s"'
+                         ''%os.path.splitext(settings.get_object('inputfilename'))[1])
+
+    settings.get_object('')
+
+    odml_table
+
+
+
 
 
 #######################################################
