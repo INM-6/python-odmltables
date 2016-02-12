@@ -294,6 +294,13 @@ class CustomInputHeaderPage(QIWizardPage):
                 return 0
         return 1
 
+    def nextId(self):
+        if self.settings.get_object('RBoutputodml').isChecked():
+            return self.wizard().PageSaveFile
+
+        return self.wizard().PageHeaderOrder
+
+
 class HeaderOrderPage(QIWizardPage):
     def __init__(self,parent=None):
         super(HeaderOrderPage, self).__init__(parent)
