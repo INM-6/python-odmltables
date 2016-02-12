@@ -12,39 +12,31 @@ from PyQt4.QtCore import (pyqtSlot)
 from pages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
                    ColorPatternPage, ChangeStylePage, SaveFilePage)
 from settings import Settings
-class odml2tableWizard(QWizard):
+class odmlconversionWizard(QWizard):
     NUM_PAGES = 7
 
     (PageLoadFile, PageCustomInputHeader,PageHeaderOrder, PageCustomColumNames,
-     PageColorPattern,PageChangeStyleOverview,PageSaveFile) = range(NUM_PAGES)
+     PageColorPattern,PageChangeStyle,PageSaveFile) = range(NUM_PAGES)
 
     settings = {}
 
     settingsfile = 'odmlconverter.conf'
 
     def __init__(self, parent=None):
-        super(odml2tableWizard, self).__init__(parent)
+        super(odmlconversionWizard, self).__init__(parent)
         settings = Settings(self.settingsfile)
 
         self.setPage(self.PageLoadFile, LoadFilePage(settings))
         self.setPage(self.PageCustomInputHeader, CustomInputHeaderPage(settings))
         self.setPage(self.PageHeaderOrder, HeaderOrderPage(settings))
         self.setPage(self.PageCustomColumNames, CustomColumnNamesPage(settings))
-        # self.setPage(self.PageColumnMarking, ColumnMarkingPage(settings))
         self.setPage(self.PageColorPattern, ColorPatternPage(settings))
-        self.setPage(self.PageChangeStyleOverview, ChangeStylePage(settings))
+        self.setPage(self.PageChangeStyle, ChangeStylePage(settings))
         self.setPage(self.PageSaveFile, SaveFilePage(settings))
 
-        # # initialize settings
-        # for pageid in self.pageIds():
-        #     page = self.page(pageid)
-        #     self.settings[page.__class__.split('.')[-1]] = {}
-        #
-        # # Saving settings
-        # self.settings = dict(zip(range(self.NUM_PAGES),[{}]*self.NUM_PAGES))
-
-        # self.setStartId(self.PageLoadFile)
-        self.setStartId(self.PageChangeStyleOverview)
+        # setting starting page of wizard
+        self.setStartId(self.PageLoadFile)
+        # self.setStartId(self.PageChangeStyle)
 
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
@@ -75,23 +67,21 @@ class odml2tableWizard(QWizard):
                                              " 'Value' and 'odML Data Type' to be"
                                              " able to convert the table back into "
                                              " an odml file.")
-        # msgs[self.PageIntro] = self.tr(
-        #     "The decision you make here will affect which page you "
-        #     "get to see next.")
-        # msgs[self.PageEvaluate] = self.tr(
-        #     "Make sure to provide a valid email address, such as "
-        #     "toni.buddenbrook@example.de.")
-        # msgs[self.PageRegister] = self.tr(
-        #     "If you don't provide an upgrade key, you will be "
-        #     "asked to fill in your details.")
-        # msgs[self.PageDetails] = self.tr(
-        #     "Make sure to provide a valid email address, such as "
-        #     "thomas.gradgrind@example.co.uk.")
-        # msgs[self.PageConclusion] = self.tr(
-        #     "You must accept the terms and conditions of the "
-        #     "license to proceed.")
-        msgs[self.NUM_PAGES + 1] = self.tr("Sorry, I already gave what help I could. "
-                          "\nMaybe you should try asking a human?")
+        msgs[self.PageCustomColumNames] = self.tr("Select the colums you want to "
+                                                  "have in the final table and move them to "
+                                                  "the right list using the central "
+                                                  "buttons. You can adjust the order "
+                                                  "of the columns using the buttons "
+                                                  "to the right.")
+        msgs[self.PageColorPattern] = self.tr("Select a pattern used for better "
+                                              "visualization of you table.")
+        msgs[self.PageChangeStyle] = self.tr("Select change the style of the "
+                                             "different cell schemes by clicking "
+                                             "on a cell and changing its properties "
+                                             "using the settings at the right.")
+        msgs[self.PageSaveFile] = self.tr("Select a location to save you file by "
+                                          "clicking on the browse button.")
+        msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no help available.")
         return msgs
 
     @pyqtSlot()
@@ -108,26 +98,12 @@ class odml2tableWizard(QWizard):
                                 msg)
         self._lastHelpMsg = msg
 
-    def convert(self): #TODO: Actual odml<=> tables conversion depending on user settings
-        params = get_wizard_parameters(self)
-        convertodml2table(**params)
-
-
-def get_wizard_parameters(wiz):
-    raise NotImplementedError()
-    return params
-
-def convertodml2table(input_file,output_file,**kwargs):
-    raise NotImplementedError()
-
-
-
 # main ========================================================================
 def main():
     import sys
 
     app = QApplication(sys.argv)
-    wiz = odml2tableWizard()
+    wiz = odmlconversionWizard()
     wiz.show()
 
 

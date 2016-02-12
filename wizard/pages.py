@@ -62,18 +62,19 @@ SavePage           - Class generating a dialog page, where the user defines the
 """
 
 import os
-import pickle
+import re
 import copy
 import xlwt
-from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
-                         QRadioButton, QVBoxLayout, QHBoxLayout, QLineEdit, QGridLayout,
-                         QRegExpValidator, QCheckBox, QPrinter, QPrintDialog,
-                         QMessageBox,QWidget,QPushButton, QFileDialog, QComboBox,QListWidget,
-                         QListWidgetItem, QTableView,QFont,QPalette,QFrame,QSizePolicy,
-                         QToolButton,QColor,QItemEditorCreatorBase)
+# from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
+#                          QRadioButton, QVBoxLayout, QHBoxLayout, QLineEdit, QGridLayout,
+#                          QRegExpValidator, QCheckBox, QPrinter, QPrintDialog,
+#                          QMessageBox,QWidget,QPushButton, QFileDialog, QComboBox,QListWidget,
+#                          QListWidgetItem, QTableView,QFont,QPalette,QFrame,QSizePolicy,
+#                          QToolButton,QColor,QItemEditorCreatorBase,QSpacerItem)
+from PyQt4.QtGui import *
 from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
 
-from  odmltables import odml_table, odml_xls_table, odml_csv_table
+from  odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 
 
 
@@ -271,18 +272,26 @@ class CustomInputHeaderPage(QIWizardPage):
 
     def validatePage(self):
         header_names = []
+
+        # check for duplicate headers
         for h in self.customheaders:
-
             header_name = h.currentText()
-
             if header_name in header_names:
                 QMessageBox.warning(self, self.tr("Non-unique headers"), self.tr("Header assignment has"
                                                   " to be unique. '%s' has been"
                                                   " assigned multiple times"%header_name))
                 return 0
-
             header_names.append(header_name)
 
+        # check for mandatory headers
+        mandatory_headers = ['Path to Section', 'Property Name', 'Value', 'odML Data Type']
+        for mand_head in mandatory_headers:
+            if mand_head not in header_names:
+                QMessageBox.warning(self, self.tr("Incomplete headers"), self.tr("You need to have the mandatory"
+                                                                                 " headers %s in you table to be"
+                                                                                 " able to reconstruct an odml"
+                                                                                 ""%mandatory_headers))
+                return 0
         return 1
 
 class HeaderOrderPage(QIWizardPage):
@@ -660,17 +669,20 @@ class ChangeStylePage(QIWizardPage):
         hbox = QHBoxLayout()
         hbox.setAlignment(Qt.AlignCenter)
 
-        self.tablebuttons = [None]*5
 
-        texts = ['Header','Standard\nRow 1', 'Standard\nRow 2','Marked \nRow 1','Marked \nRow 2']
+
+        texts = ['Header','Standard\nRow 1', 'Standard\nRow 2','Marked \nRow 1','Marked \nRow 2','Default Value']
         default_styles = ['color: rgb(255,255,255); background-color: rgb(51,51,51); font:bold',
                           'color: rgb(255,255,255); background-color: rgb(0,128,0)',
                           'color: rgb(255,255,255); background-color: rgb(0,0,128)',
                           'color: rgb(0,0,0); background-color: rgb(153,204,0)',
-                          'color: rgb(0,0,0); background-color: rgb(51,102,255)']
-        common_default = "; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; border-color: red" #background-color: rgb(0, 255, 255);
+                          'color: rgb(0,0,0); background-color: rgb(51,102,255)',
+                          'color: rgb(0,0,0); background-color: rgb(255,0,0)']
+        common_default = "; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; border-color: rgb(255,0,0)" #background-color: rgb(0, 255, 255);
         # ''padding: 6px'
-        positions = [(0,0,1,2),(1,0),(2,0),(1,1),(2,1)]
+        positions = [(0,0,1,2),(1,0),(2,0),(1,1),(2,1),(3,0,1,2)]
+
+        self.tablebuttons = [None]*len(texts)
 
         gridtable = QGridLayout()
         for i in range(len(self.tablebuttons)):
@@ -682,14 +694,24 @@ class ChangeStylePage(QIWizardPage):
             self.tablebuttons[i].clicked.connect(self.updatesettings)
             gridtable.addWidget(self.tablebuttons[i],*positions[i])
             # self.tablebuttons[i].setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Maximum)
+            self.settings.register(texts[i],self.tablebuttons[i])
 
-        self.settings.register('GLtablegrid',gridtable)
+        self.cbhighlightdefaults = QCheckBox('Highlight default values')
+        self.cbhighlightdefaults.setChecked(True)
+        self.cbhighlightdefaults.toggled.connect(self.updatedefaultbutton)
+        self.settings.register('CBhighlightdefaults',self.cbhighlightdefaults)
+
+        # add spacer for invisible 'default value' button
+        self.spacer = QSpacerItem(10,0)
 
         gridtable.setSpacing(0)
 
         vstretcher = QVBoxLayout()
         vstretcher.addStretch(1)
         vstretcher.addLayout(gridtable)
+        vstretcher.addSpacerItem(self.spacer)
+        vstretcher.addSpacing(10)
+        vstretcher.addWidget(self.cbhighlightdefaults)
         vstretcher.addStretch(1)
 
         hbox.addLayout(vstretcher)
@@ -704,9 +726,11 @@ class ChangeStylePage(QIWizardPage):
 
         self.cbbgcolor = ColorListWidget()
         self.cbbgcolor.currentIndexChanged.connect(self.updatetable)
+        self.settings.register('CBbgcolor',self.cbbgcolor)
 
         self.cbfontcolor = ColorListWidget()
         self.cbfontcolor.currentIndexChanged.connect(self.updatetable)
+        self.settings.register('CBfontcolor',self.cbfontcolor)
 
         self.cbboldfont = QCheckBox('bold')
         self.cbboldfont.setStyleSheet('font:bold')
@@ -717,7 +741,7 @@ class ChangeStylePage(QIWizardPage):
 
         gridsettings = QGridLayout()
         self.settingstitle = QLabel()
-        self.settingstitle.setText(self.tablebuttons[0].text())
+        self.settingstitle.setText('-')
         self.settingstitle.setStyleSheet('font:bold 16px')
         gridsettings.addWidget(self.settingstitle,0,0,1,1)
         gridsettings.addWidget(QLabel('Backgroundcolor'),1,0)
@@ -750,23 +774,21 @@ class ChangeStylePage(QIWizardPage):
         # update header of selection part (right part)
         self.settingstitle.setText(sender.text().replace('\n',' '))
         # update backgroundcolor
-        colorstring = self.get_property(sender.styleSheet(),'background-color').strip(' ').strip('rgb(').rstrip(')')
-        color = tuple([int(c) for c in colorstring.split(',')])
+        color = get_rgb(get_property(sender.styleSheet(),'background-color'))
         index = self.cbbgcolor.xlwt_rgbcolors.index(color)#self.cbbgcolor.findText(color, Qt.MatchFixedString)
         if index >= 0:
             self.cbbgcolor.setCurrentIndex(index)
         else:
             pass
         # update fontcolor
-        colorstring = self.get_property(sender.styleSheet(),'color').strip(' ').strip('rgb(').rstrip(')')
-        color = tuple([int(c) for c in colorstring.split(',')])
-        index = self.cbbgcolor.xlwt_rgbcolors.index(color)#self.cbfontcolor.findText(color, Qt.MatchFixedString)
+        color = get_rgb(get_property(sender.styleSheet(),'color'))
+        index = self.cbfontcolor.xlwt_rgbcolors.index(color)#self.cbfontcolor.findText(color, Qt.MatchFixedString)
         if index >= 0:
             self.cbfontcolor.setCurrentIndex(index)
         else:
             pass
         #update font style
-        font_style = self.get_property(sender.styleSheet(),'font')
+        font_style = get_property(sender.styleSheet(),'font')
         if font_style == None: font_style = ''
         self.cbboldfont.setChecked('bold' in font_style)
         self.cbitalicfont.setChecked('italic' in font_style)
@@ -774,6 +796,7 @@ class ChangeStylePage(QIWizardPage):
 
     def updatetable(self):
         sender = self.sender()
+        # updates from comboboxes
         if sender in [self.cbbgcolor,self.cbfontcolor]:
             if sender == self.cbbgcolor:
                 to_update = 'background-color'
@@ -781,28 +804,21 @@ class ChangeStylePage(QIWizardPage):
             elif sender == self.cbfontcolor:
                 to_update = 'color'
                 new_style_value = 'rgb%s;'%(str(self.cbfontcolor.get_current_rgb()))
-            print self.removestyle(self.currentbutton.styleSheet(),to_update) + '; %s:%s'%(to_update,new_style_value)
             self.currentbutton.setStyleSheet(self.removestyle(self.currentbutton.styleSheet(),to_update) + '; %s:%s'%(to_update,new_style_value))
 
+        # updates from checkboxes
         elif sender in [self.cbboldfont,self.cbitalicfont]:
             new_style = self.currentbutton.styleSheet()
-            to_update = 'font'
-            new_style_value = self.get_property(self.currentbutton.styleSheet(),to_update)
-
             if sender == self.cbboldfont:
                 new_value = 'bold'
             elif sender == self.cbitalicfont:
                 new_value = 'italic'
-
-
             new_style.replace(new_value,'')
             if sender.isChecked():
                 if 'font:' in new_style:
                     new_style.replace('font:','font: %s'%new_value)
                 else:
                     new_style += '; font: %s'%new_value
-
-            print new_style
 
             self.currentbutton.setStyleSheet(new_style)
 
@@ -817,11 +833,15 @@ class ChangeStylePage(QIWizardPage):
                 s += 1
         return '; '.join(styles)
 
-    def get_property(self,style,property):
-        styles = [str(s) for s in style.split(';')]
-        for s in styles:
-            if s.strip(' ').startswith(property+':'):
-                return s.replace(property+':','')
+
+    def updatedefaultbutton(self):
+        self.tablebuttons[5].setVisible(self.cbhighlightdefaults.isChecked())
+        if self.cbhighlightdefaults.isChecked():
+            height = 0
+        else:
+            height = self.tablebuttons[5].height()
+        self.spacer.changeSize(self.tablebuttons[5].width(),height,QSizePolicy.Fixed,QSizePolicy.Fixed)
+        self.layout().invalidate()
 
 
 
@@ -849,8 +869,10 @@ class ColorListWidget(QComboBox):
         self.xlwt_colornames = []
         self.xlwt_color_index = []
         self.xlwt_rgbcolors = []
+        # self._xlwt_colorlabels = []
         for i in range(64):
             cnames = [name for name, index in cmap.items() if index == i]
+            # self._xlwt_colorlabels.append(cnames[0] if len(cnames)>0 else '')
             if cnames != []:
                 self.xlwt_colornames.append(', '.join(cnames))
                 self.xlwt_color_index.append(i)
@@ -920,17 +942,22 @@ class SaveFilePage(QIWizardPage):
 
         if self.outputfilename == '':
             QMessageBox.warning(self,'No output file','You need to select an output file.')
+            return 0
         elif ((os.path.splitext(self.outputfilename)[1]!=expected_extension) and
                   (os.path.splitext(self.outputfilename)[1]!='')):
             QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
                                                          ' but you selected "%s"'
                                                          ''%(expected_extension,
                                                              os.path.splitext(self.outputfilename)[1]))
+            return 0
         # extending filename if no extension is present
         if os.path.splitext(self.outputfilename)[1]=='':
             self.outputfilename += expected_extension
 
         convert(self.settings)
+
+        print 'Complete!'
+        return 1
 
 
 def convert(settings):
@@ -971,8 +998,8 @@ def convert(settings):
     # setting custom header selection and custom header titles if necessary
     if (os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']):
         # setting custom header columns
-        output_headers = [title_translator[str(li.gettext())]
-                          for li in settings.get_object('LWselectedcolumns')]
+        output_headers = [title_translator[str(settings.get_object('LWselectedcolumns').item(index).text())]
+                          for index in range(settings.get_object('LWselectedcolumns').count())]
         table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
 
         # setting custom header labels
@@ -980,11 +1007,70 @@ def convert(settings):
             customoutputlabels = [le.text() for le in settings.get_object('customheaderlabels')]
             table.change_header_titles(**dict(zip(output_headers,customoutputlabels)))
 
-        # marking columns
-        if os.path.splitext(settings.get_object('inputfilename'))[1] == '.xls':
+        # adding extra layout specifications to xls output files
+        if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
+            # marking columns
             marked_columns = [cb.isChecked() for cb in settings.get_object('columnmarkings')]
             if any(marked_columns):
                 table.mark_columns(*[h for i,h in enumerate(output_headers) if marked_columns[i]])
+
+            # setting color pattern and changing point
+            if settings.get_object('RBalternating').isChecked():
+                table.pattern = 'alternating'
+            elif settings.get_object('RBchessfield').isChecked():
+                table.pattern = 'chessfield'
+
+            if settings.get_object('RBnopattern').isChecked():
+                table.changing_point = None
+            elif settings.get_object('RBsection').isChecked():
+                table.changing_point = "sections"
+            elif settings.get_object('RBproperty').isChecked():
+                table.changing_point = "properties"
+            elif settings.get_object('RBvalue').isChecked():
+                table.changing_point = "values"
+
+            style_names = ['header_style','first_style','second_style','first_marked_style','second_marked_style','highlight_style']
+            style_labels = ['Header','Standard\nRow 1', 'Standard\nRow 2','Marked \nRow 1','Marked \nRow 2','Default Value']
+            style_buttons = [settings.get_object(style_label) for style_label in style_labels]
+
+            for i,style_name in enumerate(style_names):
+                style_button = style_buttons[i]
+
+                # get background color
+                rgb_tuple = get_rgb(get_property(style_button.styleSheet(),'background-color'))
+                index = settings.get_object('CBbgcolor').xlwt_rgbcolors.index(rgb_tuple)
+                bgcolor = settings.get_object('CBbgcolor').xlwt_colornames[index].split(',')[0]
+
+                # get font color
+                rgb_tuple = get_rgb(get_property(style_button.styleSheet(),'color'))
+                index = settings.get_object('CBfontcolor').xlwt_rgbcolors.index(rgb_tuple)
+                fontcolor = settings.get_object('CBfontcolor').xlwt_colornames[index].split(',')[0]
+
+                # get font properties
+                font_properties = ''
+                font_string = get_property(style_button.styleSheet(),'font')
+                if 'bold' in font_string:
+                    font_properties += 'bold 1'
+                if 'italic' in font_string:
+                    font_properties += 'italic 1'
+
+                # construct style
+                style = xls_style.XlsStyle(backcolor=bgcolor,
+                                             fontcolor=fontcolor,
+                                             fontstyle=font_properties)
+                setattr(table,style_name,style)
+
+
+            # setting highlight defaults
+            table.highlight_defaults = settings.get_object('CBhighlightdefaults').isChecked()
+
+    # saving file
+    if os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls','.csv']:
+        table.write2file(settings.get_object('outputfilename'))
+    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
+        table.write2odml(settings.get_object('outputfilename'))
+
+
 
 
 
@@ -1009,234 +1095,20 @@ def _shorten_path(path):
         return "...%s" % (path[id:])
 
 
+def get_property(style,property):
+    styles = [str(s) for s in style.split(';')]
+    for s in styles:
+        if s.strip(' ').startswith(property+':'):
+            return s.replace(property+':','')
+
+    return ''
 
 
-
-
-
-
-
-
-
-#
-#
-# class IntroPage(QWizardPage):
-#     def __init__(self, parent=None):
-#         super(IntroPage, self).__init__(parent)
-#
-#         self.setTitle(self.tr("Introduction"))
-#         self.setPixmap(QWizard.WatermarkPixmap, QPixmap(":/images/watermark.png"))
-#         topLabel = QLabel(self.tr("This Wizard will help you register your copy of "
-#                                   "<i>Super Product One</i> or start "
-#                                   "evaluating the product."))
-#         topLabel.setWordWrap(True)
-#
-#         regRBtn = QRadioButton(self.tr("&Register your copy"))
-#         self.evalRBtn = QRadioButton(self.tr("&Evaluate the product for 30 days"))
-#         regRBtn.setChecked(True)
-#
-#         layout = QVBoxLayout()
-#         layout.addWidget(topLabel)
-#         layout.addWidget(regRBtn)
-#         layout.addWidget(self.evalRBtn)
-#         self.setLayout(layout)
-#
-#         self.registerField('regRBtn',regRBtn)
-#
-#
-#     # def nextId(self):
-#     #     # if self.evalRBtn.isChecked():
-#     #     #     print 'Current ID %s'%(self.currentId())
-#     #     return self.currentId() + 1
-#     #     # else:
-#     #     #     return 2
-#
-#
-#
-# class EvaluatePage(QWizardPage):
-#     def __init__(self, parent=None):
-#         super(EvaluatePage, self).__init__(parent)
-#
-#         self.setTitle(self.tr("Evaluate <i>Super Product One</i>"))
-#         self.setSubTitle(self.tr("Please fill both fields. \nMake sure to provide "
-#                                  "a valid email address (e.g. john.smith@example.com)"))
-#         nameLabel = QLabel("Name: ")
-#         nameEdit = QLineEdit()
-#         nameLabel.setBuddy(nameEdit)
-#
-#         emailLabel = QLabel(self.tr("&Email address: "))
-#         emailEdit = QLineEdit()
-#         emailEdit.setValidator(QRegExpValidator(
-#                 QRegExp(".*@.*"), self))
-#         emailLabel.setBuddy(emailEdit)
-#
-#         self.registerField("evaluate.name*", nameEdit)
-#         self.registerField("evaluate.email*", emailEdit)
-#
-#         grid = QGridLayout()
-#         grid.addWidget(nameLabel, 0, 0)
-#         grid.addWidget(nameEdit, 0, 1)
-#         grid.addWidget(emailLabel, 1, 0)
-#         grid.addWidget(emailEdit, 1, 1)
-#         self.setLayout(grid)
-#
-#     # def nextId(self):
-#     #     return odml2tableWizard.PageConclusion
-#
-#     def validatePage(self):
-#         print 'validation'
-#         pass
-#
-# class RegisterPage(QWizardPage):
-#     def __init__(self, parent=None):
-#         super(RegisterPage, self).__init__(parent)
-#
-#         self.setTitle(self.tr("Register Your Copy of <i>Super Product One</i>"))
-#         self.setSubTitle(self.tr("If you have an upgrade key, please fill in "
-#                                  "the appropriate field."))
-#         nameLabel = QLabel(self.tr("N&ame"))
-#         nameEdit = QLineEdit()
-#         nameLabel.setBuddy(nameEdit)
-#
-#         upgradeKeyLabel = QLabel(self.tr("&Upgrade key"))
-#         self.upgradeKeyEdit = QLineEdit()
-#         upgradeKeyLabel.setBuddy(self.upgradeKeyEdit)
-#
-#         self.registerField("register.name*", nameEdit)
-#         self.registerField("register.upgradeKey", self.upgradeKeyEdit)
-#
-#         grid = QGridLayout()
-#         grid.addWidget(nameLabel, 0, 0)
-#         grid.addWidget(nameEdit, 0, 1)
-#         grid.addWidget(upgradeKeyLabel, 1, 0)
-#         grid.addWidget(self.upgradeKeyEdit, 1, 1)
-#
-#         self.setLayout(grid)
-#
-#     # def nextId(self):
-#     #     if len(self.upgradeKeyEdit.text()) > 0 :
-#     #         return odml2tableWizard.PageConclusion
-#     #     else:
-#     #         return odml2tableWizard.PageDetails
-#
-#
-# class DetailsPage(QWizardPage):
-#     def __init__(self, parent=None):
-#         super(DetailsPage, self).__init__(parent)
-#
-#         self.setTitle(self.tr("Fill in Your Details"))
-#         self.setSubTitle(self.tr("Please fill all three fields. /n"
-#                                  "Make sure to provide a valid "
-#                                  "email address (e.g., tanaka.aya@example.com)."))
-#         coLabel = QLabel(self.tr("&Company name: "))
-#         coEdit = QLineEdit()
-#         coLabel.setBuddy(coEdit)
-#
-#         emailLabel = QLabel(self.tr("&Email address: "))
-#         emailEdit = QLineEdit()
-#         emailEdit.setValidator(QRegExpValidator(QRegExp(".*@.*"), self))
-#         emailLabel.setBuddy(emailEdit)
-#
-#         postLabel = QLabel(self.tr("&Postal address: "))
-#         postEdit = QLineEdit()
-#         postLabel.setBuddy(postEdit)
-#
-#         self.registerField("details.company*", coEdit)
-#         self.registerField("details.email*", emailEdit)
-#         self.registerField("details.postal*", postEdit)
-#
-#         grid = QGridLayout()
-#         grid.addWidget(coLabel, 0, 0)
-#         grid.addWidget(coEdit, 0, 1)
-#         grid.addWidget(emailLabel, 1, 0)
-#         grid.addWidget(emailEdit, 1, 1)
-#         grid.addWidget(postLabel, 2, 0)
-#         grid.addWidget(postEdit, 2, 1)
-#         self.setLayout(grid)
-#
-#     # def nextId(self):
-#     #     return odml2tableWizard.PageConclusion
-#
-# class ConclusionPage(QWizardPage):
-#     def __init__(self, parent=None):
-#         super(ConclusionPage, self).__init__(parent)
-#
-#         self.setTitle(self.tr("Complete Your Registration"))
-#         self.setPixmap(QWizard.WatermarkPixmap, QPixmap(":/images/watermark.png"))
-#
-#         self.bottomLabel = QLabel()
-#         self.bottomLabel.setWordWrap(True)
-#
-#         agreeBox = QCheckBox(self.tr("I agree to the terms of the license."))
-#
-#         self.registerField("conclusion.agree*", agreeBox)
-#
-#         vbox = QVBoxLayout()
-#         vbox.addWidget(self.bottomLabel)
-#         vbox.addWidget(agreeBox)
-#         self.setLayout(vbox)
-#
-#     # def nextId(self):
-#     #     return -1
-#
-#     def initializePage(self):
-#         licenseText = ''
-#
-#         # if self.wizard().hasVisitedPage(odml2tableWizard.PageEvaluate):
-#         #     licenseText = self.tr("<u>Evaluation License Agreement:</u> "
-#         #                   "You can use this software for 30 days and make one "
-#         #                   "backup, but you are not allowed to distribute it.")
-#         # elif self.wizard().hasVisitedPage(odml2tableWizard.PageDetails):
-#         #     licenseText = self.tr("<u>First-Time License Agreement:</u> "
-#         #                   "You can use this software subject to the license "
-#         #                   "you will receive by email.")
-#         # else:
-#         #     licenseText = self.tr("<u>Upgrade License Agreement:</u> "
-#         #                   "This software is licensed under the terms of your "
-#         #                   "current license.")
-#
-#         licenseText = 'Put License Text here.'
-#
-#         self.bottomLabel.setText(licenseText)
-#
-#     def setVisible(self, visible):
-#         # only show the 'Print' button on the last page
-#         QWizardPage.setVisible(self, visible)
-#
-#         if visible:
-#             self.wizard().setButtonText(QWizard.CustomButton1, self.tr("&Print"))
-#             self.wizard().setOption(QWizard.HaveCustomButton1, True)
-#             self.wizard().customButtonClicked.connect(self._printButtonClicked)
-#             self._configWizBtns(True)
-#         else:
-#             # only disconnect if button has been assigned and connected
-#             btn = self.wizard().button(QWizard.CustomButton1)
-#             if len(btn.text()) > 0:
-#                 self.wizard().customButtonClicked.disconnect(self._printButtonClicked)
-#
-#             self.wizard().setOption(QWizard.HaveCustomButton1, False)
-#             self._configWizBtns(False)
-#
-#     def _configWizBtns(self, state):
-#         # position the Print button (CustomButton1) before the Finish button
-#         if state:
-#             btnList = [QWizard.Stretch, QWizard.BackButton, QWizard.NextButton,
-#                        QWizard.CustomButton1, QWizard.FinishButton,
-#                        QWizard.CancelButton, QWizard.HelpButton]
-#             self.wizard().setButtonLayout(btnList)
-#         else:
-#             # remove it if it's not visible
-#             btnList = [QWizard.Stretch, QWizard.BackButton, QWizard.NextButton,
-#                        QWizard.FinishButton,
-#                        QWizard.CancelButton, QWizard.HelpButton]
-#             self.wizard().setButtonLayout(btnList)
-#
-#     @pyqtSlot()
-#     def _printButtonClicked(self):
-#         printer = QPrinter()
-#         dialog = QPrintDialog(printer, self)
-#         if dialog.exec_():
-#             QMessageBox.warning(self,
-#                                 self.tr("Print License"),
-#                                 self.tr("As an environment friendly measure, the "
-#                                         "license text will not actually be printed."))
+def get_rgb(style_string):
+    rgbregex = re.compile(" *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{1,3})\) *")
+    match = rgbregex.match(style_string)
+    if match:
+        groups = match.groupdict()
+        return tuple([int(groups['r']),int(groups['g']),int(groups['b'])])
+    else:
+        raise ValueError('No rgb identification possible from "%s"'%style_string)
