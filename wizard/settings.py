@@ -56,7 +56,6 @@ class Settings():
         else:
             raise ValueError('"%s" is not registered'%name)
 
-
     def is_registered(self,name):
         return ((name in self.config['attributes'])
                 and (name in self.config['objects']))

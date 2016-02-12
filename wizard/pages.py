@@ -184,19 +184,27 @@ class LoadFilePage(QIWizardPage):
 
 
     def nextId(self):
-        if self.inputfilename[-5:] != '.odml':
-            if self.settings.get_object('CBcustominput').isChecked():
-                return self.wizard().PageCustomInputHeader
-            else:
-                return self.wizard().PageHeaderOrder
+        if ((self.inputfilename[-5:] != '.odml') and
+                (self.settings.get_object('CBcustominput').isChecked())):
+            return self.wizard().PageCustomInputHeader
+
+        elif not self.settings.get_object('RBoutputodml').isChecked():
+            return self.wizard().PageHeaderOrder
         else:
-            if (self.settings.get_object('RBoutputxls').isChecked() or
-                self.settings.get_object('RBoutputcsv').isChecked()):
-
-                return self.wizard().PageHeaderOrder
-
-            else:
-                return self.wizard().PageSaveFile
+            return self.wizard().PageSaveFile
+        # if self.inputfilename[-5:] != '.odml':
+        #     if self.settings.get_object('CBcustominput').isChecked():
+        #         return self.wizard().PageCustomInputHeader
+        #     else:
+        #         return self.wizard().PageHeaderOrder
+        # else:
+        #     if (self.settings.get_object('RBoutputxls').isChecked() or
+        #         self.settings.get_object('RBoutputcsv').isChecked()):
+        #
+        #         return self.wizard().PageHeaderOrder
+        #
+        #     else:
+        #         return self.wizard().PageSaveFile
 
 
 
@@ -431,7 +439,7 @@ class HeaderOrderPage(QIWizardPage):
             QMessageBox.warning(self, self.tr("Incomplete odml"),
                             self.tr("You need to include the headers %s "
                                     " in your table if you want to be able to"
-                                    " generate an odml from the table."))
+                                    " generate an odml from the table."%(missing_headers)))
 
         return 1
 
@@ -655,11 +663,11 @@ class ChangeStylePage(QIWizardPage):
         self.tablebuttons = [None]*5
 
         texts = ['Header','Standard\nRow 1', 'Standard\nRow 2','Marked \nRow 1','Marked \nRow 2']
-        default_styles = ['color: white; background-color: gray; font:bold',
-                          'color: white; background-color: green',
-                          'color: white; background-color: blue',
-                          'color: white; background-color: red',
-                          'color: white; background-color: orange']
+        default_styles = ['color: rgb(255,255,255); background-color: rgb(51,51,51); font:bold',
+                          'color: rgb(255,255,255); background-color: rgb(0,128,0)',
+                          'color: rgb(255,255,255); background-color: rgb(0,0,128)',
+                          'color: rgb(0,0,0); background-color: rgb(153,204,0)',
+                          'color: rgb(0,0,0); background-color: rgb(51,102,255)']
         common_default = "; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; border-color: red" #background-color: rgb(0, 255, 255);
         # ''padding: 6px'
         positions = [(0,0,1,2),(1,0),(2,0),(1,1),(2,1)]
@@ -742,15 +750,21 @@ class ChangeStylePage(QIWizardPage):
         # update header of selection part (right part)
         self.settingstitle.setText(sender.text().replace('\n',' '))
         # update backgroundcolor
-        color = self.get_property(sender.styleSheet(),'background-color').strip().rstrip()
-        index = self.cbbgcolor.findText(color, Qt.MatchFixedString)
+        colorstring = self.get_property(sender.styleSheet(),'background-color').strip(' ').strip('rgb(').rstrip(')')
+        color = tuple([int(c) for c in colorstring.split(',')])
+        index = self.cbbgcolor.xlwt_rgbcolors.index(color)#self.cbbgcolor.findText(color, Qt.MatchFixedString)
         if index >= 0:
             self.cbbgcolor.setCurrentIndex(index)
+        else:
+            pass
         # update fontcolor
-        color = self.get_property(sender.styleSheet(),'color').strip().rstrip()
-        index = self.cbfontcolor.findText(color, Qt.MatchFixedString)
+        colorstring = self.get_property(sender.styleSheet(),'color').strip(' ').strip('rgb(').rstrip(')')
+        color = tuple([int(c) for c in colorstring.split(',')])
+        index = self.cbbgcolor.xlwt_rgbcolors.index(color)#self.cbfontcolor.findText(color, Qt.MatchFixedString)
         if index >= 0:
             self.cbfontcolor.setCurrentIndex(index)
+        else:
+            pass
         #update font style
         font_style = self.get_property(sender.styleSheet(),'font')
         if font_style == None: font_style = ''
@@ -759,20 +773,38 @@ class ChangeStylePage(QIWizardPage):
 
 
     def updatetable(self):
-        # get current settings from settings dialog
-        style = ';'
-        style += 'background-color:rgb%s;'%(str(self.cbbgcolor.get_current_rgb()))
-        style += 'color:rgb%s;'%(str(self.cbfontcolor.get_current_rgb()))
-        if self.cbboldfont.isChecked():
-            style += 'font:bold'
-            if self.cbitalicfont.isChecked():
-                style.rstrip(';')
-                style += ' italic;'
-        elif self.cbitalicfont.isChecked(): style += 'font:italic;'
+        sender = self.sender()
+        if sender in [self.cbbgcolor,self.cbfontcolor]:
+            if sender == self.cbbgcolor:
+                to_update = 'background-color'
+                new_style_value = 'rgb%s;'%(str(self.cbbgcolor.get_current_rgb()))
+            elif sender == self.cbfontcolor:
+                to_update = 'color'
+                new_style_value = 'rgb%s;'%(str(self.cbfontcolor.get_current_rgb()))
+            print self.removestyle(self.currentbutton.styleSheet(),to_update) + '; %s:%s'%(to_update,new_style_value)
+            self.currentbutton.setStyleSheet(self.removestyle(self.currentbutton.styleSheet(),to_update) + '; %s:%s'%(to_update,new_style_value))
 
-        old_style = self.removestyle(self.currentbutton.styleSheet(),'font')
+        elif sender in [self.cbboldfont,self.cbitalicfont]:
+            new_style = self.currentbutton.styleSheet()
+            to_update = 'font'
+            new_style_value = self.get_property(self.currentbutton.styleSheet(),to_update)
 
-        self.currentbutton.setStyleSheet(old_style + style)
+            if sender == self.cbboldfont:
+                new_value = 'bold'
+            elif sender == self.cbitalicfont:
+                new_value = 'italic'
+
+
+            new_style.replace(new_value,'')
+            if sender.isChecked():
+                if 'font:' in new_style:
+                    new_style.replace('font:','font: %s'%new_value)
+                else:
+                    new_style += '; font: %s'%new_value
+
+            print new_style
+
+            self.currentbutton.setStyleSheet(new_style)
 
     def removestyle(self,style,property):
         styles = [str(s) for s in style.split(';')]
@@ -780,6 +812,7 @@ class ChangeStylePage(QIWizardPage):
         while s < len(styles):
             if styles[s].strip(' ').startswith(property+':'):
                 styles.pop(s)
+                styles = [s.strip(' ').rstrip(' ') for s in styles if s.strip(' ')!='']
             else:
                 s += 1
         return '; '.join(styles)
@@ -917,10 +950,11 @@ def convert(settings):
     # setting xls_table or csv_table headers if necessary
     if ((os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
             (settings.get_object('CBcustominput').isChecked())):
-        headerlabels = [l.text() for l in settings.get_object('headerlabels')]
-        customheaders = [cb.getCurrentItem().text() for cb in settings.get_object('customheaders')]
-
-        table.change_header_titles(**zip(customheaders,headerlabels))
+        inputheaderlabels = [str(l.text()) for l in settings.get_object('headerlabels')]
+        inputcustomheaders = [str(cb.currentText()) for cb in settings.get_object('customheaders')]
+        title_translator = {v:k for k,v in table._header_titles.iteritems()}
+        inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
+        table.change_header_titles(**dict(zip(inputcolumnnames,inputheaderlabels)))
 
     # loading input file
     if os.path.splitext(settings.get_object('inputfilename'))[1] == '.xls':
@@ -933,9 +967,28 @@ def convert(settings):
         raise ValueError('Unknown input file extension "%s"'
                          ''%os.path.splitext(settings.get_object('inputfilename'))[1])
 
-    settings.get_object('')
 
-    odml_table
+    # setting custom header selection and custom header titles if necessary
+    if (os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']):
+        # setting custom header columns
+        output_headers = [title_translator[str(li.gettext())]
+                          for li in settings.get_object('LWselectedcolumns')]
+        table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
+
+        # setting custom header labels
+        if settings.get_object('CBcustomheader').isChecked():
+            customoutputlabels = [le.text() for le in settings.get_object('customheaderlabels')]
+            table.change_header_titles(**dict(zip(output_headers,customoutputlabels)))
+
+        # marking columns
+        if os.path.splitext(settings.get_object('inputfilename'))[1] == '.xls':
+            marked_columns = [cb.isChecked() for cb in settings.get_object('columnmarkings')]
+            if any(marked_columns):
+                table.mark_columns(*[h for i,h in enumerate(output_headers) if marked_columns[i]])
+
+
+
+
 
 
 

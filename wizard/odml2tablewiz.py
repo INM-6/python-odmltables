@@ -43,8 +43,8 @@ class odml2tableWizard(QWizard):
         # # Saving settings
         # self.settings = dict(zip(range(self.NUM_PAGES),[{}]*self.NUM_PAGES))
 
-        self.setStartId(self.PageLoadFile)
-        # self.setStartId(self.PageChangeStyleOverview)
+        # self.setStartId(self.PageLoadFile)
+        self.setStartId(self.PageChangeStyleOverview)
 
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
@@ -57,6 +57,8 @@ class odml2tableWizard(QWizard):
         self.helpRequested.connect(self._showHelp)
 
         self.setWindowTitle(self.tr("conversion wizard"))
+
+        self.setButtonText(self.FinishButton,'Generate File')
 
 
     def _createHelpMsgs(self):
