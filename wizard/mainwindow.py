@@ -8,7 +8,7 @@ Created on Tue Jan 26 12:57:46 2016
 import sys
 from PyQt4 import QtGui, QtCore
 #import wizards
-from odmlconverterwiz import Odml2TableWiz
+from odmlconverterwiz import odmlconversionWizard
 from compsectionwiz import CompSectionWiz
 #from table2odmlwiz import Table2OdmlWiz
 
@@ -61,7 +61,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def startWizard(self):
         if self.radio1.isChecked():
-            wizard = Odml2TableWiz()
+            wizard = odmlconversionWizard()
             wizard.exec_()
         elif self.radio2.isChecked():
             wizard = CompSectionWiz()
