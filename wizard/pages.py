@@ -610,18 +610,23 @@ class ColorPatternPage(QIWizardPage):
         vbox.addSpacing(20)
 
         self.rbalternating = QRadioButton('alternating')
-        self.rbchessfield = QRadioButton('chessfield')
+        self.rbcheckerboard = QRadioButton('checkerboard')
         self.rbnopattern = QRadioButton('no pattern')
 
         self.settings.register('RBalternating',self.rbalternating)
-        self.settings.register('RBchessfield',self.rbchessfield)
+        self.settings.register('RBcheckerboard', self.rbcheckerboard)
         self.settings.register('RBnopattern',self.rbnopattern)
+
+        patterngroup=QButtonGroup(vbox)
+        patterngroup.addButton(self.rbalternating)
+        patterngroup.addButton(self.rbcheckerboard)
+        patterngroup.addButton(self.rbnopattern)
 
         self.rbalternating.setChecked(True)
         self.rbnopattern.toggled.connect(self.updatelayout)
 
         vbox.addWidget(self.rbalternating)
-        vbox.addWidget(self.rbchessfield)
+        vbox.addWidget(self.rbcheckerboard)
         vbox.addWidget(self.rbnopattern)
 
         vbox.addSpacing(40)
@@ -646,6 +651,11 @@ class ColorPatternPage(QIWizardPage):
         self.settings.register('RBsection',self.rbsection)
         self.settings.register('RBproperty',self.rbproperty)
         self.settings.register('RBvalue',self.rbvalue)
+
+        changegroup=QButtonGroup(vbox)
+        changegroup.addButton(self.rbsection)
+        changegroup.addButton(self.rbproperty)
+        changegroup.addButton(self.rbvalue)
 
         vbox.addWidget(self.rbsection)
         vbox.addWidget(self.rbproperty)
@@ -833,7 +843,9 @@ class ChangeStylePage(QIWizardPage):
                 if 'font:' in new_style:
                     new_style.replace('font:','font: %s'%new_value)
                 else:
-                    new_style += '; font: %s'%new_value
+                    new_style += '; font:%s'%new_value
+            elif get_property(new_style,'font').strip(' ') == '':
+                new_style.replace('font:','')
 
             self.currentbutton.setStyleSheet(new_style)
 
@@ -975,28 +987,26 @@ class SaveFilePage(QIWizardPage):
         self.settings.register('outputfilename', self)
 
          # extending filename if no extension is present
-        if os.path.splitext(self.outputfilename)[1]=='':
+        if (self.outputfilename != '' and os.path.splitext(self.outputfilename)[1]==''):
             self.outputfilename += self.expected_extension
         short_filename = _shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
-    def validatePage(self):
-        if self.outputfilename == '':
-            QMessageBox.warning(self,'No output file','You need to select an output file.')
-            return 0
-        elif ((os.path.splitext(self.outputfilename)[1]!=self.expected_extension) and
+
+        if ((os.path.splitext(self.outputfilename)[1]!=self.expected_extension) and
                   (os.path.splitext(self.outputfilename)[1]!='')):
             QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
                                                          ' but you selected "%s"'
                                                          ''%(self.expected_extension,
                                                              os.path.splitext(self.outputfilename)[1]))
-            return 0
+            self.handlebuttonbrowse()
 
+        elif self.outputfilename != '':
+            convert(self.settings)
 
-        convert(self.settings)
+            print 'Complete!'
 
-        print 'Complete!'
-        return 1
+            self.buttonshow.setEnabled(True)
 
     def show_file(self):
         os.system('see %s'%self.outputfilename)
@@ -1038,7 +1048,8 @@ def convert(settings):
 
 
     # setting custom header selection and custom header titles if necessary
-    if (os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']):
+    if (os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls','.csv']):
+
         # setting custom header columns
         output_headers = [title_translator[str(settings.get_object('LWselectedcolumns').item(index).text())]
                           for index in range(settings.get_object('LWselectedcolumns').count())]
@@ -1059,8 +1070,8 @@ def convert(settings):
             # setting color pattern and changing point
             if settings.get_object('RBalternating').isChecked():
                 table.pattern = 'alternating'
-            elif settings.get_object('RBchessfield').isChecked():
-                table.pattern = 'chessfield'
+            elif settings.get_object('RBcheckerboard').isChecked():
+                table.pattern = 'checkerboard'
 
             if settings.get_object('RBnopattern').isChecked():
                 table.changing_point = None
