@@ -38,6 +38,8 @@ class odmlconversionWizard(QWizard):
         self.setStartId(self.PageLoadFile)
         # self.setStartId(self.PageChangeStyle)
 
+        self.setOption(self.IndependentPages, False)
+
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
@@ -50,7 +52,7 @@ class odmlconversionWizard(QWizard):
 
         self.setWindowTitle(self.tr("conversion wizard"))
 
-        self.setButtonText(self.FinishButton,'Generate File')
+        # self.setButtonText(self.FinishButton,'Generate File')
 
 
     def _createHelpMsgs(self):

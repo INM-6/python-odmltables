@@ -394,10 +394,10 @@ class HeaderOrderPage(QIWizardPage):
 
         vbox.addSpacing(20)
 
-        self.cbcustomheader = QCheckBox('I want to change the names of my columns.')
-        self.settings.register('CBcustomheader',self.cbcustomheader)
-        # self.registerField('CBcustomheader',self.cbcustomheader)
-        vbox.addWidget(self.cbcustomheader)
+        # self.cbcustomheader = QCheckBox('I want to change the names of my columns.')
+        # self.settings.register('CBcustomheader',self.cbcustomheader)
+        # # self.registerField('CBcustomheader',self.cbcustomheader)
+        # vbox.addWidget(self.cbcustomheader)
 
         self.setLayout(vbox)
 
@@ -427,11 +427,11 @@ class HeaderOrderPage(QIWizardPage):
         self.selection_list.insertItem(currentRow + 1, currentItem)
         self.selection_list.setCurrentRow(currentRow+1)
 
-    def nextId(self):
-        if self.settings.get_object('CBcustomheader').isChecked():
-            return self.wizard().PageCustomColumNames
-        else:
-            return self.wizard().currentId()+1
+    # def nextId(self):
+        # if self.settings.get_object('CBcustomheader').isChecked():
+        #     return self.wizard().PageCustomColumNames
+        # else:
+        #     return self.wizard().currentId()+1
 
     def validatePage(self):
 
@@ -494,6 +494,14 @@ class CustomColumnNamesPage(QIWizardPage):
         enable_marking = False
         if self.settings.get_object('RBoutputxls').isChecked():
             enable_marking = True
+
+        # clear grid
+        while self.grid.count():
+            item = self.grid.takeAt(0)
+            widget = item.widget()
+            widget.deleteLater()
+            # self.grid.removeWidget(widget)
+        self.grid.invalidate()
 
         self.customheaderlabels = []
         self.columnmarkings = False
@@ -907,10 +915,10 @@ class SaveFilePage(QIWizardPage):
         vbox = QVBoxLayout()
 
         # adding pattern selection part
-        topLabel = QLabel(self.tr("Where do you want to save your file?"))
-        topLabel.setWordWrap(True)
-        vbox.addWidget(topLabel)
-        vbox.addSpacing(40)
+        self.topLabel = QLabel(self.tr("Where do you want to save your file?"))
+        self.topLabel.setWordWrap(True)
+        vbox.addWidget(self.topLabel)
+        # vbox.addSpacing(40)
 
         # Add first horizontal box
         self.buttonbrowse = QPushButton("Browse")
@@ -918,53 +926,80 @@ class SaveFilePage(QIWizardPage):
         self.outputfilename = ''
         self.outputfile = QLabel(self.outputfilename)
         self.outputfile.setWordWrap(True)
+        self.buttonshow = QPushButton("Open file")
+        self.buttonshow.setEnabled(False)
+        self.buttonsaveconfig = QPushButton("Save configuration")
+
         hbox = QHBoxLayout()
         hbox.addWidget(self.buttonbrowse)
         hbox.addWidget(self.outputfile)
-
         hbox.addStretch()
 
         vbox.addLayout(hbox)
+        # vbox.addSpacing(10)
+        vbox.addWidget(self.buttonshow)
+        vbox.addStretch()
+
+        # adding separator
+        horizontalLine = QFrame()
+        horizontalLine.setFrameStyle(QFrame.HLine)
+        horizontalLine.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Minimum)
+        vbox.addWidget(horizontalLine)
+        vbox.addWidget(QLabel('You can save the configuration used in this run'))
+        grid = QGridLayout()
+        self.configlist = QListWidget()
+        grid.addWidget(self.configlist,0,0)
+        grid.addWidget(self.buttonsaveconfig)
+        vbox.addLayout(grid)
         self.setLayout(vbox)
 
         self.outputfilename = ''
 
+    def initializePage(self):
+
+        if self.settings.get_object('RBoutputxls').isChecked():
+            self.expected_extension = '.xls'
+        elif self.settings.get_object('RBoutputcsv').isChecked():
+            self.expected_extension = '.csv'
+        elif self.settings.get_object('RBoutputodml').isChecked():
+            self.expected_extension = '.odml'
+        else:
+            raise ValueError('Can not save file without selection of output format.')
+
+        self.topLabel.setText("Where do you want to save your %s file?"%self.expected_extension.strip('.'))
+
     def handlebuttonbrowse(self):
         self.outputfilename = str(QFileDialog.getSaveFileName(self, self.tr("Save File"),
-                            os.path.dirname(self.settings.get_object('inputfilename')),""))
+                            os.path.dirname(self.settings.get_object('inputfilename')),"%s files (*%s);;all files (*)"%(self.expected_extension.strip('.'),self.expected_extension)))
 
         self.settings.register('outputfilename', self)
+
+         # extending filename if no extension is present
+        if os.path.splitext(self.outputfilename)[1]=='':
+            self.outputfilename += self.expected_extension
         short_filename = _shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
     def validatePage(self):
-        if self.settings.get_object('RBoutputxls').isChecked():
-            expected_extension = '.xls'
-        elif self.settings.get_object('RBoutputcsv').isChecked():
-            expected_extension = '.csv'
-        elif self.settings.get_object('RBoutputodml').isChecked():
-            expected_extension = '.odml'
-        else:
-            raise ValueError('Can not save file without selection of output format.')
-
         if self.outputfilename == '':
             QMessageBox.warning(self,'No output file','You need to select an output file.')
             return 0
-        elif ((os.path.splitext(self.outputfilename)[1]!=expected_extension) and
+        elif ((os.path.splitext(self.outputfilename)[1]!=self.expected_extension) and
                   (os.path.splitext(self.outputfilename)[1]!='')):
             QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
                                                          ' but you selected "%s"'
-                                                         ''%(expected_extension,
+                                                         ''%(self.expected_extension,
                                                              os.path.splitext(self.outputfilename)[1]))
             return 0
-        # extending filename if no extension is present
-        if os.path.splitext(self.outputfilename)[1]=='':
-            self.outputfilename += expected_extension
+
 
         convert(self.settings)
 
         print 'Complete!'
         return 1
+
+    def show_file(self):
+        os.system('see %s'%self.outputfilename)
 
 
 def convert(settings):
@@ -982,11 +1017,11 @@ def convert(settings):
                          ''%os.path.splitext(settings.get_object('outputfilename'))[1])
 
     # setting xls_table or csv_table headers if necessary
+    title_translator = {v:k for k,v in table._header_titles.iteritems()}
     if ((os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
             (settings.get_object('CBcustominput').isChecked())):
         inputheaderlabels = [str(l.text()) for l in settings.get_object('headerlabels')]
         inputcustomheaders = [str(cb.currentText()) for cb in settings.get_object('customheaders')]
-        title_translator = {v:k for k,v in table._header_titles.iteritems()}
         inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
         table.change_header_titles(**dict(zip(inputcolumnnames,inputheaderlabels)))
 
@@ -1010,9 +1045,9 @@ def convert(settings):
         table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
 
         # setting custom header labels
-        if settings.get_object('CBcustomheader').isChecked():
-            customoutputlabels = [le.text() for le in settings.get_object('customheaderlabels')]
-            table.change_header_titles(**dict(zip(output_headers,customoutputlabels)))
+        # if settings.get_object('CBcustomheader').isChecked():
+        customoutputlabels = [str(le.text()) for le in settings.get_object('customheaderlabels')]
+        table.change_header_titles(**dict(zip(output_headers,customoutputlabels)))
 
         # adding extra layout specifications to xls output files
         if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
@@ -1059,6 +1094,8 @@ def convert(settings):
                 if 'bold' in font_string:
                     font_properties += 'bold 1'
                 if 'italic' in font_string:
+                    if font_properties != '':
+                        font_properties += ', '
                     font_properties += 'italic 1'
 
                 # construct style
