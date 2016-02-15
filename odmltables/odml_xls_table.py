@@ -24,7 +24,7 @@ class OdmlXlsTable(OdmlTable):
     :param first_marked_style: default style used in marked columns
     :param second_marked_style: used to switch styles of the rows in marked
         columns if changing_point is not None
-    :param pattern: can be 'alternating' or 'chessfield'
+    :param pattern: can be 'alternating' or 'checkerboard'
     :param changing_point: select the point for changing styles. this can be
         when a new section, property or value starts ('sections', 'properties',
         'values' or None)
@@ -90,7 +90,7 @@ class OdmlXlsTable(OdmlTable):
 
     @pattern.setter
     def pattern(self, pat):
-        if pat in ['alternating', 'chessfield']:
+        if pat in ['alternating', 'checkerboard']:
             self._pattern = pat
         else:
             raise Exception("This pattern does not exist")
@@ -253,7 +253,7 @@ class OdmlXlsTable(OdmlTable):
 
             for col, h in enumerate(self._header):
 
-                if self._pattern is "chessfield":
+                if self._pattern is "checkerboard":
                     row_style = (row_style + 1) % 2
                 elif self._pattern is "alternating":
                     row_style = row_style
