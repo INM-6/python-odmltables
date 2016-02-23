@@ -24,50 +24,74 @@ class MainWindow(QtGui.QMainWindow):
         centralWidget = QtGui.QWidget()
         self.setCentralWidget(centralWidget)
 
-        label = QtGui.QLabel("Welcome to the odmltable-GUI!")
-
-        self.radio1 = QtGui.QRadioButton("odmltable <-> odml")
-        self.radio2 = QtGui.QRadioButton("compare sections")
-        self.radio3 = QtGui.QRadioButton("sth else")
-
-        okButton = QtGui.QPushButton("OK")
-        cancelButton = QtGui.QPushButton("Cancel")
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(cancelButton)
-        hbox.addStretch(1)
-        hbox.addWidget(okButton)
-
         vbox = QtGui.QVBoxLayout()
 
+        title_font = QtGui.QFont()
+        # title_font.setFamily("Verdana")
+        title_font.setBold(True)
+        title_font.setPointSize(14)
+        label = QtGui.QLabel("Welcome to the odmltable-GUI!")
+        label.setFont(title_font)
         vbox.addWidget(label)
-        vbox.addStretch(1)
-        vbox.addWidget(self.radio1)
-        vbox.addWidget(self.radio2)
-        vbox.addWidget(self.radio3)
-        vbox.addStretch(1)
-        vbox.addLayout(hbox)
+        vbox.addSpacing(10)
 
-        centralWidget.setLayout(vbox)
+        grid = QtGui.QGridLayout()
+        grid.setColumnStretch(0,1)
+        grid.setColumnStretch(1,1)
+        vbox.addLayout(grid)
 
-        self.statusBar()
+        self.convertbutton = QtGui.QToolButton()
+        self.convertbutton.setText(self.tr('Convert between odml\nand table format'))
+        self.convertbutton.setIcon(QtGui.QIcon("graphics/convertodml.svg"))
+        self.convertbutton.setIconSize(QtCore.QSize(120,60))
+        self.convertbutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.convertbutton.setFixedWidth(200)
+        self.convertbutton.clicked.connect(self.startWizard)
+        grid.addWidget(self.convertbutton,0,0)
 
-        okButton.clicked.connect(self.startWizard)
-        cancelButton.clicked.connect(QtCore.QCoreApplication.instance().quit)
+        self.comparebutton = QtGui.QToolButton()
+        self.comparebutton.setText(self.tr('Compare entries within\nan odml'))
+        self.comparebutton.setIcon(QtGui.QIcon("graphics/comparetable.svg"))
+        self.comparebutton.setIconSize(QtCore.QSize(120,60))
+        self.comparebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.comparebutton.setFixedWidth(200)
+        self.comparebutton.clicked.connect(self.startWizard)
+        grid.addWidget(self.comparebutton,0,1)
+
+        self.generatebutton = QtGui.QToolButton()
+        self.generatebutton.setText(self.tr('Generate empty template\n table'))
+        self.generatebutton.setIcon(QtGui.QIcon("graphics/createtemplate.svg"))
+        self.generatebutton.setIconSize(QtCore.QSize(120,60))
+        self.generatebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.generatebutton.setFixedWidth(200)
+        self.generatebutton.clicked.connect(self.startWizard)
+        grid.addWidget(self.generatebutton,1,0)
+
+        self.filterbutton = QtGui.QToolButton()
+        self.filterbutton.setText(self.tr('Filter content of odml\n'))
+        self.filterbutton.setIcon(QtGui.QIcon("graphics/filterodml.svg"))
+        self.filterbutton.setIconSize(QtCore.QSize(120,60))
+        self.filterbutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.filterbutton.setFixedWidth(200)
+        self.filterbutton.clicked.connect(self.startWizard)
+        grid.addWidget(self.filterbutton,1,1)
+
 
         self.setGeometry(300, 300, 350, 250)
         self.setWindowTitle('Main Window')
+        centralWidget.setLayout(vbox)
         self.show()
 
     def startWizard(self):
-        if self.radio1.isChecked():
+        sender = self.sender()
+        if sender==self.convertbutton:
             wizard = odmlconversionWizard()
-            wizard.exec_()
-        elif self.radio2.isChecked():
+        elif sender==self.comparebutton:
             wizard = CompSectionWiz()
-            wizard.exec_()
-        elif self.radio3.isChecked():
-            pass # new options
+        elif sender==self.generatebutton:
+            raise NotImplemented('Template generation is not yet implemented')
+        elif sender==self.filterbutton:
+            raise NotImplemented('Filtering not yet implemented')
         else:
-            self.statusBar().showMessage("Choose one of the Options above")
-
+            raise EnvironmentError('Unknown sender')
+        wizard.exec_()
