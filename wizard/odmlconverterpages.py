@@ -74,14 +74,11 @@ import xlwt
 from PyQt4.QtGui import *
 from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
 
+from pageutils import QIWizardPage
+
 from  odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 
 
-
-class QIWizardPage(QWizardPage):
-    def __init__(self,settings,parent=None):
-        super(QIWizardPage,self).__init__(parent)
-        self.settings = settings
 
 class LoadFilePage(QIWizardPage):
     def __init__(self,parent=None):

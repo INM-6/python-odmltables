@@ -14,7 +14,7 @@ from PyQt4.QtCore import Qt
 import odml
 import odmltables.compare_section_csv_table
 from settings import Settings
-from pages import QIWizardPage
+from pageutils import QIWizardPage
 
 
 class CompSectionWiz(QWizard):

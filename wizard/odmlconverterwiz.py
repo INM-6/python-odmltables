@@ -9,8 +9,8 @@ import os
 from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
 
-from pages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
-                   ColorPatternPage, ChangeStylePage, SaveFilePage)
+from odmlconverterpages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
+                                ColorPatternPage, ChangeStylePage, SaveFilePage)
 from settings import Settings
 class odmlconversionWizard(QWizard):
     NUM_PAGES = 7
