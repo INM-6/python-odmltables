@@ -30,9 +30,13 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the odmltable-GUI!")
+        label = QtGui.QLabel("Welcome to the grapical odml-tables interface!")
         label.setFont(title_font)
         vbox.addWidget(label)
+        vbox.addSpacing(5)
+
+        subtitle = QtGui.QLabel('Select one of the actions below')
+        vbox.addWidget(subtitle)
         vbox.addSpacing(10)
 
         grid = QtGui.QGridLayout()
@@ -78,7 +82,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
         self.setGeometry(300, 300, 350, 250)
-        self.setWindowTitle('Main Window')
+        self.setWindowTitle('odML-tables')
         centralWidget.setLayout(vbox)
         self.show()
 
