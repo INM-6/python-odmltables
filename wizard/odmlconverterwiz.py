@@ -12,7 +12,7 @@ from PyQt4.QtCore import (pyqtSlot)
 from odmlconverterpages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
                                 ColorPatternPage, ChangeStylePage, SaveFilePage)
 from settings import Settings
-class odmlconversionWizard(QWizard):
+class ConversionWizard(QWizard):
     NUM_PAGES = 7
 
     (PageLoadFile, PageCustomInputHeader,PageHeaderOrder, PageCustomColumNames,
@@ -23,7 +23,7 @@ class odmlconversionWizard(QWizard):
     settingsfile = 'odmlconverter.conf'
 
     def __init__(self, parent=None):
-        super(odmlconversionWizard, self).__init__(parent)
+        super(ConversionWizard, self).__init__(parent)
         settings = Settings(self.settingsfile)
 
         self.setPage(self.PageLoadFile, LoadFilePage(settings))
@@ -105,7 +105,7 @@ def main():
     import sys
 
     app = QApplication(sys.argv)
-    wiz = odmlconversionWizard()
+    wiz = ConversionWizard()
     wiz.show()
 
 

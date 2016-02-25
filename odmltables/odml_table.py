@@ -529,9 +529,10 @@ class OdmlTable(object):
         """
         check odmldict for consistency regarding dtypes to ensure that data can be loaded again.
         """
-        for property_dict in self._odmldict:
-            if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
-                raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],self.odtypes.valid_dtypes))
+        if self._odmldict!=None:
+            for property_dict in self._odmldict:
+                if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
+                    raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -834,6 +835,11 @@ class OdmlDtypes(object):
         elif dtype ==  'datetime.date':
             try:
                 result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+            except ValueError:
+                result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+            except ValueError:
+                raise ValueError('The value "%s" can not be converted to a date as '
+                                 'it has not format yyyy-mm-dd or dd-mm-yyyy'%value)
             except TypeError:
                 result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':

@@ -74,7 +74,7 @@ import xlwt
 from PyQt4.QtGui import *
 from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
 
-from pageutils import QIWizardPage
+from pageutils import *
 
 from  odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 
@@ -330,27 +330,6 @@ class CustomInputHeaderPage(QIWizardPage):
             return self.wizard().PageSaveFile
 
         return self.wizard().PageHeaderOrder
-
-
-def clearLayout(layout):
-    for i in reversed(range(layout.count())):
-        item = layout.itemAt(i)
-
-        if isinstance(item, QWidgetItem):
-            # print "widget" + str(item)
-            item.widget().close()
-            # or
-            # item.widget().setParent(None)
-        elif isinstance(item, QSpacerItem):
-            pass
-            # print "spacer " + str(item)
-            # no need to do extra stuff
-        else:
-            # print "layout " + str(item)
-            clearLayout(item.layout())
-
-        # remove the item from layout
-        layout.removeItem(item)
 
 
 class HeaderOrderPage(QIWizardPage):
@@ -1020,7 +999,7 @@ class SaveFilePage(QIWizardPage):
         dlg.setFileMode(QFileDialog.AnyFile)
         dlg.setAcceptMode(QFileDialog.AcceptSave)
         dlg.setLabelText (QFileDialog.Accept, "Generate File" )
-        dlg.setDefaultSuffix(self.expected_extension)
+        dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
         print self.settings.get_object('inputfilename')
         dlg.setDirectory(self.settings.get_object('inputfilename'))

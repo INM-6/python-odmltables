@@ -169,7 +169,7 @@ class OdmlXlsTable(OdmlTable):
         oldrow = []
         row = 0
 
-        doclen = len(self._odmldict) if self._docdict else 0
+        doclen = len(self._docdict) if self._docdict else 0
         max_col_len = [1]*max(len(self._header),2*doclen+1)
         for i,h in enumerate(self._header):
             if h!= None:
@@ -200,104 +200,105 @@ class OdmlXlsTable(OdmlTable):
 
         row += 1
 
-        # write the rest of the rows
-        for dic in self._odmldict:
+        if self._odmldict!=None:
+            # write the rest of the rows
+            for dic in self._odmldict:
 
-            # make a copy of the actual dic
-            row_dic = dic.copy()
+                # make a copy of the actual dic
+                row_dic = dic.copy()
 
-            # removing unneccessary entries
-            if dic["Path"] == oldpath:
-                if not self.show_all_sections:
-                    for h in self._SECTION_INF:
-                        row_dic[h] = ""
-            else:
-                # start of a new section
-                if self._changing_point is 'sections':
-                    row_style = (row_style + 1) % 2     # switch row-color
-                oldpath = dic["Path"]
-                oldprop = ""
+                # removing unneccessary entries
+                if dic["Path"] == oldpath:
+                    if not self.show_all_sections:
+                        for h in self._SECTION_INF:
+                            row_dic[h] = ""
+                else:
+                    # start of a new section
+                    if self._changing_point is 'sections':
+                        row_style = (row_style + 1) % 2     # switch row-color
+                    oldpath = dic["Path"]
+                    oldprop = ""
 
-            if dic["PropertyName"] == oldprop:
-                if not self.show_all_properties:
-                    for h in self._PROPERTY_INF:
-                        row_dic[h] = ""
-            else:
-                # start of a new property
-                if self._changing_point is 'properties':
-                    row_style = (row_style + 1) % 2     # switch row-color
-                oldprop = dic["PropertyName"]
+                if dic["PropertyName"] == oldprop:
+                    if not self.show_all_properties:
+                        for h in self._PROPERTY_INF:
+                            row_dic[h] = ""
+                else:
+                    # start of a new property
+                    if self._changing_point is 'properties':
+                        row_style = (row_style + 1) % 2     # switch row-color
+                    oldprop = dic["PropertyName"]
 
-            # check the changing point
-            if self._changing_point is 'values':
-                row_style = (row_style + 1) % 2
-            elif self._changing_point is None:
-                pass
-            elif not self._changing_point in ['sections', 'properties']:
-                raise Exception("Invalid argument for changing_point: Your " +
-                                "changing_point must be 'sections', " +
-                                "'properties', 'values' or None")
-                # TODO: change exception
-
-            # row_content: only those elements of row_dic, that will be
-            # visible in the table
-            row_content = [row_dic[h] if h!=None else '' for h in self._header]
-
-            # check, if row would be empty or same as the row before;
-            # if so, skip the row
-            if ((row_content == oldrow) or
-                    (row_content == ['' for h in self._header])):
-                continue
-            else:
-                oldrow = list(row_content)
-
-            for col, h in enumerate(self._header):
-
-                if self._pattern is "checkerboard":
+                # check the changing point
+                if self._changing_point is 'values':
                     row_style = (row_style + 1) % 2
-                elif self._pattern is "alternating":
-                    row_style = row_style
+                elif self._changing_point is None:
+                    pass
+                elif not self._changing_point in ['sections', 'properties']:
+                    raise Exception("Invalid argument for changing_point: Your " +
+                                    "changing_point must be 'sections', " +
+                                    "'properties', 'values' or None")
+                    # TODO: change exception
+
+                # row_content: only those elements of row_dic, that will be
+                # visible in the table
+                row_content = [row_dic[h] if h!=None else '' for h in self._header]
+
+                # check, if row would be empty or same as the row before;
+                # if so, skip the row
+                if ((row_content == oldrow) or
+                        (row_content == ['' for h in self._header])):
+                    continue
                 else:
-                    raise Exception("this is not a valid argument")
-                    # TODO: better exception
+                    oldrow = list(row_content)
 
-                # adjust column style
-                if h in self._marked_cols:
-                    col_style = 1
-                else:
-                    col_style = 0
+                for col, h in enumerate(self._header):
 
-                stylestring = "row" + str(row_style) + "col" + str(col_style)
+                    if self._pattern is "checkerboard":
+                        row_style = (row_style + 1) % 2
+                    elif self._pattern is "alternating":
+                        row_style = row_style
+                    else:
+                        raise Exception("this is not a valid argument")
+                        # TODO: better exception
 
-                #special style for highlighting default values
-                if (h == 'Value' and self._highlight_defaults
-                    and row_dic['Value'] == self.odtypes.default_value(row_dic['odmlDatatype'])):
-                    stylestring = 'highlight'
+                    # adjust column style
+                    if h in self._marked_cols:
+                        col_style = 1
+                    else:
+                        col_style = 0
 
-                style = styles[stylestring]
-                if h != None:
-                    cell_content = row_dic[h]
-                else:
-                    cell_content = ''
+                    stylestring = "row" + str(row_style) + "col" + str(col_style)
 
-                #special style for datetime-objects
+                    #special style for highlighting default values
+                    if (h == 'Value' and self._highlight_defaults
+                        and row_dic['Value'] == self.odtypes.default_value(row_dic['odmlDatatype'])):
+                        stylestring = 'highlight'
 
-                if isinstance(cell_content, datetime.datetime):
-                    style.num_format_str = "DD-MM-YYYY HH:MM:SS"
-                elif isinstance(cell_content, datetime.date):
-                    style.num_format_str = "DD-MM-YYYY"
-                elif isinstance(cell_content, datetime.time):
-                    style.num_format_str = "HH:MM:SS"
-                else:
-                    style.num_format_str = ""
+                    style = styles[stylestring]
+                    if h != None:
+                        cell_content = row_dic[h]
+                    else:
+                        cell_content = ''
 
-                # finding longest string in the column
-                if len(str(cell_content)) > max_col_len[col]:
-                    max_col_len[col] = len(str(cell_content))
+                    #special style for datetime-objects
 
-                sheet.write(row, col, cell_content, style)
+                    if isinstance(cell_content, datetime.datetime):
+                        style.num_format_str = "DD-MM-YYYY HH:MM:SS"
+                    elif isinstance(cell_content, datetime.date):
+                        style.num_format_str = "DD-MM-YYYY"
+                    elif isinstance(cell_content, datetime.time):
+                        style.num_format_str = "HH:MM:SS"
+                    else:
+                        style.num_format_str = ""
 
-            row += 1
+                    # finding longest string in the column
+                    if len(str(cell_content)) > max_col_len[col]:
+                        max_col_len[col] = len(str(cell_content))
+
+                    sheet.write(row, col, cell_content, style)
+
+                row += 1
 
         # adjust the size of the columns due to the max length of the content
         for i, l in enumerate(max_col_len):

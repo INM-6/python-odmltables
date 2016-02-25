@@ -8,8 +8,9 @@ Created on Tue Jan 26 12:57:46 2016
 import sys
 from PyQt4 import QtGui, QtCore
 #import wizards
-from odmlconverterwiz import odmlconversionWizard
+from odmlconverterwiz import ConversionWizard
 from compsectionwiz import CompSectionWiz
+from generatetemplatewiz import GenerateTemplateWizard
 #from table2odmlwiz import Table2OdmlWiz
 
 class MainWindow(QtGui.QMainWindow):
@@ -89,11 +90,11 @@ class MainWindow(QtGui.QMainWindow):
     def startWizard(self):
         sender = self.sender()
         if sender==self.convertbutton:
-            wizard = odmlconversionWizard()
+            wizard = ConversionWizard()
         elif sender==self.comparebutton:
             wizard = CompSectionWiz()
         elif sender==self.generatebutton:
-            raise NotImplemented('Template generation is not yet implemented')
+            wizard = GenerateTemplateWizard()
         elif sender==self.filterbutton:
             raise NotImplemented('Filtering not yet implemented')
         else:
