@@ -1,78 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-pages
-=====
 
-Classes to create dialog pages for the wizard interface of python-odmltables.
-
-Classes
--------
-
-WelcomePage        - Class generating the first dialog page, where the user has
-                     to decide which odmltable operation he/she wants to
-                     perform
-
-LoadodMLPage       - Class generating a dialog page, where the user has to
-                     specify the odML file he/she wants to transform into a
-                     table and define the corresponding table format
-
-LoadTablePage      - Class generating a dialog page, where the user has to
-                     specify the table file he/she wants to transform into an
-                     odML file and state if the item names of the table header
-                     were modified
-
-HeaderOrderPage    - Class generating a dialog page, where the user has to
-                     choose which table header items should be used, can change
-                     in which order the table header items are displayed, and
-                     state if the item names should be modified
-
-HeaderDefNamesPage - Class generating a dialog page, where the user can modify
-                     the names for all chosen header items for the wanted table
-
-HeaderModNamesPage - Class generating a dialog page, where the user has to
-                     match the default names of the odML header items to all
-                     modified header item names of the loaded table
-
-RedundancyPage     - Class generating a dialog page, where the user can state
-                     if and which redundant information should be displayed in
-                     the wanted table
-
-MarkColumnPage     - Class generating a dialog page, where the user can decide
-                     if and which column of the wanted table should be
-                     emphasized compared to the remaining columns
-
-BackPatternPage    - Class generating a dialog page, where the user can decide
-                     if and which background pattern type should be used for
-                     the wanted table
-
-StylePage          - Class generating a dialog page, where the user can see the
-                     style (background color, font style) of the chosen pattern
-                     and can decide to change the style for the pattern fields,
-                     individually
-
-StyleModPage       - Class generating a dialog page, where the user can change
-                     the background colors, the font colors, and the font style
-                     for a selected pattern field of the wanted table
-
-SavePage           - Class generating a dialog page, where the user defines the
-                     location, and filename of the file that he wants to save
-
-
-@author: zehl
-"""
 
 import os
 import re
 import copy
-import xlwt
-# from PyQt4.QtGui import (QApplication, QWizard, QWizardPage, QPixmap, QLabel,
-#                          QRadioButton, QVBoxLayout, QHBoxLayout, QLineEdit, QGridLayout,
-#                          QRegExpValidator, QCheckBox, QPrinter, QPrintDialog,
-#                          QMessageBox,QWidget,QPushButton, QFileDialog, QComboBox,QListWidget,
-#                          QListWidgetItem, QTableView,QFont,QPalette,QFrame,QSizePolicy,
-#                          QToolButton,QColor,QItemEditorCreatorBase,QSpacerItem)
+import subprocess
+
 from PyQt4.QtGui import *
-from PyQt4.QtCore import (pyqtSlot, QRegExp, Qt,pyqtProperty,SIGNAL)
+from PyQt4.QtCore import Qt
 
 from pageutils import *
 
@@ -89,13 +24,17 @@ class LoadFilePage(QIWizardPage):
         self.setLayout(self.layout)
 
     def initializePage(self):
+
+        self.setTitle("Select an input file")
+        self.setSubTitle("Select the file you want to convert and specify the output format you want to generate")
+
         vbox = self.layout
 
         # Adding input part
         topLabel = QLabel(self.tr("Choose a file to load"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
-        vbox.addSpacing(20)
+        # vbox.addSpacing(10)
 
         # Add first horizontal box
         self.buttonbrowse = QPushButton("Browse")
@@ -240,6 +179,9 @@ class CustomInputHeaderPage(QIWizardPage):
     def __init__(self,parent=None):
         super(CustomInputHeaderPage, self).__init__(parent)
 
+        self.setTitle("Provide information about your input file")
+        self.setSubTitle("Which titles were used for which odml column in you input file. Select the corresponding odml columns.")
+
         # Set up layout
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
@@ -336,9 +278,22 @@ class HeaderOrderPage(QIWizardPage):
     def __init__(self,parent=None):
         super(HeaderOrderPage, self).__init__(parent)
 
+        self.setTitle("Customize the output table")
+        self.setSubTitle("Select the columns for the output table by putting them in the list of selected columns and arranging the order using the buttons to the right")
+
         # Set up layout
         vbox = QVBoxLayout()
         self.setLayout(vbox)
+
+
+        hbox0 = QHBoxLayout()
+        hbox0.addStretch()
+        hbox0.addWidget(QLabel('available columns'))
+        hbox0.addStretch()
+        hbox0.addSpacing(90)
+        hbox0.addWidget(QLabel('selected columns'))
+        hbox0.addStretch()
+        hbox0.addSpacing(30)
 
         topLabel = QLabel(self.tr("Select the columns for the output table"))
         topLabel.setWordWrap(True)
@@ -493,6 +448,9 @@ class CustomColumnNamesPage(QIWizardPage):
         vbox = QVBoxLayout()
         self.setLayout(vbox)
 
+        self.setTitle("Customize the output table")
+        self.setSubTitle("Define the titles to be displayed for the different odml columns in your output table")
+
     def initializePage(self):
         # Set up layout
         vbox = QVBoxLayout()
@@ -589,6 +547,9 @@ class ColorPatternPage(QIWizardPage):
     def __init__(self,parent=None):
         super(ColorPatternPage, self).__init__(parent)
 
+        self.setTitle("Customize the output table")
+        self.setSubTitle("Select the color pattern and style to be used in the xls table")
+
         # Set up layout
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
@@ -600,7 +561,7 @@ class ColorPatternPage(QIWizardPage):
         self.layout().addLayout(vbox)
 
         # adding pattern selection part
-        topLabel = QLabel(self.tr("Select the color pattern to be used in the xls table"))
+        topLabel = QLabel(self.tr("Which color pattern shall be used?"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
@@ -677,9 +638,14 @@ class ChangeStylePage(QIWizardPage):
     def __init__(self,parent=None):
         super(ChangeStylePage, self).__init__(parent)
 
+        self.setTitle("Customize the output table")
+        self.setSubTitle("Select the color colors and fontstyles to be used in the xls table")
+
         # Set up layout
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
+
+
 
     def initializePage(self):
         # Set up layout
@@ -891,6 +857,9 @@ class SaveFilePage(QIWizardPage):
     def __init__(self,parent=None):
         super(SaveFilePage, self).__init__(parent)
 
+        self.setTitle("Save the result")
+        self.setSubTitle("Select a location to save your file. You can save the settings made during this generation with a custom configuration name. This configuration can be used in future runs of the wizard.")
+
         # Set up layout
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
@@ -1038,9 +1007,11 @@ class SaveFilePage(QIWizardPage):
     def show_file(self):
         system = os.name
         if system == 'posix':
-            os.system('see %s'%self.outputfilename)
+            subprocess.Popen(["nohup", "see", self.outputfilename])
+            # os.system('see %s'%self.outputfilename)
         elif system == 'nt':
-            os.system("start %s"%self.outputfilename)
+            subprocess.Popen(["nohup", "start", self.outputfilename])
+            # os.system("start %s"%self.outputfilename)
 
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or (str(self.configlist.currentItem().text()) in ['','<New Configuration>'])):

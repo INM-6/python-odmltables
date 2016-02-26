@@ -6,24 +6,23 @@ Created on Tue Jan 26 12:58:23 2016
 """
 
 import os
-from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
-from PyQt4.QtCore import (pyqtSlot)
+from PyQt4.QtGui import QApplication
 
-from odmlconverterpages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
-                                ColorPatternPage, ChangeStylePage, SaveFilePage)
+
+from converterpages import (LoadFilePage, CustomInputHeaderPage, HeaderOrderPage, CustomColumnNamesPage,
+                            ColorPatternPage, ChangeStylePage, SaveFilePage)
+from wizutils import OdmltablesWizard
+
 from settings import Settings
-class ConversionWizard(QWizard):
+class ConversionWizard(OdmltablesWizard):
     NUM_PAGES = 7
 
     (PageLoadFile, PageCustomInputHeader,PageHeaderOrder, PageCustomColumNames,
      PageColorPattern,PageChangeStyle,PageSaveFile) = range(NUM_PAGES)
 
-    settings = {}
-
-    settingsfile = 'odmlconverter.conf'
 
     def __init__(self, parent=None):
-        super(ConversionWizard, self).__init__(parent)
+        super(ConversionWizard, self).__init__('Conversion Wizard',parent)
         settings = Settings(self.settingsfile)
 
         self.setPage(self.PageLoadFile, LoadFilePage(settings))
@@ -33,26 +32,6 @@ class ConversionWizard(QWizard):
         self.setPage(self.PageColorPattern, ColorPatternPage(settings))
         self.setPage(self.PageChangeStyle, ChangeStylePage(settings))
         self.setPage(self.PageSaveFile, SaveFilePage(settings))
-
-        # setting starting page of wizard
-        self.setStartId(self.PageLoadFile)
-        # self.setStartId(self.PageChangeStyle)
-
-        self.setOption(self.IndependentPages, False)
-
-        # images won't show in Windows 7 if style not set
-        self.setWizardStyle(self.ModernStyle)
-        self.setOption(self.HaveHelpButton, True)
-        self.setPixmap(QWizard.LogoPixmap, QPixmap("/images/logo.png"))
-
-        # set up help messages
-        self._lastHelpMsg = ''
-        self._helpMsgs = self._createHelpMsgs()
-        self.helpRequested.connect(self._showHelp)
-
-        self.setWindowTitle(self.tr("conversion wizard"))
-
-        # self.setButtonText(self.FinishButton,'Generate File')
 
 
     def _createHelpMsgs(self):
@@ -85,20 +64,6 @@ class ConversionWizard(QWizard):
                                           "clicking on the browse button.")
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no help available.")
         return msgs
-
-    @pyqtSlot()
-    def _showHelp(self):
-        # get the help message for the current page
-        msg = self._helpMsgs[self.currentId()]
-
-        # if same as last message, display alternate message
-        if msg == self._lastHelpMsg:
-            msg = self._helpMsgs[self.NUM_PAGES + 1]
-
-        QMessageBox.information(self,
-                                self.tr("Conversion Wizard Help"),
-                                msg)
-        self._lastHelpMsg = msg
 
 # main ========================================================================
 def main():

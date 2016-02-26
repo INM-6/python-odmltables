@@ -1,44 +1,44 @@
 # -*- coding: utf-8 -*-
 
 import os
+# import sys
 from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
 
+from wizutils import OdmltablesWizard
 from generatetemplatepages import HeaderOrderPage,SaveFilePage
 from settings import Settings
-class GenerateTemplateWizard(QWizard):
+
+
+class GenerateTemplateWizard(OdmltablesWizard):
     NUM_PAGES = 2
 
     (PageHeaderOrder,PageSaveFile) = range(NUM_PAGES)
 
-    settings = {}
-
-    settingsfile = 'generatetemplate.conf'
-
     def __init__(self, parent=None):
-        super(GenerateTemplateWizard, self).__init__(parent)
-        settings = Settings(self.settingsfile)
-
-        self.setPage(self.PageHeaderOrder, HeaderOrderPage(settings))
-        self.setPage(self.PageSaveFile, SaveFilePage(settings))
-
-        # setting starting page of wizard
-        self.setStartId(self.PageHeaderOrder)
+        super(GenerateTemplateWizard, self).__init__('Generate Template Wizard',parent)
 
 
-        self.setOption(self.IndependentPages, False)
+        self.setPage(self.PageHeaderOrder, HeaderOrderPage(self.settings))
+        self.setPage(self.PageSaveFile, SaveFilePage(self.settings))
 
-        # images won't show in Windows 7 if style not set
-        self.setWizardStyle(self.ModernStyle)
-        self.setOption(self.HaveHelpButton, True)
-        self.setPixmap(QWizard.LogoPixmap, QPixmap("../logos/odML-tables.png"))
+        # # setting starting page of wizard
+        # self.setStartId(self.PageHeaderOrder)
+        #
+        #
+        # self.setOption(self.IndependentPages, False)
+        #
+        # # images won't show in Windows 7 if style not set
+        # self.setWizardStyle(self.ModernStyle)
+        # self.setOption(self.HaveHelpButton, True)
+        # self.setPixmap(QWizard.LogoPixmap, QPixmap(os.path.join('..','logo',"odML-tables_100x100.png")))
 
-        # set up help messages
-        self._lastHelpMsg = ''
-        self._helpMsgs = self._createHelpMsgs()
-        self.helpRequested.connect(self._showHelp)
+        # # set up help messages
+        # self._lastHelpMsg = ''
+        # self._helpMsgs = self._createHelpMsgs()
+        # self.helpRequested.connect(self._showHelp)
 
-        self.setWindowTitle(self.tr("generate template wizard"))
+        # self.setWindowTitle(self.tr("generate template wizard"))
 
 
     def _createHelpMsgs(self):
@@ -54,20 +54,6 @@ class GenerateTemplateWizard(QWizard):
                                           "clicking on the browse button.")
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no help available.")
         return msgs
-
-    @pyqtSlot()
-    def _showHelp(self):
-        # get the help message for the current page
-        msg = self._helpMsgs[self.currentId()]
-
-        # if same as last message, display alternate message
-        if msg == self._lastHelpMsg:
-            msg = self._helpMsgs[self.NUM_PAGES + 1]
-
-        QMessageBox.information(self,
-                                self.tr("Conversion Wizard Help"),
-                                msg)
-        self._lastHelpMsg = msg
 
 # main ========================================================================
 def main():

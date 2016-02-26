@@ -8,7 +8,7 @@ Created on Tue Jan 26 12:57:46 2016
 import sys
 from PyQt4 import QtGui, QtCore
 #import wizards
-from odmlconverterwiz import ConversionWizard
+from converterwiz import ConversionWizard
 from compsectionwiz import CompSectionWiz
 from generatetemplatewiz import GenerateTemplateWizard
 #from table2odmlwiz import Table2OdmlWiz

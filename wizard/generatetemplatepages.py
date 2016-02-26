@@ -3,6 +3,7 @@
 import os
 import re
 import copy
+import subprocess
 import datetime
 
 from PyQt4.QtGui import *
@@ -23,14 +24,23 @@ class HeaderOrderPage(QIWizardPage):
     def __init__(self,parent=None):
         super(HeaderOrderPage, self).__init__(parent)
 
+        self.setTitle("Customize the output table")
+        self.setSubTitle("Select the columns for the output table by putting them in the list of selected columns and arranging the order using the buttons to the right")
+
         # Set up layout
         vbox = QVBoxLayout()
         self.setLayout(vbox)
 
-        topLabel = QLabel(self.tr("Select the columns for the output table"))
-        topLabel.setWordWrap(True)
-        vbox.addWidget(topLabel)
-        vbox.addSpacing(20)
+        hbox0 = QHBoxLayout()
+        hbox0.addStretch()
+        hbox0.addWidget(QLabel('available columns'))
+        hbox0.addStretch()
+        hbox0.addSpacing(90)
+        hbox0.addWidget(QLabel('selected columns'))
+        hbox0.addStretch()
+        hbox0.addSpacing(30)
+
+        vbox.addLayout(hbox0)
 
         # Adding input part
         odtables = odml_table.OdmlTable()
@@ -41,6 +51,7 @@ class HeaderOrderPage(QIWizardPage):
         self.header_list.setSelectionMode(3)
         self.selection_list = QListWidget()
         self.selection_list.setSelectionMode(3)
+
 
         toright = QToolButton()
         toright.setArrowType(Qt.RightArrow)
@@ -182,6 +193,9 @@ class SaveFilePage(QIWizardPage):
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
 
+        self.setTitle("Save the result")
+        self.setSubTitle("Select a location to save your file")
+
     def add_new_conf(self,configlist):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
@@ -219,10 +233,6 @@ class SaveFilePage(QIWizardPage):
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
-        # adding pattern selection part
-        self.topLabel = QLabel(self.tr("Where do you want to save your file?"))
-        self.topLabel.setWordWrap(True)
-        vbox.addWidget(self.topLabel)
         vbox.addSpacing(40)
 
         # Add first horizontal box
@@ -253,7 +263,6 @@ class SaveFilePage(QIWizardPage):
         short_filename = _shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
-        self.topLabel.setText("Where do you want to save your %s file?"%self.expected_extension.strip('.'))
 
 
 
@@ -295,9 +304,11 @@ class SaveFilePage(QIWizardPage):
     def show_file(self):
         system = os.name
         if system == 'posix':
-            os.system('see %s'%self.outputfilename)
+            subprocess.Popen(["nohup", "see", self.outputfilename])
+            # os.system('see %s'%self.outputfilename)
         elif system == 'nt':
-            os.system("start %s"%self.outputfilename)
+            subprocess.Popen(["nohup", "start", self.outputfilename])
+            # os.system("start %s"%self.outputfilename)
 
 
 def createfile(settings):
