@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
-import re
-import copy
 import subprocess
 import datetime
 
 from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt
 
 from pageutils import *
 
@@ -260,7 +256,7 @@ class SaveFilePage(QIWizardPage):
 
         self.outputfilename = ''
         self.settings.register('outputfilename', self,useconfig=False)
-        short_filename = _shorten_path(self.outputfilename)
+        short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
 
@@ -282,7 +278,8 @@ class SaveFilePage(QIWizardPage):
 
 
         print self.outputfilename
-        short_filename = _shorten_path(self.outputfilename)
+
+        short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
 
@@ -384,36 +381,3 @@ def setup_tutorodml():
 
     return doc
 
-
-#######################################################
-# Supplementory functions
-def _shorten_path(path):
-    sep = os.path.sep
-    if path.count(sep)>2:
-        id = path.rfind(sep)
-        id = path.rfind(sep,0,id)
-    else:
-        id = 0
-    if path == '':
-        return path
-    else:
-        return "...%s" % (path[id:])
-
-
-def get_property(style,property):
-    styles = [str(s) for s in style.split(';')]
-    for s in styles:
-        if s.strip(' ').startswith(property+':'):
-            return s.replace(property+':','')
-
-    return ''
-
-
-def get_rgb(style_string):
-    rgbregex = re.compile(" *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{1,3})\) *")
-    match = rgbregex.match(style_string)
-    if match:
-        groups = match.groupdict()
-        return tuple([int(groups['r']),int(groups['g']),int(groups['b'])])
-    else:
-        raise ValueError('No rgb identification possible from "%s"'%style_string)

@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
-# import sys
-from PyQt4.QtGui import (QApplication, QWizard, QPixmap, QMessageBox)
-from PyQt4.QtCore import (pyqtSlot)
+from PyQt4.QtGui import (QApplication)
 
 from wizutils import OdmltablesWizard
 from generatetemplatepages import HeaderOrderPage,SaveFilePage
-from settings import Settings
 
 
 class GenerateTemplateWizard(OdmltablesWizard):
@@ -18,28 +14,8 @@ class GenerateTemplateWizard(OdmltablesWizard):
     def __init__(self, parent=None):
         super(GenerateTemplateWizard, self).__init__('Generate Template Wizard',parent)
 
-
         self.setPage(self.PageHeaderOrder, HeaderOrderPage(self.settings))
         self.setPage(self.PageSaveFile, SaveFilePage(self.settings))
-
-        # # setting starting page of wizard
-        # self.setStartId(self.PageHeaderOrder)
-        #
-        #
-        # self.setOption(self.IndependentPages, False)
-        #
-        # # images won't show in Windows 7 if style not set
-        # self.setWizardStyle(self.ModernStyle)
-        # self.setOption(self.HaveHelpButton, True)
-        # self.setPixmap(QWizard.LogoPixmap, QPixmap(os.path.join('..','logo',"odML-tables_100x100.png")))
-
-        # # set up help messages
-        # self._lastHelpMsg = ''
-        # self._helpMsgs = self._createHelpMsgs()
-        # self.helpRequested.connect(self._showHelp)
-
-        # self.setWindowTitle(self.tr("generate template wizard"))
-
 
     def _createHelpMsgs(self):
         msgs = {}
