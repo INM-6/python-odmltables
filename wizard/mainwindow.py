@@ -11,6 +11,7 @@ from PyQt4 import QtGui, QtCore
 from converterwiz import ConversionWizard
 from compsectionwiz import CompSectionWiz
 from generatetemplatewiz import GenerateTemplateWizard
+from filterwiz import FilterWizard
 #from table2odmlwiz import Table2OdmlWiz
 
 class MainWindow(QtGui.QMainWindow):
@@ -96,7 +97,7 @@ class MainWindow(QtGui.QMainWindow):
         elif sender==self.generatebutton:
             wizard = GenerateTemplateWizard()
         elif sender==self.filterbutton:
-            raise NotImplemented('Filtering not yet implemented')
+            wizard = FilterWizard()
         else:
             raise EnvironmentError('Unknown sender')
         wizard.exec_()
