@@ -133,11 +133,11 @@ class LoadFilePage(QIWizardPage):
             QMessageBox.warning(self,'Select a format','You need to select a table format to continue.')
             return 0
 
-        if not self.settings.get_object('inputfilename'):
+        if (not self.settings.is_registered('inputfilename')) or (not self.settings.get_object('inputfilename')):
             QMessageBox.warning(self,'Select an input file','You need to select an input file to continue.')
             return 0
 
-        if self.settings.get_object('inputfilename').split('.')[-1] not in ['xls', 'csv', 'odml']:
+        elif self.settings.get_object('inputfilename').split('.')[-1] not in ['xls', 'csv', 'odml']:
             QMessageBox.warning(self,'Wrong input format','The input file has to be an ".xls", ".csv" or ".odml" file.')
             return 0
 
