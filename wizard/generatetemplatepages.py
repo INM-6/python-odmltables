@@ -304,7 +304,7 @@ class SaveFilePage(QIWizardPage):
             subprocess.Popen(["nohup", "see", self.outputfilename])
             # os.system('see %s'%self.outputfilename)
         elif system == 'nt':
-            subprocess.Popen(["nohup", "start", self.outputfilename])
+            subprocess.Popen(["start", self.outputfilename])
             # os.system("start %s"%self.outputfilename)
 
 
