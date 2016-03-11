@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
+import copy
 
 from PyQt4.QtGui import *
 
@@ -89,16 +90,15 @@ class LoadFilePage(QIWizardPage):
 
     def validatePage(self):
 
-        if not self.settings.get_object('inputfilename'):
+        if (not self.settings.is_registered('inputfilename')) or (not self.settings.get_object('inputfilename')):
             QMessageBox.warning(self,'Select an input file','You need to select an input file to continue.')
             return 0
 
-        if self.settings.get_object('inputfilename').split('.')[-1] not in ['xls', 'csv', 'odml']:
+        elif self.settings.get_object('inputfilename').split('.')[-1] not in ['xls', 'csv', 'odml']:
             QMessageBox.warning(self,'Wrong input format','The input file has to be an ".xls", ".csv" or ".odml" file.')
             return 0
 
         return 1
-
 
 
     def nextId(self):
@@ -212,8 +212,15 @@ class FilterPage(QIWizardPage):
     def __init__(self,parent=None):
         super(FilterPage, self).__init__(parent)
 
+        self.odmltreeheaders = ['Content',
+                                'Value','DataUncertainty','DataUnit','odmlDatatype','ValueDefinition',
+                                'PropertyName','PropertyDefinition',
+                                'SectionName','SectionType','SectionDefinition']
+
         self.setTitle("Filter your data")
-        self.setSubTitle("Select the filters you want to apply.")
+        self.setSubTitle("Create your filters and apply them to the odml-tables structure.")
+
+        self.filters = {}
 
         # filtersettingsframe = QFrame()
         # hbox = QHBoxLayout()
@@ -224,75 +231,103 @@ class FilterPage(QIWizardPage):
 
         left = QFrame(self)
         left.setFrameShape(QFrame.StyledPanel)
-        vboxleft = QVBoxLayout()
-        left.setLayout(vboxleft)
+        left.setMinimumHeight(450)
+        left.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.vboxleft = QVBoxLayout()
+        left.setLayout(self.vboxleft)
 
         leftbottom = QFrame(self)
         leftbottom.setFrameShape(QFrame.StyledPanel)
-        vboxleftbottom = QVBoxLayout()
-        leftbottom.setLayout(vboxleftbottom)
-
+        self.vboxleftbottom = QVBoxLayout()
+        leftbottom.setLayout(self.vboxleftbottom)
+        leftbottom.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         right = QFrame(self)
         right.setFrameShape(QFrame.StyledPanel)
         vboxright = QVBoxLayout()
         right.setLayout(vboxright)
 
-        filtersettingsgrid = QGridLayout()
-        filtersettingsgrid.addWidget(QLabel('mode'),0,0)
-        filtersettingsgrid.addWidget(QLabel('invert'),1,0)
-        filtersettingsgrid.addWidget(QLabel('recursive'),2,0)
-        filtersettingsgrid.addWidget(QLabel(self.tr('comparison\nfunction')),3,0)
+        self.filtersettingsgrid = QGridLayout()
+        self.filtersettingsgrid.addWidget(QLabel('mode'),0,0)
+        self.filtersettingsgrid.addWidget(QLabel('invert'),1,0)
+        self.filtersettingsgrid.addWidget(QLabel('recursive'),2,0)
+        self.compfunclabel = QLabel(self.tr('comparison\nfunction'))
+        self.filtersettingsgrid.addWidget(self.compfunclabel,3,0)
 
         self.rbAND = QRadioButton(self.tr('&& [AND]'))
         self.rbOR = QRadioButton('| [OR]')
-        filtersettingsgrid.addWidget(self.rbAND,0,1)
-        filtersettingsgrid.addWidget(self.rbOR,0,2)
+        self.rbAND.setChecked(True)
+        self.filtersettingsgrid.addWidget(self.rbAND,0,1)
+        self.filtersettingsgrid.addWidget(self.rbOR,0,2)
 
         self.cbinvert = QCheckBox()
-        filtersettingsgrid.addWidget(self.cbinvert,1,1)
+        self.filtersettingsgrid.addWidget(self.cbinvert,1,1)
 
         self.cbrecursive = QCheckBox()
-        filtersettingsgrid.addWidget(self.cbrecursive,2,1)
+        self.filtersettingsgrid.addWidget(self.cbrecursive,2,1)
 
         self.lwcomparisonfunc = QListWidget()
-        self.lwcomparisonfunc.addItems(['test0','test1'])
         self.lwcomparisonfunc.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        filtersettingsgrid.addWidget(self.lwcomparisonfunc,3,1,1,2)
+        self.filtersettingsgrid.addWidget(self.lwcomparisonfunc,3,1,1,2)
 
 #       ########### KEY-Value Part ##################
-        keygrid = QGridLayout()
-        keygrid.addWidget(QLabel('key'),0,0)
-        keygrid.addWidget(QLabel('value'),0,1)
+        self.keygrid = QGridLayout()
+        self.keygrid.addWidget(QLabel('key'),0,0)
+        self.keygrid.addWidget(QLabel('value'),0,1)
+
+        # self.cbkeys = QComboBox()
+        # self.cbvalue = QLineEdit()
+
+        ###############################
+        filtercreatorlabel = QLabel('Filter Creator')
+        filtercreatorlabel.setStyleSheet('font: bold; font-size: 14pt')
+        self.vboxleft.addWidget(filtercreatorlabel)
+        self.vboxleft.addLayout(self.filtersettingsgrid)
+        self.vboxleft.addStretch()
+        # self.vboxleft.addWidget(QPushButton('test'))
+        # self.vboxleft.addLayout(self.keygrid)
+        self.filtersettingsgrid.addLayout(self.keygrid,4,0,1,3,)
+
         self.pbaddkey = QPushButton('+')
         self.pbremovekey = QPushButton('-')
+        self.pbaddkey.clicked.connect(self._add_key_value_pair)
+        self.pbremovekey.clicked.connect(self._remove_key_value_pair)
         self.pbaddkeylayout = QHBoxLayout()
         self.pbaddkeylayout.addStretch()
         self.pbaddkeylayout.addWidget(self.pbaddkey)
         self.pbaddkeylayout.addWidget(self.pbremovekey)
         self.pbaddkeylayout.addStretch()
-        keygrid.addLayout(self.pbaddkeylayout,1,0,1,2)
-        self.cbkeys = QComboBox()
-        self.cbvalue = QLineEdit()
+        self.vboxleft.addLayout(self.pbaddkeylayout)
+        self.vboxleft.addStretch()
 
-        ###############################
-        filtercreatorlabel = QLabel('Filter Creator')
-        filtercreatorlabel.setStyleSheet('font: bold; font-size: 14pt')
-        vboxleft.addWidget(filtercreatorlabel)
-        vboxleft.addLayout(filtersettingsgrid)
-        vboxleft.addStretch()
-        vboxleft.addLayout(keygrid)
-
-
+        self.pbaddfilter = QPushButton('Add filter')
+        self.pbaddfilter.clicked.connect(self.addfilter)
+        self.vboxleft.addWidget(self.pbaddfilter)
 
         filterlabel = QLabel('Applied filters')
         filterlabel.setStyleSheet('font: bold; font-size: 14pt')
-        vboxleftbottom.addWidget(filterlabel)
+        self.vboxleftbottom.addWidget(filterlabel)
+
+        self.lwfilters = QListWidget()
+        self.lwfilters.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.vboxleftbottom.addWidget(self.lwfilters)
+
+        self.pbremovefilter = QPushButton('Remove filter')
+        self.pbremovefilter.clicked.connect(self.removefilter)
+        self.vboxleftbottom.addWidget(self.pbremovefilter)
 
         ###################################
         self.odmltree = QTreeWidget()
         self.odmltree.setColumnCount(2)
-        self.odmltree.setHeaderLabels(["Path", "Dtype"])
+        self.odmltree.setHeaderLabels(self.odmltreeheaders)
         self.odmltree.setSelectionMode(3)
+        self.odmltree.setMinimumWidth(500)
+        self.odmltree.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+
+        columnwidths = [50]*len(self.odmltreeheaders)
+        columnwidths[0:3] = [250,100,100]
+        [self.odmltree.setColumnWidth(i,w) for i,w in enumerate(columnwidths)]
+
+
 
         vboxright.addWidget(self.odmltree)
 
@@ -303,11 +338,33 @@ class FilterPage(QIWizardPage):
         splitter2 = QSplitter(Qt.Horizontal)
         splitter2.addWidget(splitterv)
         splitter2.addWidget(right)
-        # splitter2.addWidget(splitter1)
-        # splitter2.addWidget(bottom)
 
         hbox.addWidget(splitter2)
         self.setLayout(hbox)
+
+
+    def initializePage(self):
+        self._add_key_value_pair()
+
+        comparison_functions = {'==\t[x==y]': lambda x,y:x==y,
+                                'endswith\t[hasattr(x,"endswith") and x.endswith(y)]': lambda x,y: hasattr(x,'endswith') and x.endswith(y),
+                                'startswith\t[hasattr(x,"startswith") and x.startswith(y)]': lambda x,y: hasattr(x,'startswith') and x.startswith(y),
+                                'is in list\t[x in y]': lambda  x,y: x in y,
+                                'contains\t[type(x)==str and y in x]': lambda  x,y: type(x)==str and y in x}
+        for cf_name in comparison_functions:
+            self.lwcomparisonfunc.addItems([cf_name])
+        self._add_custom_item_to_list(self.lwcomparisonfunc)
+        # self.lwcomparisonfunc.item(0).setSelected(True)
+        self.lwcomparisonfunc.setCurrentRow(0)
+        self.lwcomparisonfunc.setFixedHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
+        self.lwcomparisonfunc.setMinimumHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
+        self.compfunclabel.setMinimumHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
+        self.layout().invalidate()
+        self.lwcomparisonfunc.itemChanged.connect(self.new_comparison_func)
+
+        self.load_odml()
+
+        self.odmltree.expandToDepth(0)
 
 
 # def filter(self,mode='and',invert=False,recursive=False,comparison_func=lambda x,y: x==y,**kwargs):
@@ -329,6 +386,298 @@ class FilterPage(QIWizardPage):
         :param kwargs: keywords and values used for filtering
         :return: None
         """
+
+    def _add_custom_item_to_list(self,list):
+        item = QListWidgetItem('add custom function\t[f(x,y)]')
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        list.addItem(item)
+
+    def new_comparison_func(self,item):
+        # item = self.sender().currentItem()
+        if str(item.text()) != 'add custom function\t[f(x,y)]':
+            if '[' in item.text() and ']' in item.text():
+                if item.flags() & Qt.ItemIsEditable:
+                    # item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                    self._add_custom_item_to_list(self.sender())
+            else:
+                QMessageBox.warning(self,'No function defined','You need to define your comparison function within brakets [].')
+
+    def _add_key_value_pair(self):
+        all_keys =self.odmltreeheaders[1:]
+        n_keys = self._get_number_of_keys()
+
+        if n_keys >= len(all_keys):
+            return
+
+        keycb = QComboBox()
+        keycb.addItems(all_keys)
+        # for id in range(keycb.count()):
+        #     if id in [self.keygrid.itemAtPosition(i,0).widget().currentIndex() for i in range(1,self._get_number_of_keys())]:
+        #         keycb.model().item(id).setEnabled(False)
+        #     else:
+        #         keycb.model().item(id).setEnabled(True)
+        valueedit = QLineEdit()
+        keycb.setMinimumSize(keycb.sizeHint())
+        valueedit.setMinimumSize(keycb.sizeHint())
+        self.keygrid.addWidget(keycb,n_keys,0)
+        self.keygrid.addWidget(valueedit,n_keys,1)
+        # self.update_enabled_keys(combobox=keycb)
+        keycb.currentIndexChanged.connect(self.update_enabled_keys)
+
+        for i in [self.keygrid.itemAtPosition(w,0).widget().currentIndex() for w in range(1,self._get_number_of_keys()-1)]:
+            keycb.model().item(i).setEnabled(False)
+
+        # setting current index to first enabled one
+        for i in range(keycb.count()):
+            if keycb.model().item(i).isEnabled():
+                keycb.setCurrentIndex(i)
+                break
+
+        # setting current index to first enabled one
+        # for i in range(len(all_keys)):
+        #     if i not in [self.keygrid.itemAtPosition(w,0).widget().currentIndex() for w in range(1,self._get_number_of_keys()-1)]: #current indices in all comboboxes
+        #         keycb.setCurrentIndex(i)
+        #         break
+
+        # self.keygrid.addWidget(keyedit,i,0,alignment=Qt.AlignTop)
+        # self.keygrid.addItem(valueedit,i,1,rowSpan=-1,columnSpan=-1)
+        self.keygrid.invalidate()
+        self.layout().invalidate()
+        self.filtersettingsgrid.invalidate()
+        self.vboxleft.invalidate()
+
+    def update_enabled_keys(self):
+        # get selected item_ids
+        selected_ids = []
+        for combobox_id in range(1,self._get_number_of_keys()):
+            combobox = self.keygrid.itemAtPosition(combobox_id,0).widget()
+            selected_ids.append(combobox.currentIndex())
+
+        # set selected ids disabled in other comboboxes
+        for combobox_id in range(1,self._get_number_of_keys()):
+            combobox = self.keygrid.itemAtPosition(combobox_id,0).widget()
+            for item_id in range(combobox.count()):
+                if item_id in selected_ids and combobox.currentIndex() != item_id:
+                    combobox.model().item(item_id).setEnabled(False)
+                else:
+                    combobox.model().item(item_id).setEnabled(True)
+
+    def _remove_key_value_pair(self):
+        n_keys = self._get_number_of_keys()
+        if n_keys>1: # not removing the column titles
+            tbr = [self.keygrid.itemAtPosition(n_keys-1,0).widget(),self.keygrid.itemAtPosition(n_keys-1,1).widget()]
+            curr_ind = tbr[0].currentIndex()
+            for tbr_item in tbr:
+                self.keygrid.removeWidget(tbr_item)
+                tbr_item.deleteLater()
+            self.keygrid.invalidate()
+
+            self.update_enabled_keys()
+            # for nkey in range(1,n_keys-1):
+            #     cb = self.keygrid.itemAtPosition(nkey,0).widget()
+            #     cb.model().item(curr_ind).setEnabled(True)
+
+    def _get_number_of_keys(self):
+        i = 0
+        while self.keygrid.itemAtPosition(i,0):
+            i += 1
+        return i
+
+    def addfilter(self):
+
+        compfuncstr = str(self.lwcomparisonfunc.currentItem().text())
+
+        # checking data consistency
+        if compfuncstr in ['endswith\t[hasattr(x,"endswith") and x.endswith(y)]', 'startswith\t[hasattr(x,"startswith") and x.startswith(y)]']:
+            for i in range(1,self._get_number_of_keys()):
+                value = str(self.keygrid.itemAtPosition(i,1).widget().text())
+                try:
+                    valuetype = type(eval(value))
+                # if (value[0] not in ['"',"'"]) or (value[-1] not in ['"',"'"]):
+                except:
+                    valuetype = None
+
+                if valuetype  not in [str,unicode]:
+                    QMessageBox.warning(self,'String input required','To be able to use the startswith or endswith '
+                                                                     'comparison function you need to provide a string '
+                                                                     'to compare to. You can define a string by using '
+                                                                     'quotation marks at the beginning and end of your '
+                                                                     'text (eg. "my string")')
+                    return
+
+        elif compfuncstr == 'is in list\t[x in y]':
+            for i in range(1,self._get_number_of_keys()):
+                value = str(self.keygrid.itemAtPosition(i,1).widget().text())
+                # if (value[0] !='[') or (value[-1] != ']'):
+                try:
+                    valuetype = type(eval(value))
+                except:
+                    valuetype = None
+
+                if not hasattr(valuetype,'__iter__'):
+                    QMessageBox.warning(self,'List input required','To be able to use the "is in" '
+                                                                     'comparison function you need to provide a list '
+                                                                     'to compare to. You can define a list by using '
+                                                                     'square brackets at the beginning and end of your '
+                                                                     'list (eg. ["option1","option2"] or [1,2,3,4])')
+                    return
+
+
+
+        filter = {}
+        filter['mode'] = 'and' if self.rbAND.isChecked() else 'or'
+        filter['invert'] = self.cbinvert.isChecked()
+        filter['recursive'] = self.cbrecursive.isChecked()
+        try:
+            filter['compfunc'] = lambda x,y: eval(compfuncstr.split('[')[1].split(']')[0])
+        except SyntaxError:
+            QMessageBox.warning(self,'Incorrect syntax', 'Your comparison function has an incorrect syntax. Please fix it and try again.')
+            return
+        filter['kwargs'] = {}
+        for i in range(1,self._get_number_of_keys()):
+            key = self.keygrid.itemAtPosition(i,0).widget().currentText()
+            value = self.keygrid.itemAtPosition(i,1).widget().text()
+            filter['kwargs'][str(key)] = eval(str(value))
+
+        filter_name = ''
+        if filter['invert']:
+            filter_name += 'invert; '
+        if filter['recursive']:
+            filter_name += 'recursive; '
+        # filter_name += 'comp.func: %s; '%compfuncstr.split('[')[0].rstrip('\t')
+        filter_name += (' ' + filter['mode'].upper() + ' ').join(['(%s %s %s)'%(key,compfuncstr.split('[')[0].rstrip('\t'),filter['kwargs'][key]) for key in filter['kwargs']])
+
+
+        if filter_name not in self.filters:
+
+            self.filters[filter_name] = filter
+
+
+            self.run_single_filter(filter_name)
+
+            self.lwfilters.addItems([filter_name])
+
+
+    def removefilter(self):
+        i = self.lwfilters.currentRow()
+        filter_name = str(self.lwfilters.currentItem().text())
+        self.filters.pop(filter_name)
+        self.lwfilters.takeItem(i)
+
+        self.run_all_filters()
+
+    def run_all_filters(self):
+        self.filtered_table = copy.deepcopy(self.table)
+        for filter in self.filters.values():
+            self.filtered_table.filter(mode=filter['mode'],invert=filter['invert'],recursive=filter['recursive'],comparison_func=filter['compfunc'],**filter['kwargs'])
+        self.update_tree(self.filtered_table)
+
+    def run_single_filter(self,filter_name):
+        if self.filtered_table == None:
+            self.filtered_table = copy.deepcopy(self.table)
+        filter = self.filters[filter_name]
+        self.filtered_table.filter(mode=filter['mode'],invert=filter['invert'],recursive=filter['recursive'],comparison_func=filter['compfunc'],**filter['kwargs'])
+        self.update_tree(self.filtered_table)
+
+
+    def load_odml(self):
+        # loading odml file
+        self.table = odml_table.OdmlTable()
+        self.settings.get_object('inputfilename')
+
+        # setting xls_table or csv_table headers if necessary
+        title_translator = {v:k for k,v in self.table._header_titles.iteritems()}
+        if ((os.path.splitext(self.settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
+                (self.settings.get_object('CBcustominput').isChecked())):
+            inputheaderlabels = [str(l.text()) for l in self.settings.get_object('headerlabels')]
+            inputcustomheaders = [str(cb.currentText()) for cb in self.settings.get_object('customheaders')]
+            inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
+            self.table.change_header_titles(**dict(zip(inputcolumnnames,inputheaderlabels)))
+
+        # loading input file
+        if os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.xls':
+            self.table.load_from_xls_table(self.settings.get_object('inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.csv':
+            self.table.load_from_csv_table(self.settings.get_object('inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.odml':
+            self.table.load_from_file(self.settings.get_object('inputfilename'))
+        else:
+            raise ValueError('Unknown input file extension "%s"'
+                             ''%os.path.splitext(self.settings.get_object('inputfilename'))[1])
+
+        self.update_tree(self.table)
+
+        self.filtered_table = copy.deepcopy(self.table)
+        self.settings.register('filtered_table',self.filtered_table)
+
+    def update_tree(self,table):
+        self.odmltree.clear()
+        self.create_sectiontree(self.odmltree,table)
+        self.create_proptree(self.odmltree,table)
+        self.create_valuetree(self.odmltree,table)
+
+        self.odmltree.expandToDepth(0)
+
+
+# ['Content','Value','DataUncertainty','DataUnit','odmlDatatype',
+#                                 'Value','ValueDefinition',
+#                                 'PropertyName','PropertyDefinition',
+#                                 'SectionName','SectionType','SectionDefinition']
+
+
+    def create_sectiontree(self,tree,table):
+        sections = {value['Path'].strip('/'):('','','','','','','',value['SectionName'],value['SectionType'],value['SectionDefinition']) for value in table._odmldict}
+        for sec in sorted(sections):
+            sec_names = sec.split('/')
+            parent_sec = tree.invisibleRootItem()
+            for i in range(len(sec_names)):
+                child =self.find_child(parent_sec,sec_names[i])
+                if child:
+                    parent_sec = child
+                else:
+                    new_sec = QTreeWidgetItem(parent_sec,[sec_names[i]] + list(sections[sec]))
+                    parent_sec = new_sec
+
+    def create_proptree(self,tree,table):
+        props = {value['Path'].strip('/') + '/' + value['PropertyName']:('','','','','',value['PropertyName'],value['PropertyDefinition'],'','') for value in table._odmldict}
+        for prop in props:
+            prop_path = prop.split('/')
+            parent_sec = tree.invisibleRootItem()
+            for i in range(len(prop_path)):
+                child =self.find_child(parent_sec,prop_path[i])
+                if child:
+                    parent_sec = child
+                else:
+                    new_sec = QTreeWidgetItem(parent_sec,[prop_path[i]] + list(props[prop]))
+                    parent_sec = new_sec
+
+    def create_valuetree(self,tree,table):
+        values = {value['Path'].strip('/') + '/' + value['PropertyName'] + '/' + str(v):(str(value['Value']),value['DataUncertainty'],value['DataUnit'],value['odmlDatatype'],value['ValueDefinition'],'','','','','') for v,value in enumerate(table._odmldict)}
+        for value in sorted(values):
+            value_path = value.split('/')
+            parent_sec = tree.invisibleRootItem()
+            for i in range(len(value_path)):
+                child =self.find_child(parent_sec,value_path[i])
+                if child:
+                    parent_sec = child
+                if i == len(value_path)-2:
+                    val = [str(v) for v in values[value]]
+                    new_sec = QTreeWidgetItem(parent_sec,[''] + val)
+                    parent_sec = new_sec
+
+
+
+    def find_child(self,tree_sec,child_name):
+        i = 0
+        result = None
+        while i < tree_sec.childCount():
+            if tree_sec.child(i).text(0) == child_name:
+                result = tree_sec.child(i)
+                break
+            i += 1
+
+        return result
+
 
 
 
@@ -471,7 +820,8 @@ class SaveFilePage(QIWizardPage):
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
-            convert(self.settings)
+            filtered_table = self.settings.get_object('filtered_table')
+            filtered_table.write2odml(self.settings.get_object('outputfilename'))
 
             print 'Complete!'
 
@@ -483,7 +833,7 @@ class SaveFilePage(QIWizardPage):
             subprocess.Popen(["nohup", "see", self.outputfilename])
             # os.system('see %s'%self.outputfilename)
         elif system == 'nt':
-            subprocess.Popen(["nohup", "start", self.outputfilename])
+            subprocess.Popen(["start", self.outputfilename])
             # os.system("start %s"%self.outputfilename)
 
     def saveconfig(self):
@@ -500,165 +850,11 @@ class SaveFilePage(QIWizardPage):
                 QMessageBox.warning(self,'Configuration already exists','You need to chose a new name for your configuration.'
                                                                         'The name "%s" already exists'%config_name)
             else:
-                curritem.setFlags(( Qt.ItemIsSelectable |  Qt.ItemIsEnabled ))
+                curritem.setFlags(( Qt.ItemIsSelectable | Qt.ItemIsEnabled ))
                 self.add_new_conf(self.configlist)
             self.settings.config_name = config_name
             self.settings.save_config()
 
-
-class ColorListWidget(QComboBox):
-
-    _xlwt_rgbcolors=[
-    (0,0,0), (255,255,255), (255,0,0), (0,255,0), (0,0,255), (255,255,0),
-    (255,0,255), (0,255,255), (0,0,0), (255,255,255), (255,0,0), (0,255,0),
-    (0,0,255), (255,255,0), (255,0,255), (0,255,255), (128,0,0), (0,128,0),
-    (0,0,128), (128,128,0), (128,0,128), (0,128,128), (192,192,192),
-    (128,128,128), (153,153,255), (153,51,102), (255,255,204),
-    (204,255,255), (102,0,102), (255,128,128), (0,102,204), (204,204,255),
-    (0,0,128), (255,0,255), (255,255,0), (0,255,255), (128,0,128),
-    (128,0,0), (0,128,128), (0,0,255), (0,204,255), (204,255,255),
-    (204,255,204), (255,255,153), (153,204,255), (255,153,204),
-    (204,153,255), (255,204,153), (51,102,255), (51,204,204), (153,204,0),
-    (255,204,0), (255,153,0), (255,102,0), (102,102,153), (150,150,150),
-    (0,51,102), (51,153,102), (0,51,0), (51,51,0), (153,51,0), (153,51,102),
-    (51,51,153), (51,51,51)
-    ]
-
-    def __init__(self):
-        super(ColorListWidget, self).__init__()
-        cmap = xlwt.Style.colour_map
-        self.xlwt_colornames = []
-        self.xlwt_color_index = []
-        self.xlwt_rgbcolors = []
-        # self._xlwt_colorlabels = []
-        for i in range(64):
-            cnames = [name for name, index in cmap.items() if index == i]
-            # self._xlwt_colorlabels.append(cnames[0] if len(cnames)>0 else '')
-            if cnames != []:
-                self.xlwt_colornames.append(', '.join(cnames))
-                self.xlwt_color_index.append(i)
-                self.xlwt_rgbcolors.append(self._xlwt_rgbcolors[i])
-
-        for i,xlwtcolor in enumerate(self.xlwt_colornames):
-            self.insertItem(i, xlwtcolor)
-            self.setItemData(i, QColor(*self.xlwt_rgbcolors[i]), Qt.DecorationRole)
-
-    def get_current_rgb(self):
-        return self.xlwt_rgbcolors[self.currentIndex()]
-
-
-def convert(settings):
-
-    # generate odmltables object
-    table = None
-    if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
-        table = odml_xls_table.OdmlXlsTable()
-    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.csv':
-        table = odml_csv_table.OdmlCsvTable()
-    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
-        table = odml_table.OdmlTable()
-    else:
-        raise ValueError('Unknown output file extension "%s"'
-                         ''%os.path.splitext(settings.get_object('outputfilename'))[1])
-
-    # setting xls_table or csv_table headers if necessary
-    title_translator = {v:k for k,v in table._header_titles.iteritems()}
-    if ((os.path.splitext(settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
-            (settings.get_object('CBcustominput').isChecked())):
-        inputheaderlabels = [str(l.text()) for l in settings.get_object('headerlabels')]
-        inputcustomheaders = [str(cb.currentText()) for cb in settings.get_object('customheaders')]
-        inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
-        table.change_header_titles(**dict(zip(inputcolumnnames,inputheaderlabels)))
-
-    # loading input file
-    if os.path.splitext(settings.get_object('inputfilename'))[1] == '.xls':
-        table.load_from_xls_table(settings.get_object('inputfilename'))
-    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.csv':
-        table.load_from_csv_table(settings.get_object('inputfilename'))
-    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.odml':
-        table.load_from_file(settings.get_object('inputfilename'))
-    else:
-        raise ValueError('Unknown input file extension "%s"'
-                         ''%os.path.splitext(settings.get_object('inputfilename'))[1])
-
-
-    # setting custom header selection and custom header titles if necessary
-    if (os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls','.csv']):
-
-        # setting custom header columns
-        output_headers = [title_translator[str(settings.get_object('LWselectedcolumns').item(index).text())]
-                          for index in range(settings.get_object('LWselectedcolumns').count())]
-        table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
-
-        # setting custom header labels
-        # if settings.get_object('CBcustomheader').isChecked():
-        customoutputlabels = [str(le.text()) for le in settings.get_object('customheaderlabels')]
-        table.change_header_titles(**dict(zip(output_headers,customoutputlabels)))
-
-        # adding extra layout specifications to xls output files
-        if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
-            # marking columns
-            marked_columns = [cb.isChecked() for cb in settings.get_object('columnmarkings')]
-            if any(marked_columns):
-                table.mark_columns(*[h for i,h in enumerate(output_headers) if marked_columns[i]])
-
-            # setting color pattern and changing point
-            if settings.get_object('RBalternating').isChecked():
-                table.pattern = 'alternating'
-            elif settings.get_object('RBcheckerboard').isChecked():
-                table.pattern = 'checkerboard'
-
-            if settings.get_object('RBnopattern').isChecked():
-                table.changing_point = None
-            elif settings.get_object('RBsection').isChecked():
-                table.changing_point = "sections"
-            elif settings.get_object('RBproperty').isChecked():
-                table.changing_point = "properties"
-            elif settings.get_object('RBvalue').isChecked():
-                table.changing_point = "values"
-
-            style_names = ['header_style','first_style','second_style','first_marked_style','second_marked_style','highlight_style']
-            style_labels = ['Header','Standard\nRow 1', 'Standard\nRow 2','Marked \nRow 1','Marked \nRow 2','Default Value']
-            style_buttons = [settings.get_object(style_label) for style_label in style_labels]
-
-            for i,style_name in enumerate(style_names):
-                style_button = style_buttons[i]
-
-                # get background color
-                rgb_tuple = get_rgb(get_property(style_button.styleSheet(),'background-color'))
-                index = settings.get_object('CBbgcolor').xlwt_rgbcolors.index(rgb_tuple)
-                bgcolor = settings.get_object('CBbgcolor').xlwt_colornames[index].split(',')[0]
-
-                # get font color
-                rgb_tuple = get_rgb(get_property(style_button.styleSheet(),'color'))
-                index = settings.get_object('CBfontcolor').xlwt_rgbcolors.index(rgb_tuple)
-                fontcolor = settings.get_object('CBfontcolor').xlwt_colornames[index].split(',')[0]
-
-                # get font properties
-                font_properties = ''
-                font_string = get_property(style_button.styleSheet(),'font')
-                if 'bold' in font_string:
-                    font_properties += 'bold 1'
-                if 'italic' in font_string:
-                    if font_properties != '':
-                        font_properties += ', '
-                    font_properties += 'italic 1'
-
-                # construct style
-                style = xls_style.XlsStyle(backcolor=bgcolor,
-                                             fontcolor=fontcolor,
-                                             fontstyle=font_properties)
-                setattr(table,style_name,style)
-
-
-            # setting highlight defaults
-            table.highlight_defaults = settings.get_object('CBhighlightdefaults').isChecked()
-
-    # saving file
-    if os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls','.csv']:
-        table.write2file(settings.get_object('outputfilename'))
-    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
-        table.write2odml(settings.get_object('outputfilename'))
 
 
 

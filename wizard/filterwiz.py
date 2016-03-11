@@ -28,7 +28,7 @@ class FilterWizard(OdmltablesWizard):
         self.setPage(self.PageFilter, FilterPage(settings))
         self.setPage(self.PageSaveFile, SaveFilePage(settings))
 
-        self.setStartId(2)
+        self.setStartId(0)
 
     def _createHelpMsgs(self):
         msgs = {}
