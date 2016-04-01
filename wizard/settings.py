@@ -90,6 +90,12 @@ class Settings():
         return ((name in self.config['attributes'])
                 or (name in self.config['objects']))
 
+    def remove_object(self,name):
+        if name in self.config['attributes']:
+            return self.config['attributes'].pop(name)
+        elif name in self.config['objects']:
+            return self.config['objects'].pop(name)
+
     def simplify_pyqt(self,conf):
         conf = copy.deepcopy(conf)
         for name, property in conf['attributes'].iteritems():
@@ -100,23 +106,115 @@ class Settings():
 
     def simplifyprop(self, prop):
         if type(prop) == QPushButton: #QPushButton
-            return (str(prop.text()),str(prop.styleSheet()),str(type(prop)))
+            return (str(prop.text()),str(prop.styleSheet()),str(type(prop)),
+                    'pyqt')
         elif hasattr(prop,'isChecked'): #[QCheckBox,QRadioButton]:
-            return (prop.isChecked(),str(str(type(prop))))
+            return (prop.isChecked(),str(type(prop)),'pyqt')
         elif hasattr(prop,'text'): # QLabel, QLineEdit
-            return (str(prop.text()),str(str(type(prop))))
+            return (str(prop.text()),str(type(prop)),'pyqt')
         elif hasattr(prop,'count') and hasattr(prop,'itemText') and hasattr(prop,'currentIndex'): # QComboBox
-            return ([str(prop.itemText(c)) for c in range(prop.count())],prop.currentIndex(),str(type(prop)))
+            return ([str(prop.itemText(c)) for c in range(prop.count())],
+                    prop.currentIndex(),str(type(prop)),'pyqt')
         elif hasattr(prop,'count') and hasattr(prop,'selectedIndexes'): #QListWidget
-            return ([str(prop.item(c).text()) for c in range(prop.count())],prop.selectedIndexes(),str(type(prop)))
+            return ([str(prop.item(c).text()) for c in range(prop.count())],
+                    prop.selectedIndexes(),str(type(prop)),'pyqt')
         elif type(prop) in self.basicdtypes: # Basic datatypes
-            return (prop,str(type(prop)))
-        elif hasattr(prop,'__iter__'): # List of objects
+            return (prop,str(type(prop)),'basic')
+        elif type(prop) == list: # List of objects
             return [self.simplifyprop(item) for item in prop]
+        elif type(prop) == dict:
+            return {key:self.simplifyprop(value) for key,value in \
+                    prop.iteritems()}
         else:
             raise ValueError('Can not simplify "%s"'%(prop))
 
-    def update_from_config(self,name,obj,index=None):
+
+    def _update_pyqt_object_from_config(self,obj,config_data,index=None):
+
+        if index:
+            obj = obj[index]
+
+        if type(obj) == QPushButton: #QPushButton
+            obj.setText(config_data[0])
+            obj.setStyleSheet(config_data[1])
+            # return obj
+        elif hasattr(obj,'isChecked'): #[QCheckBox,QRadioButton]:
+            obj.setChecked(config_data[0])
+        elif hasattr(obj,'text'): # QLabel, QLineEdit
+            obj.setText(config_data[0])
+            # return obj
+        elif hasattr(obj,'count') and hasattr(obj,'itemText') and hasattr(obj,'currentIndex'): #QComboBox
+            obj.clear()
+            obj.addItems(config_data[0])
+            obj.setCurrentIndex(config_data[1])
+            # return obj
+        elif hasattr(obj,'count') and hasattr(obj,'selectedIndexes'): #QListWidget
+            # removing old items
+            obj.clear()
+            for itemlabel in config_data[0]:
+                item = QListWidgetItem()
+                item.setText(itemlabel)
+                obj.addItem(item)
+            for itemid in range(obj.count()):
+                if itemid in config_data[1]:
+                    obj.item(itemid).setSelected(True)
+                else:
+                    obj.item(itemid).setSelected(False)
+
+    def _update_basetype(self,parent,name,config_data,index=None):
+        if config_data[1] not in [str(p) for p in self.basicdtypes]: # Basic datatypes
+            raise TypeError('Attribute of type %s can not be recovered'%type(config_data))
+        elif index != None:
+            if type(parent)==list and index>=len(parent):
+                parent.append(config_data[0])
+            else:
+                parent[index] = config_data[0]
+        else:
+            setattr(parent,name,config_data[0])
+
+    def _update_list(self,obj,prop,name,index=None):
+        # obj = [] if obj == {} else obj
+        # if type(obj) != list:
+        #     raise TypeError('Wrong Type of object')
+        if any([p[-1]=='pyqt' for p in prop]) and len(prop) != len(obj):
+            raise IndexError('Wrong size of obj')
+        else:
+            if index:
+                obj = obj[index]
+            for i,_ in enumerate(prop):
+                self.update_data(obj,prop[i],name,index=i)
+
+    def _update_dict(self,obj,prop,index=None):
+        if type(obj) != dict:
+            raise TypeError('Wrong type of object')
+        if any([p[-1]=='pyqt' for p in prop]) and len(prop) != len(obj):
+            #better: check if dict contain same keys
+            raise IndexError('Wrong size of object')
+        if index:
+            if index not in obj:
+                obj[index] = {}
+            obj = obj[index]
+        # elif element:
+        #     if element not in obj:
+        #         obj[element] = {}
+        #     obj=obj[element]
+        for key, value in prop.iteritems():
+            self.update_data(obj,prop[key],name=key,index=key)
+
+
+    def _get_saved_obj(self,name):
+        prop = None
+        if name not in self.settings[self.config_name]['attributes'].keys() + self.settings[self.config_name]['objects'].keys():
+            print 'Object %s not present in saved config'%name
+        else:
+            if name in self.settings[self.config_name]['attributes']:
+                prop = self.settings[self.config_name]['attributes'][name]
+            elif name in self.settings[self.config_name]['objects']:
+                prop = self.settings[self.config_name]['objects'][name]
+        return prop
+
+
+    def update_from_config(self,name,obj):
         if not self.config_name:
             # print 'Can not get %s from config. No config loaded.'%name
             return
@@ -128,68 +226,56 @@ class Settings():
         #     print 'Exiting update_from_config, because of invalid input %s'%(str(self.get_object(name)))
         #     return
 
-        if name not in self.settings[self.config_name]['attributes'].keys() + self.settings[self.config_name]['objects'].keys():
-            print 'Object %s not present in saved config'%name
-            return
+        prop = self._get_saved_obj(name)
 
-        if name in self.settings[self.config_name]['attributes']:
-            prop = self.settings[self.config_name]['attributes'][name]
-        elif name in self.settings[self.config_name]['objects']:
-            prop = self.settings[self.config_name]['objects'][name]
-        # prop = self.get_object(name)
-        if index != None:
-            prop = prop[index]
+        # # prop = self.get_object(name)
+        # if index != None:
+        #     prop = prop[index]
+        # elif element != None:
+        #     prop = prop[element]
 
-        if type(obj)!= list:
-            if (name in self.settings[self.config_name]['attributes']) and (str(type(getattr(obj,name))) != prop[-1]):
-                raise TypeError('Object to fill has type %s but saved data fits to type %s'%(type(getattr(obj,name)),prop[-1]))
-            if (name in self.settings[self.config_name]['objects']) and (str(type(obj)) != prop[-1]):
-                raise TypeError('Object to fill has type %s but saved data fits to type %s'%(type(obj),prop[-1]))
+        if type(obj)!= list and type(obj)!= dict and type(prop)!=dict:
+            if (name in self.settings[self.config_name]['attributes']) and\
+                    (str(type(getattr(obj,name))) != prop[-2]):
+                raise TypeError('Object to fill has type %s but saved data '
+                        'fits to type %s'%(type(getattr(obj,name)),prop[-2]))
+            if (name in self.settings[self.config_name]['objects']) and \
+                    (str(type(obj)) != prop[-2]):
+                raise TypeError('Object to fill has type %s but saved data '
+                                'fits to type %s'%(type(obj),prop[-2]))
+        self.update_data(obj,prop,name)
 
-        # if name in self.settings[self.config_name]['attributes']:
-        #     prop = self.settings[self.config_name]['attributes'][name]
-        # elif name in self.settings[self.config_name]['objects']:
-        #     prop = self.settings[self.config_name]['objects'][name]
-        # else:
-        #     raise ValueError('"%s" is not registered'%name)
 
-        if type(obj) == QPushButton: #QPushButton
-            obj.setText(prop[0])
-            obj.setStyleSheet(prop[1])
-            # return obj
-        elif hasattr(obj,'isChecked'): #[QCheckBox,QRadioButton]:
-            obj.setChecked(prop[0])
-        elif hasattr(obj,'text'): # QLabel, QLineEdit
-            obj.setText(prop[0])
-            # return obj
-        elif hasattr(obj,'count') and hasattr(obj,'itemText') and hasattr(obj,'currentIndex'): #QComboBox
-            obj.clear()
-            obj.addItems(prop[0])
-            obj.setCurrentIndex(prop[1])
-            # return obj
-        elif hasattr(obj,'count') and hasattr(obj,'selectedIndexes'): #QListWidget
-            # removing old items
-            obj.clear()
-            for itemlabel in prop[0]:
-                item = QListWidgetItem()
-                item.setText(itemlabel)
-                obj.addItem(item)
-            for itemid in range(obj.count()):
-                if itemid in prop[1]:
-                    obj.item(itemid).setSelected(True)
-                else:
-                    obj.item(itemid).setSelected(False)
-            # return obj
-        elif hasattr(obj,name):
-            if prop[1] not in [str(p) for p in self.basicdtypes]: # Basic datatypes
-                raise TypeError('Attribute of type %s can not be recovered'%type(prop))
-            else:
-                setattr(obj,name,prop[0])
-            # return (prop,type(prop))
-        elif hasattr(obj,'__iter__'): # List of objects
-            if len(obj) == len(prop):
-                for i,item in enumerate(obj):
-                    self.update_from_config(name,item,index=i)
+    def update_data(self,obj,prop,name,index=None):
+
+        if type(prop)==tuple and prop[-1] == 'pyqt':
+            self._update_pyqt_object_from_config(obj,prop,index=index)
+        elif type(prop)==tuple and prop[-1] == 'basic':
+            self._update_basetype(obj,name,prop,index=index)
+        elif type(prop) == list:
+            self._update_list(obj,prop,name,index=index)
+        elif type(prop) == dict:
+            self._update_dict(obj,prop,index=index)
+
+        #     # return (prop,type(prop))
+        # elif type(obj)==list: # List of objects
+        #     # list of strings can be generated
+        #     if type(obj[0])==str and prop[0][1] == str(type('')):
+        #         for o in range(len(obj)):
+        #             obj.pop(0)
+        #         for p, pro in enumerate(prop):
+        #             obj.append(prop[p][0])
+        #     # list of objects (has to have same length as saved list)
+        #     elif len(obj) == len(prop):
+        #         for i,item in enumerate(obj):
+        #             self.update_from_config(name,item,index=i)
+        # elif type(obj)==dict:
+        #     obj.clear()
+        #     for key in prop:
+        #         # obj[element] = None
+        #
+        #         obj[key] = self.update_from_config(name,obj,element=key)
+
         else:
             raise ValueError('Can not update object "%s" from config "%s"'%(obj,name))
 

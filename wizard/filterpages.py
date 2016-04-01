@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 
 from pageutils import *
 
-from  odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
+from odmltables import odml_table
 
 
 class LoadFilePage(QIWizardPage):
@@ -43,7 +43,8 @@ class LoadFilePage(QIWizardPage):
         hbox1.addStretch()
         vbox.addLayout(hbox1)
 
-        self.cbcustominput = QCheckBox('I changed the column names in the input table.')
+        self.cbcustominput = QCheckBox('I changed the column names in the i'
+                                       'nput table.')
         self.cbcustominput.setEnabled(False)
         self.settings.register('CBcustominput',self.cbcustominput)
         vbox.addWidget(self.cbcustominput)
@@ -70,7 +71,8 @@ class LoadFilePage(QIWizardPage):
             # loading output format choice
             self.settings.register('CBcustominput',self.cbcustominput)
             self.settings.register('inputfilename', self,useconfig=False)
-            short_filename = shorten_path(self.settings.get_object('inputfilename'))
+            short_filename = shorten_path(self.settings.get_object(
+                     'inputfilename'))
             self.inputfile.setText(short_filename)
             # self.settings.get_object('RBoutputxls')
 
@@ -90,12 +92,17 @@ class LoadFilePage(QIWizardPage):
 
     def validatePage(self):
 
-        if (not self.settings.is_registered('inputfilename')) or (not self.settings.get_object('inputfilename')):
-            QMessageBox.warning(self,'Select an input file','You need to select an input file to continue.')
+        if ((not self.settings.is_registered('inputfilename')) or
+                (not self.settings.get_object('inputfilename'))):
+            QMessageBox.warning(self,'Select an input file',
+                                'You need to select an input file to continue.')
             return 0
 
-        elif self.settings.get_object('inputfilename').split('.')[-1] not in ['xls', 'csv', 'odml']:
-            QMessageBox.warning(self,'Wrong input format','The input file has to be an ".xls", ".csv" or ".odml" file.')
+        elif self.settings.get_object('inputfilename').split('.')[-1] \
+                not in ['xls', 'csv', 'odml']:
+            QMessageBox.warning(self,'Wrong input format',
+                                'The input file has to be an ".xls", ".csv" or '
+                                '".odml" file.')
             return 0
 
         return 1
@@ -116,7 +123,8 @@ class CustomInputHeaderPage(QIWizardPage):
         super(CustomInputHeaderPage, self).__init__(parent)
 
         self.setTitle("Provide information about your input file")
-        self.setSubTitle("Which titles were used for which odml column in you input file. Select the corresponding odml columns.")
+        self.setSubTitle("Which titles were used for which odml column in you "
+                         "input file. Select the corresponding odml columns.")
 
         # Set up layout
         self.vbox = QVBoxLayout()
@@ -133,7 +141,8 @@ class CustomInputHeaderPage(QIWizardPage):
 
 
         # Adding input part
-        topLabel = QLabel(self.tr("Provide the column types used in the input table"))
+        topLabel = QLabel(self.tr("Provide the column types used in the "
+                                  "input table"))
         topLabel.setWordWrap(True)
         vbox.addSpacing(20)
         vbox.addWidget(topLabel)
@@ -186,20 +195,23 @@ class CustomInputHeaderPage(QIWizardPage):
         for h in self.customheaders:
             header_name = h.currentText()
             if header_name in header_names:
-                QMessageBox.warning(self, self.tr("Non-unique headers"), self.tr("Header assignment has"
-                                                  " to be unique. '%s' has been"
-                                                  " assigned multiple times"%header_name))
+                QMessageBox.warning(self, self.tr("Non-unique headers"),
+                                    self.tr("Header assignment has"
+                                      " to be unique. '%s' has been"
+                                      " assigned multiple times"%header_name))
                 return 0
             header_names.append(header_name)
 
         # check for mandatory headers
-        mandatory_headers = ['Path to Section', 'Property Name', 'Value', 'odML Data Type']
+        mandatory_headers = ['Path to Section', 'Property Name', 'Value',
+                             'odML Data Type']
         for mand_head in mandatory_headers:
             if mand_head not in header_names:
-                QMessageBox.warning(self, self.tr("Incomplete headers"), self.tr("You need to have the mandatory"
-                                                                                 " headers %s in you table to be"
-                                                                                 " able to reconstruct an odml"
-                                                                                 ""%mandatory_headers))
+                QMessageBox.warning(self, self.tr("Incomplete headers"),
+                                    self.tr("You need to have the mandatory"
+                                             " headers %s in you table to be"
+                                             " able to reconstruct an odml"
+                                             ""%mandatory_headers))
                 return 0
         return 1
 
@@ -213,115 +225,184 @@ class FilterPage(QIWizardPage):
         super(FilterPage, self).__init__(parent)
 
         self.odmltreeheaders = ['Content',
-                                'Value','DataUncertainty','DataUnit','odmlDatatype','ValueDefinition',
+                                'Value','DataUncertainty','DataUnit',
+                                'odmlDatatype','ValueDefinition',
                                 'PropertyName','PropertyDefinition',
                                 'SectionName','SectionType','SectionDefinition']
 
         self.setTitle("Filter your data")
-        self.setSubTitle("Create your filters and apply them to the odml-tables structure.")
+        self.setSubTitle("Create your filters and apply them to the "
+                         "odml-tables structure.")
 
         self.filters = {}
 
-        # filtersettingsframe = QFrame()
-        # hbox = QHBoxLayout()
-        # hbox.addWidget(filtersettingsframe)
-        # self.setLayout(hbox)
-
         hbox = QVBoxLayout(self)
 
-        left = QFrame(self)
-        left.setFrameShape(QFrame.StyledPanel)
-        left.setMinimumHeight(450)
-        left.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
-        self.vboxleft = QVBoxLayout()
-        left.setLayout(self.vboxleft)
+        # set up FILTER CREATOR FRAME
+        frame_filtercreator = QFrame(self)
+        frame_filtercreator.setFrameShape(QFrame.StyledPanel)
+        frame_filtercreator.setMinimumHeight(600)
+        frame_filtercreator.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.vbox_filtercreator = QVBoxLayout()
+        frame_filtercreator.setLayout(self.vbox_filtercreator)
 
-        leftbottom = QFrame(self)
-        leftbottom.setFrameShape(QFrame.StyledPanel)
-        self.vboxleftbottom = QVBoxLayout()
-        leftbottom.setLayout(self.vboxleftbottom)
-        leftbottom.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
-        right = QFrame(self)
-        right.setFrameShape(QFrame.StyledPanel)
-        vboxright = QVBoxLayout()
-        right.setLayout(vboxright)
+        # Title
+        filtercreatorlabel = QLabel('Filter Creator')
+        filtercreatorlabel.setStyleSheet('font: bold; font-size: 14pt')
+        self.vbox_filtercreator.addWidget(filtercreatorlabel)
 
-        self.filtersettingsgrid = QGridLayout()
-        self.filtersettingsgrid.addWidget(QLabel('mode'),0,0)
-        self.filtersettingsgrid.addWidget(QLabel('invert'),1,0)
-        self.filtersettingsgrid.addWidget(QLabel('recursive'),2,0)
-        self.compfunclabel = QLabel(self.tr('comparison\nfunction'))
-        self.filtersettingsgrid.addWidget(self.compfunclabel,3,0)
+        # set up FILTER MODE FRAME
+        groupbox_filtermode = QGroupBox(self.tr('Mode'))
+        groupbox_filtermode.setStyleSheet('QGroupBox {border: 1px solid gray; '
+                                            'border-radius: 5px; margin-top: '
+                                            '0.5em}'
+                                       'QGroupBox::title {'
+                                            'subcontrol-origin: margin;'
+                                            'left: 10px;'
+                                            'padding: 0 3px 0 3px;}')
+        self.grid_filtermode = QGridLayout()
+        groupbox_filtermode.setLayout(self.grid_filtermode)
 
         self.rbAND = QRadioButton(self.tr('&& [AND]'))
         self.rbOR = QRadioButton('| [OR]')
         self.rbAND.setChecked(True)
-        self.filtersettingsgrid.addWidget(self.rbAND,0,1)
-        self.filtersettingsgrid.addWidget(self.rbOR,0,2)
+        self.cbinvert = QCheckBox('invert')
+        self.cbrecursive = QCheckBox('recursive')
+        self.grid_filtermode.addWidget(self.rbAND,0,0)
+        self.grid_filtermode.addWidget(self.rbOR,0,1)
+        self.grid_filtermode.addWidget(self.cbinvert)
+        self.grid_filtermode.addWidget(self.cbrecursive)
 
-        self.cbinvert = QCheckBox()
-        self.filtersettingsgrid.addWidget(self.cbinvert,1,1)
+        self.vbox_filtercreator.addWidget(groupbox_filtermode)
 
-        self.cbrecursive = QCheckBox()
-        self.filtersettingsgrid.addWidget(self.cbrecursive,2,1)
+        # set up FILTER FUNCTION FRAME
+        groupbox_filterfunction = QGroupBox(self.tr('Filter Function'))
+        groupbox_filterfunction.setStyleSheet('QGroupBox {border: 1px solid '
+                                            'gray; '
+                                            'border-radius: 5px; margin-top: '
+                                            '0.5em}'
+                                       'QGroupBox::title {'
+                                            'subcontrol-origin: margin;'
+                                            'left: 10px;'
+                                            'padding: 0 3px 0 3px;}')
+        self.grid_filterfunction = QGridLayout()
+        groupbox_filterfunction.setLayout(self.grid_filterfunction)
 
-        self.lwcomparisonfunc = QListWidget()
-        self.lwcomparisonfunc.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        self.filtersettingsgrid.addWidget(self.lwcomparisonfunc,3,1,1,2)
+        self.vbox_filtercreator.addWidget(groupbox_filterfunction)
 
-#       ########### KEY-Value Part ##################
-        self.keygrid = QGridLayout()
-        self.keygrid.addWidget(QLabel('key'),0,0)
-        self.keygrid.addWidget(QLabel('value'),0,1)
+        # set up ADD FILTER FUNCTION FRAME
+        groupbox_addfilterfunction = QGroupBox(self.tr('Custom Filter '
+                                                       'Function Creator'))
+        groupbox_addfilterfunction.setStyleSheet('QGroupBox {border: 1px solid '
+                                            'gray; '
+                                            'border-radius: 5px; margin-top: '
+                                            '0.5em}'
+                                       'QGroupBox::title {'
+                                            'subcontrol-origin: margin;'
+                                            'left: 10px;'
+                                            'padding: 0 3px 0 3px;}')
 
-        # self.cbkeys = QComboBox()
-        # self.cbvalue = QLineEdit()
+        self.grid_addfilterfunction = QGridLayout()
+        self.grid_addfilterfunction.setSizeConstraint(QLayout.SetMinimumSize)
+        groupbox_addfilterfunction.setLayout(self.grid_addfilterfunction)
 
-        ###############################
-        filtercreatorlabel = QLabel('Filter Creator')
-        filtercreatorlabel.setStyleSheet('font: bold; font-size: 14pt')
-        self.vboxleft.addWidget(filtercreatorlabel)
-        self.vboxleft.addLayout(self.filtersettingsgrid)
-        self.vboxleft.addStretch()
-        # self.vboxleft.addWidget(QPushButton('test'))
-        # self.vboxleft.addLayout(self.keygrid)
-        self.filtersettingsgrid.addLayout(self.keygrid,4,0,1,3,)
+        self.grid_addfilterfunction.addWidget(QLabel('Filter Function Name'),
+                                              0,0)
+        self.grid_addfilterfunction.addWidget(QLabel('Filter Function'),0,1)
 
-        self.pbaddkey = QPushButton('+')
-        self.pbremovekey = QPushButton('-')
-        self.pbaddkey.clicked.connect(self._add_key_value_pair)
-        self.pbremovekey.clicked.connect(self._remove_key_value_pair)
-        self.pbaddkeylayout = QHBoxLayout()
-        self.pbaddkeylayout.addStretch()
-        self.pbaddkeylayout.addWidget(self.pbaddkey)
-        self.pbaddkeylayout.addWidget(self.pbremovekey)
-        self.pbaddkeylayout.addStretch()
-        self.vboxleft.addLayout(self.pbaddkeylayout)
-        self.vboxleft.addStretch()
+        fname_layout = QHBoxLayout()
+        self.lineedit_filtername = QLineEdit()
+        fname_layout.addWidget(self.lineedit_filtername)
+        fname_layout.addSpacing(30)
+        self.grid_addfilterfunction.addLayout(fname_layout,1,0)
+        fxy_layout = QHBoxLayout()
+        fxy_layout.addWidget(QLabel('f(x,y)='))
+        self.lineedit_fxy = QLineEdit()
+        fxy_layout.addWidget(self.lineedit_fxy)
+        self.grid_addfilterfunction.addLayout(fxy_layout,1,1)
+        add_button = QPushButton('Add')
+        add_button.setFixedWidth(50)
+        add_button.clicked.connect(self.new_filter_func)
+        self.grid_addfilterfunction.addWidget(add_button,1,2)
 
-        self.pbaddfilter = QPushButton('Add filter')
-        self.pbaddfilter.clicked.connect(self.addfilter)
-        self.vboxleft.addWidget(self.pbaddfilter)
+        self.vbox_filtercreator.addWidget(groupbox_addfilterfunction)
+
+        # set up ATTRIBUTE FRAME
+        self.groupbox_attributes = QGroupBox(self.tr('Attribute Criteria'))
+        self.groupbox_attributes.setStyleSheet('QGroupBox {border: 1px solid '
+                                            'gray; '
+                                            'border-radius: 5px; margin-top: '
+                                            '0.5em}'
+                                       'QGroupBox::title {'
+                                            'subcontrol-origin: margin;'
+                                            'left: 10px;'
+                                            'padding: 0 3px 0 3px;}')
+
+        self.grid_attributes = QGridLayout()
+        self.grid_attributes.setSizeConstraint(QLayout.SetMinimumSize)
+        self.groupbox_attributes.setLayout(self.grid_attributes)
+
+        self.grid_attributes.addWidget(QLabel('Attribute (x)'),0,1)
+        self.grid_attributes.addWidget(QLabel('Value (y)'),0,2)
+
+
+        add_button = QPushButton('+')
+        add_button.setFixedWidth(30)
+        add_button.clicked.connect(self.update_attributes)
+        self.grid_attributes.addWidget(add_button,1,0)
+
+        self.vbox_filtercreator.addWidget(self.groupbox_attributes)
+
+        # APPLY FILTER BUTTON
+        self.groupbox_applybutton = QGroupBox()
+        apply_filter_button = QPushButton('Apply Filter')
+        apply_filter_button.clicked.connect(self.applyfilter)
+        vbox_applybutton = QVBoxLayout()
+        self.groupbox_applybutton.setLayout(vbox_applybutton)
+        vbox_applybutton.addWidget(apply_filter_button)
+        self.vbox_filtercreator.addWidget(self.groupbox_applybutton)
+
+        self.vbox_filtercreator.addStretch()
+
+        ########################
+        # APPLIED FILTERS FRAME
+        frame_appliedfilters = QFrame(self)
+        frame_appliedfilters.setFrameShape(QFrame.StyledPanel)
+        self.vbox_appliedfilters = QVBoxLayout()
+        frame_appliedfilters.setLayout(self.vbox_appliedfilters)
+        frame_appliedfilters.setSizePolicy(QSizePolicy.Expanding,
+                                           QSizePolicy.Expanding)
+
 
         filterlabel = QLabel('Applied filters')
         filterlabel.setStyleSheet('font: bold; font-size: 14pt')
-        self.vboxleftbottom.addWidget(filterlabel)
+        self.vbox_appliedfilters.addWidget(filterlabel)
 
         self.lwfilters = QListWidget()
-        self.lwfilters.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
-        self.vboxleftbottom.addWidget(self.lwfilters)
+        self.lwfilters.setSizePolicy(QSizePolicy.Expanding,
+                                     QSizePolicy.Expanding)
+        self.vbox_appliedfilters.addWidget(self.lwfilters)
 
         self.pbremovefilter = QPushButton('Remove filter')
         self.pbremovefilter.clicked.connect(self.removefilter)
-        self.vboxleftbottom.addWidget(self.pbremovefilter)
+        self.vbox_appliedfilters.addWidget(self.pbremovefilter)
 
-        ###################################
+        ###########################
+        # TREE REPRESENTATION FRAME
+        frame_treerepresentation = QFrame(self)
+        frame_treerepresentation.setFrameShape(QFrame.StyledPanel)
+        vbox_treerepresentation = QVBoxLayout()
+        frame_treerepresentation.setLayout(vbox_treerepresentation)
+        frame_treerepresentation.setSizePolicy(QSizePolicy.Expanding,
+                                               QSizePolicy.Expanding)
+
         self.odmltree = QTreeWidget()
         self.odmltree.setColumnCount(2)
         self.odmltree.setHeaderLabels(self.odmltreeheaders)
         self.odmltree.setSelectionMode(3)
         self.odmltree.setMinimumWidth(500)
-        self.odmltree.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.odmltree.setSizePolicy(QSizePolicy.Expanding,
+                                    QSizePolicy.Expanding)
 
         columnwidths = [50]*len(self.odmltreeheaders)
         columnwidths[0:3] = [250,100,100]
@@ -329,168 +410,242 @@ class FilterPage(QIWizardPage):
 
 
 
-        vboxright.addWidget(self.odmltree)
+        vbox_treerepresentation.addWidget(self.odmltree)
 
         splitterv = QSplitter(Qt.Vertical)
-        splitterv.addWidget(left)
-        splitterv.addWidget(leftbottom)
+        splitterv.addWidget(frame_filtercreator)
+        splitterv.addWidget(frame_appliedfilters)
 
         splitter2 = QSplitter(Qt.Horizontal)
         splitter2.addWidget(splitterv)
-        splitter2.addWidget(right)
+        splitter2.addWidget(frame_treerepresentation)
 
         hbox.addWidget(splitter2)
         self.setLayout(hbox)
 
+        self.groupbox_attributes.setFixedHeight(100)
+
+        self.grid_attributes.itemAtPosition(1,0).widget().click()
+
 
     def initializePage(self):
-        self._add_key_value_pair()
+        # self.update_attributes()
 
-        comparison_functions = {'==\t[x==y]': lambda x,y:x==y,
-                                'endswith\t[hasattr(x,"endswith") and x.endswith(y)]': lambda x,y: hasattr(x,'endswith') and x.endswith(y),
-                                'startswith\t[hasattr(x,"startswith") and x.startswith(y)]': lambda x,y: hasattr(x,'startswith') and x.startswith(y),
-                                'is in list\t[x in y]': lambda  x,y: x in y,
-                                'contains\t[type(x)==str and y in x]': lambda  x,y: type(x)==str and y in x}
-        for cf_name in comparison_functions:
-            self.lwcomparisonfunc.addItems([cf_name])
-        self._add_custom_item_to_list(self.lwcomparisonfunc)
-        # self.lwcomparisonfunc.item(0).setSelected(True)
-        self.lwcomparisonfunc.setCurrentRow(0)
-        self.lwcomparisonfunc.setFixedHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
-        self.lwcomparisonfunc.setMinimumHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
-        self.compfunclabel.setMinimumHeight(self.lwcomparisonfunc.sizeHintForRow(0) * (self.lwcomparisonfunc.count() +1) + 2 * self.lwcomparisonfunc.frameWidth())
-        self.layout().invalidate()
-        self.lwcomparisonfunc.itemChanged.connect(self.new_comparison_func)
+        self.default_filter_functions = [
+            ('==\t[x==y]',
+                'x==y'),
+            ('endswith\t[hasattr(x,"endswith") and x.endswith(y)]',
+                'hasattr(x,"endswith") and x.endswith(y)'),
+            ('startswith\t[hasattr(x,"startswith") and x.startswith(y)]',
+                'hasattr(x,"startswith") and x.startswith(y)'),
+            ('is in list\t[x in y]',
+                'x in y'),
+            ('contains\t[type(x)==str and y in x]',
+                'type(x)==str and y in x')]
+
+        # self.filter_functions = copy.deepcopy(self.default_filter_functions)
+
+        clearLayout(self.grid_filterfunction)
+
+        self.filterfunctionnames = [f[0] for f in self.default_filter_functions]
+        self.filterfunctions = [f[1] for f in self.default_filter_functions]
+
+        self.settings.register('filterfunctionnames',self.filterfunctionnames)
+        self.settings.register('filterfunctions',self.filterfunctions)
+
+        self.view_filterfunctions()
 
         self.load_odml()
+
+        self.settings.register('filters',self.filters)
+
+        self.run_all_filters()
+
+        self.lwfilters.clear()
+
+        for filter in self.filters.values():
+            filter_name = self._get_filter_name(filter)
+            self._show_applied_filter(filter,filter_name)
 
         self.odmltree.expandToDepth(0)
 
 
-# def filter(self,mode='and',invert=False,recursive=False,comparison_func=lambda x,y: x==y,**kwargs):
-        """
-        filters odml properties according to provided kwargs.
+    def view_filterfunctions(self):
+        clearLayout(self.grid_filterfunction)
 
-        :param mode: Possible values: 'and', 'or'. For 'and' all keyword arguments
-                must be satisfied for a property to be selected. For 'or' only one
-                of the keyword arguments must be satisfied for the property to be
-                selected. Default: 'and'
-        :param invert: Inverts filter function. Previously accepted properties
-                are rejected and the other way round. Default: False
-        :param recursive: Delete also properties attached to subsections of the
-                mother section and therefore complete branch
-        :param comparison_func: Function used to compare dictionary entry to
-               keyword. Eg. 'lambda x,y: x.startswith(y)' in case of strings or
-               'lambda x,y: x in y' in case of multiple permitted values.
-               Default: lambda x,y: x==y
-        :param kwargs: keywords and values used for filtering
-        :return: None
-        """
+        for f,filter in enumerate(zip(self.filterfunctionnames,self.filterfunctions)):
+            filter_name = filter[0]
+            filter_abbr = filter_name.split('[')[0].strip(' ').rstrip('\t')
+            filter_func_str = filter[1]
+            self.grid_filterfunction.addWidget(QLabel(filter_abbr),f,1)
+            self.grid_filterfunction.addWidget(QRadioButton(filter_func_str),
+                                               f,2)
+            if f >= len(self.default_filter_functions):
+                remove_button = QPushButton('-')
+                remove_button.setFixedWidth(30)
+                remove_button.clicked.connect(self.removefilterfunction)
+                self.grid_filterfunction.addWidget(remove_button,f,0)
 
-    def _add_custom_item_to_list(self,list):
-        item = QListWidgetItem('add custom function\t[f(x,y)]')
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
-        list.addItem(item)
+        self.grid_filterfunction.itemAtPosition(0,2).widget().setChecked(True)
 
-    def new_comparison_func(self,item):
-        # item = self.sender().currentItem()
-        if str(item.text()) != 'add custom function\t[f(x,y)]':
-            if '[' in item.text() and ']' in item.text():
-                if item.flags() & Qt.ItemIsEditable:
-                    # item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                    self._add_custom_item_to_list(self.sender())
-            else:
-                QMessageBox.warning(self,'No function defined','You need to define your comparison function within brakets [].')
 
-    def _add_key_value_pair(self):
-        all_keys =self.odmltreeheaders[1:]
-        n_keys = self._get_number_of_keys()
+    def new_filter_func(self):
 
-        if n_keys >= len(all_keys):
+        if len(self.filterfunctions) >= len(self.default_filter_functions) + 5:
+            QMessageBox.warning(self,'Too many functions',
+                                'You can only define up to 5 custom functions.')
             return
 
-        keycb = QComboBox()
-        keycb.addItems(all_keys)
-        # for id in range(keycb.count()):
-        #     if id in [self.keygrid.itemAtPosition(i,0).widget().currentIndex() for i in range(1,self._get_number_of_keys())]:
-        #         keycb.model().item(id).setEnabled(False)
-        #     else:
-        #         keycb.model().item(id).setEnabled(True)
-        valueedit = QLineEdit()
-        keycb.setMinimumSize(keycb.sizeHint())
-        valueedit.setMinimumSize(keycb.sizeHint())
-        self.keygrid.addWidget(keycb,n_keys,0)
-        self.keygrid.addWidget(valueedit,n_keys,1)
-        # self.update_enabled_keys(combobox=keycb)
-        keycb.currentIndexChanged.connect(self.update_enabled_keys)
+        fname = str(self.lineedit_filtername.text())
+        fstr = str(self.lineedit_fxy.text())
 
-        for i in [self.keygrid.itemAtPosition(w,0).widget().currentIndex() for w in range(1,self._get_number_of_keys()-1)]:
-            keycb.model().item(i).setEnabled(False)
+        # consistency checks
+        if not (fname and fstr):
+            QMessageBox.warning(self,'No function defined',
+                                'You need to define your a function name and '
+                                'a function expression depending on the '
+                                'attribute (x) and the value (y).')
+            return
+        elif '[' in fname or '[' in fstr or ']' in fname or ']' in fstr:
+            QMessageBox.warning(self,'Invalid expression',
+                                'You can not use square brackets to define '
+                                'your function. Please adapt your function '
+                                'accordingly.')
+            return
+        elif '%s\t[%s]'%(fname,fstr) in self.filterfunctionnames:
+            QMessageBox.warning(self,'Function already exists',
+                                'You can not define a function with name %s, '
+                                'a function of this name already exists'%(
+                                    fname))
+            return
 
-        # setting current index to first enabled one
-        for i in range(keycb.count()):
-            if keycb.model().item(i).isEnabled():
-                keycb.setCurrentIndex(i)
-                break
 
-        # setting current index to first enabled one
-        # for i in range(len(all_keys)):
-        #     if i not in [self.keygrid.itemAtPosition(w,0).widget().currentIndex() for w in range(1,self._get_number_of_keys()-1)]: #current indices in all comboboxes
-        #         keycb.setCurrentIndex(i)
-        #         break
+        self.filterfunctionnames.append('%s\t[%s]'%(fname,fstr))
+        self.filterfunctions.append('%s'%fstr)
+        self.view_filterfunctions()
 
-        # self.keygrid.addWidget(keyedit,i,0,alignment=Qt.AlignTop)
-        # self.keygrid.addItem(valueedit,i,1,rowSpan=-1,columnSpan=-1)
-        self.keygrid.invalidate()
+        # set last radiobutton activated
+        i = 0
+        while self.grid_filterfunction.itemAtPosition(i,2):
+            i+=1
+        self.grid_filterfunction.itemAtPosition(i-1,2).widget().setChecked(True)
+
+
+    def update_attributes(self):
+        sender = self.sender()
+        nattributes = self._get_number_of_keys()
+        idx = self.grid_attributes.indexOf(sender)
+        location = self.grid_attributes.getItemPosition(idx)
+
+        # in case of full line -> remove line
+        if self.grid_attributes.itemAtPosition(location[0],location[1]+1):
+            # deleting row
+            tbr = [self.grid_attributes.itemAtPosition(location[0],location[
+                1]+i).widget() for i in range(3)]
+            for widget in tbr:
+                self.grid_attributes.removeWidget(widget)
+                widget.deleteLater()
+
+            # moving lower widgets upward
+            for row_id in range(location[0]+1,nattributes+1):
+                for col_id in range(3):
+                    item = self.grid_attributes.itemAtPosition(row_id,
+                                                                col_id)
+                    widget = item.widget() if hasattr(item,'widget') else None
+                    if widget:
+                        widx = self.grid_attributes.indexOf(widget)
+                        wloc = self.grid_attributes.getItemPosition(widx)
+
+                        self.grid_attributes.removeWidget(widget)
+                        self.grid_attributes.addWidget(widget,wloc[0]-1,wloc[1])
+
+            self.update_enabled_keys()
+
+        # in case of an empty line -> add line
+        else:
+            # moving add button
+            widx = self.grid_attributes.indexOf(sender)
+            wloc = self.grid_attributes.getItemPosition(widx)
+            if wloc[0] < len(self.odmltreeheaders)-1:
+                self.grid_attributes.removeWidget(sender)
+                self.grid_attributes.addWidget(sender,wloc[0]+1,wloc[1])
+
+                # adding row
+                removebutton = QPushButton('-')
+                removebutton.setFixedWidth(30)
+                removebutton.clicked.connect(self.update_attributes)
+                self.grid_attributes.addWidget(removebutton,*wloc)
+
+                all_keys = self.odmltreeheaders[1:]
+                # get previously selected ids
+                selected_ids = []
+                for combobox_id in range(1,self._get_number_of_keys()):
+                    combobox = self.grid_attributes.itemAtPosition(combobox_id,1).widget()
+                    selected_ids.append(combobox.currentIndex())
+
+                keycb = QComboBox()
+                keycb.addItems(all_keys)
+                keycb.currentIndexChanged.connect(self.update_enabled_keys)
+
+                self.grid_attributes.addWidget(keycb,wloc[0],wloc[1]+1)
+                self.grid_attributes.addWidget(QLineEdit(),wloc[0],wloc[1]+2)
+
+                # set to first non-selected id
+                for id in range(len(self.odmltreeheaders)):
+                    if id not in selected_ids:
+                        keycb.setCurrentIndex(id)
+                        break
+
+            else:
+                QMessageBox.warning(self,'Too many attributes',
+                                    'You can not define more than %s '
+                                    'attributes.'%(len(
+                                            self.odmltreeheaders)-1))
+
         self.layout().invalidate()
-        self.filtersettingsgrid.invalidate()
-        self.vboxleft.invalidate()
+
 
     def update_enabled_keys(self):
         # get selected item_ids
         selected_ids = []
         for combobox_id in range(1,self._get_number_of_keys()):
-            combobox = self.keygrid.itemAtPosition(combobox_id,0).widget()
+            combobox = self.grid_attributes.itemAtPosition(combobox_id,1).widget()
             selected_ids.append(combobox.currentIndex())
 
         # set selected ids disabled in other comboboxes
         for combobox_id in range(1,self._get_number_of_keys()):
-            combobox = self.keygrid.itemAtPosition(combobox_id,0).widget()
+            combobox = self.grid_attributes.itemAtPosition(combobox_id,1).widget()
             for item_id in range(combobox.count()):
-                if item_id in selected_ids and combobox.currentIndex() != item_id:
+                if item_id in selected_ids and \
+                                combobox.currentIndex() != item_id:
                     combobox.model().item(item_id).setEnabled(False)
                 else:
                     combobox.model().item(item_id).setEnabled(True)
 
-    def _remove_key_value_pair(self):
-        n_keys = self._get_number_of_keys()
-        if n_keys>1: # not removing the column titles
-            tbr = [self.keygrid.itemAtPosition(n_keys-1,0).widget(),self.keygrid.itemAtPosition(n_keys-1,1).widget()]
-            curr_ind = tbr[0].currentIndex()
-            for tbr_item in tbr:
-                self.keygrid.removeWidget(tbr_item)
-                tbr_item.deleteLater()
-            self.keygrid.invalidate()
-
-            self.update_enabled_keys()
-            # for nkey in range(1,n_keys-1):
-            #     cb = self.keygrid.itemAtPosition(nkey,0).widget()
-            #     cb.model().item(curr_ind).setEnabled(True)
 
     def _get_number_of_keys(self):
         i = 0
-        while self.keygrid.itemAtPosition(i,0):
+        while self.grid_attributes.itemAtPosition(i,1):
             i += 1
         return i
 
-    def addfilter(self):
+    def applyfilter(self):
 
-        compfuncstr = str(self.lwcomparisonfunc.currentItem().text())
+        # get selected filterfunction
+        for id in range(self.grid_filterfunction.count()):
+            widget = self.grid_filterfunction.itemAt(id).widget()
+            if hasattr(widget,'isChecked') and widget.isChecked():
+                wloc = self.grid_filterfunction.getItemPosition(id)
+                break
+
+        filterfuncstr = self.filterfunctions[wloc[0]]
 
         # checking data consistency
-        if compfuncstr in ['endswith\t[hasattr(x,"endswith") and x.endswith(y)]', 'startswith\t[hasattr(x,"startswith") and x.startswith(y)]']:
+        if filterfuncstr in ['hasattr(x,"endswith") and x.endswith(y)',
+                             'hasattr(x,"startswith") and x.startswith(y)']:
             for i in range(1,self._get_number_of_keys()):
-                value = str(self.keygrid.itemAtPosition(i,1).widget().text())
+                value = str(self.grid_attributes.
+                            itemAtPosition(i,2).widget().text())
                 try:
                     valuetype = type(eval(value))
                 # if (value[0] not in ['"',"'"]) or (value[-1] not in ['"',"'"]):
@@ -498,16 +653,18 @@ class FilterPage(QIWizardPage):
                     valuetype = None
 
                 if valuetype  not in [str,unicode]:
-                    QMessageBox.warning(self,'String input required','To be able to use the startswith or endswith '
-                                                                     'comparison function you need to provide a string '
-                                                                     'to compare to. You can define a string by using '
-                                                                     'quotation marks at the beginning and end of your '
-                                                                     'text (eg. "my string")')
+                    QMessageBox.warning(self,'String input required',
+                             'To be able to use the startswith or endswith '
+                             'filter function you need to provide a string '
+                             'to compare to. You can define a string by using '
+                             'quotation marks at the beginning and end of your '
+                             'text (eg. "my string")')
                     return
 
-        elif compfuncstr == 'is in list\t[x in y]':
+        elif filterfuncstr == 'x in y':
             for i in range(1,self._get_number_of_keys()):
-                value = str(self.keygrid.itemAtPosition(i,1).widget().text())
+                value = str(self.grid_attributes.
+                            itemAtPosition(i,2).widget().text())
                 # if (value[0] !='[') or (value[-1] != ']'):
                 try:
                     valuetype = type(eval(value))
@@ -515,11 +672,12 @@ class FilterPage(QIWizardPage):
                     valuetype = None
 
                 if not hasattr(valuetype,'__iter__'):
-                    QMessageBox.warning(self,'List input required','To be able to use the "is in" '
-                                                                     'comparison function you need to provide a list '
-                                                                     'to compare to. You can define a list by using '
-                                                                     'square brackets at the beginning and end of your '
-                                                                     'list (eg. ["option1","option2"] or [1,2,3,4])')
+                    QMessageBox.warning(self,'List input required',
+                             'To be able to use the "is in" '
+                             'filter function you need to provide a list '
+                             'to compare to. You can define a list by using '
+                             'square brackets at the beginning and end of your '
+                             'list (eg. ["option1","option2"] or [1,2,3,4])')
                     return
 
 
@@ -528,34 +686,88 @@ class FilterPage(QIWizardPage):
         filter['mode'] = 'and' if self.rbAND.isChecked() else 'or'
         filter['invert'] = self.cbinvert.isChecked()
         filter['recursive'] = self.cbrecursive.isChecked()
+        filter['compfuncstr'] =filterfuncstr
         try:
-            filter['compfunc'] = lambda x,y: eval(compfuncstr.split('[')[1].split(']')[0])
+            compfunc = lambda x,y:\
+                                eval(filter['compfuncstr'])
         except SyntaxError:
-            QMessageBox.warning(self,'Incorrect syntax', 'Your comparison function has an incorrect syntax. Please fix it and try again.')
+            QMessageBox.warning(self,'Incorrect syntax',
+                                'Your filter function has an incorrect '
+                                'syntax. Please fix it and try again.')
             return
         filter['kwargs'] = {}
         for i in range(1,self._get_number_of_keys()):
-            key = self.keygrid.itemAtPosition(i,0).widget().currentText()
-            value = self.keygrid.itemAtPosition(i,1).widget().text()
-            filter['kwargs'][str(key)] = eval(str(value))
+            key = self.grid_attributes.\
+                itemAtPosition(i,1).widget().currentText()
+            value = self.grid_attributes.itemAtPosition(i,2).widget().text()
+            filter['kwargs'][str(key)] = str(value)
+
+        filter_name = self._get_filter_name(filter)
+
+
+        if filter_name not in self.filters:
+
+            self._show_applied_filter(filter,filter_name)
+
+        else:
+            QMessageBox.warning(self,'Filter already exists',
+                                'You can not apply the same filter twice.')
+
+
+    def _get_filter_name(self,filter):
+        filterfuncstr = filter['compfuncstr']
 
         filter_name = ''
         if filter['invert']:
             filter_name += 'invert; '
         if filter['recursive']:
             filter_name += 'recursive; '
-        # filter_name += 'comp.func: %s; '%compfuncstr.split('[')[0].rstrip('\t')
-        filter_name += (' ' + filter['mode'].upper() + ' ').join(['(%s %s %s)'%(key,compfuncstr.split('[')[0].rstrip('\t'),filter['kwargs'][key]) for key in filter['kwargs']])
+        filter_name += (' ' + filter['mode'].upper() + ' ').join(
+                ['(%s %s %s)'%(key,
+                               filterfuncstr.split('[')[0].rstrip('\t'),
+                               filter['kwargs'][key])
+                    for key in filter['kwargs']])
+
+        return filter_name
+
+    def _show_applied_filter(self,filter,filter_name):
+        self.filters[filter_name] = filter
+
+        self.run_single_filter(filter_name)
+
+        self.lwfilters.addItems([filter_name])
+
+        self.reset_filtersettings()
+
+    def reset_filtersettings(self):
+        self.rbAND.setChecked(True)
+        self.rbOR.setChecked(False)
+        self.cbinvert.setChecked(False)
+        self.cbrecursive.setChecked(False)
+
+        self.grid_filterfunction.itemAtPosition(0,2).widget().setChecked(True)
+
+        self.lineedit_filtername.setText('')
+        self.lineedit_fxy.setText('')
+
+        w = self.grid_attributes.itemAtPosition(2,0).widget()
+        while str(w.text())=='-':
+            w.click()
+            w = self.grid_attributes.itemAtPosition(2,0).widget()
+
+        self.grid_attributes.itemAtPosition(1,1).widget().setCurrentIndex(0)
+        self.grid_attributes.itemAtPosition(1,2).widget().setText('')
 
 
-        if filter_name not in self.filters:
+    def removefilterfunction(self):
+        sender = self.sender()
 
-            self.filters[filter_name] = filter
+        idx = self.grid_filterfunction.indexOf(sender)
+        location = self.grid_filterfunction.getItemPosition(idx)
 
-
-            self.run_single_filter(filter_name)
-
-            self.lwfilters.addItems([filter_name])
+        self.filterfunctionnames.pop(location[0])
+        self.filterfunctions.pop(location[0])
+        self.view_filterfunctions()
 
 
     def removefilter(self):
@@ -567,16 +779,30 @@ class FilterPage(QIWizardPage):
         self.run_all_filters()
 
     def run_all_filters(self):
-        self.filtered_table = copy.deepcopy(self.table)
+        # keeping filtered_table object and not substituting whole object to
+        # be able to retrieve data from registered object
+        self.filtered_table._odmldict = copy.deepcopy(self.table._odmldict)
         for filter in self.filters.values():
-            self.filtered_table.filter(mode=filter['mode'],invert=filter['invert'],recursive=filter['recursive'],comparison_func=filter['compfunc'],**filter['kwargs'])
+            self.filtered_table.filter(mode=filter['mode'],
+                                       invert=filter['invert'],
+                                       recursive=filter['recursive'],
+                                       comparison_func=lambda x,y:\
+                                                    eval(filter['compfuncstr']),
+                                       **{key:eval(value) for key,value in
+                                        filter['kwargs'].iteritems()})
         self.update_tree(self.filtered_table)
 
     def run_single_filter(self,filter_name):
         if self.filtered_table == None:
             self.filtered_table = copy.deepcopy(self.table)
         filter = self.filters[filter_name]
-        self.filtered_table.filter(mode=filter['mode'],invert=filter['invert'],recursive=filter['recursive'],comparison_func=filter['compfunc'],**filter['kwargs'])
+        self.filtered_table.filter(mode=filter['mode'],
+                                   invert=filter['invert'],
+                                   recursive=filter['recursive'],
+                                   comparison_func=lambda x,y:\
+                                                    eval(filter['compfuncstr']),
+                                   **{key:eval(value) for key,value in
+                                        filter['kwargs'].iteritems()})
         self.update_tree(self.filtered_table)
 
 
@@ -586,29 +812,42 @@ class FilterPage(QIWizardPage):
         self.settings.get_object('inputfilename')
 
         # setting xls_table or csv_table headers if necessary
-        title_translator = {v:k for k,v in self.table._header_titles.iteritems()}
-        if ((os.path.splitext(self.settings.get_object('inputfilename'))[1] in ['.xls','.csv']) and
+        title_translator = {v:k for k,v in
+                            self.table._header_titles.iteritems()}
+        if ((os.path.splitext(self.settings.get_object('inputfilename'))[1]
+                                                        in ['.xls','.csv']) and
                 (self.settings.get_object('CBcustominput').isChecked())):
-            inputheaderlabels = [str(l.text()) for l in self.settings.get_object('headerlabels')]
-            inputcustomheaders = [str(cb.currentText()) for cb in self.settings.get_object('customheaders')]
-            inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
-            self.table.change_header_titles(**dict(zip(inputcolumnnames,inputheaderlabels)))
+            inputheaderlabels = [str(l.text()) for l in
+                                  self.settings.get_object('headerlabels')]
+            inputcustomheaders = [str(cb.currentText()) for cb in
+                                  self.settings.get_object('customheaders')]
+            inputcolumnnames = [title_translator[label] for label in
+                                inputcustomheaders]
+            self.table.change_header_titles(**dict(zip(inputcolumnnames,
+                                                       inputheaderlabels)))
 
         # loading input file
-        if os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.xls':
-            self.table.load_from_xls_table(self.settings.get_object('inputfilename'))
-        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.csv':
-            self.table.load_from_csv_table(self.settings.get_object('inputfilename'))
-        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.odml':
+        if os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
+                                                                        '.xls':
+            self.table.load_from_xls_table(self.settings.get_object(
+                     'inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
+                                                                        '.csv':
+            self.table.load_from_csv_table(self.settings.get_object(
+                     'inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
+                                                                        '.odml':
             self.table.load_from_file(self.settings.get_object('inputfilename'))
         else:
-            raise ValueError('Unknown input file extension "%s"'
-                             ''%os.path.splitext(self.settings.get_object('inputfilename'))[1])
+            raise ValueError('Unknown input file extension '
+                              '"%s"'%os.path.splitext(
+                                self.settings.get_object('inputfilename'))[1])
 
         self.update_tree(self.table)
 
         self.filtered_table = copy.deepcopy(self.table)
-        self.settings.register('filtered_table',self.filtered_table)
+        self.settings.register('filtered_table',self.filtered_table,
+                               useconfig=False)
 
     def update_tree(self,table):
         self.odmltree.clear()
@@ -626,7 +865,11 @@ class FilterPage(QIWizardPage):
 
 
     def create_sectiontree(self,tree,table):
-        sections = {value['Path'].strip('/'):('','','','','','','',value['SectionName'],value['SectionType'],value['SectionDefinition']) for value in table._odmldict}
+        sections = {value['Path'].strip('/'):('','','','','','','',
+                                              value['SectionName'],
+                                              value['SectionType'],
+                                              value['SectionDefinition'])
+                    for value in table._odmldict}
         for sec in sorted(sections):
             sec_names = sec.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -635,11 +878,17 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 else:
-                    new_sec = QTreeWidgetItem(parent_sec,[sec_names[i]] + list(sections[sec]))
+                    new_sec = QTreeWidgetItem(parent_sec,[sec_names[i]] +
+                                              list(sections[sec]))
                     parent_sec = new_sec
 
     def create_proptree(self,tree,table):
-        props = {value['Path'].strip('/') + '/' + value['PropertyName']:('','','','','',value['PropertyName'],value['PropertyDefinition'],'','') for value in table._odmldict}
+        props = {value['Path'].strip('/') + '/' + value['PropertyName']:(
+            '','','','','',
+            value['PropertyName'],
+            value['PropertyDefinition'],
+            '','')
+                 for value in table._odmldict}
         for prop in props:
             prop_path = prop.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -648,11 +897,20 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 else:
-                    new_sec = QTreeWidgetItem(parent_sec,[prop_path[i]] + list(props[prop]))
+                    new_sec = QTreeWidgetItem(parent_sec,[prop_path[i]] +
+                                              list(props[prop]))
                     parent_sec = new_sec
 
     def create_valuetree(self,tree,table):
-        values = {value['Path'].strip('/') + '/' + value['PropertyName'] + '/' + str(v):(str(value['Value']),value['DataUncertainty'],value['DataUnit'],value['odmlDatatype'],value['ValueDefinition'],'','','','','') for v,value in enumerate(table._odmldict)}
+        values = {value['Path'].strip('/') + '/' +
+                  value['PropertyName'] + '/' + str(v):
+                      (str(value['Value']),
+                       value['DataUncertainty'],
+                       value['DataUnit'],
+                       value['odmlDatatype'],
+                       value['ValueDefinition'],
+                       '','','','','')
+                  for v,value in enumerate(table._odmldict)}
         for value in sorted(values):
             value_path = value.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -686,7 +944,10 @@ class SaveFilePage(QIWizardPage):
         super(SaveFilePage, self).__init__(parent)
 
         self.setTitle("Save the result")
-        self.setSubTitle("Select a location to save your file. You can save the settings made during this generation with a custom configuration name. This configuration can be used in future runs of the wizard.")
+        self.setSubTitle("Select a location to save your file. You can save "
+                         "the settings made during this generation with a "
+                         "custom configuration name. This configuration can be "
+                         "used in future runs of the wizard.")
 
         # Set up layout
         self.vbox = QVBoxLayout()
@@ -705,11 +966,13 @@ class SaveFilePage(QIWizardPage):
 
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
-            QMessageBox.warning(self,'No configuration selected','You need to select a configuration in'
-                                                                 ' order to delete it.')
+            QMessageBox.warning(self,'No configuration selected',
+                                'You need to select a configuration in'
+                                ' order to delete it.')
         else:
             conf_name = str(self.configlist.currentItem().text())
-            quit_msg = "Are you sure you want to delete the configuration '%s'?"%(conf_name)
+            quit_msg = "Are you sure you want to delete the configuration " \
+                       "'%s'?"%(conf_name)
             reply = QMessageBox.question(self, 'Message',
                              quit_msg, QMessageBox.Yes, QMessageBox.No)
 
@@ -762,7 +1025,8 @@ class SaveFilePage(QIWizardPage):
         horizontalLine.setFrameStyle(QFrame.HLine)
         horizontalLine.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
-        vbox.addWidget(QLabel('You can save the configuration used in this run'))
+        vbox.addWidget(QLabel('You can save the configuration '
+                              'used in this run'))
         grid = QGridLayout()
         self.configlist = QListWidget()
         self.configlist.itemActivated.connect(self.newconfname)
@@ -780,7 +1044,8 @@ class SaveFilePage(QIWizardPage):
         self.expected_extension = '.odml'
 
 
-        self.topLabel.setText("Where do you want to save your %s file?"%self.expected_extension.strip('.'))
+        self.topLabel.setText("Where do you want to save your "
+                              "%s file?"%self.expected_extension.strip('.'))
 
         self.configlist.addItems(self.settings.get_all_config_names())
 
@@ -795,33 +1060,36 @@ class SaveFilePage(QIWizardPage):
         print self.settings.get_object('inputfilename')
         dlg.setDirectory(self.settings.get_object('inputfilename'))
 
-        dlg.setFilter("%s files (*%s);;all files (*)"%(self.expected_extension.strip('.'),self.expected_extension))
+        dlg.setFilter("%s files (*%s);;all files "
+                      "(*)"%(self.expected_extension.strip('.'),
+                             self.expected_extension))
         # filenames = []
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
 
-        # self.outputfilename = str(QFileDialog.getSaveFileName(self, self.tr("Save File"),
-        #                     os.path.dirname(self.settings.get_object('inputfilename')),"%s files (*%s);;all files (*)"%(self.expected_extension.strip('.'),self.expected_extension)))
-
          # extending filename if no extension is present
-        if (self.outputfilename != '' and os.path.splitext(self.outputfilename)[1]==''):
+        if (self.outputfilename != '' and
+                    os.path.splitext(self.outputfilename)[1]==''):
             self.outputfilename += self.expected_extension
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
 
-        if ((os.path.splitext(self.outputfilename)[1]!=self.expected_extension) and
+        if ((os.path.splitext(self.outputfilename)[1]!=
+                 self.expected_extension) and
                   (os.path.splitext(self.outputfilename)[1]!='')):
-            QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
-                                                         ' but you selected "%s"'
-                                                         ''%(self.expected_extension,
-                                                             os.path.splitext(self.outputfilename)[1]))
+            QMessageBox.warning(self,'Wrong file format',
+                             'The output file format is supposed to be "%s",'
+                             ' but you selected "%s"'
+                             ''%(self.expected_extension,
+                                 os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
             filtered_table = self.settings.get_object('filtered_table')
-            filtered_table.write2odml(self.settings.get_object('outputfilename'))
+            filtered_table.write2odml(self.settings.get_object(
+                    'outputfilename'))
 
             print 'Complete!'
 
@@ -837,21 +1105,29 @@ class SaveFilePage(QIWizardPage):
             # os.system("start %s"%self.outputfilename)
 
     def saveconfig(self):
-        if ((self.configlist.currentItem() == None) or (str(self.configlist.currentItem().text()) in ['','<New Configuration>'])):
-            QMessageBox.warning(self,'No configuration name selected','You need to select a name for your '
-                                                                      'configuration if you want to save it or '
-                                                                      'define a new one (<New Configuration>)')
+        if ((self.configlist.currentItem() == None) or
+                (str(self.configlist.currentItem().text()) in
+                     ['','<New Configuration>'])):
+            QMessageBox.warning(self,'No configuration name selected',
+                              'You need to select a name for your '
+                              'configuration if you want to save it or '
+                              'define a new one (<New Configuration>)')
         else:
             config_name = str(self.configlist.currentItem().text())
             curritem = self.configlist.currentItem()
             if self.configlist.currentRow() != 0:
                 self.configlist.item(0).setText('<New Configuration>')
             elif config_name in self.settings.get_all_config_names():
-                QMessageBox.warning(self,'Configuration already exists','You need to chose a new name for your configuration.'
-                                                                        'The name "%s" already exists'%config_name)
+                QMessageBox.warning(self,'Configuration already exists',
+                        'You need to chose a new name for your configuration.'
+                        'The name "%s" already exists'%config_name)
             else:
                 curritem.setFlags(( Qt.ItemIsSelectable | Qt.ItemIsEnabled ))
                 self.add_new_conf(self.configlist)
+
+            # need to remove odmltables object as this can not be saved
+            self.settings.remove_object('filtered_table')
+
             self.settings.config_name = config_name
             self.settings.save_config()
 
