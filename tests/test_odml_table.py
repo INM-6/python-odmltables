@@ -239,28 +239,35 @@ class TestOdmlTable(unittest.TestCase):
     #     # # TODO: Exception
     #     # with self.assertRaises(Exception):
     #     #     self.test_table.allow_empty_columns = 4
-
-    def test_forbid_free_cols(self):
-        """
-        test forbidding free columns while there are already free columns in
-        the header
-        """
-
-        self.test_table.allow_empty_columns = True
-        self.test_table.change_header(Path=1, PropertyDefinition=3, Value=4)
-        # TODO: Exception aendern
-        # with self.assertRaises(Exception):
-        #     self.test_table.allow_empty_columns = False
+    #
+    # def test_forbid_free_cols(self):
+    #     """
+    #     test forbidding free columns while there are already free columns in
+    #     the header
+    #     """
+    #
+    #     self.test_table.allow_empty_columns = True
+    #     self.test_table.change_header(Path=1, PropertyDefinition=3, Value=4)
+    #     # TODO: Exception aendern
+    #     with self.assertRaises(Exception):
+    #         self.test_table.allow_empty_columns = False
 
     def test_merge(self):
         doc1 = create_compare_test(sections=2,properties=2,levels=2)
+
+        # generate one additional Value, which is not present in doc2
+        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
+                                                         dtype='str'))
+
         # generate one additional Property, which is not present in doc2
         doc1.sections[0].append(odml.Property(name='Doc1Property2',value=5))
+
         #generate one additional Section, which is not present in doc2
         new_prop = odml.Property(name='Doc1Property2',value=10)
         new_sec = odml.Section(name='Doc1Section')
         new_sec.append(new_prop)
         doc1.sections[0].append(new_sec)
+
         self.test_table.load_from_odmldoc(doc1)
 
         doc2 = create_compare_test(sections=3,properties=3,levels=3)
@@ -269,16 +276,43 @@ class TestOdmlTable(unittest.TestCase):
 
         backup_table = copy.deepcopy(self.test_table)
 
-        self.test_table.merge(doc2)
-        backup_table.merge(table2)
+        self.test_table.merge(doc2,mode='overwrite')
+        backup_table.merge(table2,mode='overwrite')
 
         self.assertListEqual(self.test_table._odmldict,backup_table._odmldict)
 
-        expected = len(table2._odmldict) + 2
+        expected = len(table2._odmldict) + 2 # only additional prop and
+        # section will be counted; additional value is overwritten
 
         self.assertEqual(len(self.test_table._odmldict),expected)
 
-        pass
+
+    def test_strict_merge_error(self):
+        doc1 = create_compare_test(sections=2,properties=2,levels=2)
+
+        # generate one additional Value, which is not present in doc2
+        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
+                                                         dtype='str'))
+
+        self.test_table.load_from_odmldoc(doc1)
+
+        doc2 = create_compare_test(sections=3,properties=3,levels=3)
+        table2 = OdmlTable()
+        table2.load_from_odmldoc(doc2)
+
+        self.assertRaises(ValueError,self.test_table.merge,doc2,mode='strict')
+
+    def test_strict_merge(self):
+        doc1 = create_compare_test(sections=0,properties=1,levels=2)
+        doc1.sections[0].properties[0].values[0].data = -1
+        self.test_table.load_from_odmldoc(doc1)
+
+        doc2 = create_compare_test(sections=0,properties=1,levels=2)
+        table2 = OdmlTable()
+        table2.load_from_odmldoc(doc2)
+        self.test_table.merge(doc2,mode='strict')
+
+        self.assertListEqual(table2._odmldict,self.test_table._odmldict)
 
 
 class TestFilter(unittest.TestCase):

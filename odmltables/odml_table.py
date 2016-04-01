@@ -4,6 +4,7 @@ Created on Tue Mar 31 15:43:40 2015
 
 @author: pick
 """
+import copy
 import odml
 import csv
 import datetime
@@ -596,7 +597,7 @@ class OdmlTable(object):
             for del_prop in del_props:
                 self.filter(invert=True,recursive=True,comparison_func= lambda x,y: x.startswith(y),Path=del_prop['Path'])
 
-    def merge(self,odmltable):
+    def merge(self,odmltable,mode='overwrite'):
         """
         Merge odmltable into current odmltable.
         :param odmltable: OdmlTable object or Odml document object
@@ -615,6 +616,10 @@ class OdmlTable(object):
             else:
                 doc1.append(sec)
 
+        #since only sections and properties are merged with odml.section.merge
+        # individual values need to be merged explicitely
+        self._merge_odml_values(doc1,doc2,mode=mode)
+
 
         #TODO: What should happen to the document properties?
         """
@@ -626,6 +631,39 @@ class OdmlTable(object):
 
         #TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
+
+    def _merge_odml_values(self,doc1,doc2,mode='overwrite'):
+        if mode not in ['strict','overwrite']:
+            raise ValueError('Merge mode "%s" does not exist. '
+                             'Valid modes are %s'%((mode,['strict',
+                                                          'overwrite'])))
+
+        for prop2 in doc2.iterproperties():
+            path = prop2.get_path()
+            prop1 = doc1.get_property_by_path(path)
+
+            if mode=='strict':
+                if (len(prop1.values)!=1) or \
+                   (prop1.values[0].data not in
+                        self.odtypes._basedtypes.values()):
+                    raise ValueError('OdML property %s already contains '
+                                     'non-default values %s'%(prop1.name,
+                                                              prop1.values))
+
+            if mode in ['overwrite','strict']:
+                # removing old values, but keeping first element, because a
+                # property needs to contain at least one value at any time
+                if prop1 != prop2: #properties can be identical, when section
+                    #  was copied. Then no value transfer is necessary.
+                    for val in prop1.values[1:]:
+                        prop1.remove(val)
+                    # adding new values (which is at least one, see comment above)
+                    for val in prop2.values:
+                        prop1.append(val)
+                    prop1.remove(prop1.values[0])
+
+
+
 
 
     def write2file(self, save_to):
