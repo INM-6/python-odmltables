@@ -12,6 +12,7 @@ from converterwiz import ConversionWizard
 from compsectionwiz import CompSectionWiz
 from generatetemplatewiz import GenerateTemplateWizard
 from filterwiz import FilterWizard
+from mergewiz import MergeWizard
 #from table2odmlwiz import Table2OdmlWiz
 
 class MainWindow(QtGui.QMainWindow):
@@ -82,6 +83,15 @@ class MainWindow(QtGui.QMainWindow):
         self.filterbutton.clicked.connect(self.startWizard)
         grid.addWidget(self.filterbutton,1,1)
 
+        self.mergebutton = QtGui.QToolButton()
+        self.mergebutton.setText(self.tr('Merge contents of odmls\n'))
+        self.mergebutton.setIcon(QtGui.QIcon("graphics/mergeodml.svg"))
+        self.mergebutton.setIconSize(QtCore.QSize(120,60))
+        self.mergebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.mergebutton.setFixedWidth(200)
+        self.mergebutton.clicked.connect(self.startWizard)
+        grid.addWidget(self.mergebutton,2,0)
+
 
         self.setGeometry(300, 300, 350, 250)
         self.setWindowTitle('odML-tables')
@@ -98,6 +108,8 @@ class MainWindow(QtGui.QMainWindow):
             wizard = GenerateTemplateWizard()
         elif sender==self.filterbutton:
             wizard = FilterWizard()
+        elif sender==self.mergebutton:
+            wizard = MergeWizard()
         else:
             raise EnvironmentError('Unknown sender')
         wizard.exec_()
