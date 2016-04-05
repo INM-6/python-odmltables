@@ -3,14 +3,14 @@
 
 from PyQt4.QtGui import QApplication
 
-from mergepages import (LoadFilePage, SaveFilePage)
+from mergepages import (LoadFilePage)
 from wizutils import OdmltablesWizard
 
 from settings import Settings
 class MergeWizard(OdmltablesWizard):
-    NUM_PAGES = 2
+    NUM_PAGES = 1
 
-    (PageLoadFile, PageSaveFile) = range(NUM_PAGES)
+    (PageLoadFile) = 1
 
 
     def __init__(self, parent=None):
@@ -18,7 +18,7 @@ class MergeWizard(OdmltablesWizard):
         settings = Settings(self.settingsfile)
 
         self.setPage(self.PageLoadFile, LoadFilePage(settings))
-        self.setPage(self.PageSaveFile, SaveFilePage(settings))
+
 
 
     def _createHelpMsgs(self):
@@ -26,9 +26,6 @@ class MergeWizard(OdmltablesWizard):
         msgs[self.PageLoadFile] = self.tr("Select two input files using the "
                                           "browser and choose your output "
                                           "file format.")
-        msgs[self.PageSaveFile] = self.tr("Select a location to save your "
-                                          "file by clicking on the browse "
-                                          "button.")
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no "
                                            "help available.")
         return msgs
