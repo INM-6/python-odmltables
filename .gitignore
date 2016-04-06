@@ -64,10 +64,11 @@ docs/_build/
 target/
 
 # OdML tables wizard
-wizard/graphics/*.tex
-wizard/graphics/*.aux
-wizard/graphics/*.pdf
-wizard/graphics/*.tex.backup
+odmltables/wizard/graphics/*.tex
+odmltables/wizard/graphics/*.aux
+odmltables/wizard/graphics/*.pdf
+odmltables/wizard/graphics/*.tex.backup
+odmltables/wizard/testfiles/*
 
 # Project specific exclude of table formats
 *.csv

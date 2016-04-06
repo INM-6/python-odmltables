@@ -5,7 +5,6 @@ Created on Tue Jan 26 12:57:46 2016
 @author: zehl
 """
 
-import sys
 from PyQt4 import QtGui, QtCore
 #import wizards
 from converterwiz import ConversionWizard
