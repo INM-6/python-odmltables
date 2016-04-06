@@ -207,7 +207,7 @@ class LoadFilePage(QIWizardPage):
         if not self.outputfilename:
             QMessageBox.warning(self,'No output file selected',
                                 'You need to select an output odml file to '
-                                'save you data.')
+                                'save your data.')
             return
 
         #  # extending filename if no extension is present
