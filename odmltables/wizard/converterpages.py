@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 
 from pageutils import *
 
-from  odmltables import odml_table, odml_xls_table, odml_csv_table, \
+from odmltables import odml_table, odml_xls_table, odml_csv_table, \
     xls_style
 
 
@@ -540,8 +540,14 @@ class CustomColumnNamesPage(QIWizardPage):
                 self.columnmarkings.append(cbmarking)
                 self.grid.setAlignment(cbmarking,Qt.AlignCenter)
 
-        self.settings.register('customheaderlabels', self.customheaderlabels)
-        self.settings.register('columnmarkings',self.columnmarkings)
+        try:
+            self.settings.register('customheaderlabels', self.customheaderlabels)
+            self.settings.register('columnmarkings',self.columnmarkings)
+        except IndexError:
+            self.settings.register('customheaderlabels',self.customheaderlabels,
+                                   useconfig=False)
+            self.settings.register('columnmarkings',self.columnmarkings,
+                                   useconfig=False)
 
     def validatePage(self):
         #get manually entered labels
