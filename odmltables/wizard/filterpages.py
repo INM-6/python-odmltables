@@ -865,11 +865,12 @@ class FilterPage(QIWizardPage):
 
 
     def create_sectiontree(self,tree,table):
-        sections = {value['Path'].strip('/'):('','','','','','','',
+        sections = {value['Path'].strip('/'):['','','','','','','',
                                               value['SectionName'],
                                               value['SectionType'],
-                                              value['SectionDefinition'])
+                                              value['SectionDefinition']]
                     for value in table._odmldict}
+        self.replace_Nones(sections)
         for sec in sorted(sections):
             sec_names = sec.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -883,12 +884,13 @@ class FilterPage(QIWizardPage):
                     parent_sec = new_sec
 
     def create_proptree(self,tree,table):
-        props = {value['Path'].strip('/') + '/' + value['PropertyName']:(
+        props = {value['Path'].strip('/') + '/' + value['PropertyName']:[
             '','','','','',
             value['PropertyName'],
             value['PropertyDefinition'],
-            '','')
+            '','']
                  for value in table._odmldict}
+        self.replace_Nones(props)
         for prop in props:
             prop_path = prop.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -904,13 +906,14 @@ class FilterPage(QIWizardPage):
     def create_valuetree(self,tree,table):
         values = {value['Path'].strip('/') + '/' +
                   value['PropertyName'] + '/' + str(v):
-                      (str(value['Value']),
+                      [str(value['Value']),
                        value['DataUncertainty'],
                        value['DataUnit'],
                        value['odmlDatatype'],
                        value['ValueDefinition'],
-                       '','','','','')
+                       '','','','','']
                   for v,value in enumerate(table._odmldict)}
+        self.replace_Nones(values)
         for value in sorted(values):
             value_path = value.split('/')
             parent_sec = tree.invisibleRootItem()
@@ -924,6 +927,11 @@ class FilterPage(QIWizardPage):
                     parent_sec = new_sec
 
 
+    def replace_Nones(self,data_dict):
+        for value_list in data_dict.values():
+            for i in range(len(value_list)):
+                if value_list[i] == None:
+                    value_list[i] = ''
 
     def find_child(self,tree_sec,child_name):
         i = 0
