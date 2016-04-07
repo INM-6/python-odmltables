@@ -782,20 +782,34 @@ class FilterPage(QIWizardPage):
         # keeping filtered_table object and not substituting whole object to
         # be able to retrieve data from registered object
         self.filtered_table._odmldict = copy.deepcopy(self.table._odmldict)
-        for filter in self.filters.values():
-            self.filtered_table.filter(mode=filter['mode'],
-                                       invert=filter['invert'],
-                                       recursive=filter['recursive'],
-                                       comparison_func=lambda x,y:\
-                                                    eval(filter['compfuncstr']),
-                                       **{key:eval(value) for key,value in
-                                        filter['kwargs'].iteritems()})
+        for filter_name, filter in self.filters.iteritems():
+        #     self.filtered_table.filter(mode=filter['mode'],
+        #                                invert=filter['invert'],
+        #                                recursive=filter['recursive'],
+        #                                comparison_func=lambda x,y:\
+        #                                             eval(filter['compfuncstr']),
+        #                                **{key:eval(value) for key,value in
+        #                                 filter['kwargs'].iteritems()})
+        # self.update_tree(self.filtered_table)
+
+            self.run_single_filter(filter_name)
         self.update_tree(self.filtered_table)
 
     def run_single_filter(self,filter_name):
         if self.filtered_table == None:
             self.filtered_table = copy.deepcopy(self.table)
         filter = self.filters[filter_name]
+
+        try:
+            [eval(value) for value in filter['kwargs'].values()]
+        except:
+            QMessageBox.warning(self,'Non-interpretable value',
+                                'Can not interpret "%s". This is not a valid '
+                                'python object. To generate a string put your '
+                                'text into quotation marks. To define a list '
+                                'use square brackets.')
+            return
+
         self.filtered_table.filter(mode=filter['mode'],
                                    invert=filter['invert'],
                                    recursive=filter['recursive'],
@@ -964,12 +978,12 @@ class SaveFilePage(QIWizardPage):
     def add_new_conf(self,configlist):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-        item.setText('<New Configuration>')
+        item.setText('<Click here enter a new configuration name>')
         configlist.insertItem(-1,item)
 
     def newconfname(self):
         sender = self.sender().currentItem()
-        if sender.text() == '<New Configuration>':
+        if sender.text() == '<Click here enter a new configuration name>':
             sender.setText('')
 
     def deleteconfname(self):
@@ -1115,16 +1129,16 @@ class SaveFilePage(QIWizardPage):
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or
                 (str(self.configlist.currentItem().text()) in
-                     ['','<New Configuration>'])):
+                     ['','<Click here enter a new configuration name>'])):
             QMessageBox.warning(self,'No configuration name selected',
                               'You need to select a name for your '
                               'configuration if you want to save it or '
-                              'define a new one (<New Configuration>)')
+                              'define a new one (<Click here enter a new configuration name>)')
         else:
             config_name = str(self.configlist.currentItem().text())
             curritem = self.configlist.currentItem()
             if self.configlist.currentRow() != 0:
-                self.configlist.item(0).setText('<New Configuration>')
+                self.configlist.item(0).setText('<Click here enter a new configuration name>')
             elif config_name in self.settings.get_all_config_names():
                 QMessageBox.warning(self,'Configuration already exists',
                         'You need to chose a new name for your configuration.'
