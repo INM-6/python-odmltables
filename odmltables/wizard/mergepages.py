@@ -2,12 +2,14 @@
 
 
 import sys
+import os
 import subprocess
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QSize
 
 from pageutils import *
+from wizutils import get_graphic_path
 
 from  odmltables import odml_table, odml_xls_table, odml_csv_table, \
     xls_style
@@ -16,6 +18,8 @@ from  odmltables import odml_table, odml_xls_table, odml_csv_table, \
 class LoadFilePage(QIWizardPage):
     def __init__(self,parent=None):
         super(LoadFilePage,self).__init__(parent)
+
+        graphic_path = get_graphic_path()
 
         # Set up layout
         self.layout = QVBoxLayout()
@@ -34,12 +38,13 @@ class LoadFilePage(QIWizardPage):
         self.settings.register('inputfilename2', self,useconfig=False)
 
         # Adding primary input part
-        topLabel = QLabel(self.tr("Choose a primary odML file to load"))
+        topLabel = QLabel(self.tr("Choose two odml files to load"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
 
         # Add first horizontal box
-        self.buttonbrowse1 = QPushButton("Browse")
+        self.buttonbrowse1 = self.generate_toolbutton("Browse for basic\nodml"
+                                                      "file",'odmlA.svg')
         self.buttonbrowse1.clicked.connect(self.browse2open,1)
         self.inputfilename1 = ''
         self.inputfile1 = QLabel(self.inputfilename1)
@@ -52,12 +57,14 @@ class LoadFilePage(QIWizardPage):
         vbox.addLayout(hbox1)
 
         # Adding secondary input part
-        topLabel = QLabel(self.tr("Choose a secondary odML file to load"))
-        topLabel.setWordWrap(True)
-        vbox.addWidget(topLabel)
+        # topLabel = QLabel(self.tr("Choose an additional odML file to load"))
+        # topLabel.setWordWrap(True)
+        # vbox.addWidget(topLabel)
 
         # Add second horizontal box
-        self.buttonbrowse2 = QPushButton("Browse")
+        self.buttonbrowse2 = self.generate_toolbutton("Browse for second,\n"
+                                                      "extending file",
+                                                      'odmlB.svg')
         self.buttonbrowse2.clicked.connect(self.browse2open,2)
         self.inputfilename2 = ''
         self.inputfile2 = QLabel(self.inputfilename2)
@@ -79,10 +86,12 @@ class LoadFilePage(QIWizardPage):
         # adding merge mode part
         vbox.addWidget(QLabel('Select a mode for merging the two files'))
         self.rbstrict = QRadioButton('strict merge')
-        self.rbstrict.setIcon(QIcon("graphics/mergestrict.svg"))
+        self.rbstrict.setIcon(QIcon(os.path.join(graphic_path,
+                                                 'mergestrict.svg')))
         self.rbstrict.setIconSize(QSize(100,100))
         self.rboverwrite = QRadioButton('overwrite')
-        self.rboverwrite.setIcon(QIcon("graphics/mergeoverwrite.svg"))
+        self.rboverwrite.setIcon(QIcon(os.path.join(graphic_path,
+                                                    'mergeoverwrite.svg')))
         self.rboverwrite.setIconSize(QSize(100,100))
 
         self.settings.register('rbstrict',self.rbstrict)
@@ -129,6 +138,16 @@ class LoadFilePage(QIWizardPage):
         vbox.addWidget(self.buttonshow)
         vbox.addStretch()
 
+    def generate_toolbutton(self,text,graphic_name):
+        graphic_path = get_graphic_path()
+        button = QToolButton()
+        button.setText(self.tr(text))
+        button.setIcon(QIcon(os.path.join(graphic_path,graphic_name)))
+        button.setIconSize(QSize(60,60))
+        button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        button.setFixedWidth(200)
+
+        return button
 
     def browse2open(self):
         sender = self.sender()
@@ -228,11 +247,11 @@ class LoadFilePage(QIWizardPage):
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
-            self.convert(self.settings)
+            success = self.convert(self.settings)
 
-            print 'Complete!'
-
-            self.buttonshow.setEnabled(True)
+            if success:
+                print 'Complete!'
+                self.buttonshow.setEnabled(True)
 
 
     def show_file(self):
@@ -271,10 +290,10 @@ class LoadFilePage(QIWizardPage):
                                 'non-default values in merge mode "strict". Data '
                                 'could be lost in the process. Please fix your odml '
                                 'files or change to merge mode "overwrite".'%(e.message))
-            return
+            return False
         except:
             QMessageBox.warning(self,'Unexpected error:', sys.exc_info()[0])
-            return
+            return False
 
         # saving file
         table1.write2odml(settings.get_object('outputfilename'))
