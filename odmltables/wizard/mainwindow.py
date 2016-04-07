@@ -76,15 +76,15 @@ class MainWindow(QtGui.QMainWindow):
 
     def generate_icon(self,text,graphic_name):
         graphic_path = get_graphic_path()
-        icon = QtGui.QToolButton()
-        icon.setText(self.tr(text))
-        icon.setIcon(QtGui.QIcon(os.path.join(graphic_path,graphic_name)))
-        icon.setIconSize(QtCore.QSize(120,60))
-        icon.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        icon.setFixedWidth(200)
-        icon.clicked.connect(self.startWizard)
+        button = QtGui.QToolButton()
+        button.setText(self.tr(text))
+        button.setIcon(QtGui.QIcon(os.path.join(graphic_path,graphic_name)))
+        button.setIconSize(QtCore.QSize(120,60))
+        button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        button.setFixedWidth(200)
+        button.clicked.connect(self.startWizard)
 
-        return icon
+        return button
 
 
     def startWizard(self):
