@@ -5,6 +5,12 @@ import os
 from PyQt4.QtGui import (QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
 
+try:
+    import odmltables
+    have_odmltables = True
+except:
+    have_odmltables = False
+
 from settings import Settings
 
 
@@ -54,3 +60,21 @@ class OdmltablesWizard(QWizard):
                                 self.tr(self.wizname),
                                 msg)
         self._lastHelpMsg = msg
+
+
+def get_graphic_path():
+    local_paths = [os.path.join('.','odmltables','wizard','graphics'),
+                   os.path.join('.','wizard','graphics'),
+                   os.path.join('.','graphics')]
+
+    global_paths = []
+    if have_odmltables:
+        global_paths.append(os.path.join(os.path.dirname(odmltables.__file__),
+                                         'wizard',
+                                         'graphics'))
+
+    paths = local_paths + global_paths
+    path = paths.pop()
+    while not os.path.exists(path):
+        path = paths.pop()
+    return path

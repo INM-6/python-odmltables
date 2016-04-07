@@ -5,6 +5,7 @@ Created on Tue Jan 26 12:57:46 2016
 @author: zehl
 """
 
+import os
 from PyQt4 import QtGui, QtCore
 #import wizards
 from converterwiz import ConversionWizard
@@ -12,7 +13,8 @@ from compsectionwiz import CompSectionWiz
 from generatetemplatewiz import GenerateTemplateWizard
 from filterwiz import FilterWizard
 from mergewiz import MergeWizard
-#from table2odmlwiz import Table2OdmlWiz
+
+from wizutils import get_graphic_path
 
 class MainWindow(QtGui.QMainWindow):
 
@@ -46,49 +48,24 @@ class MainWindow(QtGui.QMainWindow):
         grid.setColumnStretch(1,1)
         vbox.addLayout(grid)
 
-        self.convertbutton = QtGui.QToolButton()
-        self.convertbutton.setText(self.tr('Convert between odml\nand table format'))
-        self.convertbutton.setIcon(QtGui.QIcon("graphics/convertodml.svg"))
-        self.convertbutton.setIconSize(QtCore.QSize(120,60))
-        self.convertbutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.convertbutton.setFixedWidth(200)
-        self.convertbutton.clicked.connect(self.startWizard)
+        self.convertbutton = self.generate_icon('Convert between odml\nand '
+                                                'table format',
+                                                "convertodml.svg")
+        self.comparebutton = self.generate_icon('Compare entries within\nan ' \
+                                               'odml',
+                                           "comparetable.svg")
+        self.generatebutton = self.generate_icon('Generate empty '
+                                                 'template\ntable',
+                                                 "createtemplate.svg")
+        self.filterbutton = self.generate_icon('Filter content of odml\n',
+                                               "filterodml.svg")
+        self.mergebutton = self.generate_icon('Merge contents of odmls\n',
+                                              "mergeodml.svg")
+
         grid.addWidget(self.convertbutton,0,0)
-
-        self.comparebutton = QtGui.QToolButton()
-        self.comparebutton.setText(self.tr('Compare entries within\nan odml'))
-        self.comparebutton.setIcon(QtGui.QIcon("graphics/comparetable.svg"))
-        self.comparebutton.setIconSize(QtCore.QSize(120,60))
-        self.comparebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.comparebutton.setFixedWidth(200)
-        self.comparebutton.clicked.connect(self.startWizard)
         grid.addWidget(self.comparebutton,0,1)
-
-        self.generatebutton = QtGui.QToolButton()
-        self.generatebutton.setText(self.tr('Generate empty template\n table'))
-        self.generatebutton.setIcon(QtGui.QIcon("graphics/createtemplate.svg"))
-        self.generatebutton.setIconSize(QtCore.QSize(120,60))
-        self.generatebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.generatebutton.setFixedWidth(200)
-        self.generatebutton.clicked.connect(self.startWizard)
         grid.addWidget(self.generatebutton,1,0)
-
-        self.filterbutton = QtGui.QToolButton()
-        self.filterbutton.setText(self.tr('Filter content of odml\n'))
-        self.filterbutton.setIcon(QtGui.QIcon("graphics/filterodml.svg"))
-        self.filterbutton.setIconSize(QtCore.QSize(120,60))
-        self.filterbutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.filterbutton.setFixedWidth(200)
-        self.filterbutton.clicked.connect(self.startWizard)
         grid.addWidget(self.filterbutton,1,1)
-
-        self.mergebutton = QtGui.QToolButton()
-        self.mergebutton.setText(self.tr('Merge contents of odmls\n'))
-        self.mergebutton.setIcon(QtGui.QIcon("graphics/mergeodml.svg"))
-        self.mergebutton.setIconSize(QtCore.QSize(120,60))
-        self.mergebutton.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.mergebutton.setFixedWidth(200)
-        self.mergebutton.clicked.connect(self.startWizard)
         grid.addWidget(self.mergebutton,2,0)
 
 
@@ -96,6 +73,19 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('odML-tables')
         centralWidget.setLayout(vbox)
         self.show()
+
+    def generate_icon(self,text,graphic_name):
+        graphic_path = get_graphic_path()
+        icon = QtGui.QToolButton()
+        icon.setText(self.tr(text))
+        icon.setIcon(QtGui.QIcon(os.path.join(graphic_path,graphic_name)))
+        icon.setIconSize(QtCore.QSize(120,60))
+        icon.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        icon.setFixedWidth(200)
+        icon.clicked.connect(self.startWizard)
+
+        return icon
+
 
     def startWizard(self):
         sender = self.sender()
