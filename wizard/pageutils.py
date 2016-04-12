@@ -3,14 +3,16 @@
 import os
 import re
 
-from PyQt4.QtGui import QWizardPage,QWidgetItem,QSpacerItem,QComboBox,QColor
+from PyQt4.QtGui import QWizardPage, QWidgetItem, QSpacerItem, QComboBox, QColor
 from PyQt4.QtCore import Qt
 import xlwt
 
+
 class QIWizardPage(QWizardPage):
-    def __init__(self,settings,parent=None):
-        super(QIWizardPage,self).__init__(parent)
+    def __init__(self, settings, parent=None):
+        super(QIWizardPage, self).__init__(parent)
         self.settings = settings
+
 
 def clearLayout(layout):
     for i in reversed(range(layout.count())):
@@ -31,8 +33,6 @@ def clearLayout(layout):
 
         # remove the item from layout
         layout.removeItem(item)
-
-
 
 
 class ColorListWidget(QComboBox):
