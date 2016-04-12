@@ -63,10 +63,18 @@ docs/_build/
 # PyBuilder
 target/
 
+# OdML tables wizard
+odmltables/wizard/graphics/*.tex
+odmltables/wizard/graphics/*.aux
+odmltables/wizard/graphics/*.pdf
+odmltables/wizard/graphics/*.tex.backup
+odmltables/wizard/testfiles/*
+
 # Project specific exclude of table formats
 *.csv
 *.xls
 *.odml
+*.conf
 
 # include single odml file for tutorial
 !examples/example1/example1-2.odml

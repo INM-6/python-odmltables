@@ -45,8 +45,10 @@ class HeaderOrderPage(QIWizardPage):
         # generating selection lists
         self.header_list = QListWidget()
         self.header_list.setSelectionMode(3)
+        self.header_list.itemDoubleClicked.connect(self.itemdoubleclicked)
         self.selection_list = QListWidget()
         self.selection_list.setSelectionMode(3)
+        self.selection_list.itemDoubleClicked.connect(self.itemdoubleclicked)
 
 
         toright = QToolButton()
@@ -151,6 +153,16 @@ class HeaderOrderPage(QIWizardPage):
         currentItem = self.selection_list.takeItem(currentRow)
         self.selection_list.insertItem(currentRow + 1, currentItem)
         self.selection_list.setCurrentRow(currentRow+1)
+
+    def itemdoubleclicked(self):
+        sender = self.sender()
+
+        if sender == self.header_list:
+            self.toright()
+        elif sender == self.selection_list:
+            self.toleft()
+        else:
+            raise ValueError('Unknown sender')
 
 
     def validatePage(self):
@@ -304,7 +316,7 @@ class SaveFilePage(QIWizardPage):
             subprocess.Popen(["nohup", "see", self.outputfilename])
             # os.system('see %s'%self.outputfilename)
         elif system == 'nt':
-            subprocess.Popen(["nohup", "start", self.outputfilename])
+            subprocess.Popen(["start", self.outputfilename])
             # os.system("start %s"%self.outputfilename)
 
 

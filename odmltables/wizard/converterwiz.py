@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 26 12:58:23 2016
 
-@author: zehl
-"""
 
-import os
 from PyQt4.QtGui import QApplication
 
 
@@ -60,8 +55,8 @@ class ConversionWizard(OdmltablesWizard):
                                              "different cell schemes by clicking "
                                              "on a cell and changing its properties "
                                              "using the settings at the right.")
-        msgs[self.PageSaveFile] = self.tr("Select a location to save you file by "
-                                          "clicking on the browse button.")
+        msgs[self.PageSaveFile] = self.tr("Select a location to save your "
+                                          "file by clicking on the browse button.")
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no help available.")
         return msgs
 

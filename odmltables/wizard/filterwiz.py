@@ -28,7 +28,7 @@ class FilterWizard(OdmltablesWizard):
         self.setPage(self.PageFilter, FilterPage(settings))
         self.setPage(self.PageSaveFile, SaveFilePage(settings))
 
-        self.setStartId(2)
+        self.setStartId(0)
 
     def _createHelpMsgs(self):
         msgs = {}
@@ -37,6 +37,7 @@ class FilterWizard(OdmltablesWizard):
         msgs[self.PageCustomInputHeader] = self.tr("You need to assign the header "
                                                    " titles used in the input file "
                                                    " to valid odml column types.")
+        #TODO: Add more help info
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no help available.")
         return msgs
 
