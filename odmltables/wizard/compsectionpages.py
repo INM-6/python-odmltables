@@ -17,6 +17,7 @@ import odml
 import odmltables.compare_section_csv_table
 import odmltables.compare_section_xls_table
 
+
 class ChooseFilePage(QIWizardPage):
     """
     """
@@ -51,7 +52,7 @@ class ChooseFilePage(QIWizardPage):
         vbox.addWidget(configlabel)
         self.configselection = QComboBox()
         self.configselection.addItems(self.settings.get_all_config_names())
-        self.configselection.insertItem(0,'-- No configuration --')
+        self.configselection.insertItem(0, '-- No configuration --')
         self.configselection.setCurrentIndex(0)
         self.configselection.activated.connect(self.selectconfig)
         vbox.addWidget(self.configselection)
@@ -59,7 +60,7 @@ class ChooseFilePage(QIWizardPage):
         # adding separator
         horizontalLine = QFrame()
         horizontalLine.setFrameStyle(QFrame.HLine)
-        horizontalLine.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Minimum)
+        horizontalLine.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         vbox.addSpacing(10)
         vbox.addWidget(horizontalLine)
         vbox.addSpacing(10)
@@ -94,9 +95,14 @@ class ChooseFilePage(QIWizardPage):
     def handlebuttonbrowse(self):
         # only allow .odml-files
         filename = QFileDialog().getOpenFileName(filter="*.odml")
-        self.inputpath = QLineEdit(filename)
-        self.settings.register('inputfile', self.inputpath)
-        self.inputfile.setText(shorten_path(filename))
+        if filename:
+            try:
+                odml.tools.xmlparser.load(filename)
+                self.inputpath = QLineEdit(filename)
+                self.settings.register('inputfile', self.inputpath)
+                self.inputfile.setText(shorten_path(filename))
+            except:
+                QMessageBox.warning(self, 'Invalid file', 'It seems that the file you chose is no valid odml-file')
 
     def selectconfig(self):
         if self.configselection.currentIndex() != 0:
@@ -114,14 +120,14 @@ class ChooseFilePage(QIWizardPage):
     def validatePage(self):
         if not any((self.settings.get_object('RBoutputxls').isChecked(),
                     self.settings.get_object('RBoutputcsv').isChecked())):
-            QMessageBox.warning(self,'Select a format','You need to select a table format to continue.')
+            QMessageBox.warning(self, 'Select a format', 'You need to select a table format to continue.')
             return 0
 
         if not self.settings.is_registered('inputfile'):
-            QMessageBox.warning(self,'Select an input file','You need to select an input file to continue.')
+            QMessageBox.warning(self, 'Select an input file', 'You need to select an input file to continue.')
             return 0
         elif not self.settings.get_object('inputfile').text():
-                QMessageBox.warning(self,'Select an input file','You need to select an input file to continue.')
+                QMessageBox.warning(self, 'Select an input file', 'You need to select an input file to continue.')
                 return 0
 
         return 1
@@ -236,7 +242,6 @@ class ChooseSectionsPage(QIWizardPage):
         self.setTitle("Choose Sections")
         self.setSubTitle("Choose the sections you want to compare")
 
-
     def _get_selected_rows(self, tree):
         """
         function to determine the selected rows in a specified QTreeWidget
@@ -296,18 +301,18 @@ class ChooseSectionsPage(QIWizardPage):
                 QTreeWidgetItem(parent, [p])
             self.section_tree.addTopLevelItem(parent)
 
-
     def selectall(self):
         if self.selectallcb.isChecked():
-            self.section_tree.selectAll();
+            self.section_tree.selectAll()
         else:
-            self.section_tree.clearSelection();
+            self.section_tree.clearSelection()
 
     def validatePage(self):
         if not self.settings.get_object("selected_secs"):
-            QMessageBox.warning(self,'No Sections chosen','You should choose at least two sections to be compared in the table.')
+            QMessageBox.warning(self, 'No Sections chosen', 'You should choose at least two sections to be compared in the table.')
             return 0
         return 1
+
 
 class ChoosePropertiesPage(QIWizardPage):
     # idea: page to choose the properties that should be compared.
@@ -351,7 +356,6 @@ class SaveTablePage(QIWizardPage):
         self.setTitle("Save Table")
         self.setSubTitle("Choose a location to save your table")
 
-
     def handlebuttonbrowse(self):
         # only allow .odml-files
         filename = QFileDialog().getSaveFileName()
@@ -375,8 +379,12 @@ class SaveTablePage(QIWizardPage):
 
     def validatePage(self):
 
+
+        if not self.settings.is_registered('outputfile'):
+            QMessageBox.warning(self, 'Select an outputfile', 'You need to select a outputfile to continue.')
+            return 0
         if not self.settings.get_object('outputfile').text():
-            QMessageBox.warning(self,'Select an outputfile','You need to select a outputfile to continue.')
+            QMessageBox.warning(self, 'Select an outputfile', 'You need to select a outputfile to continue.')
             return 0
 
         if self.settings.get_object('RBoutputxls').isChecked():
