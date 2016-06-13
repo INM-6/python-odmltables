@@ -39,5 +39,7 @@ setup(
     'gui_scripts': [
         'gui = wizard.main:run []',
     ]
-}
+    },
+    date_files = [('/usr/share/applications', ['odmltables.desktop']),
+                  ('/usr/share/pixmaps', 'logo/odMLtables.png'])]
 )

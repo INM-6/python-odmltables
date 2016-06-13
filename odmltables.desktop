@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=odmltables
+GenericName=wizard for odmltables
+Exec=
+Icon=/usr/share/pixmaps/odML-tables.png
+Terminal=false
+Type=Application
+StartupNotify = false
