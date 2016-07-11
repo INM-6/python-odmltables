@@ -293,7 +293,7 @@ class OdmlXlsTable(OdmlTable):
                         style.num_format_str = ""
 
                     # finding longest string in the column
-                    if len(str(cell_content)) > max_col_len[col]:
+                    if len(unicode(cell_content)) > max_col_len[col]:
                         max_col_len[col] = len(str(cell_content))
 
                     sheet.write(row, col, cell_content, style)
