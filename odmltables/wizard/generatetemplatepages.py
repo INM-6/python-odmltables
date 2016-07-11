@@ -334,6 +334,7 @@ def createfile(settings):
                       for index in range(settings.get_object('LWselectedcolumns').count())]
     table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
     table.mark_columns(*[h for i,h in enumerate(output_headers) if h in mandatory_titles])
+    table.highlight_defaults = True
 
     # saving file
     table.write2file(settings.get_object('outputfilename'))
@@ -347,49 +348,91 @@ def setup_tutorodml():
     doc.repository = '/myserver/myrepo'
 
     # APPEND MAIN SECTIONS
-    doc.append(odml.Section(name='MySection1',type='sectiontype0', definition = 'This is my first section describing the first very important part of my experiment (eg. the experimental setup / hardware)'))
-    doc.append(odml.Section(name='MySection2',type='sectiontype1', definition = 'This is my second section describing the second very important part of my experiment (eg. the subject performing the experiment)'))
+    doc.append(odml.Section(name='MySection',
+                            type='<Enter the type of data you this section is'
+                                 ' associated with, e.g. hardware>',
+                            definition = '<Describe the purpose of sections '
+                                         'in short statements in this '
+                                         'column.>'))
+    doc.append(odml.Section(name='OneMoreSection',
+                            type='<Enter the type of data you this section is'
+                                 ' associated with, e.g. software>',
+                            definition = '<Use only the first cell in this '
+                                         'column to for the section '
+                                         'description.>'))
 
-    parent = doc['MySection1']
-    parent.append(odml.Section('MySubsection1',type='sectiontype0', definition = 'This section contains information about a subpart of my experiment (eg. everything concerning the amplifier used...)'))
-    parent.append(odml.Section('MySubsection2',type='sectiontype0', definition = 'This section contains information about another subpart of my experiment (eg. everything concerning the sensor used...)'))
-
-    parent = doc['MySection2']
-    parent.append(odml.Section('MySubsection3',type='sectiontype2', definition = 'This section contains information about yet another subpart of my experiment (eg. the history of the subject)'))
-
+    parent = doc['OneMoreSection']
+    parent.append(odml.Section('MySubsection',
+                               type='<Enter the type of data you this section'
+                                    ' is associated with, e.g. settings>',
+                               definition = '<Describe the purpose of this '
+                                            'section here (eg. everything '
+                                            'concerning the amplifier '
+                                            'used...)'))
 
     # ADDING PROPERTIES
-    parent = doc['MySection1']
-    parent.append(odml.Property(name='SetupID', value=odml.Value('supersetup2016',dtype='str',unit='',uncertainty='',definition='ID of the setup used for this experiment'), definition = 'ID of the setup used for this experiment'))
-    parent.append(odml.Property(name='SetupName', value=odml.Value('mysetup',dtype='str',unit='',uncertainty='',definition='Human readable setup name'), definition = 'Human readable setup name'))
-    parent.append(odml.Property(name='SetupLocation', value=odml.Value('mylab, room 007',dtype='str',unit='',uncertainty='',definition='Location of the setup'), definition = 'Location of the setup'))
+    parent = doc['MySection']
+    parent.append(odml.Property(name='MyFirstProperty',
+                                value=odml.Value('MyFirstValue',
+                                                 dtype='str',
+                                                 unit='',
+                                                 uncertainty='',
+                                                 definition='<Describe the '
+                                                            'meaning of this '
+                                                            'value in more '
+                                                            'detail here.>'),
+                                definition = '<Enter a short definition of '
+                                             'the property described here>'))
+    parent.append(odml.Property(name='OneMoreProperty',
+                                value=odml.Value(2.001,
+                                                 dtype='float',
+                                                 unit='mm',
+                                                 uncertainty=0.02,
+                                                 definition='A section can '
+                                                            'have more than '
+                                                            'one property '
+                                                            'attached and a '
+                                                            'value can be of '
+                                                            'different type '
+                                                            'than string.'),
+                                definition = '<Enter a short definition of '
+                                             'the property described here>'))
 
-    parent = doc['MySection1']['MySubsection1']
-    parent.append(odml.Property(name='HardwareID', value=odml.Value('superamplifier3000',dtype='str',unit='',uncertainty='',definition='ID of the amplifier used for this experiment'), definition = 'ID of the amplifier used for this experiment'))
-    parent.append(odml.Property(name='AcquisitionDate', value=odml.Value(datetime.date(2000,01,01),dtype='date',unit='',uncertainty='1 week',definition='Recipience date of the hardware component'), definition = 'Purchase date of the hardware component'))
-    parent.append(odml.Property(name='AmplificationFactor', value=[odml.Value(5,dtype='int',unit='V/V',uncertainty=0.01,definition='Signal amplification during calibration'),
-                                                                    odml.Value(50,dtype='int',unit='V/V',uncertainty=0.01,definition='Signal amplification during main measurement')],
-                                definition = 'Signal amplification factor used during the experiment'))
+    # ADDING MORE VALUES
+    parent = doc['MySection'].properties['OneMoreProperty']
+    parent.append(odml.Value(4.,
+                              dtype='float',
+                              unit='',
+                              uncertainty=0.4,
+                              definition='A property can have more than one '
+                                         'value attached.'))
 
-    parent = doc['MySection1']['MySubsection2']
-    parent.append(odml.Property(name='HardwareID', value=odml.Value('supersensor5000',dtype='str',unit='',uncertainty='',definition='ID of the sensor used for this experiment'), definition = 'ID of the sensor used for this experiment'))
-    parent.append(odml.Property(name='InstallationDate', value=odml.Value(datetime.date(2015,01,01),dtype='date',unit='',uncertainty='1 day',definition='Date of the initial start-up of the hardware component'), definition = 'Installation date of the hardware component'))
-    parent.append(odml.Property(name='Sensitivity', value=odml.Value(10,dtype='float',unit='mV/N',uncertainty=0.001,definition='Sensitivity of the hardware component'),definition = 'Sensitivity of the hardware component'))
-    parent.append(odml.Property(name='Range', value=[odml.Value(0.1,dtype='float',unit='N',uncertainty=0.05,definition='Lower measurement limit'),
-                                                     odml.Value(10000,dtype='float',unit='N',uncertainty=100,definition='Upper measurement limit')],
-                                definition = 'Active measurement range of the hardware component'))
+    parent = doc['OneMoreSection']
+    parent.append(odml.Property(name='MyEmptyProperty',
+                                value=odml.Value(-1,
+                                                 dtype='int',
+                                                 unit='',
+                                                 uncertainty='',
+                                                 definition='This integer '
+                                                            'value still '
+                                                            'contains the '
+                                                            'default value '
+                                                            '"-1", which can '
+                                                            'be highlighted '
+                                                            'using '
+                                                            'odml-tables.'),
+                                definition = 'This property contains an '
+                                             'empty/default value.'))
 
-    parent = doc['MySection2']
-    parent.append(odml.Property(name='SubjectID', value=odml.Value('s1357',dtype='str',unit='',uncertainty='',definition='PassportID'), definition = 'ID of the subject taking part in the experiment'))
-    parent.append(odml.Property(name='SubjectName', value=odml.Value('Sam Subject',dtype='str',unit='',uncertainty='',definition='First and last name of the subject'), definition = 'Name of the subject'))
-    parent.append(odml.Property(name='Birthdate', value=odml.Value(datetime.date(1910,01,01),dtype='date',unit='',uncertainty='',definition='Birthdate'), definition = 'Birthdate of the subject'))
-
-    parent = doc['MySection2']['MySubsection3']
-    parent.append(odml.Property(name='Diseases', value=[odml.Value('Smallpox',dtype='str',unit='',uncertainty='',definition='Disease'),
-                                                        odml.Value('Plague',dtype='str',unit='',uncertainty='',definition='Disease'),
-                                                        odml.Value('Cholera',dtype='str',unit='',uncertainty='',definition='Disease')],
-                                definition = 'Past diseases of the subject'))
-    parent.append(odml.Property(name='BiologicalAge', value=odml.Value(50,dtype='int',unit='years',uncertainty=5,definition='Age'), definition = 'Tested biological age of the subject'))
-
+    parent = doc['OneMoreSection']['MySubsection']
+    parent.append(odml.Property(name='MyLastProperty',
+                                value=odml.Value(datetime.datetime.today().date(),
+                                                 dtype='date',
+                                                 unit='',
+                                                 uncertainty='',
+                                                 definition='This value '
+                                                            'contains todays '
+                                                            'date.'),
+                                definition = 'You can define the hierarchical location of a section via the "path to section" column.'))
     return doc
 
