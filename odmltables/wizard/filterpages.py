@@ -819,7 +819,8 @@ class FilterPage(QIWizardPage):
                                         filter['kwargs'].iteritems()})
         self.update_tree(self.filtered_table)
 
-
+    # TODO: check if this can also be done via XPath + provide xpath
+    # interface in gui (see http://lxml.de/xpathxslt.html)
     def load_odml(self):
         # loading odml file
         self.table = odml_table.OdmlTable()

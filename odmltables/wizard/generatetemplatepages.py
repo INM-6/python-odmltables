@@ -433,6 +433,8 @@ def setup_tutorodml():
                                                  definition='This value '
                                                             'contains todays '
                                                             'date.'),
-                                definition = 'You can define the hierarchical location of a section via the "path to section" column.'))
+                                definition = 'You can define the hierarchical'
+                                             ' location of a section via the'
+                                             ' "path to section" column.'))
     return doc
 
