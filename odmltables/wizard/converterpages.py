@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 
 from pageutils import *
 
-from odmltables import odml_table, odml_xls_table, odml_csv_table, \
+from .. import odml_table, odml_xls_table, odml_csv_table, \
     xls_style
 
 
