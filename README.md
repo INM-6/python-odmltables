@@ -39,4 +39,3 @@ To set up python-odmltables you navigate to your python-odmltables folder and in
 Bugs
 ----
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
-[I'm an inline-style link](https://www.google.com)
