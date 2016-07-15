@@ -1,14 +1,6 @@
 odMLtables Tutorial
 ===================
 
-:Authors:
-	Jana Pick and Lyuba Zehl
-:Release:
-	0.1
-:License:
-	Creative Commons Attribution-ShareAlike 4.0 International
-	`License <http://creativecommons.org/licenses/by-sa/4.0/>`_
-
 In general there are two different kinds of tables you can create yet: a table with an overview of your whole odML or a table comparing different sections of the odML due to their properties. How they exactly look like will be shown later. But you should know, that only the first table can be converted back to an odML-file.
 
 odML-table
@@ -433,7 +425,7 @@ To apply the filter function we first need to generate a metadata collection. He
 
 This generates the file *example3.xls*, which should look like this:
 
-.. figure:: screenshots/example3-1.png
+.. figure:: images/screenshots/example3-1.png
     :scale: 50 %
     :alt: Example 3: Xls representation of the complete odml structure.
 
@@ -461,7 +453,7 @@ If we save it as 'Example3_Output.xls'::
 
 this looks as following:
 
-.. figure:: screenshots/example3-2.png
+.. figure:: images/screenshots/example3-2.png
     :scale: 50 %
     :alt: Example 3: Xls representation of the odml structure after first filtering.
 
@@ -474,7 +466,7 @@ However, the resulting table still contains the 'dev_measures_template' section 
 
 This operation only leaves properties in the table, whose parent section name does not end with 'template' and therefore removes the 'dev_measures_template' section and all its properties.
 
-.. figure:: screenshots/example3-3.png
+.. figure:: images/screenshots/example3-3.png
     :scale: 50 %
     :alt: Example 3: Xls representation of the odml structure after second filtering.
 
