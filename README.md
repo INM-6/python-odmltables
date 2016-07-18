@@ -10,7 +10,7 @@ In addition to the Python API, python-odmltables provides its main functionality
 Download
 --------
 
-The latest version of python-odmltables is available on `GitHub <https://github.com/INM-6/python-odmltables>`_. You can either use git and download python-odmltables directly using
+The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly using
 
 	$ cd /home/usr/toolbox/
 	$ git clone https://github.com/INM-6/python-odmltables.git
@@ -22,8 +22,8 @@ Requirements
 ------------
 To use python-odmltables you also need to install
 
-- python-odML (https://github.com/G-Node/python-odml)
-- xlrd (https://pypi.python.org/pypi/xlrd) and xlwt (https://pypi.python.org/pypi/xlwt) for reading and writing of the xls format using python
+- [python-odML] (https://github.com/G-Node/python-odml)
+- [xlrd] (https://pypi.python.org/pypi/xlrd) and [xlwt] (https://pypi.python.org/pypi/xlwt) for reading and writing of the xls format using python
 
 
 Installation
