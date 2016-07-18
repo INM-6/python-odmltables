@@ -9,7 +9,7 @@ from PyQt4 import QtGui
 import sys
 from mainwindow import MainWindow
 
-def main():
+def run():
 
     app = QtGui.QApplication(sys.argv)
     w = MainWindow()
@@ -17,4 +17,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run()
