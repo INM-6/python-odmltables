@@ -9,7 +9,7 @@ In general, there are two types of tables you can create yet: First, a table tha
 In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow.
 
 
-Flattened odML-table
+Flattened odML table
 ====================
 
 This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
@@ -29,24 +29,23 @@ This table is basically just a flat version of the hierarchical odML file. Every
 The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odML-tables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
 
 
-
 csv
 ---
 
-There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv-format.
+There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
 
 
-Create the first table
-++++++++++++++++++++++
+Creating your first table
++++++++++++++++++++++++++
 
-To create a csv table from an odML-file you have to import the class :class:`odml_csv_table.OdmlCsvTable`::
+To create a csv table from an odML file you have to import the class :class:`odml_csv_table.OdmlCsvTable` and create an instance of that class::
 
     from odml_csv_table import OdmlCsvTable
 
     myFirstTable = OdmlCsvTable()
 
 
-Then you can load your odML-file::
+Then you can load your odML file::
 
     myFirstTable.load_from_file('testfile.odml')
 
@@ -58,10 +57,10 @@ You will get a table with the four columns; 'Path', 'Property Name', 'Value' and
 
 
 
-Load the odML
-+++++++++++++
+Loading odML from other sources
++++++++++++++++++++++++++++++++
 
-You can not only, as shown in the example above, load the odML from an odML-file. There are several other possibilities:
+You can not only load the odML from an odML-file, as shown in the example above. There are several other possibilities:
 
 1. load from an :class:`odml.Document` (class of the odML-Python-library)::
 
@@ -73,38 +72,25 @@ You can not only, as shown in the example above, load the odML from an odML-file
     myTable = OdmlCsvTable()
     myTable.load_from_odmldoc(doc)
 
-2. load from a python function that creates an :class:`odml.Document`::
-
-    import odml
-
-    def function1():
-        doc = odml.Document()
-        # now append some sections, properties and values to the document
-
-        return doc
-
-    myTable = odmlCsvTable()
-    myTable.load_from_function(function1)
+2. load from another table -- but this option will be explained later!
 
 
-3. load from a table (this option will be explained later)
+Changing the table header
++++++++++++++++++++++++++
 
-Changing the header
-+++++++++++++++++++
-
-Next step is to change the header in favor of your plans for the table. You can choose, which of the possible columns given above will be in the table and also what their name is.
+The next step is to change the header to match you specific requirements for the table. In particular, you can choose which of the possible table columns (see above) will be in the table, their order, and also what the column headers are.
 
 .. warning::
    If you miss out one of the columns 'Path', 'Property Name', 'Value' and 'odML Data Type' in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back.
 
-By using the function :func:`odml_table.OdmlTable.change_header_titles` you can choose an own title for every column::
+By using the function :func:`odml_table.OdmlTable.change_header_titles` you can choose a custom title for every column::
 
     myFirstTable.change_header_titles(Path='my path',
                                       PropertyName='my property',
                                       Value='my value',
                                       odmlDatatype='my datatype')
 
-The table should now look exactly as the old one, with the only difference that the names of the columns have changed. If you want to print some more information, you can adjust this by using the function :func:`odml_table.OdmlTable.change_header`::
+The table should now look exactly as the old one, with the only difference that the names of the columns have changed. If you want to print additional columns, you can specify this by using the function :func:`odml_table.OdmlTable.change_header`::
 
     myFirstTable.change_header(Path=1,
                                SectionName=2,
@@ -112,11 +98,11 @@ The table should now look exactly as the old one, with the only difference that 
                                PropertyName=4,
                                Value=5)
 
-As you can see, in this function you can not only decide the columns but also their order, by giving them numbers from 1 on. If, for some reason, you want to have an empty column inside your table, you will have to set the option ``odml_table.OdmlTable.allow_empty_columns`` to True ::
+As you can see, in this function you can not only decide which columns to show, but also their order, by giving them numbers starting from 1. If, for some reason, you want to have an empty column inside your table, you will have to set the option ``odml_table.OdmlTable.allow_empty_columns`` to True ::
 
     myFirstTable.allow_empty_columns = True
 
-After this command, a code as the following should work fine::
+After this command, a code like the one below should work fine::
 
     myFirstTable.change_header(Path=1,
                                PropertyName=3,
@@ -124,10 +110,11 @@ After this command, a code as the following should work fine::
                                SectionDefinition=7,
                                DataUncertainty=8)
 
+
 Avoiding unnessaccery entries
 +++++++++++++++++++++++++++++
 
-You might already have notized, that not every cell of the tables is filled. To make a table better humanreadable, some information about the Section (Path, SectionName and SectionDefinition) or the Property (PropertyName, PropertyDefinition) wont be printed in the table if they dont change. To change this behaviour use the options ``showall_sections`` and ``showall_properties``::
+You might already have noticed that not every cell of the tables is filled. To make a table better human-readable, redundant information about the Section (Path, SectionName and SectionDefinition) or the Property (PropertyName, PropertyDefinition) will not be printed if it is already contained in the previous row. To change this behaviour use the options ``showall_sections`` and ``showall_properties``::
 
     myFirstTable.showall_sections = True
     myFirstTable.showall_properties = True
@@ -135,20 +122,16 @@ You might already have notized, that not every cell of the tables is filled. To 
 Now everything should be there.
 
 
-
-.. _XLS:
-
 xls
 ---
 
-All those functions already shown for the csv-table also work with xls. But there are some additional features concerning the Style of cells. First you need import the modul and create a new table::
+All the functions already shown for the csv table also work with xls tables. However, there are some additional features concerning the Style of cells. Again, first you need import the modul and create a new table::
 
     from odml_xls_table import OdmlXlsTable
     myXlsTable = OdmlXlsTable()
 
 
-
-choosing styles
+Choosing styles
 +++++++++++++++
 
 There are some styles you can easily change in the table. First, there is the style of the header. You can choose the backcolor and fontcolor and the style of the font::
@@ -157,7 +140,7 @@ There are some styles you can easily change in the table. First, there is the st
     myXlsTable.header_style.fontcolor = ''
     myXlsTable.header_style.fontstyle = 'bold 1'
 
-The same way you can adapt the styles ``first_style`` and ``second_style``. Those are the styles used for the normal rows of the table. For a better overview there are those two styles, which are used alternating (for more information see section about `changing pattern`_.
+The same way you can adapt the styles ``first_style`` and ``second_style``. Those are the styles used for the orginary rows of the table. For a better visual representation, two style attributes exist that can be used in an alternating fashion (see section about `Changing grid patterns`_).
 
 You can find a table with all possible colors and their names :download:`here <colors.xls>`.
 
@@ -169,13 +152,13 @@ Sometimes there might be columns you want to lay a special focus on. So, to mark
 
     myXlsTable.mark_columns('Path', 'Value')
 
-Those marked columns will have a different style, which is determined by the attributes ``first_marked_style`` and ``second_marked_style`` (those can also be changed).
+Those marked columns will have a different style, which is determined by the attributes ``first_marked_style`` and ``second_marked_style`` (those can also be changed, as shown above).
 
 
 Changing grid patterns
 ++++++++++++++++++++++
 
-By default the two different styles for the rows will alternate when a new section starts. But you can also change this behavior to a new property or a new value and, if you dont want different colors at all, just turn it off. This works by setting ``changing_point`` to either 'sections', 'properties', 'values' or None::
+By default the two different styles for the rows will alternate when a new section starts. However, you can also change this behavior to change for each new property or even new value. If you dont want different colors at all, just turn it off. All this works by setting ``changing_point`` to either 'sections', 'properties', 'values' or None::
 
     myXlsTable.changing_point = 'values'
 
@@ -184,21 +167,20 @@ Also, for a better distinctness between the columns , you can choose a 'chessfie
     myXlsTable.pattern = 'chessfield'
 
 
-
 Comparative odML table
 ======================
 
-It might happen, that you have several sections with similar properties, for example TODO: example . To create a table, in which you can easily compare different sections of an odml, you can use this classes.
+It may happen that you have several sections with similar properties, for example one section per training day of an animal containing that days training parameters . To create a table in which you can easily compare values across different sections of an odML, you can use the comparative table representation.
 
 csv
 ---
 
-The easiest format here is, again, csv. So for the beginning, here is how you create a table to compare sections due to their properties in csv.
+The easiest format here is, again, csv. So for the beginning, here is how you create a table to compare properties across sections.
 
-The beginning
-+++++++++++++
+Starting out
+++++++++++++
 
-to create a csv-file with the table, import the class::
+To create a csv-file with the table, import the class::
 
     from compare_section_csv_table import CompareSectionCsvTable
     myCompareTable = CompareSectionCsvTable()
@@ -207,10 +189,11 @@ Now you can load the table::
 
     myCompareTable.load_from_file('somefile.odml')
 
+
 Choosing sections
 +++++++++++++++++
 
-Next you have to decide, which sections of the table you want to compare. You can either just choose all sections out of a list of sectionnames or you can select all sections with a specific beginning::
+Next you have to decide which sections of the table you want to compare. You can either just choose all sections out of a list of sectionnames or you can select all sections with a specific beginning::
 
     myCompareTable.choose_sections('s1', 's2', 's3')
 
@@ -218,28 +201,30 @@ Next you have to decide, which sections of the table you want to compare. You ca
 
     myCompareTable.choose_sections_startwith('s')
 
+The latter would select all sections starting with an 's'. In the example above, this could be helpful if the sections were called 'Training_Day_01', 'Training_Day_02',... such that you could select alls sections starting with 'Training_Day'.
+
 You can already write this table to a file::
 
     myCompareTable.write2file('compare.csv')
 
+The resulting file will have the properties in the header, and each following row represents one of the sections.
 
 
 Switch the table
 ++++++++++++++++
 
-Now the section names should be in the header and the property names in the first column. This can be inverted by using the command ``switch``::
+Now, assume we want to have the section names in the header and the property names in the first column. For example, if you have many sections to compare you might get a better overview by switching the table this way. This can be realized by setting ``switch`` to True::
 
     myCompareTable.switch = True
 
-This time the property names should be in the header and the names of the sections in the first column. For example if you have many sections to compare you might get a better overview by switching the table this way.
 
+Including all properties
+++++++++++++++++++++++++
 
-Include all
-+++++++++++
-
-If the sections you compare dont have exactly the same structure there might be properties appearing in one section but not in another. If you only want to compare those properties that are present in all of your chosen sections, use the option include_all::
+If the sections you compare dont have exactly the same structure there might be properties appearing in one section but not in another. If you only want to compare those properties that are present in all of your chosen sections, set the option include_all to False::
 
     myCompareTable.include_all = False
+
 
 xls
 ---
@@ -247,10 +232,10 @@ xls
 In this part you will find the additional options for an xls-table.
 
 
-First table
-+++++++++++
+Creating a table
+++++++++++++++++
 
-to create a new table use the command::
+To create a new table use the command::
 
     from compare_section_xls_table import CompareSectionXlsTable()
     xlsCompareTable = CompareSectionXlsTable()
@@ -259,14 +244,14 @@ to create a new table use the command::
 Changing styles
 +++++++++++++++
 
-there are different styles you can adjust in this table:
+There are again different styles you can adjust in this table:
 
-1. **headerstyle** The style used for the captions of rows and columns
-2. **first_style** The style used for the values inside the table
-3. **second_style** The second style used for the values inside the table
-4. **missing_value_style** If ``include_all`` is True, this style will be used if a property doesnt exist in the section, so they distinguish from properties with empty values
+1. **headerstyle** The style used for the captions of rows and columns.
+2. **first_style** The style used for the values inside the table.
+3. **second_style** The alternate style used for the values inside the table.
+4. **missing_value_style** If ``include_all`` is True, this style will be used if a property doesnt exist in the section, so they distinguish from properties with empty values.
 
-You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles.
+As already shown for the flattened table (`Choosing styles`_), you may also adjust backcolor, fontcolor and fontstyle for each of the styles.
 
 
 Practical examples
@@ -274,15 +259,19 @@ Practical examples
 
 In these three short examples you will learn how to:
 
-1. Generate a template odml starting from a table, which will then be used to
-2. Manually enrich the odml via a tabular representation like it could be done in a daily workflow and finally how to
-3. Reduce an odml, such that it can be used for a laboratory notebook or specific overviews
+1. Generate a template odML starting from a table, which will then be used to
+2. Manually enrich the odML via a tabular representation like it could be done in a daily workflow and finally how to
+3. Reduce an odML, such that it can be used for a laboratory notebook or specific overviews
+
+All source files can be found in the examples folder of the python-odmltables package
+.
 
 .. _example1:
 
-Example 1: Generating a template odml
+Example 1: Generating a template odML
 -------------------------------------
-In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file 'Example1.xls' and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important for the later understanding of the metadata structure. The table should now look like this:
+
+In this example you will learn how to generate an odML template file starting from an empty xls file. First you need to create an empty xls file 'example1.xls' using your preferred spreadsheet software and fill the first row with the header titles. In principle only four header title are necessary to generate an odML from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important later in understanding of the metadata structure. The table should now look like this:
 
 |
 
@@ -292,7 +281,7 @@ In this example you will learn how to generate an odml template file starting fr
 
 |
 
-Next, you need to decide on a structure of your odml. Here, we are implementing only a small branch of an odml, which is describing an animal, its attributes and surgery. First of all, we are choosing properties we want to cover in the odml to describe
+Next, you need to decide on a structure of your odML. Here, we will implement only a small branch of an odML, which describes an animal, its attributes and the surgery. First of all, we choose properties we want to cover in the odML:
 
 **The animal**
 
@@ -313,13 +302,13 @@ Next, you need to decide on a structure of your odml. Here, we are implementing 
 * **Painkiller** Name of painkiller, if used
 * **Link** URL or folder containing surgery protocol
 
-By describing the meaning of the properties, we already also covered the property definition we need to provide. As the surgery is typically specific to the animal, we are going to use one main section for the animal ('/Animal') and a subsection for the description of the surgery ('/Animal/Surgery'). These are the 'Path to Section' values we need to provide in the xls table. In the next step we need to define the data types of the values we are going to put in the odml. For most of the values a string is the best option (AnimalID, Species, Sex, Litter, Seizures, Surgeon, Quality, Anaesthestic, Painkiller), however some properties need different datatypes:
+By describing the meaning of the properties, we also covered the property definition we need to provide. As the surgery is typically specific to the animal, we are going to use one main section for the animal ('/Animal') and a subsection for the description of the surgery ('/Animal/Surgery'). These are the 'Path to Section' values we need to provide in the xls table. In the next step we need to define the data types of the values we are going to put in the odml file. For most of the values a string is the best option (AnimalID, Species, Sex, Litter, Seizures, Surgeon, Quality, Anaesthestic, Painkiller), however some properties need different datatypes:
 
 * **Birthdate / Date** date
 * **Weight** float, this can be an arbitrary non-integer number
 * **Link** url, this basically a string, but with special formatting.
 
-Finally we are also able to define units for the values we are going to enter in this odml. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
+Finally we are also able to define units for the values we are going to enter in this odML. In this example a unit is only necessary for the weight value, as the interpretation of this value highly depends on the unit. We define the unit of the weight as gram (g).
 If you now enter all the information discussed above in the xls table, this should look like below:
 
 
@@ -334,36 +323,34 @@ If you now enter all the information discussed above in the xls table, this shou
 |
 
 
-For the conversion of the xls file to an odml template file, you need to generate an OdmlXlsTable object and load the your xls file::
+For the conversion of the xls file to an odML template file, you need to generate an OdmlXlsTable object and load the your xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object
     xlstable = odxlstable.OdmlXlsTable()
 
     # loading the data
-    xlstable.load_from_xls_table('Example1.xls')
+    xlstable.load_from_xls_table('example1.xls')
 
-Now you can save it directly as odml file::
+Now you can save it directly as odML file::
 
     xlstable.write2odml('example1.odml')
 
-If you now open the odml file in the browser or save it again as in the tabular format, you will see that also value have appeared for the properties. These values are default values defined in the odml-table OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odml. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
+If you now open the odML file in the browser or save it again as in the tabular format, you will see that also values have appeared for the properties. These values are default values defined in the odML-tables OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odML. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
 
-This new odml file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
-
-
+This new odML file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
 
-example 2: Manual enrichment of odml
+Example 2: Manual enrichment of odML
 ------------------------------------
 
-In this example you are going to manually add data to an already existing odml document (see :ref:`example1`). In the best case, this odml document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odml. However, in principle the manual enrichment method presented here can also be used to start from an empty template odml and manually enter all values of the odml.
+In this example you are going to manually add data to an already existing odML document (see :ref:`example1`). In the best case, this odML document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odML in terms of a complete description of the data and experiment. However, in principle the manual enrichment method presented here can also be used to start from an empty template odML, and all metadata is manually entered.
 
-First of all, we are going to start from the odml generated in :ref:`example1`. If you don't have the resulting file from :ref:`example1`, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
+We start from the odML generated in :ref:`example1`. If you don't have the resulting file, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
 
     'python example2.py'
 
-To generate an OdmlTables object, load the odml and save it again as xls file::
+To generate an OdmlTables object, load the odML and save it again as xls file::
 
     import odmltables.odml_xls_table as odml_xls_table
 
@@ -402,7 +389,7 @@ Path to Section Property Name  Value                                  odML Data 
 
 |
 
-The completed xls file can then be saved as 'manually_enriched.xls' and converted back to the odml format via::
+The completed xls file can then be saved as 'manually_enriched.xls' and converted back to the odML format via::
 
     import odmltables.odml_xls_table as odml_xls_table
 
@@ -415,68 +402,76 @@ The completed xls file can then be saved as 'manually_enriched.xls' and converte
     # save data as odml document
     xlstable.write2odml('example2-2.odml')
 
-The 'example2-2.odml' file is now complete and can used for long term metadata storage and easy and fast metadata access for further analyses.
+The 'example2-2.odml' file is now complete with manually entered metadata and can used for long term metadata storage and easy and fast metadata access for further analyses.
 
 
-example 3: Creating an overview sheet / Filtering
--------------------------------------------------
+Example 3: Creating an overview sheet / Filtering sections and properties
+-------------------------------------------------------------------------
 
 In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
 This feature can be used to create a summary table to be included in a laboratory notebook.
 
-To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odml, which you can generate by executing the example3.py script in the odmltables/example folder::
+To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odML, which you can generate by executing the example3.py script in the example folder of the odml-tables package::
 
     'python example3.py'
 
-This generates the file *example3.xls*, which should look like this:
+This generates the file 'example3.xls', which should look like this:
 
 .. figure:: images/screenshots/example3-1.png
     :scale: 50 %
-    :alt: Example 3: Xls representation of the complete odml structure.
+    :alt: Example 3: xls representation of the complete odML structure.
 
-    Example 3: Xls representation of the complete odml structure.
+    Example 3: xls representation of the complete odML structure.
 
-This example structure contains only the branch of an odml describing the animal and its development. The previously known information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data measured a subsection '/Animal/Development' exists, which contains developmental properties only consisting of a single measurement value. In addition several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
+This example structure contains only the branch of an odML describing the animal and its development. The previously acquired information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data a subsection '/Animal/Development' exists, which contains those developmental properties that only consist of a single measurement value. In addition, several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
 
-For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we are now focusing on the 'DevelopmentalAge' and 'Weight' properties.
-To get an odmltables representation of the xls file we are generating an OdmlXlsTable object and loading the data from the xls file::
+For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we focus on the 'DevelopmentalAge' and 'Weight' properties. To get an odML-tables representation of the xls file we generate an OdmlXlsTable object and load the data from the xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object
     xlstable = odxlstable.OdmlXlsTable()
 
     # loading the data
-    xlstable.load_from_xls_table('Example3.xls')
+    xlstable.load_from_xls_table('example3.xls')
 
 Now we are going to apply a filter, which only leaves the properties with name 'DevelopmentalAge' or 'Weight' in the table::
 
     xlstable.filter(PropertyName=['DevelopmentalAge','Weight'], comparison_func= lambda x,y: (x in y))
 
-If we save it as 'Example3_Output.xls'::
+If we save it as 'example3_Output.xls'::
 
-    xlstable.write2file('Example3_Output.xls')
+    xlstable.write2file('example3_Output.xls')
 
-this looks as following:
+this looks as follows:
 
 .. figure:: images/screenshots/example3-2.png
     :scale: 50 %
-    :alt: Example 3: Xls representation of the odml structure after first filtering.
+    :alt: Example 3: xls representation of the odML structure after first filtering.
 
-    Example 3: Xls representation of the odml structure after first filtering.
+    Example 3: xls representation of the odML structure after first filtering.
 
 
 However, the resulting table still contains the 'dev_measures_template' section and all its properties, which is not usefull in a printout for a laboratory notebook. To remove this, we apply a second filter::
 
-    xlstable.filter(invert=True,Path='template', comparison_func=lambda x,y: x.endswith(y))
+    xlstable.filter(invert=True, Path='template', comparison_func=lambda x,y: x.endswith(y))
 
 This operation only leaves properties in the table, whose parent section name does not end with 'template' and therefore removes the 'dev_measures_template' section and all its properties.
 
 .. figure:: images/screenshots/example3-3.png
     :scale: 50 %
-    :alt: Example 3: Xls representation of the odml structure after second filtering.
+    :alt: Example 3: xls representation of the odML structure after second filtering.
 
-    Example 3: Xls representation of the odml structure after second filtering.
+    Example 3: xls representation of the odML structure after second filtering.
+
+This filtered representation of the original xls file can also be further adapted in terms of the layout of the table and finally printed or converted to pdf using a spreadsheet software.
 
 
-This filtered representation of the original xls file can also be further adapted in terms of the layout of the table (see XLS_) and finally printed or converted to pdf using a spreadsheet software.
+Graphical Frontend
+==================
 
+The use of the Python API as described above gives you full flexibility over the conversion processes that may be required for your project. Also, it allows you to implement workflows to initiate automated conversion steps to compile metadata from multiple sources, and merge it with manually entered metadata, as described in `Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`_.
+
+However, many of the functions outlined above are also accessible via a graphical front-end that allows to comfortably perform some of the most frequent steps in viewing and manipulating odML-based metadata collections, including conversion to flattened table structures or filtering. Please see the installation instructions to learn how to start the graphical front-end.
+
+
+.. _`Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`: http://dx.doi.org/10.3389/fninf.2016.00026

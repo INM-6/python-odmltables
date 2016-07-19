@@ -1,12 +1,15 @@
+****************************
+Function Reference by Module
+****************************
 
-code documentation
-==================
+.. toctree::
+   :maxdepth: 2
 
 Here you find a detailed documentation of the code.
 
 
-odml table
-+++++++++++
+Flattened odML table
+++++++++++++++++++++
 
 .. automodule:: odml_table
    :members:
@@ -17,8 +20,8 @@ odml table
 .. automodule:: odml_xls_table
    :members:
 
-compare section table
-+++++++++++++++++++++
+Comparative Tables
+++++++++++++++++++
 
 .. automodule:: compare_section_table
    :members:
