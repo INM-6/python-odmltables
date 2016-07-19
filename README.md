@@ -39,10 +39,12 @@ Alternatively, if you don't want to install python-odmltables, you can add the p
     $ PYTHONPATH="${PYTHONPATH}:/home/usr/toolbox/python-odmltables"
     $ export PYTHONPATH
 
-Then you can start the odmltables wizard by navigating to the wizard folder
+Then you can start the odmltables wizard by navigating to the wizard folder and running the 'odmltables-gui' script
 
     $ cd /home/usr/toolbox/python-odmltables/
+    $ ./odmltables-gui
 
+    
 Bugs
 ----
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
