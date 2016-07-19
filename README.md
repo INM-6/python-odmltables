@@ -34,7 +34,14 @@ To set up python-odmltables you navigate to your python-odmltables folder and in
 	$ cd /home/usr/toolbox/python-odmltables/
 	$ python setup.py install
 
+Alternatively, if you don't want to install python-odmltables, you can add the path to your python-odmltables folder to your PYTHONPATH. On Linux this can be (temporarily) done via
 
+    $ PYTHONPATH="${PYTHONPATH}:/home/usr/toolbox/python-odmltables"
+    $ export PYTHONPATH
+
+Then you can start the odmltables wizard by navigating to the wizard folder
+
+    $ cd /home/usr/toolbox/python-odmltables/
 
 Bugs
 ----
