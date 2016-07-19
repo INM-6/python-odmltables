@@ -78,4 +78,6 @@ odmltables/wizard/testfiles/*
 
 # include single odml file for tutorial
 !examples/example1/example1-2.odml
+!examples/example1/example1-1.csv
+!examples/example1/example1-2.csv
 !doc/source/colors.xls
