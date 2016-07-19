@@ -287,7 +287,7 @@ In this example you will learn how to generate an odml template file starting fr
 |
 
 .. csv-table::
-   :file: csv/example1-1.csv
+   :file: ../examples/example1/example1-1.csv
    :widths: 10,10,10,10,10,20
 
 |
@@ -327,7 +327,7 @@ If you now enter all the information discussed above in the xls table, this shou
 
 
 .. csv-table::
-   :file: csv/example1-2.csv
+   :file: ../examples/example1/example1-2.csv
    :widths: 10,10,10,10,10,20
 
 

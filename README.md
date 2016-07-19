@@ -44,7 +44,6 @@ Then you can start the odmltables wizard by navigating to the wizard folder and 
     $ cd /home/usr/toolbox/python-odmltables/
     $ ./odmltables-gui
 
-    
 Bugs
 ----
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
