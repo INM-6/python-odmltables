@@ -10,20 +10,24 @@ odML-tables - Table-based editing of odML metadata collections
 Synopsis
 =========
 
-*odML-tables* is a tool to support working with metadata collections for electrophysiological data. It provides both a library interface as well as a graphical user interface to perform typical tasks that arise when dealing with metadata collections based on the odML_ format. Currently, odML-tables supports:
+*odML-tables* is a tool to support working with metadata collections for electrophysiological data. 
 
-- converting odML files to table-based representations and back
-- creating an empty odML template
-- comparing sections within an odML file
-- filtering odML files to subsets
-- merging multiple odML files
+The odML_ file format and library API provides a means to store hierarchical metadata collections for electrophysiological data. Such collections typically consist of a large number of key-value pairs organized by a hierarchy of sections (see `Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`_). However, for editing and viewing metadata the use of standard spreadsheet software offering a flat tabular representation of a selected subset of metadata is desireable. *odML-tables* provides a set of library functions as well as a graphical user interface that offers to swtich between hierarchical and flat representations of their metadata collection, and provides functions that assist in working with these files.
+
+Currently, odML-tables supports:
+
+- converting metadata collections between the hierarchical odML format and table-based representations (i.e., xls, csv)
+- creating an empty template for starting a new metadata collection
+- comparing sections within a metadata collections
+- filtering metadata collections to extract a specific subcollection
+- merging multiple metadata collections into one file
 
 
 Contents:
 =========
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
     introduction
     install
@@ -40,3 +44,7 @@ Indices and tables
 
 
 .. _`odML`: http://www.g-node.org/projects/odml
+.. _`Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`: http://dx.doi.org/10.3389/fninf.2011.00016
+
+.. |date| date::
+.. |time| date:: %H:%M
