@@ -1,37 +1,43 @@
-odMLtables Tutorial
-===================
+********
+Tutorial
+********
 
-In general there are two different kinds of tables you can create yet: a table with an overview of your whole odML or a table comparing different sections of the odML due to their properties. How they exactly look like will be shown later. But you should know, that only the first table can be converted back to an odML-file.
+At its core, odML-tables is a tool to convert hierarchical representations of metadata stored in the odML format to flat, tabluar formats. While the former is ideal to store, group, and structure large metadata collections, the latter is easier to visualize for the human eye and may be edited using powerful spreadsheet software. In either case, the data are structured as property-value pairs. Please refer to the documentation of odML for an in-depth tutorial of the format.
 
-odML-table
-***********
+In general, there are two types of tables you can create yet: First, a table that represents a plain flattened overview of the entire odML, referred to as an *flattened odML table*. Second, a table that compares a specific set of properties (keys) across sections of the odML, referred to as a *comparative odML table*. Note that only the flattened odML table can be converted back to the hierarchical odML format, while the comparative odML table is intended for visualization of a specific part of the metadata collection, only.
 
-This table is basically just a flat version of the odML-file. Every row of the table represents a value of the odML (as you will see later, that does not mean you have to print every value) and gives all available information about this value. Those are:
+In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow.
 
-* **Path** The Path to the Section next to the Value. Every Value belongs to exactly one Property, and every Property to exactly one Section. So, by giving the Path to the Section you automatically get the Path to the Value by adding the Name of the Property and the Value. This must be in the table, if you want to convert it back to an odML-file, otherwise it will be impossible to recreate the hierarchic structure of the odML.
-* **SectionName** The Name of the Section next to the Value. This one is optional, as the name of the Section is already given in the Path.
-* **SectionDefinition** The Definition of the Section next to the Value. This is an optional attribute in odML, so it is also optional in the table.
-* **SectionType** The type of the Section.
-* **PropertyName** The Name of the Property the Value belongs to. This one is not optional, if you want to convert the table back to an odML.
-* **PropertyDefinition** The Definition of the Property.
-* **Value** The metadata-Value itself. A Property without Values cannot exist, so this has to be in the table to create an odML from it.
-* **ValueDefinition** The definition of the Value (optional).
-* **DataUnit** The Unit of the Value (optional).
-* **DataUncertainty** The uncertainty of the Value (optional).
-* **odmlDatatype** The odML data Type of the Value. This is important, because it might be different from the datatype in Python or Excel. This one must be given in the table if you want to convert it back to odML.
 
-Those are many options, and in most cases you dont need all those information. The default columns of an odML-Table are 'Path', 'Property Name', 'Value' and 'odML Data Type', as those are the information needed to create an odML from the information in the table.
+Flattened odML-table
+====================
+
+This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
+
+* **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required). 
+* **SectionName** The name of the section. This column is provided for better readibility only, since the section name is also encoded in the Path (optional).
+* **SectionDefinition** The definition of the section (optional).
+* **SectionType** The type of the section (optional).
+* **PropertyName** The name of the property the value belongs to (required).
+* **PropertyDefinition** The definition of the property (optional).
+* **Value** The metadata value itself. Every row must have a value (required).
+* **ValueDefinition** The definition of the value (optional).
+* **DataUnit** The unit of measurement of the value (optional).
+* **DataUncertainty** The uncertainty of the value (optional).
+* **odmlDatatype** The odML data type of the value. Note that this may differ from the datatypes used to represent the value in Python or Excel (required).
+
+The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odML-tables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
 
 
 
 csv
-+++
+---
 
 As already mentioned in the introduction there are different formats you can save your files to; at the moment those are csv or xls. Since xls provides much more possibilities concerning the appearance of the table we will start with the easier csv-format.
 
 
-create the first table
-----------------------
+Create the first table
+++++++++++++++++++++++
 
 To create a csv table from an odML-file you have to import the class :class:`odml_csv_table.OdmlCsvTable`::
 
@@ -52,8 +58,8 @@ You will get a table with the four columns; 'Path', 'Property Name', 'Value' and
 
 
 
-load the odML
--------------
+Load the odML
++++++++++++++
 
 You can not only, as shown in the example above, load the odML from an odML-file. There are several other possibilities:
 
@@ -83,8 +89,8 @@ You can not only, as shown in the example above, load the odML from an odML-file
 
 3. load from a table (this option will be explained later)
 
-changing the header
--------------------
+Changing the header
++++++++++++++++++++
 
 Next step is to change the header in favor of your plans for the table. You can choose, which of the possible columns given above will be in the table and also what their name is.
 
@@ -118,8 +124,8 @@ After this command, a code as the following should work fine::
                                SectionDefinition=7,
                                DataUncertainty=8)
 
-avoiding unnessaccery entries
------------------------------
+Avoiding unnessaccery entries
++++++++++++++++++++++++++++++
 
 You might already have notized, that not every cell of the tables is filled. To make a table better humanreadable, some information about the Section (Path, SectionName and SectionDefinition) or the Property (PropertyName, PropertyDefinition) wont be printed in the table if they dont change. To change this behaviour use the options ``showall_sections`` and ``showall_properties``::
 
@@ -133,7 +139,7 @@ Now everything should be there.
 .. _XLS:
 
 xls
-+++
+---
 
 All those functions already shown for the csv-table also work with xls. But there are some additional features concerning the Style of cells. First you need import the modul and create a new table::
 
@@ -143,7 +149,7 @@ All those functions already shown for the csv-table also work with xls. But ther
 
 
 choosing styles
----------------
++++++++++++++++
 
 There are some styles you can easily change in the table. First, there is the style of the header. You can choose the backcolor and fontcolor and the style of the font::
 
@@ -155,8 +161,9 @@ The same way you can adapt the styles ``first_style`` and ``second_style``. Thos
 
 You can find a table with all possible colors and their names :download:`here <colors.xls>`.
 
-marking columns
----------------
+
+Highlighting columns
+++++++++++++++++++++
 
 Sometimes there might be columns you want to lay a special focus on. So, to mark columns that they differ from the other, there is the option ``mark_columns``::
 
@@ -165,8 +172,8 @@ Sometimes there might be columns you want to lay a special focus on. So, to mark
 Those marked columns will have a different style, which is determined by the attributes ``first_marked_style`` and ``second_marked_style`` (those can also be changed).
 
 
-changing pattern
-----------------
+Changing grid patterns
+++++++++++++++++++++++
 
 By default the two different styles for the rows will alternate when a new section starts. But you can also change this behavior to a new property or a new value and, if you dont want different colors at all, just turn it off. This works by setting ``changing_point`` to either 'sections', 'properties', 'values' or None::
 
@@ -178,18 +185,18 @@ Also, for a better distinctness between the columns , you can choose a 'chessfie
 
 
 
-table to compare sections
-*************************
+Comparative odML table
+======================
 
 It might happen, that you have several sections with similar properties, for example TODO: example . To create a table, in which you can easily compare different sections of an odml, you can use this classes.
 
 csv
-+++
+---
 
 The easiest format here is, again, csv. So for the beginning, here is how you create a table to compare sections due to their properties in csv.
 
-the beginning
-----------------
+The beginning
++++++++++++++
 
 to create a csv-file with the table, import the class::
 
@@ -200,8 +207,8 @@ Now you can load the table::
 
     myCompareTable.load_from_file('somefile.odml')
 
-choosing sections
------------------
+Choosing sections
++++++++++++++++++
 
 Next you have to decide, which sections of the table you want to compare. You can either just choose all sections out of a list of sectionnames or you can select all sections with a specific beginning::
 
@@ -217,8 +224,8 @@ You can already write this table to a file::
 
 
 
-switch the table
-----------------
+Switch the table
+++++++++++++++++
 
 Now the section names should be in the header and the property names in the first column. This can be inverted by using the command ``switch``::
 
@@ -227,23 +234,21 @@ Now the section names should be in the header and the property names in the firs
 This time the property names should be in the header and the names of the sections in the first column. For example if you have many sections to compare you might get a better overview by switching the table this way.
 
 
-include all
------------
+Include all
++++++++++++
 
 If the sections you compare dont have exactly the same structure there might be properties appearing in one section but not in another. If you only want to compare those properties that are present in all of your chosen sections, use the option include_all::
 
     myCompareTable.include_all = False
 
-
-
 xls
-+++
+---
 
 In this part you will find the additional options for an xls-table.
 
 
-first table
------------
+First table
++++++++++++
 
 to create a new table use the command::
 
@@ -251,8 +256,8 @@ to create a new table use the command::
     xlsCompareTable = CompareSectionXlsTable()
 
 
-changing styles
----------------
+Changing styles
++++++++++++++++
 
 there are different styles you can adjust in this table:
 
@@ -264,8 +269,8 @@ there are different styles you can adjust in this table:
 You can, as already shown for the odml-table (`choosing styles`_), adjust backcolor, fontcolor and fontstyle for each of the styles.
 
 
-practical examples
-******************
+Practical examples
+==================
 
 In these three short examples you will learn how to:
 
@@ -275,8 +280,8 @@ In these three short examples you will learn how to:
 
 .. _example1:
 
-example 1: Generating a template odml
-+++++++++++++++++++++++++++++++++++++
+Example 1: Generating a template odml
+-------------------------------------
 In this example you will learn how to generate an odml template file starting from an empty xls file. First you need to create an empty xls file 'Example1.xls' and fill the first row with the header titles. In principle only four header title are necessary to generate an odml from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important for the later understanding of the metadata structure. The table should now look like this:
 
 |
@@ -350,7 +355,7 @@ This new odml file can now be used for multiple repetitions of the experiment an
 
 
 example 2: Manual enrichment of odml
-++++++++++++++++++++++++++++++++++++
+------------------------------------
 
 In this example you are going to manually add data to an already existing odml document (see :ref:`example1`). In the best case, this odml document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odml. However, in principle the manual enrichment method presented here can also be used to start from an empty template odml and manually enter all values of the odml.
 
@@ -414,7 +419,7 @@ The 'example2-2.odml' file is now complete and can used for long term metadata s
 
 
 example 3: Creating an overview sheet / Filtering
-+++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------
 
 In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
 This feature can be used to create a summary table to be included in a laboratory notebook.

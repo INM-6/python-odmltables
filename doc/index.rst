@@ -12,7 +12,7 @@ Synopsis
 
 *odML-tables* is a tool to support working with metadata collections for electrophysiological data. 
 
-The odML_ file format and library API provides a means to store hierarchical metadata collections for electrophysiological data. Such collections typically consist of a large number of key-value pairs organized by a hierarchy of sections (see `Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`_). However, for editing and viewing metadata the use of standard spreadsheet software offering a flat tabular representation of a selected subset of metadata is desireable. *odML-tables* provides a set of library functions as well as a graphical user interface that offers to swtich between hierarchical and flat representations of their metadata collection, and provides functions that assist in working with these files.
+The odML_ file format and library API provides a means to store hierarchical metadata collections for electrophysiological data. Such collections typically consist of a large number of key-value pairs organized by a hierarchy of sections (see `Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`_). However, for editing and viewing metadata the use of standard spreadsheet software offering a flat tabular representation of a selected subset of metadata is desireable (cf., `Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`_). *odML-tables* provides a set of library functions as well as a graphical user interface that offers to swtich between hierarchical and flat representations of their metadata collection, and provides functions that assist in working with these files.
 
 Currently, odML-tables supports:
 
@@ -45,6 +45,7 @@ Indices and tables
 
 .. _`odML`: http://www.g-node.org/projects/odml
 .. _`Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`: http://dx.doi.org/10.3389/fninf.2011.00016
+.. _`Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`: http://dx.doi.org/10.3389/fninf.2016.00026
 
 .. |date| date::
 .. |time| date:: %H:%M
