@@ -8,98 +8,76 @@ odML-tables is a pure Python package so that it should be easy to install on any
 
 
 Dependencies
-============
+------------
 
-The following packages are required to use Elephant:
+The following packages are required to use python-odmltables:
+
     * Python_ >= 2.7
     * numpy_ >= 1.8.2
-    * scipy_ >= 0.14.0
     * quantities_ >= 0.10.1
     * odml >= 1.1
     * xlrd >= 0.9.4
     * xlwt >= 1.0.0
-
     * For building the documentation:
         * numpydoc >= 0.5
         * sphinx >= 1.2.2
-        * sphinxcontrib-exceltable >=0.2.2
-        
     * For running tests:
         * nose >= 1.3.3
 
-All dependencies can be found on the Python package index (PyPI).
+Download
+--------
+
+The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using
+
+    $ cd /home/usr/toolbox/
+    $ git clone https://github.com/INM-6/python-odmltables.git
+
+or alternatively download python-odmltables as ZIP file and unzip it to a folder.
 
 
-Debian/Ubuntu
--------------
-For Debian/Ubuntu, we recommend to install numpy and scipy as system packages using apt-get::
+Installation
+------------
+
+Linux
+*****
+
+On Linux, to set up python-odmltables you navigate to your python-odmltables folder and install it via
+
+    $ cd /home/usr/toolbox/python-odmltables/
+    $ python setup.py install
+
+You can start the odmltables graphical wizard by calling
     
-    $ apt-get install python-numpy python-scipy python-pip python-six
-
-Further packages are found on the Python package index (pypi) and should be installed with pip_::
+    odml-tables
     
-    $ pip install quantities
-
-We highly recommend to install these packages using a virtual environment provided by virtualenv_ or locally in the home directory using the ``--user`` option of pip (e.g., ``pip install --user quantities``), neither of which require administrator privileges.
-
+Alternatively, you may navigate to the python-odmltables folder and run
+    
+    ./odmltables-gui
+    
+    
 Windows/Mac OS X
-----------------
+****************
 
 On non-Linux operating systems we recommend using the Anaconda_ Python distribution, and installing all dependencies in a `Conda environment`_, e.g.::
 
     $ conda create -n neuroscience python numpy scipy pip six
     $ source activate neuroscience
-    $ pip install quantities
-    $ pip install git+https://github.com/NeuralEnsemble/python-neo.git@snapshot-20150821#egg=neo-snapshot-20150821
-
-
-Installation
-============
-
-Automatic installation from PyPI
---------------------------------
-
-The easiest way to install Elephant is via pip_::
-
-    $ pip install elephant    
-
-
-Manual installation from pypi
------------------------------
-
-To download and install manually, download the latest package from http://pypi.python.org/pypi/elephant
-
-Then::
-
-    $ tar xzf elephant-0.3.0.tar.gz
-    $ cd elephant-0.3.0
-    $ python setup.py install
     
-or::
+Then navigate to the folder where you downloaded python-odmltables and run:
 
-    $ python3 setup.py install
-    
-depending on which version of Python you are using.
-
-
-Installation of the latest build from source
---------------------------------------------
-
-To install the latest version of Elephant from the Git repository::
-
-    $ git clone git://github.com/NeuralEnsemble/elephant.git
-    $ cd elephant
     $ python setup.py install
 
+On Windows, to run the graphical wizard, execute odml-tables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
+
+Alternatively, on Windows or Max OS X you may navigate to the python-odmltables folder and run
+    
+    python odmltables-gui.py
 
 
-.. _`Python`: http://python.org/
-.. _`numpy`: http://www.numpy.org/
-.. _`scipy`: http://scipy.org/scipylib/
-.. _`quantities`: http://pypi.python.org/pypi/quantities
-.. _`neo`: http://pypi.python.org/pypi/neo
-.. _`pip`: http://pypi.python.org/pypi/pip
-.. _`virtualenv`: https://virtualenv.pypa.io/en/latest/
-.. _`this snapshot`: https://github.com/NeuralEnsemble/python-neo/archive/snapshot-20150821.zip
+Bugs
+----
+If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
+
+
 .. _Anaconda: http://continuum.io/downloads
 .. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments

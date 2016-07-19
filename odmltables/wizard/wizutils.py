@@ -65,18 +65,25 @@ class OdmltablesWizard(QWizard):
 
 
 def get_graphic_path():
-    local_paths = [os.path.join('.','odmltables','wizard','graphics'),
-                   os.path.join('.','wizard','graphics'),
-                   os.path.join('.','graphics')]
-
-    global_paths = []
     if have_odmltables:
-        global_paths.append(os.path.join(os.path.dirname(odmltables.__file__),
+        data_path = os.path.join(os.path.dirname(odmltables.__file__),
                                          'wizard',
-                                         'graphics'))
+                                         'graphics')
+    return data_path
 
-    paths = local_paths + global_paths
-    path = paths.pop()
-    while not os.path.exists(path):
-        path = paths.pop()
-    return path
+    # Old version -- kick out if not needed anymore
+#     local_paths = [os.path.join('.','odmltables','wizard','graphics'),
+#                    os.path.join('.','wizard','graphics'),
+#                    os.path.join('.','graphics')]
+# 
+#     global_paths = []
+#     if have_odmltables:
+#         global_paths.append(os.path.join(os.path.dirname(odmltables.__file__),
+#                                          'wizard',
+#                                          'graphics'))
+# 
+#     paths = local_paths + global_paths
+#     path = paths.pop()
+#     while not os.path.exists(path):
+#         path = paths.pop()
+#     return paths[-1]

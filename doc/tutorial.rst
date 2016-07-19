@@ -15,7 +15,7 @@ Flattened odML-table
 This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
 
 * **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required). 
-* **SectionName** The name of the section. This column is provided for better readibility only, since the section name is also encoded in the Path (optional).
+* **SectionName** The name of the section (optional). This column is provided for better readibility only, since the section name is also encoded in the Path.
 * **SectionDefinition** The definition of the section (optional).
 * **SectionType** The type of the section (optional).
 * **PropertyName** The name of the property the value belongs to (required).
@@ -24,7 +24,7 @@ This table is basically just a flat version of the hierarchical odML file. Every
 * **ValueDefinition** The definition of the value (optional).
 * **DataUnit** The unit of measurement of the value (optional).
 * **DataUncertainty** The uncertainty of the value (optional).
-* **odmlDatatype** The odML data type of the value. Note that this may differ from the datatypes used to represent the value in Python or Excel (required).
+* **odmlDatatype** The odML data type of the value (required). Note that this may differ from the datatypes used to represent the value in Python or Excel.
 
 The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odML-tables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
 
@@ -33,7 +33,7 @@ The required columns are the minimum number of columns required in order to conv
 csv
 ---
 
-As already mentioned in the introduction there are different formats you can save your files to; at the moment those are csv or xls. Since xls provides much more possibilities concerning the appearance of the table we will start with the easier csv-format.
+There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv-format.
 
 
 Create the first table
