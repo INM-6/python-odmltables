@@ -12,7 +12,8 @@ extras_require = {'docs': ['sphinx>=1.2.2'],
 setup(
     name="python-odmltables",
     version='0.1.0',
-    packages=['odmltables', 'tests'],
+    packages=['odmltables', 'odmltables.wizard', 'tests'],
+    package_data={'odmltables': ['wizard/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
 
@@ -32,14 +33,14 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-    # 'console_scripts': [
-    #     'foo = my_package.some_module:main_func',
-    #     'bar = other_module:some_func',
-    # ],
-    'gui_scripts': [
-        'gui = wizard.main:run []',
-    ]
+        # 'console_scripts': [
+        #     'foo = my_package.some_module:main_func',
+        #     'bar = other_module:some_func',
+        # ],
+        'gui_scripts': [
+            'odml-tables = odmltables.wizard.main:run []',
+        ]
     },
-    data_files = [('/usr/share/applications', ['odmltables.desktop']),
-                  ('/usr/share/pixmaps', 'logo/odMLtables.png')]
+    #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
+    #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
 )
