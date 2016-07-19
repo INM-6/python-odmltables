@@ -33,7 +33,10 @@ class OdmltablesWizard(QWizard):
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
-        self.setPixmap(QWizard.LogoPixmap, QPixmap(os.path.join('..','logo',"odML-tables_100x100.png")))
+        self.setPixmap(QWizard.LogoPixmap, QPixmap(os.path.join('..',
+                                                                '..',
+                                                                'logo',
+                                                   "odML-tables_100x100.png")))
         # self.setPixmap(QWizard.WatermarkPixmap, QPixmap(os.path.join('..','logo',"odML-tables_100x100.png")))
 
         # set up help messages
