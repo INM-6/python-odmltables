@@ -995,7 +995,6 @@ class SaveFilePage(QIWizardPage):
         grid.addWidget(self.buttondeleteconfig,1,1)
         vbox.addLayout(grid)
 
-        self.outputfilename = ''
         self.settings.register('outputfilename', self,useconfig=False)
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
