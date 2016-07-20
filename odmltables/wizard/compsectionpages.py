@@ -344,7 +344,7 @@ class SaveTablePage(QIWizardPage):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.AnyFile)
         dlg.setAcceptMode(QFileDialog.AcceptSave)
-        dlg.setLabelText(QFileDialog.Accept, "Generate File")
+        dlg.setLabelText(QFileDialog.Accept, "Save comparison")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
         dlg.setDirectory(self.settings.get_object('inputfilename'))
@@ -357,6 +357,9 @@ class SaveTablePage(QIWizardPage):
             self.outputfilename = str(dlg.selectedFiles()[0])
         self.settings.register('outputfilename', self)
         self.outputfile.setText(shorten_path(self.outputfilename))
+
+        if self.outputfilename:
+            self.compare()
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()
@@ -372,7 +375,7 @@ class SaveTablePage(QIWizardPage):
         table.choose_sections(*selections)
         table.write2file(self.settings.get_object("outputfilename"))
 
-    def validatePage(self):
+    def compare(self):
         if not (self.settings.is_registered('outputfilename') and
                     self.settings.get_object('outputfilename')):
             QMessageBox.warning(self, 'Select an outputfile',
@@ -384,8 +387,6 @@ class SaveTablePage(QIWizardPage):
         elif self.settings.get_object('RBoutputcsv').isChecked():
             self._saveCsvTable()
         else:
-            return 0
-
-        return 1
+            raise ValueError('No output format was selected.')
 
 #
