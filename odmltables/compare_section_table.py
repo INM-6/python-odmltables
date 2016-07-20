@@ -5,9 +5,8 @@ Created on Tue May 26 09:51:20 2015
 @author: pick
 """
 
+import warnings
 import odml
-from collections import defaultdict
-import pprint
 
 class CompareSectionTable():
     """
@@ -61,7 +60,11 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             for prop in sect.iterproperties():
-                table[sec_ind][properties.index(prop.name)] = prop.value.data
+                table[sec_ind][properties.index(prop.name)] = prop.values[0].data
+                if len(prop.values)>1:
+                    warnings.warn('Property %s contains %i values. Only '
+                                  'showing first one in comparison table'
+                                  ''%(prop.name,len(prop.values)))
             sec_ind += 1
 
         if self.include_all:
