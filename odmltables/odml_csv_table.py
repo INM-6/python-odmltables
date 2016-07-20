@@ -36,7 +36,7 @@ class OdmlCsvTable(OdmlTable):
         with open(save_to, 'wb') as csvfile:
 
             len_docdict = 0 if not self._docdict else len(self._docdict)
-            fieldnames = range(max(len(self._header),len_docdict*2+1))
+            fieldnames = range(max(len(self._header), len_docdict * 2 + 1))
 
             csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames,
                                        dialect='excel',
@@ -48,15 +48,13 @@ class OdmlCsvTable(OdmlTable):
             if self._docdict:
                 doc_list = ['Document Information']
                 for doc_key in sorted(self._docdict):
-                    doc_list = doc_list + [doc_key,self._docdict[doc_key]]
-                csvwriter.writerow(dict(zip(range(len(doc_list)),doc_list)))
-
+                    doc_list = doc_list + [doc_key, self._docdict[doc_key]]
+                csvwriter.writerow(dict(zip(range(len(doc_list)), doc_list)))
 
             # writing document headers
             header_list = [self._header_titles[h] if h is not None else ""
                            for h in self._header]
-            csvwriter.writerow(dict(zip(range(len(header_list)),header_list)))
-
+            csvwriter.writerow(dict(zip(range(len(header_list)), header_list)))
 
             for dic in self._odmldict:
                 # create a copy of the dictionary, so nothing in the odml_dict

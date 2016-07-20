@@ -68,13 +68,13 @@ class OdmlTable(object):
                     for v in doc.itervalues()]
         return odmldict
 
-    def _create_documentdict(self,doc):
-        attributes = ['author','date','repository','version']
-        docdict = {att:getattr(doc,att) for att in attributes}
+    def _create_documentdict(self, doc):
+        attributes = ['author', 'date', 'repository', 'version']
+        docdict = {att: getattr(doc, att) for att in attributes}
         return docdict
 
 
-        #TODO: better exception
+        # TODO: better exception
 
     def load_from_file(self, load_from):
         """
@@ -86,7 +86,7 @@ class OdmlTable(object):
         """
         doc = odml.tools.xmlparser.load(load_from)
         self._odmldict = self.__create_odmldict(doc)
-        self._docdict =  self._create_documentdict(doc)
+        self._docdict = self._create_documentdict(doc)
 
     def load_from_odmldoc(self, doc):
         """
@@ -96,7 +96,7 @@ class OdmlTable(object):
         :type load_from: odml-document
         """
         self._odmldict = self.__create_odmldict(doc)
-        self._docdict =  self._create_documentdict(doc)
+        self._docdict = self._create_documentdict(doc)
 
     def load_from_function(self, odmlfct):
         """
@@ -107,33 +107,35 @@ class OdmlTable(object):
         """
         doc = odmlfct()
         self._odmldict = self.__create_odmldict(doc)
-        self._docdict =  self._create_documentdict(doc)
+        self._docdict = self._create_documentdict(doc)
 
-    def _get_docdict(self,row):
+    def _get_docdict(self, row):
         '''
-        supplementory function to reconstruct self._docdict from first row in table
+        supplementory function to reconstruct self._docdict from first row in
+        table
 
         :param row: list of values in first row of table
         :return: None
         '''
         if self._docdict == None:
             self._docdict = {}
-        for col_id in range(len(row)/2):
-            if row[2*col_id+1] != '':
-                key = row[2*col_id+1]
+        for col_id in range(len(row) / 2):
+            if row[2 * col_id + 1] != '':
+                key = row[2 * col_id + 1]
                 # in case last entry was empty and document
                 # info is longer than header, this cell will
                 # not be present
-                if 2*col_id+2 == len(row):
+                if 2 * col_id + 2 == len(row):
                     value = ''
                 else:
-                    value = row[2*col_id+2]
+                    value = row[2 * col_id + 2]
                 self._docdict[key] = value
 
     @staticmethod
     def get_xls_header(load_from):
         '''
-        Providing non-empty xls header entries of first sheet for odml tables gui only
+        Providing non-empty xls header entries of first sheet for odml tables
+        gui only
         :return:
         '''
         workbook = xlrd.open_workbook(load_from)
@@ -143,7 +145,7 @@ class OdmlTable(object):
 
             row = 0
             # read document information if present
-            if worksheet.cell(0,0).value ==  'Document Information':
+            if worksheet.cell(0, 0).value == 'Document Information':
                 # doc_row = [r.value for r in worksheet.row(row)]
                 # self._get_docdict(doc_row)
                 row += 1
@@ -152,7 +154,7 @@ class OdmlTable(object):
             header_row = worksheet.row(row)
 
             # read the header
-            header = [h.value for h in header_row if h.ctype !=0 ]
+            header = [h.value for h in header_row if h.ctype != 0]
 
             return header
 
@@ -177,7 +179,7 @@ class OdmlTable(object):
             row = 0
 
             # read document information if present
-            if worksheet.cell(0,0).value ==  'Document Information':
+            if worksheet.cell(0, 0).value == 'Document Information':
                 doc_row = [r.value for r in worksheet.row(row)]
                 self._get_docdict(doc_row)
                 row += 1
@@ -188,14 +190,15 @@ class OdmlTable(object):
             # read the header
             header = [h.value for h in header_row]
             # strip trailing empty cells from header
-            for i in range(len(header_row)-1,-1,-1):
+            for i in range(len(header_row) - 1, -1, -1):
                 if header_row[i].ctype == 0:
                     header.pop(i)
                 else:
                     break
 
-            n_cols =  len(header)
-            self._header = [inv_header_titles[h] if h!='' else None for h in header]
+            n_cols = len(header)
+            self._header = [inv_header_titles[h] if h != '' else None for h in
+                            header]
             row += 1
 
             old_dic = {"Path": "",
@@ -230,24 +233,24 @@ class OdmlTable(object):
                     current_dic[self._header[col_n]] = value
 
                 if (current_dic['Path'] == '' or
-                   current_dic['Path'] == old_dic['Path']):
-                        # it is not the start of a new section
+                            current_dic['Path'] == old_dic['Path']):
+                    # it is not the start of a new section
 
-                        if (current_dic['PropertyName'] == '' or
-                            current_dic['PropertyName'] ==
+                    if (current_dic['PropertyName'] == '' or
+                                current_dic['PropertyName'] ==
                                 old_dic['PropertyName']):
-                            # old section, old property
-                            for key in self._SECTION_INF:
-                                current_dic[key] = old_dic[key]
-                            for key in self._PROPERTY_INF:
-                                current_dic[key] = old_dic[key]
-                        else:
-                            # old section, new property
-                            for key in self._SECTION_INF:
-                                current_dic[key] = old_dic[key]
+                        # old section, old property
+                        for key in self._SECTION_INF:
+                            current_dic[key] = old_dic[key]
+                        for key in self._PROPERTY_INF:
+                            current_dic[key] = old_dic[key]
+                    else:
+                        # old section, new property
+                        for key in self._SECTION_INF:
+                            current_dic[key] = old_dic[key]
                 else:
-                        # new section, => new property
-                        pass
+                    # new section, => new property
+                    pass
 
                 old_dic = current_dic.copy()
 
@@ -255,16 +258,17 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                if ('date' in dtype or 'time' in dtype) and (value!=''):
+                if ('date' in dtype or 'time' in dtype) and (value != ''):
                     value = xlrd.xldate_as_tuple(value, workbook.datemode)
-                current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
+                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
 
                 self._odmldict.append(current_dic)
 
     @staticmethod
     def get_csv_header(load_from):
         '''
-        Providing non-empty csv header entries of first sheet for odml tables gui only
+        Providing non-empty csv header entries of first sheet for odml tables
+        gui only
         :return:
         '''
         with open(load_from, 'rb') as csvfile:
@@ -278,15 +282,14 @@ class OdmlTable(object):
                     row = csvreader.next()
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
-                                  ' Filename "%s"'%load_from)
+                                  ' Filename "%s"' % load_from)
 
             # get column ids of non-empty header cells
-            header = [h for h in row if h!='']
+            header = [h for h in row if h != '']
 
             return header
 
-
-    #TODO: use normal reader instead of dictreader => much easier!!
+    # TODO: use normal reader instead of dictreader => much easier!!
     def load_from_csv_table(self, load_from):
         """
         loads the odmldict from a csv-file containing an odml-table. To load
@@ -304,7 +307,7 @@ class OdmlTable(object):
         with open(load_from, 'rb') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            row = csvreader .next()
+            row = csvreader.next()
 
             # check if first line contains document information
             if row[0] == 'Document Information':
@@ -313,14 +316,17 @@ class OdmlTable(object):
                     row = csvreader.next()
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
-                                  ' Filename "%s"'%load_from)
+                                  ' Filename "%s"' % load_from)
 
             # get column ids of non-empty header cells
-            header_title_ids = {inv_header_titles[h]:id for id,h in enumerate(row) if h!=''}
-            header_title_order = {id:inv_header_titles[h] for id,h in enumerate(row) if h!=''}
+            header_title_ids = {inv_header_titles[h]: id for id, h in
+                                enumerate(row) if h != ''}
+            header_title_order = {id: inv_header_titles[h] for id, h in
+                                  enumerate(row) if h != ''}
 
             # reconstruct headers
-            self._header = [inv_header_titles[h] if h!='' else None for h in row]
+            self._header = [inv_header_titles[h] if h != '' else None for h in
+                            row]
 
             must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
@@ -362,7 +368,7 @@ class OdmlTable(object):
                         current_dic[header_title_order[col_n]] = row[col_n]
 
                 if (current_dic['Path'] == '' or
-                        current_dic['Path'] == old_dic['Path']):
+                            current_dic['Path'] == old_dic['Path']):
                     # it is not the start of a new section
 
                     if (current_dic['PropertyName'] == ''
@@ -376,7 +382,7 @@ class OdmlTable(object):
                     else:
                         # old section, new property
                         for key in self._SECTION_INF:
-                                current_dic[key] = old_dic[key]
+                            current_dic[key] = old_dic[key]
                 else:
                     # new section, => new property
                     pass
@@ -387,10 +393,9 @@ class OdmlTable(object):
                 dtype = current_dic['odmlDatatype']
                 value = current_dic['Value']
 
-                current_dic['Value'] = self.odtypes.to_odml_value(value,dtype)
+                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
 
                 self._odmldict.append(current_dic)
-
 
     def change_header_titles(self, **kwargs):
         """
@@ -488,7 +493,7 @@ class OdmlTable(object):
         # sortieren nach values
         keys_sorted = sorted(kwargs, key=kwargs.get)
 
-        #check if first element is in range
+        # check if first element is in range
         if kwargs[keys_sorted[0]] <= 0:
             errmsg = ("Your smallest argument is {}, but the columns start" +
                       " at 1").format(kwargs[keys_sorted[0]])
@@ -497,27 +502,27 @@ class OdmlTable(object):
 
         max_col = kwargs[keys_sorted[-1]]
 
-        #initialize header with enough elements
+        # initialize header with enough elements
         header = max_col * [None]
 
         if keys_sorted[0] in self._header_titles:
-                header[kwargs[keys_sorted[0]]-1] = keys_sorted[0]
+            header[kwargs[keys_sorted[0]] - 1] = keys_sorted[0]
         else:
             raise Exception(keys_sorted[0], "not in header_titles")
             # TODO: better Exception
 
-        #check if there are two keys with the same value
+        # check if there are two keys with the same value
         for index, key in enumerate(keys_sorted[1:]):
-            if kwargs[keys_sorted[index]] == kwargs[keys_sorted[index-1]]:
-                errmsg = "The keys {0} and {1} both have the value {2}"\
-                    .format(keys_sorted[index-1],
+            if kwargs[keys_sorted[index]] == kwargs[keys_sorted[index - 1]]:
+                errmsg = "The keys {0} and {1} both have the value {2}" \
+                    .format(keys_sorted[index - 1],
                             keys_sorted[index],
                             kwargs[keys_sorted[index]])
                 raise Exception(errmsg)
                 # TODO: better exception
             else:
                 if key in self._header_titles:
-                    header[kwargs[key]-1] = key
+                    header[kwargs[key] - 1] = key
                 else:
                     raise Exception(key, "not in header_titles")
                     # TODO: better Exception
@@ -526,12 +531,19 @@ class OdmlTable(object):
 
     def consistency_check(self):
         """
-        check odmldict for consistency regarding dtypes to ensure that data can be loaded again.
+        check odmldict for consistency regarding dtypes to ensure that data
+        can be loaded again.
         """
-        if self._odmldict!=None:
+        if self._odmldict != None:
             for property_dict in self._odmldict:
-                if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
-                    raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'.format(property_dict['odmlDatatype'],self.odtypes.valid_dtypes))
+                if property_dict[
+                    'odmlDatatype'] not in self.odtypes.valid_dtypes:
+                    raise TypeError(
+                            'Non valid dtype "{0}" in odmldict. Valid types '
+                            'are {'
+                            '1}'.format(
+                                    property_dict['odmlDatatype'],
+                                    self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -543,13 +555,17 @@ class OdmlTable(object):
         self._odmldict = new_odmldict
         return new_odmldict, deleted_properties
 
-    def filter(self,mode='and',invert=False,recursive=False,comparison_func=lambda x,y: x==y,**kwargs):
+    def filter(self, mode='and', invert=False, recursive=False,
+               comparison_func=lambda x, y: x == y, **kwargs):
         """
         filters odml properties according to provided kwargs.
 
-        :param mode: Possible values: 'and', 'or'. For 'and' all keyword arguments
-                must be satisfied for a property to be selected. For 'or' only one
-                of the keyword arguments must be satisfied for the property to be
+        :param mode: Possible values: 'and', 'or'. For 'and' all keyword
+        arguments
+                must be satisfied for a property to be selected. For 'or'
+                only one
+                of the keyword arguments must be satisfied for the property
+                to be
                 selected. Default: 'and'
         :param invert: Inverts filter function. Previously accepted properties
                 are rejected and the other way round. Default: False
@@ -563,24 +579,30 @@ class OdmlTable(object):
         :return: None
         """
         if not kwargs:
-            raise ValueError('No filter keywords provided for property filtering.')
-        if mode not in ['and','or']:
-            raise ValueError('Invalid operation mode "%s". Accepted values are "and","or".'%(mode))
+            raise ValueError(
+                    'No filter keywords provided for property filtering.')
+        if mode not in ['and', 'or']:
+            raise ValueError(
+                    'Invalid operation mode "%s". Accepted values are "and",'
+                    '"or".' % (
+                        mode))
 
         def filter_func(dict_prop):
             keep_property = False
             for filter_key, filter_value in kwargs.iteritems():
                 if filter_key not in dict_prop:
-                    raise ValueError('Key "%s" is missing in property dictionary %s'%(filter_key,dict_prop))
+                    raise ValueError(
+                            'Key "%s" is missing in property dictionary %s' % (
+                                filter_key, dict_prop))
 
-                if comparison_func(dict_prop[filter_key],filter_value):
+                if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
                 else:
                     keep_property = False
 
-                if mode=='or' and keep_property:
+                if mode == 'or' and keep_property:
                     break
-                if mode=='and' and not keep_property:
+                if mode == 'and' and not keep_property:
                     break
 
             if invert:
@@ -588,20 +610,21 @@ class OdmlTable(object):
 
             return keep_property
 
-
         _, del_props = self._filter(filter_func=filter_func)
 
-        if recursive and len(del_props)>0:
+        if recursive and len(del_props) > 0:
             for del_prop in del_props:
-                self.filter(invert=True,recursive=True,comparison_func= lambda x,y: x.startswith(y),Path=del_prop['Path'])
+                self.filter(invert=True, recursive=True,
+                            comparison_func=lambda x, y: x.startswith(y),
+                            Path=del_prop['Path'])
 
-    def merge(self,odmltable,mode='overwrite'):
+    def merge(self, odmltable, mode='overwrite'):
         """
         Merge odmltable into current odmltable.
         :param odmltable: OdmlTable object or Odml document object
         :return:
         """
-        if hasattr(odmltable,'_convert2odml'):
+        if hasattr(odmltable, '_convert2odml'):
             doc2 = odmltable._convert2odml()
         else:
             # assuming odmltable is already an odml document
@@ -614,12 +637,11 @@ class OdmlTable(object):
             else:
                 doc1.append(sec)
 
-        #since only sections and properties are merged with odml.section.merge
+        # since only sections and properties are merged with odml.section.merge
         # individual values need to be merged explicitely
-        self._merge_odml_values(doc1,doc2,mode=mode)
+        self._merge_odml_values(doc1, doc2, mode=mode)
 
-
-        #TODO: What should happen to the document properties?
+        # TODO: What should happen to the document properties?
         """
         'author'
         'date'
@@ -627,42 +649,39 @@ class OdmlTable(object):
         'repository'
         """
 
-        #TODO: Check what happens to original odmldict...
+        # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
 
-    def _merge_odml_values(self,doc1,doc2,mode='overwrite'):
-        if mode not in ['strict','overwrite']:
+    def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
+        if mode not in ['strict', 'overwrite']:
             raise ValueError('Merge mode "%s" does not exist. '
-                             'Valid modes are %s'%((mode,['strict',
-                                                          'overwrite'])))
+                             'Valid modes are %s' % ((mode, ['strict',
+                                                             'overwrite'])))
 
         for prop2 in doc2.iterproperties():
             path = prop2.get_path()
             prop1 = doc1.get_property_by_path(path)
 
-            if mode=='strict':
-                if (len(prop1.values)!=1) or \
-                   (prop1.values[0].data not in
-                        self.odtypes._basedtypes.values()):
+            if mode == 'strict':
+                if (len(prop1.values) != 1) or \
+                        (prop1.values[0].data not in
+                             self.odtypes._basedtypes.values()):
                     raise ValueError('OdML property %s already contains '
-                                     'non-default values %s'%(prop1.name,
-                                                              prop1.values))
+                                     'non-default values %s' % (prop1.name,
+                                                                prop1.values))
 
-            if mode in ['overwrite','strict']:
+            if mode in ['overwrite', 'strict']:
                 # removing old values, but keeping first element, because a
                 # property needs to contain at least one value at any time
-                if prop1 != prop2: #properties can be identical, when section
+                if prop1 != prop2:  # properties can be identical, when section
                     #  was copied. Then no value transfer is necessary.
                     for val in prop1.values[1:]:
                         prop1.remove(val)
-                    # adding new values (which is at least one, see comment above)
+                    # adding new values (which is at least one, see comment
+                    # above)
                     for val in prop2.values:
                         prop1.append(val)
                     prop1.remove(prop1.values[0])
-
-
-
-
 
     def write2file(self, save_to):
         """
@@ -672,10 +691,10 @@ class OdmlTable(object):
 
         self.consistency_check()
 
-
     def _convert2odml(self):
         """
-        Generates odml representation of odmldict and return it as odml document.
+        Generates odml representation of odmldict and return it as odml
+        document.
         :return:
         """
         doc = odml.Document()
@@ -745,7 +764,6 @@ class OdmlTable(object):
 
         return doc
 
-
     def write2odml(self, save_to):
         """
         writes the loaded odmldict (e.g. from an csv-file) to an odml-file
@@ -758,27 +776,32 @@ class OdmlDtypes(object):
     """
     Class to handle odml data types, synonyms and default values.
 
-    :param basedtypes_dict: Dictionary containing additional basedtypes to use as keys and default values as values.
+    :param basedtypes_dict: Dictionary containing additional basedtypes to
+    use as keys and default values as values.
             Default: None
-    :param synonyms_dict: Dictionary containing additional synonyms to use as keys and basedtypes to associate as values.
+    :param synonyms_dict: Dictionary containing additional synonyms to use as
+    keys and basedtypes to associate as values.
             Default: None
     :return: None
     """
 
+    default_basedtypes = {'int': -1,
+                          'float': -1.0,
+                          'bool': False,
+                          'datetime': datetime.datetime(1900, 11, 11, 00, 00,
+                                                        00),
+                          'datetime.date': datetime.datetime(1900, 11,
+                                                             11).date(),
+                          'datetime.time': datetime.datetime(1900, 11, 11, 00,
+                                                             00, 00).time(),
+                          'str': '-',
+                          'url': 'file://-'}
+    default_synonyms = {'boolean': 'bool', 'binary': 'bool',
+                        'date': 'datetime.date', 'time': 'datetime.time',
+                        'integer': 'int', 'string': 'str', 'text': 'str',
+                        'person': 'str'}
 
-    default_basedtypes = {'int':-1,
-                  'float':-1.0,
-                  'bool':False,
-                  'datetime':datetime.datetime(1900,11,11,00,00,00),
-                  'datetime.date':datetime.datetime(1900,11,11).date(),
-                  'datetime.time':datetime.datetime(1900,11,11,00,00,00).time(),
-                  'str':'-',
-                  'url':'file://-'}
-    default_synonyms = {'boolean':'bool','binary':'bool','date':'datetime.date','time':'datetime.time',
-                'integer':'int','string':'str','text':'str','person':'str'}
-
-
-    def __init__(self,basedtypes_dict=None,synonyms_dict=None):
+    def __init__(self, basedtypes_dict=None, synonyms_dict=None):
         self._basedtypes = self.default_basedtypes.copy()
         self._synonyms = self.default_synonyms.copy()
         self._validDtypes = None
@@ -788,7 +811,6 @@ class OdmlDtypes(object):
             self._basedtypes.update(basedtypes_dict)
         if synonyms_dict is not None:
             self._synonyms.update(synonyms_dict)
-
 
     @property
     def valid_dtypes(self):
@@ -802,15 +824,15 @@ class OdmlDtypes(object):
 
         return self._validDtypes
 
-
     @property
     def synonyms(self):
         return self._synonyms
 
-    def add_synonym(self,basedtype, synonym):
+    def add_synonym(self, basedtype, synonym):
         """
         Setting user specific default synonyms
-        :param basedtype: Accepted basedtype of OdmlDtypes or None. None delete already existing synonym
+        :param basedtype: Accepted basedtype of OdmlDtypes or None. None
+        delete already existing synonym
         :param synonym: Synonym to be connected to basedtype
         :return: None
         """
@@ -818,47 +840,53 @@ class OdmlDtypes(object):
             if basedtype is None and synonym in self._synonyms:
                 self._synonyms.pop(synonym)
             else:
-                raise ValueError('Can not add synonym "%s=%s". %s is not a base dtype.'
-                                 'Valid basedtypes are %s.'%(basedtype,synonym,basedtype,self.basedtypes))
+                raise ValueError(
+                        'Can not add synonym "%s=%s". %s is not a base dtype.'
+                        'Valid basedtypes are %s.' % (
+                            basedtype, synonym, basedtype, self.basedtypes))
 
         elif synonym is None or synonym == '':
-            raise ValueError('"%s" is not a valid synonym.'%synonym)
+            raise ValueError('"%s" is not a valid synonym.' % synonym)
         else:
-            self._synonyms.update({synonym:basedtype})
+            self._synonyms.update({synonym: basedtype})
 
     @property
     def basedtypes(self):
         return self._basedtypes.keys()
 
-    def add_basedtypes(self,basedtype,default_value):
+    def add_basedtypes(self, basedtype, default_value):
         if basedtype in self._basedtypes:
             raise ValueError('Basedtype "%s" already exists. Can not be added. '
-                             'To customize the default value use "customize_default".')
+                             'To customize the default value use '
+                             '"customize_default".')
         else:
-            self._basedtypes.update({basedtype:default_value})
+            self._basedtypes.update({basedtype: default_value})
 
     @property
     def default_values(self):
         def_values = self._basedtypes.copy()
-        for syn,base in self._synonyms.iteritems():
+        for syn, base in self._synonyms.iteritems():
             def_values[syn] = self._basedtypes[base]
         return def_values
 
-    def default_value(self,basedtype):
+    def default_value(self, basedtype):
         if basedtype in self.default_values:
             return self.default_values[basedtype]
         else:
-            raise ValueError('"%s" is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
+            raise ValueError(
+                    '"%s" is not a basedtype. Valid basedtypes are %s' % (
+                        basedtype, self.basedtypes))
 
-
-    def set_default_value(self,basedtype,default_value):
+    def set_default_value(self, basedtype, default_value):
         if basedtype in self.basedtypes:
             self._basedtypes[basedtype] = default_value
         else:
             raise ValueError('Can not set default value for basedtype "%s". '
-                             'This is not a basedtype. Valid basedtypes are %s'%(basedtype,self.basedtypes))
+                             'This is not a basedtype. Valid basedtypes are '
+                             '%s' % (
+                                 basedtype, self.basedtypes))
 
-    def to_odml_value(self,value,dtype):
+    def to_odml_value(self, value, dtype):
         # return default value of dtype if value is empty
         if value == '':
             return self.default_value(dtype)
@@ -868,14 +896,15 @@ class OdmlDtypes(object):
 
         if dtype == 'datetime':
             result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-        elif dtype ==  'datetime.date':
+        elif dtype == 'datetime.date':
             try:
                 result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             except ValueError:
                 result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
             except ValueError:
-                raise ValueError('The value "%s" can not be converted to a date as '
-                                 'it has not format yyyy-mm-dd or dd-mm-yyyy'%value)
+                raise ValueError(
+                        'The value "%s" can not be converted to a date as '
+                        'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
             except TypeError:
                 result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':
@@ -888,9 +917,9 @@ class OdmlDtypes(object):
 
         elif dtype in self._basedtypes:
             try:
-                result = eval('%s("%s")'%(dtype,value))
+                result = eval('%s("%s")' % (dtype, value))
             except ValueError:
-                result = eval('%s(%s)'%(dtype,value))
+                result = eval('%s(%s)' % (dtype, value))
         else:
             raise TypeError('Unkown dtype {0}'.format(dtype))
 

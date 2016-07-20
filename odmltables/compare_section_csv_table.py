@@ -27,7 +27,6 @@ class CompareSectionCsvTable(CompareSectionTable):
             csvwriter = csv.writer(csvfile, dialect='excel',
                                    quoting=csv.QUOTE_NONNUMERIC)
 
-
             if self.switch:
                 csvwriter.writerow([''] + properties)
 
@@ -39,4 +38,5 @@ class CompareSectionCsvTable(CompareSectionTable):
 
                 for i in range(len(table[0])):
                     csvwriter.writerow([properties[i]] + [table[j][i]
-                                       for j in range(len(table))])
+                                                          for j in
+                                                          range(len(table))])

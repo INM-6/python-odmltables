@@ -33,5 +33,3 @@ class XlsStyle():
                                          self.backcolor)
 
         return s
-
-

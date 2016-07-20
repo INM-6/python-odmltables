@@ -9,8 +9,8 @@ from PyQt4 import QtGui
 import sys
 from mainwindow import MainWindow
 
-def run():
 
+def run():
     app = QtGui.QApplication(sys.argv)
     w = MainWindow()
     sys.exit(app.exec_())

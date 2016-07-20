@@ -6,6 +6,7 @@
 import warnings
 import odml
 
+
 class CompareSectionTable():
     """
     class to create a table in which you compare different sections of a odml-
@@ -46,7 +47,6 @@ class CompareSectionTable():
         sec_num = 0
         sec_ind = 0
 
-
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             sections.append(sect.name)
             for prop in sect.iterproperties():
@@ -58,11 +58,12 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             for prop in sect.iterproperties():
-                table[sec_ind][properties.index(prop.name)] = prop.values[0].data
-                if len(prop.values)>1:
+                table[sec_ind][properties.index(prop.name)] = prop.values[
+                    0].data
+                if len(prop.values) > 1:
                     warnings.warn('Property %s contains %i values. Only '
                                   'showing first one in comparison table'
-                                  ''%(prop.name,len(prop.values)))
+                                  '' % (prop.name, len(prop.values)))
             sec_ind += 1
 
         if self.include_all:
@@ -72,7 +73,7 @@ class CompareSectionTable():
                          if None in [s[i] for s in table]]
             for prop in to_delete:
                 for section in table:
-                    del section[properties.index(prop)] #CHANGE!!
+                    del section[properties.index(prop)]  # CHANGE!!
                 properties.remove(prop)
 
         return properties, sections, table
@@ -123,7 +124,5 @@ class CompareSectionTable():
 
         :raise NotImplementedError: Implemented in the subclass
         """
-        #TODO: Error Message if no document loaded!!
+        # TODO: Error Message if no document loaded!!
         raise NotImplementedError()
-
-

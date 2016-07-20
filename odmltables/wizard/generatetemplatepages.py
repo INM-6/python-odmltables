@@ -10,18 +10,22 @@ from pageutils import *
 from  odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 import odml
 
-
 mandatory_headers = ['Path to Section',
-                        'Property Name',
-                        'Value',
-                        'odML Data Type']
+                     'Property Name',
+                     'Value',
+                     'odML Data Type']
+
 
 class HeaderOrderPage(QIWizardPage):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super(HeaderOrderPage, self).__init__(parent)
 
         self.setTitle("Customize the output table")
-        self.setSubTitle("Select the columns for the output table by putting them in the list of selected columns and arranging the order using the buttons to the right")
+        self.setSubTitle(
+                "Select the columns for the output table by putting them in "
+                "the "
+                "list of selected columns and arranging the order using the "
+                "buttons to the right")
 
         # Set up layout
         vbox = QVBoxLayout()
@@ -49,7 +53,6 @@ class HeaderOrderPage(QIWizardPage):
         self.selection_list = QListWidget()
         self.selection_list.setSelectionMode(3)
         self.selection_list.itemDoubleClicked.connect(self.itemdoubleclicked)
-
 
         toright = QToolButton()
         toright.setArrowType(Qt.RightArrow)
@@ -80,20 +83,19 @@ class HeaderOrderPage(QIWizardPage):
                                   'Property Definition',
                                   'Section Definition']
         self.mandatory_headers = mandatory_headers
-        for i,h in enumerate(self.header_names):
+        for i, h in enumerate(self.header_names):
             if h not in default_selection_list:
                 item = QListWidgetItem()
                 item.setText(h)
                 self.header_list.addItem(item)
 
-        for i,h in enumerate(default_selection_list):
+        for i, h in enumerate(default_selection_list):
             item = QListWidgetItem()
             item.setText(h)
             self.selection_list.addItem(item)
 
             if h in self.mandatory_headers:
                 item.setTextColor(QColor('red'))
-
 
         hbox.addWidget(self.selection_list)
 
@@ -115,30 +117,37 @@ class HeaderOrderPage(QIWizardPage):
 
         vbox.addSpacing(20)
 
-
     def initializePage(self):
         # Set up layout
 
-        self.settings.register('LWselectedcolumns',self.selection_list)
-        self.settings.register('LWnonselectedcolumns',self.header_list)
-
+        self.settings.register('LWselectedcolumns', self.selection_list)
+        self.settings.register('LWnonselectedcolumns', self.header_list)
 
     def toright(self):
-        # sort rows in descending order in order to compensate shifting due to takeItem
-        rows = sorted([index.row() for index in self.header_list.selectedIndexes()],
-                      reverse=True)
+        # sort rows in descending order in order to compensate shifting due
+        # to takeItem
+        rows = sorted(
+                [index.row() for index in self.header_list.selectedIndexes()],
+                reverse=True)
         for row in rows:
             self.selection_list.addItem(self.header_list.takeItem(row))
 
     def toleft(self):
-        # sort rows in descending order in order to compensate shifting due to takeItem
-        rows = sorted([index.row() for index in self.selection_list.selectedIndexes()],
+        # sort rows in descending order in order to compensate shifting due
+        # to takeItem
+        rows = sorted([index.row() for index in
+                       self.selection_list.selectedIndexes()],
                       reverse=True)
         for row in rows:
             if self.selection_list.item(row).text() in self.mandatory_headers:
                 QMessageBox.warning(self, self.tr("Mandatory header"),
-                                self.tr("'%s' is a mandatory header. This header is necessary to "
-                                        "be able to convert the table into an odml."%self.selection_list.item(row).text()))
+                                    self.tr(
+                                            "'%s' is a mandatory header. This "
+                                            "header is necessary to "
+                                            "be able to convert the table "
+                                            "into an "
+                                            "odml." % self.selection_list.item(
+                                                    row).text()))
             else:
                 self.header_list.addItem(self.selection_list.takeItem(row))
 
@@ -146,13 +155,13 @@ class HeaderOrderPage(QIWizardPage):
         currentRow = self.selection_list.currentRow()
         currentItem = self.selection_list.takeItem(currentRow)
         self.selection_list.insertItem(currentRow - 1, currentItem)
-        self.selection_list.setCurrentRow(currentRow-1)
+        self.selection_list.setCurrentRow(currentRow - 1)
 
     def down(self):
         currentRow = self.selection_list.currentRow()
         currentItem = self.selection_list.takeItem(currentRow)
         self.selection_list.insertItem(currentRow + 1, currentItem)
-        self.selection_list.setCurrentRow(currentRow+1)
+        self.selection_list.setCurrentRow(currentRow + 1)
 
     def itemdoubleclicked(self):
         sender = self.sender()
@@ -164,19 +173,22 @@ class HeaderOrderPage(QIWizardPage):
         else:
             raise ValueError('Unknown sender')
 
-
     def validatePage(self):
 
         # check number of selected headers
         if self.settings.get_object('LWselectedcolumns').count() < 1:
             QMessageBox.warning(self, self.tr("No header selected"),
                                 self.tr("You need to select at least one header"
-                                        " to generate a table representation of an odml."))
+                                        " to generate a table representation "
+                                        "of an odml."))
             return 0
 
         selectedheaderstrings = []
-        for itemid in range(self.settings.get_object('LWselectedcolumns').count()):
-            selectedheaderstrings.append(self.settings.get_object('LWselectedcolumns').item(itemid).text())
+        for itemid in range(
+                self.settings.get_object('LWselectedcolumns').count()):
+            selectedheaderstrings.append(
+                    self.settings.get_object('LWselectedcolumns').item(
+                            itemid).text())
 
         missing_headers = []
         for mand_header in self.mandatory_headers:
@@ -185,16 +197,17 @@ class HeaderOrderPage(QIWizardPage):
 
         if missing_headers != []:
             QMessageBox.warning(self, self.tr("Incomplete odml"),
-                            self.tr("You need to include the headers %s "
-                                    " in your table if you want to be able to"
-                                    " generate an odml from the table."%(missing_headers)))
+                                self.tr("You need to include the headers %s "
+                                        " in your table if you want to be "
+                                        "able to"
+                                        " generate an odml from the table." % (
+                                            missing_headers)))
 
         return 1
 
 
-
 class SaveFilePage(QIWizardPage):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super(SaveFilePage, self).__init__(parent)
 
         # Set up layout
@@ -204,11 +217,11 @@ class SaveFilePage(QIWizardPage):
         self.setTitle("Save the result")
         self.setSubTitle("Select a location to save your file")
 
-    def add_new_conf(self,configlist):
+    def add_new_conf(self, configlist):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText('<New Configuration>')
-        configlist.insertItem(-1,item)
+        configlist.insertItem(-1, item)
 
     def newconfname(self):
         sender = self.sender().currentItem()
@@ -217,20 +230,23 @@ class SaveFilePage(QIWizardPage):
 
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
-            QMessageBox.warning(self,'No configuration selected','You need to select a configuration in'
-                                                                 ' order to delete it.')
+            QMessageBox.warning(self, 'No configuration selected',
+                                'You need to select a configuration in'
+                                ' order to delete it.')
         else:
             conf_name = str(self.configlist.currentItem().text())
-            quit_msg = "Are you sure you want to delete the configuration '%s'?"%(conf_name)
+            quit_msg = "Are you sure you want to delete the configuration " \
+                       "'%s'?" % (
+                           conf_name)
             reply = QMessageBox.question(self, 'Message',
-                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+                                         quit_msg, QMessageBox.Yes,
+                                         QMessageBox.No)
 
             if reply == QMessageBox.Yes:
                 self.configlist.takeItem(self.configlist.currentRow())
                 self.settings.delete_config(conf_name)
             else:
                 pass
-
 
     def initializePage(self):
 
@@ -259,48 +275,44 @@ class SaveFilePage(QIWizardPage):
         hbox.addWidget(self.outputfile)
         hbox.addStretch()
 
-
         vbox.addLayout(hbox)
         vbox.addSpacing(30)
         vbox.addWidget(self.buttonshow)
         vbox.addStretch()
 
-
         self.outputfilename = ''
-        self.settings.register('outputfilename', self,useconfig=False)
+        self.settings.register('outputfilename', self, useconfig=False)
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
-
-
-
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.AnyFile)
         dlg.setAcceptMode(QFileDialog.AcceptSave)
-        dlg.setLabelText (QFileDialog.Accept, "Generate File" )
+        dlg.setLabelText(QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
         # dlg.setDirectory(self.settings.get_object('inputfilename'))
 
-        dlg.setFilter("%s files (*%s);;all files (*)"%(self.expected_extension.strip('.'),self.expected_extension))
+        dlg.setFilter("%s files (*%s);;all files (*)" % (
+            self.expected_extension.strip('.'), self.expected_extension))
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
-
 
         print self.outputfilename
 
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
-
-        if ((os.path.splitext(self.outputfilename)[1]!=self.expected_extension) and
-                  (os.path.splitext(self.outputfilename)[1]!='')):
-            QMessageBox.warning(self,'Wrong file format','The output file format is supposed to be "%s",'
-                                                         ' but you selected "%s"'
-                                                         ''%(self.expected_extension,
-                                                             os.path.splitext(self.outputfilename)[1]))
+        if ((os.path.splitext(self.outputfilename)[
+                 1] != self.expected_extension) and
+                (os.path.splitext(self.outputfilename)[1] != '')):
+            QMessageBox.warning(self, 'Wrong file format',
+                                'The output file format is supposed to be "%s",'
+                                ' but you selected "%s"'
+                                '' % (self.expected_extension,
+                                      os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
@@ -326,14 +338,18 @@ def createfile(settings):
     table.load_from_odmldoc(odmldoc)
     table.changing_point = None
 
-    title_translator = {v:k for k,v in table._header_titles.iteritems()}
+    title_translator = {v: k for k, v in table._header_titles.iteritems()}
     mandatory_titles = [title_translator[m] for m in mandatory_headers]
 
     # setting custom header columns
-    output_headers = [title_translator[str(settings.get_object('LWselectedcolumns').item(index).text())]
-                      for index in range(settings.get_object('LWselectedcolumns').count())]
-    table.change_header(**dict(zip(output_headers,range(1,len(output_headers)+1))))
-    table.mark_columns(*[h for i,h in enumerate(output_headers) if h in mandatory_titles])
+    output_headers = [title_translator[str(
+            settings.get_object('LWselectedcolumns').item(index).text())]
+                      for index in
+                      range(settings.get_object('LWselectedcolumns').count())]
+    table.change_header(
+            **dict(zip(output_headers, range(1, len(output_headers) + 1))))
+    table.mark_columns(
+            *[h for i, h in enumerate(output_headers) if h in mandatory_titles])
     table.highlight_defaults = True
 
     # saving file
@@ -351,24 +367,24 @@ def setup_tutorodml():
     doc.append(odml.Section(name='MySection',
                             type='<Enter the type of data you this section is'
                                  ' associated with, e.g. hardware>',
-                            definition = '<Describe the purpose of sections '
-                                         'in short statements in this '
-                                         'column.>'))
+                            definition='<Describe the purpose of sections '
+                                       'in short statements in this '
+                                       'column.>'))
     doc.append(odml.Section(name='OneMoreSection',
                             type='<Enter the type of data you this section is'
                                  ' associated with, e.g. software>',
-                            definition = '<Use only the first cell in this '
-                                         'column to for the section '
-                                         'description.>'))
+                            definition='<Use only the first cell in this '
+                                       'column to for the section '
+                                       'description.>'))
 
     parent = doc['OneMoreSection']
     parent.append(odml.Section('MySubsection',
                                type='<Enter the type of data you this section'
                                     ' is associated with, e.g. settings>',
-                               definition = '<Describe the purpose of this '
-                                            'section here (eg. everything '
-                                            'concerning the amplifier '
-                                            'used...)'))
+                               definition='<Describe the purpose of this '
+                                          'section here (eg. everything '
+                                          'concerning the amplifier '
+                                          'used...)'))
 
     # ADDING PROPERTIES
     parent = doc['MySection']
@@ -381,8 +397,8 @@ def setup_tutorodml():
                                                             'meaning of this '
                                                             'value in more '
                                                             'detail here.>'),
-                                definition = '<Enter a short definition of '
-                                             'the property described here>'))
+                                definition='<Enter a short definition of '
+                                           'the property described here>'))
     parent.append(odml.Property(name='OneMoreProperty',
                                 value=odml.Value(2.001,
                                                  dtype='float',
@@ -395,17 +411,17 @@ def setup_tutorodml():
                                                             'value can be of '
                                                             'different type '
                                                             'than string.'),
-                                definition = '<Enter a short definition of '
-                                             'the property described here>'))
+                                definition='<Enter a short definition of '
+                                           'the property described here>'))
 
     # ADDING MORE VALUES
     parent = doc['MySection'].properties['OneMoreProperty']
     parent.append(odml.Value(4.,
-                              dtype='float',
-                              unit='',
-                              uncertainty=0.4,
-                              definition='A property can have more than one '
-                                         'value attached.'))
+                             dtype='float',
+                             unit='',
+                             uncertainty=0.4,
+                             definition='A property can have more than one '
+                                        'value attached.'))
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
@@ -421,20 +437,20 @@ def setup_tutorodml():
                                                             'be highlighted '
                                                             'using '
                                                             'odml-tables.'),
-                                definition = 'This property contains an '
-                                             'empty/default value.'))
+                                definition='This property contains an '
+                                           'empty/default value.'))
 
     parent = doc['OneMoreSection']['MySubsection']
     parent.append(odml.Property(name='MyLastProperty',
-                                value=odml.Value(datetime.datetime.today().date(),
-                                                 dtype='date',
-                                                 unit='',
-                                                 uncertainty='',
-                                                 definition='This value '
-                                                            'contains todays '
-                                                            'date.'),
-                                definition = 'You can define the hierarchical'
-                                             ' location of a section via the'
-                                             ' "path to section" column.'))
+                                value=odml.Value(
+                                        datetime.datetime.today().date(),
+                                        dtype='date',
+                                        unit='',
+                                        uncertainty='',
+                                        definition='This value '
+                                                   'contains todays '
+                                                   'date.'),
+                                definition='You can define the hierarchical'
+                                           ' location of a section via the'
+                                           ' "path to section" column.'))
     return doc
-

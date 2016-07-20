@@ -67,7 +67,7 @@ class OdmlXlsTable(OdmlTable):
         self._pattern = 'alternating'
         self._changing_point = 'sections'
 
-    #TODO: python properties??
+    # TODO: python properties??
 
     @property
     def changing_point(self):
@@ -80,7 +80,7 @@ class OdmlXlsTable(OdmlTable):
         else:
             raise Exception("Your changing point must be 'sections', " +
                             "'properties', 'values' or None")
-        # TODO: exceptions
+            # TODO: exceptions
 
     @property
     def pattern(self):
@@ -99,7 +99,7 @@ class OdmlXlsTable(OdmlTable):
 
     @highlight_defaults.setter
     def highlight_defaults(self, mode):
-        if mode in [True,False]:
+        if mode in [True, False]:
             self._highlight_defaults = mode
         else:
             try:
@@ -108,7 +108,6 @@ class OdmlXlsTable(OdmlTable):
                 raise TypeError('Mode "{}" can not be'
                                 'converted to boolean.'
                                 ''.format(str(mode)))
-
 
     def mark_columns(self, *args):
         """
@@ -148,17 +147,18 @@ class OdmlXlsTable(OdmlTable):
 
         self.consistency_check()
 
-        styles = {"document_info": xlwt.easyxf(self.document_info_style.get_style_string()),
+        styles = {"document_info": xlwt.easyxf(
+            self.document_info_style.get_style_string()),
                   "header": xlwt.easyxf(self.header_style.get_style_string()),
                   "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
                   "row1col0":
-                  xlwt.easyxf(self.second_style.get_style_string()),
+                      xlwt.easyxf(self.second_style.get_style_string()),
                   "row0col1":
-                  xlwt.easyxf(self.first_marked_style.get_style_string()),
+                      xlwt.easyxf(self.first_marked_style.get_style_string()),
                   "row1col1":
-                  xlwt.easyxf(self.second_marked_style.get_style_string()),
+                      xlwt.easyxf(self.second_marked_style.get_style_string()),
                   "highlight":
-                  xlwt.easyxf(self.highlight_style.get_style_string())}
+                      xlwt.easyxf(self.highlight_style.get_style_string())}
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheetname)
 
@@ -168,37 +168,40 @@ class OdmlXlsTable(OdmlTable):
         row = 0
 
         doclen = len(self._docdict) if self._docdict else 0
-        max_col_len = [1]*max(len(self._header),2*doclen+1)
-        for i,h in enumerate(self._header):
-            if h!= None:
+        max_col_len = [1] * max(len(self._header), 2 * doclen + 1)
+        for i, h in enumerate(self._header):
+            if h != None:
                 max_col_len[i] = len(self._header_titles[h])
         col_style = 0
         row_style = 0
 
         if self._docdict:
             # add document information in first row
-            sheet.write(row,0,'Document Information',styles["document_info"])
+            sheet.write(row, 0, 'Document Information', styles["document_info"])
 
             for a, attribute in enumerate(sorted(self._docdict)):
-                sheet.write(row, 2*a+1, attribute, styles["document_info"])
-                sheet.write(row, 2*a+2, self._docdict[attribute], styles["document_info"])
+                sheet.write(row, 2 * a + 1, attribute, styles["document_info"])
+                sheet.write(row, 2 * a + 2, self._docdict[attribute],
+                            styles["document_info"])
 
-                #adjusting cell widths
-                if len(attribute) > max_col_len[2*a+1]:
-                    max_col_len[2*a+1] = len(attribute)
-                if self._docdict[attribute]!= None and (len(self._docdict[attribute]) > max_col_len[2*a+2]):
-                    max_col_len[2*a+2] = len(self._docdict[attribute])
+                # adjusting cell widths
+                if len(attribute) > max_col_len[2 * a + 1]:
+                    max_col_len[2 * a + 1] = len(attribute)
+                if self._docdict[attribute] != None and (
+                    len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
+                    max_col_len[2 * a + 2] = len(self._docdict[attribute])
 
             row += 1
 
         # write the header
         for col, h in enumerate(self._header):
             sheet.write(row, col, self._header_titles[h] if h in
-                        self._header_titles else "", styles['header'])
+                                                            self._header_titles else "",
+                        styles['header'])
 
         row += 1
 
-        if self._odmldict!=None:
+        if self._odmldict != None:
             # write the rest of the rows
             for dic in self._odmldict:
 
@@ -213,7 +216,7 @@ class OdmlXlsTable(OdmlTable):
                 else:
                     # start of a new section
                     if self._changing_point is 'sections':
-                        row_style = (row_style + 1) % 2     # switch row-color
+                        row_style = (row_style + 1) % 2  # switch row-color
                     oldpath = dic["Path"]
                     oldprop = ""
 
@@ -224,7 +227,7 @@ class OdmlXlsTable(OdmlTable):
                 else:
                     # start of a new property
                     if self._changing_point is 'properties':
-                        row_style = (row_style + 1) % 2     # switch row-color
+                        row_style = (row_style + 1) % 2  # switch row-color
                     oldprop = dic["PropertyName"]
 
                 # check the changing point
@@ -233,14 +236,16 @@ class OdmlXlsTable(OdmlTable):
                 elif self._changing_point is None:
                     pass
                 elif not self._changing_point in ['sections', 'properties']:
-                    raise Exception("Invalid argument for changing_point: Your " +
-                                    "changing_point must be 'sections', " +
-                                    "'properties', 'values' or None")
+                    raise Exception(
+                        "Invalid argument for changing_point: Your " +
+                        "changing_point must be 'sections', " +
+                        "'properties', 'values' or None")
                     # TODO: change exception
 
                 # row_content: only those elements of row_dic, that will be
                 # visible in the table
-                row_content = [row_dic[h] if h!=None else '' for h in self._header]
+                row_content = [row_dic[h] if h != None else '' for h in
+                               self._header]
 
                 # check, if row would be empty or same as the row before;
                 # if so, skip the row
@@ -266,11 +271,13 @@ class OdmlXlsTable(OdmlTable):
                     else:
                         col_style = 0
 
-                    stylestring = "row" + str(row_style) + "col" + str(col_style)
+                    stylestring = "row" + str(row_style) + "col" + str(
+                            col_style)
 
-                    #special style for highlighting default values
+                    # special style for highlighting default values
                     if (h == 'Value' and self._highlight_defaults
-                        and row_dic['Value'] == self.odtypes.default_value(row_dic['odmlDatatype'])):
+                        and row_dic['Value'] == self.odtypes.default_value(
+                                row_dic['odmlDatatype'])):
                         stylestring = 'highlight'
 
                     style = styles[stylestring]
@@ -279,7 +286,7 @@ class OdmlXlsTable(OdmlTable):
                     else:
                         cell_content = ''
 
-                    #special style for datetime-objects
+                    # special style for datetime-objects
 
                     if isinstance(cell_content, datetime.datetime):
                         style.num_format_str = "DD-MM-YYYY HH:MM:SS"
@@ -300,6 +307,6 @@ class OdmlXlsTable(OdmlTable):
 
         # adjust the size of the columns due to the max length of the content
         for i, l in enumerate(max_col_len):
-            sheet.col(i).width = 256 * (l+1)
+            sheet.col(i).width = 256 * (l + 1)
 
         workbook.save(save_to)

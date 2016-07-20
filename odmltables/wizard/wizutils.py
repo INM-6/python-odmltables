@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 import os
@@ -7,6 +6,7 @@ from PyQt4.QtCore import (pyqtSlot)
 
 try:
     import odmltables
+
     have_odmltables = True
 except:
     have_odmltables = False
@@ -15,12 +15,11 @@ from settings import Settings
 
 
 class OdmltablesWizard(QWizard):
-
     def __init__(self, wizname, parent=None):
         super(OdmltablesWizard, self).__init__(parent)
 
         self.wizname = wizname
-        self.settingsfile = wizname.replace(' ','').lower() + '.conf'
+        self.settingsfile = wizname.replace(' ', '').lower() + '.conf'
 
         # initialize settings
         self.settings = Settings(self.settingsfile)
@@ -34,9 +33,10 @@ class OdmltablesWizard(QWizard):
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
         self.setPixmap(QWizard.LogoPixmap,
-                       QPixmap(os.path.join('..','..','logo',
+                       QPixmap(os.path.join('..', '..', 'logo',
                                             "odML-tables_100x100.png")))
-        # self.setPixmap(QWizard.WatermarkPixmap, QPixmap(os.path.join('..','logo',"odML-tables_100x100.png")))
+        # self.setPixmap(QWizard.WatermarkPixmap, QPixmap(os.path.join('..',
+        # 'logo',"odML-tables_100x100.png")))
 
         # set up help messages
         self._lastHelpMsg = ''
@@ -47,7 +47,6 @@ class OdmltablesWizard(QWizard):
 
     def _createHelpMsgs(self):
         raise NotImplementedError()
-
 
     @pyqtSlot()
     def _showHelp(self):
@@ -67,11 +66,12 @@ class OdmltablesWizard(QWizard):
 def get_graphic_path():
     if have_odmltables:
         data_path = os.path.join(os.path.dirname(odmltables.__file__),
-                                         'wizard',
-                                         'graphics')
+                                 'wizard',
+                                 'graphics')
     return data_path
 
     # Old version -- kick out if not needed anymore
+
 #     local_paths = [os.path.join('.','odmltables','wizard','graphics'),
 #                    os.path.join('.','wizard','graphics'),
 #                    os.path.join('.','graphics')]

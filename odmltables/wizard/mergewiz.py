@@ -7,19 +7,18 @@ from mergepages import (LoadFilePage)
 from wizutils import OdmltablesWizard
 
 from settings import Settings
+
+
 class MergeWizard(OdmltablesWizard):
     NUM_PAGES = 1
 
     (PageLoadFile) = 1
 
-
     def __init__(self, parent=None):
-        super(MergeWizard, self).__init__('Merge Wizard',parent)
+        super(MergeWizard, self).__init__('Merge Wizard', parent)
         settings = Settings(self.settingsfile)
 
         self.setPage(self.PageLoadFile, LoadFilePage(settings))
-
-
 
     def _createHelpMsgs(self):
         msgs = {}
@@ -30,6 +29,7 @@ class MergeWizard(OdmltablesWizard):
                                            "help available.")
         return msgs
 
+
 # main ========================================================================
 def main():
     import sys
@@ -38,9 +38,8 @@ def main():
     wiz = MergeWizard()
     wiz.show()
 
-
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
-

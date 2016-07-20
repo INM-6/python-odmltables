@@ -237,9 +237,9 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.section_tree)
         for row in rows:
             self.selection_tree.addTopLevelItem(
-                self.section_tree.takeTopLevelItem(row))
+                    self.section_tree.takeTopLevelItem(row))
             self.selected_sections.append(self.sections.pop(
-                self.sections.index(self.filtered_sections[row])))
+                    self.sections.index(self.filtered_sections[row])))
             self.filtered_sections.pop(row)
 
     def toleft(self):
@@ -250,7 +250,7 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.selection_tree)
         for row in rows:
             self.section_tree.addTopLevelItem(
-                self.selection_tree.takeTopLevelItem(row))
+                    self.selection_tree.takeTopLevelItem(row))
             item = self.selected_sections.pop(row)
             self.sections.append(item)
             self.filtered_sections.append(item)

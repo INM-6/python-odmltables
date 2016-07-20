@@ -13,7 +13,6 @@ from wizutils import OdmltablesWizard
 
 
 class CompSectionWizard(OdmltablesWizard):
-
     settings = {}
     settingsfile = 'odmlconverter.conf'
     NUM_PAGES = 3
@@ -54,7 +53,6 @@ class CompSectionWizard(OdmltablesWizard):
         return msgs
 
 
-
 # main ========================================================================
 def main():
     import sys
@@ -63,8 +61,8 @@ def main():
     wiz = CompSectionWizard()
     wiz.show()
 
-
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

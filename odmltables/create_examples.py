@@ -27,11 +27,14 @@ def create_odmltable_example():
 
     doc = odml.Document()
     doc.append(odml.Section(name='Subject',
-                            definition='Information on the investigated experimental subject (animal or person)'))
+                            definition='Information on the investigated '
+                                       'experimental subject (animal or '
+                                       'person)'))
     parent = doc['Subject']
 
     parent.append(odml.Section(name='Training',
-                               definition='Information on the training given to subject'))
+                               definition='Information on the training given '
+                                          'to subject'))
 
     parent.append(odml.Property(name='Species',
                                 definition='Binomial species name',
@@ -41,7 +44,8 @@ def create_odmltable_example():
     parent.append(odml.Property(name='Gender',
                                 definition='',
                                 value=odml.Value(data=gender,
-                                                 definition='Gender (male or female)',
+                                                 definition='Gender (male or '
+                                                            'female)',
                                                  dtype=odml.DType.string)))
 
     parent.append(odml.Property(name='Weight',
@@ -54,10 +58,12 @@ def create_odmltable_example():
     parent.append(odml.Property(name='Period',
                                 definition='start and end date of training',
                                 value=[odml.Value(data=start_date,
-                                                  definition='start date of training',
+                                                  definition='start date of '
+                                                             'training',
                                                   dtype=odml.DType.date),
                                        odml.Value(data=end_date,
-                                                  definition='end date of training',
+                                                  definition='end date of '
+                                                             'training',
                                                   dtype=odml.DType.date)]))
 
     parent.append(odml.Property(name='Duration',
@@ -75,9 +81,9 @@ def create_electrode_example():
     electrode_type = 'Utah Array'
     count = 10
     electrode_id = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    impedance = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] #40-50
-    length = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] #2mm-2cm
-    suaids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] #between 1 and 4
+    impedance = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # 40-50
+    length = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # 2mm-2cm
+    suaids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # between 1 and 4
 
     doc = odml.Document()
 
@@ -93,7 +99,7 @@ def create_electrode_example():
 
     for i in range(count):
         parent = doc['Multielectrode Array']
-        sec_name = 'Electrode'+str(i+1)
+        sec_name = 'Electrode' + str(i + 1)
         parent.append(odml.Section(name=sec_name))
         parent = doc['Multielectrode Array'][sec_name]
         parent.append(odml.Property(name='ID',
@@ -124,192 +130,192 @@ def create_mice_example():
     doc = odml.Document()
 
     for i in range(10):
-        sec_name = 'day' + str(i*2)
+        sec_name = 'day' + str(i * 2)
 
         doc.append(odml.Section(name=sec_name))
         parent = doc[sec_name]
         parent.append(odml.Property(name='weight', value=weight[i]))
         parent.append(odml.Property(name='body length', value=body[i]))
         parent.append(odml.Property(name='tail length', value=tail[i]))
-        parent.append(odml.Property(name='fur', value=(2*i >= fur)))
-        parent.append(odml.Property(name='eye opening', value=(2*i >= eye)))
+        parent.append(odml.Property(name='fur', value=(2 * i >= fur)))
+        parent.append(odml.Property(name='eye opening', value=(2 * i >= eye)))
 
     return doc
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     folder = '../data/examples/'
 
     ################## csv examples #######################
 
     # save the first odml as 'testfile.odml'
-#    doc = create_odmltable_example()
-#    odml.tools.xmlparser.XMLWriter(doc).write_file(folder + 'testfile.odml')
-#
-#    # first example - create the first table
-#    myFirstTable = OdmlCsvTable()
-#    myFirstTable.load_from_file(folder + 'testfile.odml')
-#    myFirstTable.write2file(folder + 'testtable.csv')
-#
-#    # second example - change header titles
-#    myFirstTable.change_header_titles(Path='my path',
-#                                      PropertyName='my property',
-#                                      Value='my value',
-#                                      odmlDatatype='my datatype')
-#
-#    myFirstTable.write2file(folder + 'testtable2.csv')
-#
-#    # third example - change the header
-#    myFirstTable.change_header(Path=1,
-#                               SectionName=2,
-#                               SectionDefinition=3,
-#                               PropertyName=4,
-#                               Value=5)
-#
-#    myFirstTable.write2file(folder + 'testtable3.csv')
-#
-#    # fourth example - allow empty columns
-#    myFirstTable.allow_empty_columns = True
-#    myFirstTable.change_header(Path=1,
-#                               PropertyName=3,
-#                               Value=4,
-#                               SectionDefinition=7,
-#                               DataUncertainty=8)
-#    myFirstTable.write2file(folder + 'testtable4.csv')
-#
-#    # examples for 'showall'-attributes
-#
-#    myFirstTable.change_header(Path=1,
-#                               SectionDefinition=2,
-#                               PropertyName=3,
-#                               PropertyDefinition=4,
-#                               Value=5)
-#
-#    myFirstTable.show_all_properties = True
-#    myFirstTable.show_all_sections = True
-#    myFirstTable.write2file(folder + 'showall1.csv')
-#
-#    myFirstTable.show_all_properties = True
-#    myFirstTable.show_all_sections = False
-#    myFirstTable.write2file(folder + 'showall2.csv')
-#
-#    myFirstTable.show_all_properties = False
-#    myFirstTable.show_all_sections = False
-#    myFirstTable.write2file(folder + 'showall3.csv')
-#
-#    ##################### xls examples #######################
-#
-#    # create a xls table
-#    myXlsTable = OdmlXlsTable()
-#    myXlsTable.load_from_function(create_odmltable_example)
-#    myXlsTable.write2file(folder + 'testtable0.xls')
-#
-#    # first example - change a style
-#    myXlsTable.first_style.backcolor = 'gray25'
-#    myXlsTable.first_style.fontcolor = 'black'
-#    myXlsTable.first_style.fontstyle = ''
-#
-#    myXlsTable.second_style.backcolor = 'gray50'
-#    myXlsTable.second_style.fontcolor = 'black'
-#    myXlsTable.second_style.fontstyle = ''
-#
-#    myXlsTable.first_marked_style.backcolor = 'ice_blue'
-#    myXlsTable.first_marked_style.fontcolor = 'white'
-#    myXlsTable.first_marked_style.fontstyle = ''
-#
-#    myXlsTable.second_marked_style.backcolor = 'periwinkle'
-#    myXlsTable.second_marked_style.fontcolor = 'white'
-#    myXlsTable.second_marked_style.fontstyle = ''
-#
-#    myXlsTable.write2file(folder + 'testtable1.xls')
-#
-#    # second example - mark columns
-#    myXlsTable.mark_columns('Path', 'Value')
-#    myXlsTable.write2file(folder + 'testtable2.xls')
-#
-#    # adjust changing point
-#
-#    myXlsTable.changing_point = 'sections'
-#    myXlsTable.write2file(folder + 'change_sections.xls')
-#
-#    myXlsTable.changing_point = 'properties'
-#    myXlsTable.write2file(folder + 'change_properties.xls')
-#
-#    myXlsTable.changing_point = 'values'
-#    myXlsTable.write2file(folder + 'change_values.xls')
-#
-#    myXlsTable.changing_point = None
-#    myXlsTable.write2file(folder + 'change_none.xls')
-#
-#    # chessfield pattern
-#
-#    myXlsTable.changing_point = 'properties'
-#    myXlsTable.pattern = 'chessfield'
-#    myXlsTable.write2file(folder + 'chessfield.xls')
+    #    doc = create_odmltable_example()
+    #    odml.tools.xmlparser.XMLWriter(doc).write_file(folder +
+    # 'testfile.odml')
+    #
+    #    # first example - create the first table
+    #    myFirstTable = OdmlCsvTable()
+    #    myFirstTable.load_from_file(folder + 'testfile.odml')
+    #    myFirstTable.write2file(folder + 'testtable.csv')
+    #
+    #    # second example - change header titles
+    #    myFirstTable.change_header_titles(Path='my path',
+    #                                      PropertyName='my property',
+    #                                      Value='my value',
+    #                                      odmlDatatype='my datatype')
+    #
+    #    myFirstTable.write2file(folder + 'testtable2.csv')
+    #
+    #    # third example - change the header
+    #    myFirstTable.change_header(Path=1,
+    #                               SectionName=2,
+    #                               SectionDefinition=3,
+    #                               PropertyName=4,
+    #                               Value=5)
+    #
+    #    myFirstTable.write2file(folder + 'testtable3.csv')
+    #
+    #    # fourth example - allow empty columns
+    #    myFirstTable.allow_empty_columns = True
+    #    myFirstTable.change_header(Path=1,
+    #                               PropertyName=3,
+    #                               Value=4,
+    #                               SectionDefinition=7,
+    #                               DataUncertainty=8)
+    #    myFirstTable.write2file(folder + 'testtable4.csv')
+    #
+    #    # examples for 'showall'-attributes
+    #
+    #    myFirstTable.change_header(Path=1,
+    #                               SectionDefinition=2,
+    #                               PropertyName=3,
+    #                               PropertyDefinition=4,
+    #                               Value=5)
+    #
+    #    myFirstTable.show_all_properties = True
+    #    myFirstTable.show_all_sections = True
+    #    myFirstTable.write2file(folder + 'showall1.csv')
+    #
+    #    myFirstTable.show_all_properties = True
+    #    myFirstTable.show_all_sections = False
+    #    myFirstTable.write2file(folder + 'showall2.csv')
+    #
+    #    myFirstTable.show_all_properties = False
+    #    myFirstTable.show_all_sections = False
+    #    myFirstTable.write2file(folder + 'showall3.csv')
+    #
+    #    ##################### xls examples #######################
+    #
+    #    # create a xls table
+    #    myXlsTable = OdmlXlsTable()
+    #    myXlsTable.load_from_function(create_odmltable_example)
+    #    myXlsTable.write2file(folder + 'testtable0.xls')
+    #
+    #    # first example - change a style
+    #    myXlsTable.first_style.backcolor = 'gray25'
+    #    myXlsTable.first_style.fontcolor = 'black'
+    #    myXlsTable.first_style.fontstyle = ''
+    #
+    #    myXlsTable.second_style.backcolor = 'gray50'
+    #    myXlsTable.second_style.fontcolor = 'black'
+    #    myXlsTable.second_style.fontstyle = ''
+    #
+    #    myXlsTable.first_marked_style.backcolor = 'ice_blue'
+    #    myXlsTable.first_marked_style.fontcolor = 'white'
+    #    myXlsTable.first_marked_style.fontstyle = ''
+    #
+    #    myXlsTable.second_marked_style.backcolor = 'periwinkle'
+    #    myXlsTable.second_marked_style.fontcolor = 'white'
+    #    myXlsTable.second_marked_style.fontstyle = ''
+    #
+    #    myXlsTable.write2file(folder + 'testtable1.xls')
+    #
+    #    # second example - mark columns
+    #    myXlsTable.mark_columns('Path', 'Value')
+    #    myXlsTable.write2file(folder + 'testtable2.xls')
+    #
+    #    # adjust changing point
+    #
+    #    myXlsTable.changing_point = 'sections'
+    #    myXlsTable.write2file(folder + 'change_sections.xls')
+    #
+    #    myXlsTable.changing_point = 'properties'
+    #    myXlsTable.write2file(folder + 'change_properties.xls')
+    #
+    #    myXlsTable.changing_point = 'values'
+    #    myXlsTable.write2file(folder + 'change_values.xls')
+    #
+    #    myXlsTable.changing_point = None
+    #    myXlsTable.write2file(folder + 'change_none.xls')
+    #
+    #    # chessfield pattern
+    #
+    #    myXlsTable.changing_point = 'properties'
+    #    myXlsTable.pattern = 'chessfield'
+    #    myXlsTable.write2file(folder + 'chessfield.xls')
 
 
-#####################
-##compare sections ##
-#####################
+    #####################
+    ##compare sections ##
+    #####################
 
-############ csv #######################
+    ############ csv #######################
 
     # examples mice
-    odml.tools.xmlparser.XMLWriter(create_mice_example()).write_file(folder + 'mice_example.odml')
+    odml.tools.xmlparser.XMLWriter(create_mice_example()).write_file(
+        folder + 'mice_example.odml')
 
-#    csv_mice = OdmlCsvTable()
-#    csv_mice.load_from_file(folder + 'mice_example.odml')
-#    csv_mice.write2file(folder + 'mice1.csv')
-#
-#    compare_mice_csv = CompareSectionCsvTable()
-#    compare_mice_csv.load_from_file(folder + 'mice_example.odml')
-#
-#    compare_mice_csv.choose_sections('day0', 'day2', 'day4')
-#    compare_mice_csv.write2file(folder + 'comparemice2.csv')
-#
-#    compare_mice_csv.choose_sections_startwith('day')
-#    compare_mice_csv.write2file(folder + 'comparemice.csv')
-#
-#    compare_mice_csv.switch = True
-#    compare_mice_csv.write2file(folder + 'comparemice3.csv')
-#
-#    compare_mice_csv.include_all = True
-#    compare_mice_csv.write2file(folder + 'mice_include_true.csv')
-#    compare_mice_csv.include_all = False
-#    compare_mice_csv.write2file(folder + 'mice_include_false.csv')
+    #    csv_mice = OdmlCsvTable()
+    #    csv_mice.load_from_file(folder + 'mice_example.odml')
+    #    csv_mice.write2file(folder + 'mice1.csv')
+    #
+    #    compare_mice_csv = CompareSectionCsvTable()
+    #    compare_mice_csv.load_from_file(folder + 'mice_example.odml')
+    #
+    #    compare_mice_csv.choose_sections('day0', 'day2', 'day4')
+    #    compare_mice_csv.write2file(folder + 'comparemice2.csv')
+    #
+    #    compare_mice_csv.choose_sections_startwith('day')
+    #    compare_mice_csv.write2file(folder + 'comparemice.csv')
+    #
+    #    compare_mice_csv.switch = True
+    #    compare_mice_csv.write2file(folder + 'comparemice3.csv')
+    #
+    #    compare_mice_csv.include_all = True
+    #    compare_mice_csv.write2file(folder + 'mice_include_true.csv')
+    #    compare_mice_csv.include_all = False
+    #    compare_mice_csv.write2file(folder + 'mice_include_false.csv')
 
 
     # examples electrodes
-    odml.tools.xmlparser.XMLWriter(create_electrode_example()).write_file(folder + 'electrodes_example.odml')
+    odml.tools.xmlparser.XMLWriter(create_electrode_example()).write_file(
+        folder + 'electrodes_example.odml')
 
-#    csv_electrodes = OdmlCsvTable()
-#    csv_electrodes.load_from_file(folder + 'electrodes_example.odml')
-#    csv_electrodes.write2file(folder + 'electrodes1.csv')
-#
-#    compare_electrodes_csv = CompareSectionCsvTable()
-#    compare_electrodes_csv.load_from_file(folder + 'electrodes_example.odml')
-#
-#    compare_electrodes_csv.choose_sections('Electrode1', 'Electrode2', 'Electrode3')
-#    compare_electrodes_csv.write2file(folder + 'compareelectrodes2.csv')
-#
-#    compare_electrodes_csv.choose_sections_startwith('Electrode')
-#    compare_electrodes_csv.write2file(folder + 'compareelectrodes.csv')
-#
-#    compare_electrodes_csv.switch = True
-#    compare_electrodes_csv.write2file(folder + 'compareelectrodes3.csv')
-#
-#    compare_electrodes_csv.include_all = True
-#    compare_electrodes_csv.write2file(folder + 'electrodes_include_true.csv')
-#    compare_electrodes_csv.include_all = False
-#    compare_electrodes_csv.write2file(folder + 'electrodes_include_false.csv')
+    #    csv_electrodes = OdmlCsvTable()
+    #    csv_electrodes.load_from_file(folder + 'electrodes_example.odml')
+    #    csv_electrodes.write2file(folder + 'electrodes1.csv')
+    #
+    #    compare_electrodes_csv = CompareSectionCsvTable()
+    #    compare_electrodes_csv.load_from_file(folder +
+    # 'electrodes_example.odml')
+    #
+    #    compare_electrodes_csv.choose_sections('Electrode1', 'Electrode2',
+    # 'Electrode3')
+    #    compare_electrodes_csv.write2file(folder + 'compareelectrodes2.csv')
+    #
+    #    compare_electrodes_csv.choose_sections_startwith('Electrode')
+    #    compare_electrodes_csv.write2file(folder + 'compareelectrodes.csv')
+    #
+    #    compare_electrodes_csv.switch = True
+    #    compare_electrodes_csv.write2file(folder + 'compareelectrodes3.csv')
+    #
+    #    compare_electrodes_csv.include_all = True
+    #    compare_electrodes_csv.write2file(folder + 'electrodes_include_true.csv')
+    #    compare_electrodes_csv.include_all = False
+    #    compare_electrodes_csv.write2file(folder + 'electrodes_include_false.csv')
 
-    #xls
+    # xls
     xls_electrodes = CompareSectionXlsTable()
     xls_electrodes.load_from_file(folder + 'electrodes_example.odml')
     xls_electrodes.choose_sections_startwith("Electrode")
     xls_electrodes.write2file(folder + 'electrodes1.xls')
-
-
-
-
-
