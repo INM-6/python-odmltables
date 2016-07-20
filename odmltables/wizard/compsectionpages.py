@@ -87,22 +87,20 @@ class ChooseFilePage(QIWizardPage):
     def initializePage(self):
 
         self.setTitle("Select an input file")
-        self.setSubTitle("Select the file you want to convert and specify the output format you want to generate")
+        self.setSubTitle("Select the file you want to convert and specify the "
+                         "output format you want to generate")
 
         self.settings.register('RBoutputxls', self.rbuttonxls)
         self.settings.register('RBoutputcsv', self.rbuttoncsv)
 
+        self.rbuttonxls.setChecked(True)
+
     def handlebuttonbrowse(self):
-        # only allow .odml-files
-        filename = QFileDialog().getOpenFileName(filter="*.odml")
-        if filename:
-            try:
-                odml.tools.xmlparser.load(filename)
-                self.inputpath = QLineEdit(filename)
-                self.settings.register('inputfile', self.inputpath)
-                self.inputfile.setText(shorten_path(filename))
-            except:
-                QMessageBox.warning(self, 'Invalid file', 'It seems that the file you chose is no valid odml-file')
+        self.inputfilename = str(QFileDialog().getOpenFileName(filter="*.odml"))
+        self.settings.register('inputfilename', self, useconfig=False)
+
+        self.settings.register('inputfilename', self, useconfig=False)
+        self.inputfile.setText(shorten_path(self.inputfilename))
 
     def selectconfig(self):
         if self.configselection.currentIndex() != 0:
@@ -113,22 +111,23 @@ class ChooseFilePage(QIWizardPage):
             self.settings.register('RBoutputcsv', self.rbuttoncsv)
             self.settings.register('CBcustominput', self.cbcustominput)
             self.settings.register('inputfilename', self, useconfig=False)
-            short_filename = shorten_path(self.settings.get_object('inputfilename'))
+            short_filename = shorten_path(
+                self.settings.get_object('inputfilename'))
             self.inputfile.setText(short_filename)
-            # self.settings.get_object('RBoutputxls')
 
     def validatePage(self):
         if not any((self.settings.get_object('RBoutputxls').isChecked(),
                     self.settings.get_object('RBoutputcsv').isChecked())):
-            QMessageBox.warning(self, 'Select a format', 'You need to select a table format to continue.')
+            QMessageBox.warning(self, 'Select a format',
+                                'You need to select a table format to '
+                                'continue.')
             return 0
 
-        if not self.settings.is_registered('inputfile'):
-            QMessageBox.warning(self, 'Select an input file', 'You need to select an input file to continue.')
+        if ((not self.settings.is_registered('inputfilename')) or
+                (not self.settings.get_object('inputfilename'))):
+            QMessageBox.warning(self, 'Select an input file',
+                                'You need to select an input file to continue.')
             return 0
-        elif not self.settings.get_object('inputfile').text():
-                QMessageBox.warning(self, 'Select an input file', 'You need to select an input file to continue.')
-                return 0
 
         return 1
 
@@ -140,9 +139,9 @@ class ChooseSectionsPage(QIWizardPage):
 
     def __init__(self, parent=None):
         super(ChooseSectionsPage, self).__init__(parent)
-        self.selected_sections = []   # sections in the right tree
-        self.sections = []            # all sections without the selected
-        self.filtered_sections = []   # filtered sections without the selected
+        self.selected_sections = []  # sections in the right tree
+        self.sections = []  # all sections without the selected
+        self.filtered_sections = []  # filtered sections without the selected
         self.initUI()
 
     def initUI(self):
@@ -155,35 +154,33 @@ class ChooseSectionsPage(QIWizardPage):
         # layout for filter form
         filterbox = QGroupBox("Filter")
 
-        secname = QLineEdit()
-        sectype = QLineEdit()
-        propname = QLineEdit()
+        self.LEsecname = QLineEdit()
+        self.LEsectype = QLineEdit()
+        self.LEpropname = QLineEdit()
 
         filterlayout = QGridLayout()
         filterlayout.addWidget(QLabel("Section Name"), 1, 0)
         filterlayout.addWidget(QLabel("Section Type"), 2, 0)
         filterlayout.addWidget(QLabel("Property Name"), 3, 0)
-        filterlayout.addWidget(secname, 1, 1)
-        filterlayout.addWidget(sectype, 2, 1)
-        filterlayout.addWidget(propname, 3, 1)
+        filterlayout.addWidget(self.LEsecname, 1, 1)
+        filterlayout.addWidget(self.LEsectype, 2, 1)
+        filterlayout.addWidget(self.LEpropname, 3, 1)
         filterbox.setLayout(filterlayout)
 
-        secname.textChanged.connect(self.filterSections)
-        sectype.textChanged.connect(self.filterSections)
-        propname.textChanged.connect(self.filterSections)
-
-        self.registerField("secname", secname)
-        self.registerField("sectype", sectype)
-        self.registerField("propname", propname)
+        self.LEsecname.textChanged.connect(self.filterSections)
+        self.LEsectype.textChanged.connect(self.filterSections)
+        self.LEpropname.textChanged.connect(self.filterSections)
 
         # define layout for the trre-widgets containing the sections
         self.section_tree = QTreeWidget()
         self.section_tree.setColumnCount(2)
         self.section_tree.setHeaderLabels(["Name", "Path"])
+        self.section_tree.itemDoubleClicked.connect(self.toright)
 
         self.selection_tree = QTreeWidget()
         self.selection_tree.setColumnCount(2)
         self.selection_tree.setHeaderLabels(["Name", "Path"])
+        self.selection_tree.itemDoubleClicked.connect(self.toleft)
 
         self.selection_tree.setSelectionMode(3)
         self.section_tree.setSelectionMode(3)
@@ -212,7 +209,7 @@ class ChooseSectionsPage(QIWizardPage):
         sectionlistlayout.addWidget(self.selection_tree)
 
         mainlayout.addLayout(sectionlistlayout)
-        self.selectallcb = QCheckBox('select all')
+        self.selectallcb = QCheckBox('select all (Ctrl+A)')
         self.selectallcb.stateChanged.connect(self.selectall)
         mainlayout.addWidget(self.selectallcb)
         mainlayout.addWidget(filterbox)
@@ -224,7 +221,8 @@ class ChooseSectionsPage(QIWizardPage):
     def initializePage(self):
 
         # load sections and properties from the selected file
-        odmldoc = odml.tools.xmlparser.load(self.settings.get_object("inputfile").text())
+        odmldoc = odml.tools.xmlparser.load(self.settings.get_object(
+                "inputfilename"))
         for section in odmldoc.itersections():
             self.sections.append([section.name,
                                   section.get_path(),
@@ -267,8 +265,10 @@ class ChooseSectionsPage(QIWizardPage):
 
         rows = self._get_selected_rows(self.section_tree)
         for row in rows:
-            self.selection_tree.addTopLevelItem(self.section_tree.takeTopLevelItem(row))
-            self.selected_sections.append(self.sections.pop(self.sections.index(self.filtered_sections[row])))
+            self.selection_tree.addTopLevelItem(
+                self.section_tree.takeTopLevelItem(row))
+            self.selected_sections.append(self.sections.pop(
+                self.sections.index(self.filtered_sections[row])))
             self.filtered_sections.pop(row)
 
     def toleft(self):
@@ -278,7 +278,8 @@ class ChooseSectionsPage(QIWizardPage):
 
         rows = self._get_selected_rows(self.selection_tree)
         for row in rows:
-            self.section_tree.addTopLevelItem(self.selection_tree.takeTopLevelItem(row))
+            self.section_tree.addTopLevelItem(
+                self.selection_tree.takeTopLevelItem(row))
             item = self.selected_sections.pop(row)
             self.sections.append(item)
             self.filtered_sections.append(item)
@@ -287,9 +288,9 @@ class ChooseSectionsPage(QIWizardPage):
 
         # find sections that match the filter
         self.filtered_sections = [s for s in self.sections
-                                  if self.field("secname") in s[0]
-                                  and self.field("sectype") in s[3]
-                                  and any([self.field("propname")
+                                  if str(self.LEsecname.text()) in s[0]
+                                  and str(self.LEsectype.text()) in s[3]
+                                  and any([str(self.LEpropname.text())
                                            in p for p in s[2]])]
         # clear left treewidget
         self.section_tree.clear()
@@ -309,7 +310,9 @@ class ChooseSectionsPage(QIWizardPage):
 
     def validatePage(self):
         if not self.settings.get_object("selected_secs"):
-            QMessageBox.warning(self, 'No Sections chosen', 'You should choose at least two sections to be compared in the table.')
+            QMessageBox.warning(self, 'No sections chosen',
+                                'You should choose at least two sections to be '
+                                'compared in the table.')
             return 0
         return 1
 
@@ -323,7 +326,6 @@ class ChoosePropertiesPage(QIWizardPage):
 
 
 class ChooseStylesPage(QIWizardPage):
-
     def __init__(self, parent=None):
         super(ChooseStylesPage, self).__init__(parent)
 
@@ -332,6 +334,7 @@ class SaveTablePage(QIWizardPage):
     """
     may be replaced by SaveFilePage
     """
+
     def __init__(self, parent=None):
         super(SaveTablePage, self).__init__(parent)
         self.initUI()
@@ -356,35 +359,53 @@ class SaveTablePage(QIWizardPage):
         self.setTitle("Save Table")
         self.setSubTitle("Choose a location to save your table")
 
+        if self.settings.get_object('RBoutputxls').isChecked():
+            self.expected_extension = '.xls'
+        elif self.settings.get_object('RBoutputcsv').isChecked():
+            self.expected_extension = '.csv'
+        else:
+            raise ValueError('Can not save file without selection of '
+                             'output format.')
+
+        self.outputfilename = ''
+
     def handlebuttonbrowse(self):
-        # only allow .odml-files
-        filename = QFileDialog().getSaveFileName()
-        self.outputpath = QLineEdit(filename)
-        self.settings.register('outputfile', self.outputpath)
-        self.outputfile.setText(filename)
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.AnyFile)
+        dlg.setAcceptMode(QFileDialog.AcceptSave)
+        dlg.setLabelText(QFileDialog.Accept, "Generate File")
+        dlg.setDefaultSuffix(self.expected_extension.strip('.'))
+
+        dlg.setDirectory(self.settings.get_object('inputfilename'))
+
+        dlg.setFilter("%s files (*%s);;all files (*)"
+                      "" % (self.expected_extension.strip('.'),
+                            self.expected_extension))
+
+        if dlg.exec_():
+            self.outputfilename = str(dlg.selectedFiles()[0])
+        self.settings.register('outputfilename', self)
+        self.outputfile.setText(self.outputfilename)
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()
-        table.load_from_file(self.settings.get_object("inputfile").text())
+        table.load_from_file(self.settings.get_object("inputfilename"))
         selections = [s[0] for s in self.settings.get_object("selected_secs")]
         table.choose_sections(*selections)
-        table.write2file(self.settings.get_object("outputfile").text())
+        table.write2file(self.settings.get_object("outputfilename"))
 
     def _saveCsvTable(self):
         table = odmltables.compare_section_csv_table.CompareSectionCsvTable()
-        table.load_from_file(self.settings.get_object("inputfile").text())
+        table.load_from_file(self.settings.get_object("inputfilename"))
         selections = [s[0] for s in self.settings.get_object("selected_secs")]
         table.choose_sections(*selections)
-        table.write2file(self.settings.get_object("outputfile").text())
+        table.write2file(self.settings.get_object("outputfilename"))
 
     def validatePage(self):
-
-
-        if not self.settings.is_registered('outputfile'):
-            QMessageBox.warning(self, 'Select an outputfile', 'You need to select a outputfile to continue.')
-            return 0
-        if not self.settings.get_object('outputfile').text():
-            QMessageBox.warning(self, 'Select an outputfile', 'You need to select a outputfile to continue.')
+        if not (self.settings.is_registered('outputfilename') and
+                    self.settings.get_object('outputfilename')):
+            QMessageBox.warning(self, 'Select an outputfile',
+                                'You need to select an outputfile to continue.')
             return 0
 
         if self.settings.get_object('RBoutputxls').isChecked():
