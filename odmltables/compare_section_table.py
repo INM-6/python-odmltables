@@ -22,7 +22,7 @@ class CompareSectionTable():
 
     def __init__(self):
         self._odmldoc = None
-        self._sel_fun = lambda x: "Development" in x.get_path()
+        self._sel_fun = lambda x: True
         self.include_all = True
         self.switch = False
 
