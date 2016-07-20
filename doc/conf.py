@@ -34,7 +34,6 @@ sys.path.insert(0, os.path.abspath('../odmltables'))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.exceltable'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
