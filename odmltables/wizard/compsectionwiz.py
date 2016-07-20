@@ -5,13 +5,14 @@ Created on Wed Feb  3 13:12:21 2016
 @author: pick
 """
 
+from PyQt4.QtGui import QApplication
 
 from settings import Settings
 from compsectionpages import ChooseFilePage, ChooseSectionsPage, SaveTablePage
 from wizutils import OdmltablesWizard
 
 
-class CompSectionWiz(OdmltablesWizard):
+class CompSectionWizard(OdmltablesWizard):
 
     settings = {}
     settingsfile = 'odmlconverter.conf'
@@ -19,7 +20,8 @@ class CompSectionWiz(OdmltablesWizard):
     (PageChooseFile, PageChooseSections, PageSaveTable) = range(NUM_PAGES)
 
     def __init__(self, parent=None):
-        super(CompSectionWiz, self).__init__('Compare Section Wizard', parent)
+        super(CompSectionWizard, self).__init__('Compare Section Wizard',
+                                                parent)
 
         settings = Settings(self.settingsfile)
 
@@ -50,3 +52,19 @@ class CompSectionWiz(OdmltablesWizard):
         msgs[self.NUM_PAGES + 1] = self.tr("Sorry, for this page there is no "
                                            "help available.")
         return msgs
+
+
+
+# main ========================================================================
+def main():
+    import sys
+
+    app = QApplication(sys.argv)
+    wiz = CompSectionWizard()
+    wiz.show()
+
+
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
