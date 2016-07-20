@@ -9,7 +9,7 @@ import os
 from PyQt4 import QtGui, QtCore
 #import wizards
 from converterwiz import ConversionWizard
-from compsectionwiz import CompSectionWiz
+from compsectionwiz import CompSectionWizard
 from generatetemplatewiz import GenerateTemplateWizard
 from filterwiz import FilterWizard
 from mergewiz import MergeWizard
@@ -92,7 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         if sender==self.convertbutton:
             wizard = ConversionWizard()
         elif sender==self.comparebutton:
-            wizard = CompSectionWiz()
+            wizard = CompSectionWizard()
         elif sender==self.generatebutton:
             wizard = GenerateTemplateWizard()
         elif sender==self.filterbutton:
