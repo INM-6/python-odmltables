@@ -47,22 +47,6 @@ class ChooseFilePage(QIWizardPage):
         hbox1.addStretch()
         vbox.addLayout(hbox1)
 
-        # adding configuration selection
-        configlabel = QLabel('Load a configuration from a previous run')
-        vbox.addWidget(configlabel)
-        self.configselection = QComboBox()
-        self.configselection.addItems(self.settings.get_all_config_names())
-        self.configselection.insertItem(0, '-- No configuration --')
-        self.configselection.setCurrentIndex(0)
-        self.configselection.activated.connect(self.selectconfig)
-        vbox.addWidget(self.configselection)
-
-        # adding separator
-        horizontalLine = QFrame()
-        horizontalLine.setFrameStyle(QFrame.HLine)
-        horizontalLine.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        vbox.addSpacing(10)
-        vbox.addWidget(horizontalLine)
         vbox.addSpacing(10)
 
         # Adding output part
@@ -101,19 +85,6 @@ class ChooseFilePage(QIWizardPage):
 
         self.settings.register('inputfilename', self, useconfig=False)
         self.inputfile.setText(shorten_path(self.inputfilename))
-
-    def selectconfig(self):
-        if self.configselection.currentIndex() != 0:
-            self.settings.load_config(str(self.configselection.currentText()))
-
-            # loading output format choice
-            self.settings.register('RBoutputxls', self.rbuttonxls)
-            self.settings.register('RBoutputcsv', self.rbuttoncsv)
-            self.settings.register('CBcustominput', self.cbcustominput)
-            self.settings.register('inputfilename', self, useconfig=False)
-            short_filename = shorten_path(
-                self.settings.get_object('inputfilename'))
-            self.inputfile.setText(short_filename)
 
     def validatePage(self):
         if not any((self.settings.get_object('RBoutputxls').isChecked(),
@@ -385,7 +356,7 @@ class SaveTablePage(QIWizardPage):
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
         self.settings.register('outputfilename', self)
-        self.outputfile.setText(self.outputfilename)
+        self.outputfile.setText(shorten_path(self.outputfilename))
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()
