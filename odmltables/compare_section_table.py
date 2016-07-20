@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 26 09:51:20 2015
 
-@author: pick
 """
 
 import warnings

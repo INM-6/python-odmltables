@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 14 11:14:55 2015
 
-@author: pick
 """
 
 import odml

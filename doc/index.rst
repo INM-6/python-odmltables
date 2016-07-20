@@ -29,10 +29,9 @@ Contents:
 .. toctree::
     :maxdepth: 1
 
-    introduction
     install
     tutorial
-    documentation
+    modules
     authors
 
 Indices and tables

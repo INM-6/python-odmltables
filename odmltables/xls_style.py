@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 12 09:41:55 2015
 
-@author: pick
 """
 
 

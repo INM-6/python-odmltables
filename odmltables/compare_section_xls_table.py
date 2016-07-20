@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun  8 08:32:23 2015
 
-@author: pick
 """
 
 import datetime
