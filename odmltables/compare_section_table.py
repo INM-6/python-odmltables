@@ -57,7 +57,7 @@ class CompareSectionTable():
         table = [[None for p in range(prop_num)] for s in range(sec_num)]
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
-            for prop in sect.iterproperties():
+            for prop in sect.properties:
                 table[sec_ind][properties.index(prop.name)] = prop.values[
                     0].data
                 if len(prop.values) > 1:
