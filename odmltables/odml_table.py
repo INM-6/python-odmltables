@@ -197,8 +197,11 @@ class OdmlTable(object):
                     break
 
             n_cols = len(header)
-            self._header = [inv_header_titles[h] if h != '' else None for h in
+            try:
+                self._header = [inv_header_titles[h] if h != '' else None for h in
                             header]
+            except KeyError,e:
+                raise ValueError('%s is not a valid header title.'%e.message)
             row += 1
 
             old_dic = {"Path": "",
@@ -259,7 +262,12 @@ class OdmlTable(object):
                 value = current_dic['Value']
 
                 if ('date' in dtype or 'time' in dtype) and (value != ''):
-                    value = xlrd.xldate_as_tuple(value, workbook.datemode)
+                    if isinstance(value,float):
+                        value = xlrd.xldate_as_tuple(value, workbook.datemode)
+                    else:
+                        raise TypeError('Expected xls date or time object, '
+                                        'but got instead %s of %s'
+                                        ''%(value,type(value)))
                 current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
 
                 self._odmldict.append(current_dic)
@@ -334,7 +342,7 @@ class OdmlTable(object):
             if any([(m not in self._header) for m in must_haves]):
                 err_msg = ("your table has to contain all of the following " +
                            " attributes: {0}").format(must_haves)
-                raise Exception(err_msg)
+                raise ValueError(err_msg)
 
             old_dic = {"Path": "",
                        "SectionName": "",
@@ -437,7 +445,7 @@ class OdmlTable(object):
                 self._header_titles[k] = kwargs[k]
             else:
                 errmsg = "{0} is not in the header_title-dictionary".format(k)
-                raise Exception(errmsg)
+                raise ValueError(errmsg)
                 # TODO: better exception
 
     def change_header(self, **kwargs):
@@ -497,7 +505,7 @@ class OdmlTable(object):
         if kwargs[keys_sorted[0]] <= 0:
             errmsg = ("Your smallest argument is {}, but the columns start" +
                       " at 1").format(kwargs[keys_sorted[0]])
-            raise Exception(errmsg)
+            raise ValueError(errmsg)
             # TODO: better Exception
 
         max_col = kwargs[keys_sorted[-1]]
@@ -508,7 +516,7 @@ class OdmlTable(object):
         if keys_sorted[0] in self._header_titles:
             header[kwargs[keys_sorted[0]] - 1] = keys_sorted[0]
         else:
-            raise Exception(keys_sorted[0], "not in header_titles")
+            raise KeyError(keys_sorted[0], "not in header_titles")
             # TODO: better Exception
 
         # check if there are two keys with the same value
@@ -518,13 +526,13 @@ class OdmlTable(object):
                     .format(keys_sorted[index - 1],
                             keys_sorted[index],
                             kwargs[keys_sorted[index]])
-                raise Exception(errmsg)
+                raise KeyError(errmsg)
                 # TODO: better exception
             else:
                 if key in self._header_titles:
                     header[kwargs[key] - 1] = key
                 else:
-                    raise Exception(key, "not in header_titles")
+                    raise KeyError(key, "not in header_titles")
                     # TODO: better Exception
 
         self._header = header
