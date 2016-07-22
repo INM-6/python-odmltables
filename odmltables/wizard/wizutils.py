@@ -52,10 +52,9 @@ class OdmltablesWizard(QWizard):
     def _showHelp(self):
         # get the help message for the current page
         msg = self._helpMsgs[self.currentId()]
-
-        # if same as last message, display alternate message
-        if msg == self._lastHelpMsg:
-            msg = self._helpMsgs[self.NUM_PAGES + 1]
+        # # if same as last message, display alternate message
+        # if msg == self._lastHelpMsg:
+        #     msg = self._helpMsgs[self.NUM_PAGES + 1]
 
         QMessageBox.information(self,
                                 self.tr(self.wizname),
@@ -70,20 +69,3 @@ def get_graphic_path():
                                  'graphics')
     return data_path
 
-    # Old version -- kick out if not needed anymore
-
-#     local_paths = [os.path.join('.','odmltables','wizard','graphics'),
-#                    os.path.join('.','wizard','graphics'),
-#                    os.path.join('.','graphics')]
-# 
-#     global_paths = []
-#     if have_odmltables:
-#         global_paths.append(os.path.join(os.path.dirname(odmltables.__file__),
-#                                          'wizard',
-#                                          'graphics'))
-# 
-#     paths = local_paths + global_paths
-#     path = paths.pop()
-#     while not os.path.exists(path):
-#         path = paths.pop()
-#     return paths[-1]
