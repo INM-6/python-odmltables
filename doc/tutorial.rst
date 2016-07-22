@@ -142,7 +142,7 @@ There are some styles you can easily change in the table. First, there is the st
 
 The same way you can adapt the styles ``first_style`` and ``second_style``. Those are the styles used for the orginary rows of the table. For a better visual representation, two style attributes exist that can be used in an alternating fashion (see section about `Changing grid patterns`_).
 
-You can find a table with all possible colors and their names :download:`here <colors.xls>`.
+You can find a table with all possible colors and their names :download:`here <source/colors.xls>`.
 
 
 Highlighting columns
