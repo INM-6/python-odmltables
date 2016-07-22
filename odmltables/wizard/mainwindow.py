@@ -6,6 +6,7 @@ Created on Tue Jan 26 12:57:46 2016
 """
 
 import os
+import datetime
 from PyQt4 import QtGui, QtCore
 # import wizards
 from converterwiz import ConversionWizard
@@ -15,6 +16,67 @@ from filterwiz import FilterWizard
 from mergewiz import MergeWizard
 
 from wizutils import get_graphic_path
+
+import sys
+from PyQt4 import QtGui
+
+import os.path
+import traceback
+
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """ handle all exceptions """
+
+
+    error_logfile = os.path.join(os.path.expanduser("~"),
+                                 '.odmltables',
+                                 'error.log')
+
+    ## KeyboardInterrupt is a special case.
+    ## We don't raise the error dialog when it occurs.
+    if issubclass(exc_type, KeyboardInterrupt):
+        if QtGui.qApp:
+            QtGui.qApp.quit()
+        return
+
+    filename, lineid, func, line = traceback.extract_tb(exc_traceback).pop()
+    filename = os.path.basename(filename)
+    error = "%s: %s" % (exc_type.__name__, exc_value)
+    complete_error = "".join( traceback.format_exception(exc_type,
+                                                         exc_value,
+                                                         exc_traceback))
+
+
+    msg_text = ("<html><b>%s</b><br><br>"
+                "Please check your odMLtables settings and inputfiles for "
+                "consistency. In case you found a bug in odMLtables please "
+                "contact the odMLtables team "
+                "<i>https://github.com/INM-6/python-odmltables/issues</i>."
+                "<br><br>"
+                "For a detailed error report see log file at <i>%s</i>"
+                "</html>"%(error.replace('<','').replace('>',''), error_logfile))
+
+    QtGui.QMessageBox.critical(None,
+                               "Unexpected Error in odMLtables",
+                               msg_text)
+
+    print "Closed due to an error. This is the full error report:"
+    print
+    print complete_error
+
+    now = str(datetime.datetime.now())
+    errorpath = os.path.dirname(error_logfile)
+    if not os.path.exists(errorpath):
+        os.makedirs(errorpath)
+    with open(error_logfile, "a+") as myfile:
+        myfile.writelines(['################### %s ###################\n'%now,
+                           complete_error,'\n'])
+
+    sys.exit(1)
+
+
+# install handler for exceptions
+sys.excepthook = handle_exception
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -34,7 +96,7 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the grapical odml-tables interface!")
+        label = QtGui.QLabel("Welcome to the graphical odMLtables interface!")
         label.setFont(title_font)
         vbox.addWidget(label)
         vbox.addSpacing(5)
@@ -87,6 +149,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def startWizard(self):
         sender = self.sender()
+
         if sender == self.convertbutton:
             wizard = ConversionWizard()
         elif sender == self.comparebutton:
@@ -99,4 +162,5 @@ class MainWindow(QtGui.QMainWindow):
             wizard = MergeWizard()
         else:
             raise EnvironmentError('Unknown sender')
+
         wizard.exec_()
