@@ -4,7 +4,8 @@ Created on Tue Mar 29 09:31:26 2016
 
 @author: pick
 """
-
+import os
+import subprocess
 from pageutils import QIWizardPage, shorten_path
 from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QMessageBox,
                          QLineEdit, QPushButton, QLabel, QGroupBox,
@@ -16,6 +17,8 @@ from PyQt4.QtCore import Qt
 import odml
 import odmltables.compare_section_csv_table
 import odmltables.compare_section_xls_table
+
+from pageutils import clearLayout
 
 
 class ChooseFilePage(QIWizardPage):
@@ -204,7 +207,7 @@ class ChooseSectionsPage(QIWizardPage):
         for line in self.sections:
             parent = QTreeWidgetItem([line[0], line[1]])
             for p in line[2]:
-                QTreeWidgetItem(parent, [p])
+                QTreeWidgetItem(parent, [str(p)])
             self.section_tree.addTopLevelItem(parent)
 
         self.filtered_sections = list(self.sections)
@@ -308,27 +311,50 @@ class SaveTablePage(QIWizardPage):
 
     def __init__(self, parent=None):
         super(SaveTablePage, self).__init__(parent)
-        self.initUI()
 
-    def initUI(self):
+        self.setTitle("Save the result")
+        self.setSubTitle("Select a location to save your file.")
 
-        layout = QVBoxLayout()
+        # Set up layout
+        self.vbox = QVBoxLayout()
+        self.setLayout(self.vbox)
 
-        self.buttonbrowse = QPushButton("Browse")
+    def initializePage(self):
+        # Set up layout
+        vbox = QVBoxLayout()
+        clearLayout(self.layout())
+        self.layout().addLayout(vbox)
+
+        # adding pattern selection part
+        self.topLabel = QLabel(self.tr("Where do you want to save your file?"))
+        self.topLabel.setWordWrap(True)
+        vbox.addWidget(self.topLabel)
+        # vbox.addSpacing(40)
+
+        # Add first horizontal box
+        self.buttonbrowse = QPushButton("Save file")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
-        self.outputfile = QLabel()
+        self.buttonbrowse.setFocus()
+        self.outputfilename = ''
+        self.outputfile = QLabel(self.outputfilename)
+        self.outputfile.setWordWrap(True)
+        self.buttonshow = QPushButton("Open file")
+        self.buttonshow.clicked.connect(self.show_file)
+        self.buttonshow.setEnabled(False)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.buttonbrowse)
         hbox.addWidget(self.outputfile)
+        hbox.addStretch()
 
-        layout.addLayout(hbox)
+        vbox.addLayout(hbox)
+        # vbox.addSpacing(10)
+        vbox.addWidget(self.buttonshow)
+        vbox.addStretch()
 
-        self.setLayout(layout)
-
-    def initializePage(self):
-        self.setTitle("Save Table")
-        self.setSubTitle("Choose a location to save your table")
+        self.settings.register('outputfilename', self, useconfig=False)
+        short_filename = shorten_path(self.outputfilename)
+        self.outputfile.setText(short_filename)
 
         if self.settings.get_object('RBoutputxls').isChecked():
             self.expected_extension = '.xls'
@@ -338,7 +364,8 @@ class SaveTablePage(QIWizardPage):
             raise ValueError('Can not save file without selection of '
                              'output format.')
 
-        self.outputfilename = ''
+        self.topLabel.setText("Where do you want to save your "
+                              "%s file?" % self.expected_extension.strip('.'))
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
@@ -360,6 +387,19 @@ class SaveTablePage(QIWizardPage):
 
         if self.outputfilename:
             self.compare()
+
+            print 'Complete!'
+
+            self.buttonshow.setEnabled(True)
+
+    def show_file(self):
+        system = os.name
+        if system == 'posix':
+            subprocess.Popen(["nohup", "see", self.outputfilename])
+            # os.system('see %s'%self.outputfilename)
+        elif system == 'nt':
+            subprocess.Popen(["start", self.outputfilename])
+            # os.system("start %s"%self.outputfilename)
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()
