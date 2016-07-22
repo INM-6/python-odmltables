@@ -903,23 +903,31 @@ class OdmlDtypes(object):
             dtype = self._synonyms[dtype]
 
         if dtype == 'datetime':
-            result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+            try:
+                result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+            except TypeError:
+                result = datetime.datetime(*value)
         elif dtype == 'datetime.date':
             try:
                 result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             except ValueError:
-                result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
-            except ValueError:
-                raise ValueError(
-                        'The value "%s" can not be converted to a date as '
-                        'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
+                try:
+                    result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+                except ValueError:
+                    raise ValueError(
+                            'The value "%s" can not be converted to a date as '
+                            'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
             except TypeError:
                 result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':
             try:
                 result = datetime.datetime.strptime(value, '%H:%M:%S').time()
             except TypeError:
-                result = datetime.datetime(*value).time()
+                try:
+                    result = datetime.datetime(*value).time()
+                except ValueError:
+                    result = datetime.time(*value[-3:])
+
         elif dtype == 'url':
             result = str(value)
 
