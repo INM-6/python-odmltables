@@ -944,7 +944,7 @@ class SaveFilePage(QIWizardPage):
         # vbox.addSpacing(40)
 
         # Add first horizontal box
-        self.buttonbrowse = QPushButton("Browse")
+        self.buttonbrowse = QPushButton("Save file")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
         self.buttonbrowse.setFocus()
         self.outputfilename = ''
