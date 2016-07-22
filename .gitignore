@@ -69,6 +69,8 @@ odmltables/wizard/graphics/*.aux
 odmltables/wizard/graphics/*.pdf
 odmltables/wizard/graphics/*.tex.backup
 odmltables/wizard/testfiles/*
+doc/build/*
+doc/build_/*
 
 # Project specific exclude of table formats
 *.csv
