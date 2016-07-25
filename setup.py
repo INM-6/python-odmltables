@@ -41,14 +41,11 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        # 'console_scripts': [
-        #     'foo = my_package.some_module:main_func',
-        #     'bar = other_module:some_func',
-        # ],
         'gui_scripts': [
             'odml-tables = odmltables.wizard.main:run []',
         ]
     },
+    zip_safe=False
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
     #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
 )
