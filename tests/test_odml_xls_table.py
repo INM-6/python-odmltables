@@ -26,8 +26,8 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
     def test_change_pattern(self):
         self.test_xls_table.pattern = 'alternating'
         self.assertEquals(self.test_xls_table.pattern, 'alternating')
-        self.test_xls_table.pattern = 'chessfield'
-        self.assertEquals(self.test_xls_table.pattern, 'chessfield')
+        self.test_xls_table.pattern = 'checkerboard'
+        self.assertEquals(self.test_xls_table.pattern, 'checkerboard')
         self.test_xls_table.pattern = 'alternating'
         self.assertEquals(self.test_xls_table.pattern, 'alternating')
         with self.assertRaises(Exception):
