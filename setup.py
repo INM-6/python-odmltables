@@ -19,7 +19,7 @@ dependency_links = [
 setup(
     name="python-odmltables",
     version='0.1.0',
-    packages=['odmltables', 'odmltables.wizard', 'tests'],
+    packages=['odmltables', 'odmltables.wizard', 'odmltables.tests'],
     package_data={'odmltables': ['wizard/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
@@ -31,6 +31,8 @@ setup(
     long_description=long_description,
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
+    download_url='https://github.com/INM-6/python-odmltables/archive/0.1.0'
+                 '.tar.gz',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
@@ -41,11 +43,9 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        'gui_scripts': [
-            'odml-tables = odmltables.wizard.main:run []',
-        ]
-    },
-    zip_safe=False
+        'gui_scripts': ['odml-tables = odmltables.wizard.main:run []']},
+    zip_safe=False,
+    keywords = ['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
     #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
 )
