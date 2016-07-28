@@ -5,13 +5,19 @@ from setuptools import setup
 long_description = open("README.rst").read()
 install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
+                    'lxml >= 3.6.1',
+                    'enum >= 0.4.6',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
                     'odml >= 1.1']
 
 extras_require = {'docs': ['numpydoc>=0.5',
                            'sphinx>=1.2.2'],
-                  'tests': ['nose>=1.3.3']}
+                  'tests': ['nose>=1.3.3'],
+                  'gui': ['pyqt4>=4.0.0'],
+                  # 'basics':['gcc >= 4.8.5',
+                  #           'libxml2 >= 2.9.2'],
+                  }
 
 dependency_links = [
     'http://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1']
@@ -27,7 +33,7 @@ setup(
 
     author="odML-tables authors and contributors",
     author_email="j.sprenger@fz-juelich.de",
-    description="",
+    description="Interface to convert odML structures to and from table-like representations",
     long_description=long_description,
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
@@ -43,7 +49,7 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        'gui_scripts': ['odml-tables = odmltables.wizard.main:run []']},
+        'gui_scripts': ['odmltables = odmltables.wizard.main:run []']},
     zip_safe=False,
     keywords = ['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
