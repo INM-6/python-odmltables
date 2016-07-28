@@ -23,6 +23,8 @@ The following packages are required to use python-odmltables:
         * sphinx >= 1.2.2
     * For running tests:
         * nose >= 1.3.3
+    * For the graphical user interface:
+        * pyqt4 >= 4.11.4
 
 
 Release Versions
