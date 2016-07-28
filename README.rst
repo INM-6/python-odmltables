@@ -1,14 +1,14 @@
 
-python-odmltables
-=================
+# python-odmltables
+
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
 odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata management structure using odML. 
 In addition to the Python API, python-odmltables provides its main functionality also via a graphical user interface.
 
 
-Dependencies
-------------
+## Dependencies
+
 
 The following packages are required to use python-odmltables:
 
@@ -25,18 +25,16 @@ The following packages are required to use python-odmltables:
         * nose >= 1.3.3
 
 
-Release Versions
--------
+## Release Versions
+
 Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip
 
     $ pip install python-odmltables
 
 
-Latest version
--------
+## Latest version
 
 ### Download
-
 
 The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using
 
@@ -85,7 +83,7 @@ Alternatively, on Windows or Max OS X you may navigate to the python-odmltables 
 	python odmltables-gui.py
 
 
-### Bugs
+## Bugs
 
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
 
