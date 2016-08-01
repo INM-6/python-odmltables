@@ -12,9 +12,9 @@ Dependencies
 
 The following packages are required to use python-odmltables:
 
-    * Python_ >= 2.7
-    * numpy_ >= 1.8.2
-    * quantities_ >= 0.10.1
+    * Python >= 2.7
+    * numpy >= 1.8.2
+    * quantities >= 0.10.1
     * odml >= 1.1
     * xlrd >= 0.9.4
     * xlwt >= 1.0.0
@@ -29,7 +29,7 @@ The following packages are required to use python-odmltables:
 
 Release Versions
 ----------------
-Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip
+Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip::
 
     $ pip install --process-dependency-links python-odmltables
 
@@ -55,7 +55,6 @@ Documentation
 The documentation of odmltables is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and can be vizualized in multiple formats. E.g., to access the documentation in html format navigate to the documentation folder within odmltables and compile the html documentation::
 
     $ cd /home/usr/toolbox/python-odmltables/doc
-
     $ make html
 
 All output format available can be listed using::
@@ -72,16 +71,15 @@ Linux
 On Linux, to set up python-odmltables you navigate to your python-odmltables folder and install it via::
 
 	$ cd /home/usr/toolbox/python-odmltables/
-
 	$ python setup.py install
 
 You can start the odmltables graphical wizard by calling::
-	
-	$ odml-tables
+
+    $ odml-tables
 	
 Alternatively, you may navigate to the python-odmltables folder and run::
-	
-	$ ./odmltables-gui
+
+    $ ./odmltables-gui
 	
 	
 Windows/Mac OS X
@@ -90,18 +88,17 @@ Windows/Mac OS X
 On non-Linux operating systems we recommend using the Anaconda_ Python distribution, and installing all dependencies in a `Conda environment`_, e.g.::
 
     $ conda create -n neuroscience python numpy scipy pip six
-
     $ source activate neuroscience
     
-Then navigate to the folder where you downloaded python-odmltables and run:
+Then navigate to the folder where you downloaded python-odmltables and run::
 
     $ python setup.py install
 
 On Windows, to run the graphical wizard, execute odml-tables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
 
-Alternatively, on Windows or Max OS X you may navigate to the python-odmltables folder and run
-	
-	python odmltables-gui.py
+Alternatively, on Windows or Mac OS X you may navigate to the python-odmltables folder and run::
+
+    $ python odmltables-gui.py
 
 
 Bugs
