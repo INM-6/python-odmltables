@@ -44,6 +44,7 @@ Download
 The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using
 
 	$ cd /home/usr/toolbox/
+
 	$ git clone https://github.com/INM-6/python-odmltables.git
 
 or alternatively download python-odmltables as ZIP file and unzip it to a folder.
@@ -55,6 +56,7 @@ Documentation
 The documentation of odmltables is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and can be vizualized in multiple formats. E.g., to access the documentation in html format navigate to the documentation folder within odmltables and compile the html documentation
 
     $ cd /home/usr/toolbox/python-odmltables/doc
+
     $ make html
 
 All output format available can be listed using
@@ -71,6 +73,7 @@ Linux
 On Linux, to set up python-odmltables you navigate to your python-odmltables folder and install it via
 
 	$ cd /home/usr/toolbox/python-odmltables/
+
 	$ python setup.py install
 
 You can start the odmltables graphical wizard by calling
@@ -88,6 +91,7 @@ Windows/Mac OS X
 On non-Linux operating systems we recommend using the Anaconda_ Python distribution, and installing all dependencies in a `Conda environment`_, e.g.::
 
     $ conda create -n neuroscience python numpy scipy pip six
+    
     $ source activate neuroscience
     
 Then navigate to the folder where you downloaded python-odmltables and run:
