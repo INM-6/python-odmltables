@@ -9,7 +9,7 @@ install_requires = ['xlrd >= 0.9.4',
                     'enum >= 0.4.6',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
-                    'odml >= 1.1']
+                    'odml >= 1.1.1']
 
 extras_require = {'docs': ['numpydoc>=0.5',
                            'sphinx>=1.2.2'],
@@ -20,11 +20,11 @@ extras_require = {'docs': ['numpydoc>=0.5',
                   }
 
 dependency_links = [
-    'http://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1']
+    'http://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1.1']
 
 setup(
     name="python-odmltables",
-    version='0.1.0',
+    version='0.1.1',
     packages=['odmltables', 'odmltables.wizard', 'odmltables.tests'],
     package_data={'odmltables': ['wizard/graphics/*']},
     install_requires=install_requires,
