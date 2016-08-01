@@ -31,7 +31,7 @@ Release Versions
 ----------------
 Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip
 
-    $ pip install python-odmltables
+    $ pip install --process-dependency-links python-odmltables
 
 
 Latest version
@@ -47,6 +47,19 @@ The latest version of python-odmltables is available on [GitHub] (https://github
 	$ git clone https://github.com/INM-6/python-odmltables.git
 
 or alternatively download python-odmltables as ZIP file and unzip it to a folder.
+
+
+Documentation
+-------------
+
+The documentation of odmltables is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and can be vizualized in multiple formats. E.g., to access the documentation in html format navigate to the documentation folder within odmltables and compile the html documentation
+
+    $ cd /home/usr/toolbox/python-odmltables/doc
+    $ make html
+
+All output format available can be listed using
+
+    $ make -n
 
 
 Installation
