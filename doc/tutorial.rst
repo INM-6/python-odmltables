@@ -6,7 +6,7 @@ At its core, odML-tables is a tool to convert hierarchical representations of me
 
 In general, there are two types of tables you can create yet: First, a table that represents a plain flattened overview of the entire odML, referred to as an *flattened odML table*. Second, a table that compares a specific set of properties (keys) across sections of the odML, referred to as a *comparative odML table*. Note that only the flattened odML table can be converted back to the hierarchical odML format, while the comparative odML table is intended for visualization of a specific part of the metadata collection, only.
 
-In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow.
+In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow. For verification of your odml files you can view the content of an odml file using the `metadataSylesheet <http://www.g-node.org/projects/odml/tools/odml.xsl>`_ provided by the `G-Node <http://www.g-node.org/projects/odml/tools>`_.
 
 
 Flattened odML table
