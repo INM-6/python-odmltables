@@ -174,18 +174,15 @@ class MainWindow(QtGui.QMainWindow):
         button.setFixedWidth(200)
         button.clicked.connect(self.startWizard)
 
-        button.setStyleSheet('background-color:#FF9955;border: 2px solid '
-                             '#404040; '
-                             'border-radius: 5px'  # 'FF7F2A'
-                             # "QPushButton:hover{ background-color: red};"
-                             # "QPushButton:hover{background-color:#FF8000"
-                             )
-        # p = button.palette()
-        # p.setColor(button.backgroundRole(),QtCore.Qt.red)#QtGui.QColor(255,
-        # 128,0))
-        # button.setPalette(p)
-        # button.setAutoFillBackground(True)
+        button.setStyleSheet(
+                            'QToolButton {'
+                            'background-color:#FF9955;'
+                            'border: 2px solid #404040;'
+                            'border-radius: 5px};'  # 'FF7F2A'
 
+                            'QToolButton:hover{'
+                            'background-color:red};'
+                             )
         return button
 
     def startWizard(self):
