@@ -27,7 +27,6 @@ import traceback
 def handle_exception(exc_type, exc_value, exc_traceback):
     """ handle all exceptions """
 
-
     error_logfile = os.path.join(os.path.expanduser("~"),
                                  '.odmltables',
                                  'error.log')
@@ -42,10 +41,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     filename, lineid, func, line = traceback.extract_tb(exc_traceback).pop()
     filename = os.path.basename(filename)
     error = "%s: %s" % (exc_type.__name__, exc_value)
-    complete_error = "".join( traceback.format_exception(exc_type,
-                                                         exc_value,
-                                                         exc_traceback))
-
+    complete_error = "".join(traceback.format_exception(exc_type,
+                                                        exc_value,
+                                                        exc_traceback))
 
     msg_text = ("<html><b>%s</b><br><br>"
                 "Please check your odMLtables settings and inputfiles for "
@@ -54,7 +52,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                 "<i>https://github.com/INM-6/python-odmltables/issues</i>."
                 "<br><br>"
                 "For a detailed error report see log file at <i>%s</i>"
-                "</html>"%(error.replace('<','').replace('>',''), error_logfile))
+                "</html>" % (
+                error.replace('<', '').replace('>', ''), error_logfile))
 
     QtGui.QMessageBox.critical(None,
                                "Unexpected Error in odMLtables",
@@ -69,8 +68,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     if not os.path.exists(errorpath):
         os.makedirs(errorpath)
     with open(error_logfile, "a+") as myfile:
-        myfile.writelines(['################### %s ###################\n'%now,
-                           complete_error,'\n'])
+        myfile.writelines(['################### %s ###################\n' % now,
+                           complete_error, '\n'])
 
     sys.exit(1)
 
@@ -88,54 +87,84 @@ class MainWindow(QtGui.QMainWindow):
     def initUI(self):
 
         centralWidget = QtGui.QWidget()
+        w, h = 450, 450
+        self.setFixedSize(w, h)
         self.setCentralWidget(centralWidget)
 
+        # background color
+        centralWidget.setAutoFillBackground(True)
+        p = centralWidget.palette()
+        gradient = QtGui.QRadialGradient(w / 2, h / 2, h / 1.5, w / 2, h)
+        gradient.setColorAt(0.0, QtGui.QColor(240, 240, 240))
+        gradient.setColorAt(1.0, QtGui.QColor(0, 76, 153))
+        p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
+        # p.setColor(centralWidget.backgroundRole(),QtGui.QColor(153,204,255))
+        # (255,128,0) # for button background
+        centralWidget.setPalette(p)
+
         vbox = QtGui.QVBoxLayout()
+
+        titlebox = QtGui.QHBoxLayout()
+        vbox.addLayout(titlebox)
+
+        subtitlebox = QtGui.QVBoxLayout()
+        titlebox.addLayout(subtitlebox)
+        subtitlebox.addSpacing(8)
 
         title_font = QtGui.QFont()
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the graphical odMLtables interface!")
+        label = QtGui.QLabel("Welcome to the graphical \nodMLtables interface!")
         label.setFont(title_font)
-        vbox.addWidget(label)
-        vbox.addSpacing(5)
+        subtitlebox.addWidget(label)
+
+        subtitlebox.addSpacing(5)
 
         subtitle = QtGui.QLabel('Select one of the actions below')
-        vbox.addWidget(subtitle)
-        vbox.addSpacing(10)
+        subtitlebox.addWidget(subtitle)
+        # subtitlebox.addSpacing(10)
 
         grid = QtGui.QGridLayout()
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
         vbox.addLayout(grid)
 
-        self.convertbutton = self.generate_icon('Convert between odml\nand '
-                                                'table format',
-                                                "convertodml.svg")
-        self.comparebutton = self.generate_icon('Compare entries within\nan ' \
-                                                'odml',
-                                                "comparetable.svg")
-        self.generatebutton = self.generate_icon('Generate empty '
-                                                 'template\ntable',
-                                                 "createtemplate.svg")
-        self.filterbutton = self.generate_icon('Filter content of odml\n',
-                                               "filterodml.svg")
-        self.mergebutton = self.generate_icon('Merge contents of odmls\n',
-                                              "mergeodml.svg")
+        self.convertbutton = self.generate_button('Convert between odml\nand '
+                                                  'table format',
+                                                  "convertodml.svg")
+        self.comparebutton = self.generate_button('Compare entries within\nan '
+                                                  'odml',
+                                                  "comparetable.svg")
+        self.generatebutton = self.generate_button('Generate empty '
+                                                   'template\ntable',
+                                                   "createtemplate.svg")
+        self.filterbutton = self.generate_button('Filter content of odml\n',
+                                                 "filterodml.svg")
+        self.mergebutton = self.generate_button('Merge contents of odmls\n',
+                                                "mergeodml.svg")
 
-        grid.addWidget(self.convertbutton, 0, 0)
-        grid.addWidget(self.comparebutton, 0, 1)
+        icon = QtGui.QLabel()
+        # icon.setGeometry(10, 10, 4, 100)
+        # use full ABSOLUTE path to the image, not relative
+        icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
+                                                  'logo',
+                                                  "odML-tables_100x100.png")))
+        # QtGui.QPixmap(os.path.join('..', '..', 'logo',
+        #                                     "odML-tables_100x100.png"))
+
+        grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
+        grid.addWidget(self.comparebutton, 1, 1)
         grid.addWidget(self.generatebutton, 1, 0)
-        grid.addWidget(self.filterbutton, 1, 1)
+        grid.addWidget(self.filterbutton, 2, 1)
         grid.addWidget(self.mergebutton, 2, 0)
-
+        titlebox.addWidget(icon)
         self.setGeometry(300, 300, 350, 250)
-        self.setWindowTitle('odML-tables')
+        self.setWindowTitle('odMLtables')
         centralWidget.setLayout(vbox)
         self.show()
 
-    def generate_icon(self, text, graphic_name):
+    def generate_button(self, text, graphic_name):
         graphic_path = get_graphic_path()
         button = QtGui.QToolButton()
         button.setText(self.tr(text))
@@ -144,6 +173,18 @@ class MainWindow(QtGui.QMainWindow):
         button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         button.setFixedWidth(200)
         button.clicked.connect(self.startWizard)
+
+        button.setStyleSheet('background-color:#FF9955;border: 2px solid '
+                             '#404040; '
+                             'border-radius: 5px'  # 'FF7F2A'
+                             # "QPushButton:hover{ background-color: red};"
+                             # "QPushButton:hover{background-color:#FF8000"
+                             )
+        # p = button.palette()
+        # p.setColor(button.backgroundRole(),QtCore.Qt.red)#QtGui.QColor(255,
+        # 128,0))
+        # button.setPalette(p)
+        # button.setAutoFillBackground(True)
 
         return button
 
