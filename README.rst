@@ -12,10 +12,10 @@ Dependencies
 
 The following packages are required to use python-odmltables:
 
-    * Python >= 2.7
-    * numpy >= 1.8.2
-    * quantities >= 0.10.1
-    * odml >= 1.1
+    * Python_ >= 2.7
+    * numpy_ >= 1.8.2
+    * quantities_ >= 0.10.1
+    * odml_ >= 1.1
     * xlrd >= 0.9.4
     * xlwt >= 1.0.0
     * For building the documentation:
@@ -105,8 +105,11 @@ Bugs
 ----
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
 
-
-.. _Anaconda: http://continuum.io/downloads
+.. _`Python`: http://python.org/
+.. _`numpy`: http://www.numpy.org/
+.. _`quantities`: http://pypi.python.org/pypi/quantities
+.. _`odml`: http://www.g-node.org/projects/odml
+.. _`Anaconda`: http://continuum.io/downloads
 .. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments
 
 
