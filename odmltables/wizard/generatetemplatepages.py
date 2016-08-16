@@ -339,7 +339,7 @@ def createfile(settings):
     table.changing_point = None
 
     title_translator = {v: k for k, v in table._header_titles.iteritems()}
-    mandatory_titles = [title_translator[m] for m in mandatory_headers]
+    # mandatory_titles = [title_translator[m] for m in mandatory_headers]
 
     # setting custom header columns
     output_headers = [title_translator[str(
@@ -348,8 +348,17 @@ def createfile(settings):
                       range(settings.get_object('LWselectedcolumns').count())]
     table.change_header(
             **dict(zip(output_headers, range(1, len(output_headers) + 1))))
-    table.mark_columns(
-            *[h for i, h in enumerate(output_headers) if h in mandatory_titles])
+    # table.mark_columns(
+    #         *[h for i, h in enumerate(output_headers) if h in mandatory_titles])
+
+    # set all styles to plan black and white
+    styles = ['first_style','second_style','first_marked_style',
+              'second_marked_style','highlight_style']
+
+    for style in styles:
+        setattr(getattr(table, style), 'backcolor', 'white')
+        setattr(getattr(table, style), 'fontcolor', 'black')
+
     table.highlight_defaults = True
 
     # saving file
