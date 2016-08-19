@@ -2,7 +2,7 @@
 """
 
 """
-import copy
+import os
 import odml
 import csv
 import datetime
@@ -26,7 +26,7 @@ class OdmlTable(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, load_from=None):
 
         self._odmldict = None
         self._docdict = None
@@ -48,6 +48,18 @@ class OdmlTable(object):
         self._SECTION_INF = ["Path", "SectionName", "SectionType",
                              "SectionDefinition"]
         self._PROPERTY_INF = ["PropertyName", "PropertyDefinition"]
+
+        if load_from is not None:
+            filename, file_extension = os.path.splitext(load_from)
+            if file_extension=='.odml':
+                self.load_from_file(load_from)
+            elif file_extension=='.xls':
+                self.load_from_xls_table(load_from)
+            elif file_extension=='.csv':
+                self.load_from_csv_table(load_from)
+            else:
+                raise IOError('Can not read file format "%s". odMLtables '
+                              'supports only .odml, .xls and .csv files.')
 
     def __create_odmldict(self, doc):
         """
