@@ -632,12 +632,12 @@ class OdmlTable(object):
         :param odmltable: OdmlTable object or Odml document object
         :return:
         """
-        if hasattr(odmltable, '_convert2odml'):
-            doc2 = odmltable._convert2odml()
+        if hasattr(odmltable, 'convert2odml'):
+            doc2 = odmltable.convert2odml()
         else:
             # assuming odmltable is already an odml document
             doc2 = odmltable
-        doc1 = self._convert2odml()
+        doc1 = self.convert2odml()
 
         for sec in doc2:
             if sec.name in doc1.sections:
@@ -699,7 +699,7 @@ class OdmlTable(object):
 
         self.consistency_check()
 
-    def _convert2odml(self):
+    def convert2odml(self):
         """
         Generates odml representation of odmldict and return it as odml
         document.
@@ -776,7 +776,7 @@ class OdmlTable(object):
         """
         writes the loaded odmldict (e.g. from an csv-file) to an odml-file
         """
-        doc = self._convert2odml()
+        doc = self.convert2odml()
         odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)
 
 
