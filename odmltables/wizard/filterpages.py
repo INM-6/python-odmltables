@@ -933,7 +933,7 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 if i == len(value_path) - 2:
-                    val = [str(v) for v in values[value]]
+                    val = [unicode(v).encode('utf-8') for v in values[value]]
                     new_sec = QTreeWidgetItem(parent_sec, [''] + val)
                     parent_sec = new_sec
 
