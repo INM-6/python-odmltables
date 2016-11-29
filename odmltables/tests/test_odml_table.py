@@ -62,6 +62,17 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.assertEquals(dict_in, dict_out)
 
 
+    def test_load_from_file(self):
+        self.filetype = 'odml'
+        table = OdmlTable()
+        table.load_from_function(create_small_test_odml)
+        dict_in = copy.deepcopy(table._odmldict)
+        table.write2odml(self.filename + '.' + self.filetype)
+        new_test_table = OdmlTable(self.filename + '.' +  self.filetype)
+        dict_out = new_test_table._odmldict
+
+        self.assertEquals(dict_in,dict_out)
+
 class TestLoadSaveOdml(unittest.TestCase):
     """
     class to test loading the odml
