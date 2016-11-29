@@ -7,7 +7,7 @@ Created on Tue Jan 26 12:57:46 2016
 
 import os
 import datetime
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore
 # import wizards
 from converterwiz import ConversionWizard
 from compsectionwiz import CompSectionWizard
@@ -74,8 +74,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     sys.exit(1)
 
 
-# install handler for exceptions
-sys.excepthook = handle_exception
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -83,6 +81,9 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
 
         self.initUI()
+
+        # install handler for exceptions
+        sys.excepthook = handle_exception
 
     def initUI(self):
 
