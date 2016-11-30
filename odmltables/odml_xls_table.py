@@ -38,8 +38,8 @@ class OdmlXlsTable(OdmlTable):
 
     """
 
-    def __init__(self):
-        OdmlTable.__init__(self)
+    def __init__(self, load_from = None):
+        super(OdmlXlsTable, self).__init__(load_from=load_from)
         self.sheetname = "sheet1"
         self._marked_cols = ["Value"]
         self.document_info_style = XlsStyle(backcolor='white',

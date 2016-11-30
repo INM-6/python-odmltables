@@ -12,8 +12,8 @@ class OdmlCsvTable(OdmlTable):
     Class to create a csv-file from an odml-file
     """
 
-    def __init__(self):
-        OdmlTable.__init__(self)
+    def __init__(self, load_from=None):
+        super(OdmlCsvTable, self).__init__(load_from=load_from)
 
     def write2file(self, save_to):
         """
