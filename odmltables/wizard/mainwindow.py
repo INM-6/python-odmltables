@@ -95,7 +95,8 @@ class MainWindow(QtGui.QMainWindow):
         # background color
         centralWidget.setAutoFillBackground(True)
         p = centralWidget.palette()
-        gradient = QtGui.QRadialGradient(w / 2, h / 2, h / 1.5, w / 2, h)
+        gradient = QtGui.QRadialGradient(w / 2, h / 3, h / 1, w / 2, h)
+        # gradient = QtGui.QRadialGradient(w / 2, h / 2, h / 1, w / 2, h)
         gradient.setColorAt(0.0, QtGui.QColor(240, 240, 240))
         gradient.setColorAt(1.0, QtGui.QColor(0, 76, 153))
         p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
@@ -116,13 +117,17 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the graphical \nodMLtables interface!")
+        label = QtGui.QLabel("Welcome to the graphical\nodMLtables interface!")
         label.setFont(title_font)
+        pal = QtGui.QPalette(label.palette())
+        pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
+        label.setPalette(pal)
         subtitlebox.addWidget(label)
 
         subtitlebox.addSpacing(5)
 
         subtitle = QtGui.QLabel('Select one of the actions below')
+        subtitle.setPalette(pal)
         subtitlebox.addWidget(subtitle)
         # subtitlebox.addSpacing(10)
 
