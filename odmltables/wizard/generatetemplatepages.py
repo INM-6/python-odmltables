@@ -285,6 +285,8 @@ class SaveFilePage(QIWizardPage):
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
+        self.issaved = False
+
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.AnyFile)
@@ -317,6 +319,7 @@ class SaveFilePage(QIWizardPage):
 
         elif self.outputfilename != '':
             createfile(self.settings)
+            self.issaved = True
 
             print 'Complete!'
 
@@ -330,6 +333,16 @@ class SaveFilePage(QIWizardPage):
         elif system == 'nt':
             subprocess.Popen(["start", self.outputfilename])
             # os.system("start %s"%self.outputfilename)
+
+    def validatePage(self):
+        if self.issaved == False:
+            quit_msg = "Are you sure you want to exit the program without " \
+                       "saving your file?"
+            reply = QMessageBox.question(self, 'Message',
+                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+            if reply == QMessageBox.No:
+                return 0
+        return 1
 
 
 def createfile(settings):

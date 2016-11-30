@@ -1002,6 +1002,7 @@ class SaveFilePage(QIWizardPage):
                               "%s file?" % self.expected_extension.strip('.'))
 
         self.configlist.addItems(self.settings.get_all_config_names())
+        self.issaved = False
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
@@ -1040,6 +1041,7 @@ class SaveFilePage(QIWizardPage):
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
+            self.issaved = True
             convert(self.settings)
 
             print 'Complete!'
@@ -1081,6 +1083,16 @@ class SaveFilePage(QIWizardPage):
                 self.add_new_conf(self.configlist)
             self.settings.config_name = config_name
             self.settings.save_config()
+
+    def validatePage(self):
+        if self.issaved == False:
+            quit_msg = "Are you sure you want to exit the program without " \
+                       "saving your file?"
+            reply = QMessageBox.question(self, 'Message',
+                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+            if reply == QMessageBox.No:
+                return 0
+        return 1
 
 
 class ColorListWidget(QComboBox):

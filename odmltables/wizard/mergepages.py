@@ -138,6 +138,8 @@ class LoadFilePage(QIWizardPage):
         vbox.addWidget(self.buttonshow)
         vbox.addStretch()
 
+        self.issaved = False
+
     def generate_toolbutton(self, text, graphic_name):
         graphic_path = get_graphic_path()
         button = QToolButton()
@@ -250,6 +252,7 @@ class LoadFilePage(QIWizardPage):
             success = self.convert(self.settings)
 
             if success:
+                self.issaved = True
                 print 'Complete!'
                 self.buttonshow.setEnabled(True)
 
@@ -261,6 +264,16 @@ class LoadFilePage(QIWizardPage):
         elif system == 'nt':
             subprocess.Popen(["start", self.outputfilename])
             # os.system("start %s"%self.outputfilename)
+
+    def validatePage(self):
+        if self.issaved == False:
+            quit_msg = "Are you sure you want to exit the program without " \
+                       "saving your file?"
+            reply = QMessageBox.question(self, 'Message',
+                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+            if reply == QMessageBox.No:
+                return 0
+        return 1
 
     def convert(self, settings):
 
@@ -298,3 +311,4 @@ class LoadFilePage(QIWizardPage):
 
         # saving file
         table1.write2odml(settings.get_object('outputfilename'))
+        return True

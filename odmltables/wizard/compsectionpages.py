@@ -366,6 +366,7 @@ class SaveTablePage(QIWizardPage):
 
         self.topLabel.setText("Where do you want to save your "
                               "%s file?" % self.expected_extension.strip('.'))
+        self.issaved = False
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
@@ -387,6 +388,7 @@ class SaveTablePage(QIWizardPage):
 
         if self.outputfilename:
             self.compare()
+            self.issaved = True
 
             print 'Complete!'
 
@@ -429,4 +431,12 @@ class SaveTablePage(QIWizardPage):
         else:
             raise ValueError('No output format was selected.')
 
-#
+    def validatePage(self):
+        if self.issaved == False:
+            quit_msg = "Are you sure you want to exit the program without " \
+                       "saving your file?"
+            reply = QMessageBox.question(self, 'Message',
+                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+            if reply == QMessageBox.No:
+                return 0
+        return 1
