@@ -5,7 +5,6 @@ from setuptools import setup
 long_description = open("README.rst").read()
 install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
-                    'lxml >= 3.6.1',
                     'enum >= 0.4.6',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
@@ -20,11 +19,11 @@ extras_require = {'docs': ['numpydoc>=0.5',
                   }
 
 dependency_links = [
-    'http://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1.1']
+    'https://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1.1']
 
 setup(
     name="python-odmltables",
-    version='0.1.1',
+    version='0.1.1.3',
     packages=['odmltables', 'odmltables.wizard', 'odmltables.tests'],
     package_data={'odmltables': ['wizard/graphics/*']},
     install_requires=install_requires,
@@ -37,8 +36,7 @@ setup(
     long_description=long_description,
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
-    download_url='https://github.com/INM-6/python-odmltables/archive/0.1.0'
-                 '.tar.gz',
+    download_url='https://github.com/INM-6/python-odmltables/archive/0.1.1.tar.gz',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
