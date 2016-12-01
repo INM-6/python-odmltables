@@ -1073,7 +1073,6 @@ class SaveFilePage(QIWizardPage):
         dlg.setLabelText(QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
-        print self.settings.get_object('inputfilename')
         dlg.setDirectory(self.settings.get_object('inputfilename'))
 
         dlg.setFilter("%s files (*%s);;all files "
