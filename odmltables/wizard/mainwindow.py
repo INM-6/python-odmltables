@@ -184,7 +184,8 @@ class MainWindow(QtGui.QMainWindow):
                             'QToolButton {'
                             'background-color:#FF9955;'
                             'border: 2px solid #404040;'
-                            'border-radius: 5px};'  # 'FF7F2A'
+                            'border-radius: 5px;'
+                            'color: black};'  # 'FF7F2A'
 
                             'QToolButton:hover{'
                             'background-color:red};'
