@@ -375,7 +375,12 @@ class SaveTablePage(QIWizardPage):
         dlg.setLabelText(QFileDialog.Accept, "Save comparison")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
-        dlg.setDirectory(self.settings.get_object('inputfilename'))
+        inputfilename = self.settings.get_object('inputfilename')
+        dirname = os.path.dirname(inputfilename)
+        suggested_filename = os.path.splitext(os.path.basename(
+                inputfilename))[0] + self.expected_extension
+        dlg.setDirectory(dirname)
+        dlg.selectFile(suggested_filename)
 
         dlg.setFilter("%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
