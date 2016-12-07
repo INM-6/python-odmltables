@@ -700,12 +700,12 @@ class ChangeStylePage(QIWizardPage):
                  'Marked \nRow 1',
                  'Marked \nRow 2', 'Default Value']
         default_styles = [
-            'color: rgb(255,255,255); background-color: rgb(51,51,'
-            '51); font:bold',
+            'color: rgb(255,255,255); background-color: rgb(51,51,51); '
+            'font:bold',
             'color: rgb(255,255,255); background-color: rgb(0,128,0)',
             'color: rgb(255,255,255); background-color: rgb(0,0,128)',
-            'color: rgb(0,0,0); background-color: rgb(153,204,0)',
-            'color: rgb(0,0,0); background-color: rgb(51,102,255)',
+            'color: rgb(0,0,0); background-color: rgb(204,255,204)',
+            'color: rgb(0,0,0); background-color: rgb(204,255,255)',
             'color: rgb(0,0,0); background-color: rgb(255,0,0)']
         common_default = "; padding-left: 5px; padding-right: 5px;" \
                          " padding-top: 5px; padding-bottom: 5px;" \
