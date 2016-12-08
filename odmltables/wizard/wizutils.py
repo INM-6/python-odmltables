@@ -3,6 +3,7 @@
 import os
 from PyQt4.QtGui import (QWizard, QPixmap, QMessageBox)
 from PyQt4.QtCore import (pyqtSlot)
+from PyQt4.QtCore import Qt
 
 try:
     import odmltables
@@ -56,10 +57,20 @@ class OdmltablesWizard(QWizard):
         # if msg == self._lastHelpMsg:
         #     msg = self._helpMsgs[self.NUM_PAGES + 1]
 
-        QMessageBox.information(self,
-                                self.tr(self.wizname),
-                                msg)
-        self._lastHelpMsg = msg
+        doc_link = "<p>For detailed information about odMLtables refer to the " \
+                   "<a href='http://pythonhosted.org/python-odmltables'>odMLtables " \
+                   "documentation</a>.</p>"
+
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle("Help")
+        msgBox.setTextFormat(Qt.RichText)
+        msgBox.setText(msg + doc_link)
+        msgBox.exec_()
+
+        # QMessageBox.information(self,
+        #                         self.tr(self.wizname),
+        #                         msg)
+        # self._lastHelpMsg = msg
 
 
 def get_graphic_path():
