@@ -59,7 +59,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                                "Unexpected Error in odMLtables",
                                msg_text)
 
-    print "Closed due to an error. This is the full error report:"
+    print "An error occurred. This is the full error report:"
     print
     print complete_error
 
@@ -71,7 +71,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         myfile.writelines(['################### %s ###################\n' % now,
                            complete_error, '\n'])
 
-    sys.exit(1)
+    # sys.exit(1)
 
 
 
