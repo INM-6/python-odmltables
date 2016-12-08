@@ -122,10 +122,13 @@ class LoadFilePage(QIWizardPage):
         else:
             self.cbcustominput.setEnabled(False)
 
-        if str(self.inputfilename[-4:]) in ['.xls', '.csv']:
-            self.rbuttonodml.setChecked(True)
-        elif str(self.inputfilename[-5:]) in ['.odml']:
-            self.rbuttonxls.setChecked(True)
+        if not (self.rbuttonxls.isChecked()
+                or self.rbuttoncsv.isChecked()
+                or self.rbuttonodml.isChecked()):
+            if str(self.inputfilename[-4:]) in ['.xls', '.csv']:
+                self.rbuttonodml.setChecked(True)
+            elif str(self.inputfilename[-5:]) in ['.odml']:
+                self.rbuttonxls.setChecked(True)
 
     def validatePage(self):
         if not any((self.settings.get_object('RBoutputxls').isChecked(),
