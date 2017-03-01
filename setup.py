@@ -30,7 +30,7 @@ setup(
     extras_require=extras_require,
     dependency_links=dependency_links,
 
-    author="odML-tables authors and contributors",
+    author="odMLtables authors and contributors",
     author_email="j.sprenger@fz-juelich.de",
     description="Interface to convert odML structures to and from table-like representations",
     long_description=long_description,
