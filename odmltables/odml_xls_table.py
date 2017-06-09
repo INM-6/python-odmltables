@@ -168,6 +168,7 @@ class OdmlXlsTable(OdmlTable):
         row = 0
 
         doclen = len(self._docdict) if self._docdict else 0
+        
         max_col_len = [1] * max(len(self._header), 2 * doclen + 1)
         for i, h in enumerate(self._header):
             if h != None:
@@ -305,8 +306,10 @@ class OdmlXlsTable(OdmlTable):
 
                 row += 1
 
-        # adjust the size of the columns due to the max length of the content
+        # adjust the size of the columns due to the max length of the content,
+        # but no more than max_allowed_col_len characters
+        max_allowed_col_len = 80
         for i, l in enumerate(max_col_len):
-            sheet.col(i).width = 256 * (l + 1)
+            sheet.col(i).width = 256 * (min(l, max_allowed_col_len) + 1)
 
         workbook.save(save_to)
