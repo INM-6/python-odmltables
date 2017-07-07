@@ -212,7 +212,7 @@ class OdmlTable(object):
             try:
                 self._header = [inv_header_titles[h] if h != '' else None for h in
                             header]
-            except KeyError,e:
+            except KeyError as e:
                 raise ValueError('%s is not a valid header title.'%e.message)
             row += 1
 
