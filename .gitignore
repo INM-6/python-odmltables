@@ -63,12 +63,15 @@ doc/_build/
 # PyBuilder
 target/
 
-# OdML tables wizard
-odmltables/wizard/graphics/*.tex
-odmltables/wizard/graphics/*.aux
-odmltables/wizard/graphics/*.pdf
-odmltables/wizard/graphics/*.tex.backup
-odmltables/wizard/testfiles/*
+# OdML tables gui folder contains only svg images
+odmltables/gui/graphics/*.tex
+odmltables/gui/graphics/*.aux
+odmltables/gui/graphics/*.pdf
+odmltables/gui/graphics/*.dvi
+odmltables/gui/graphics/*.ps
+odmltables/gui/graphics/*.txt
+odmltables/gui/graphics/*.tex.backup
+odmltables/gui/testfiles/*
 doc/build/*
 doc/_build/*
 

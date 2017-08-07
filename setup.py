@@ -24,8 +24,8 @@ dependency_links = [
 setup(
     name="python-odmltables",
     version='0.1.1.3',
-    packages=['odmltables', 'odmltables.wizard', 'odmltables.tests'],
-    package_data={'odmltables': ['wizard/graphics/*']},
+    packages=['odmltables', 'odmltables.gui', 'odmltables.tests'],
+    package_data={'odmltables': ['gui/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
     dependency_links=dependency_links,
@@ -47,7 +47,7 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        'gui_scripts': ['odmltables = odmltables.wizard.main:run []']},
+        'gui_scripts': ['odmltables = odmltables.gui.main:run []']},
     zip_safe=False,
     keywords = ['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),

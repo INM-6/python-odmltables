@@ -76,7 +76,7 @@ class OdmltablesWizard(QWizard):
 def get_graphic_path():
     if have_odmltables:
         data_path = os.path.join(os.path.dirname(odmltables.__file__),
-                                 'wizard',
+                                 'gui',
                                  'graphics')
     return data_path
 

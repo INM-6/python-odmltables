@@ -897,7 +897,7 @@ class SaveFilePage(QIWizardPage):
         self.setSubTitle("Select a location to save your file. You can save the"
                          " settings made during this generation with a custom "
                          "configuration name. This configuration can be used "
-                         "in future runs of the wizard.")
+                         "in future runs of the gui.")
 
         # Set up layout
         self.vbox = QVBoxLayout()
