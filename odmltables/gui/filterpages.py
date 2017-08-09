@@ -11,8 +11,14 @@ from odmltables import odml_table
 
 
 class LoadFilePage(QIWizardPage):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(LoadFilePage, self).__init__(parent)
+
+        if filename is None:
+            self.inputfilename = ''
+        else:
+            self.inputfilename = filename
+        self.settings.register('inputfilename', self, useconfig=False)
 
         # Set up layout
         self.layout = QVBoxLayout()
@@ -33,7 +39,6 @@ class LoadFilePage(QIWizardPage):
         # Add first horizontal box
         self.buttonbrowse = QPushButton("Browse")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
-        self.inputfilename = ''
         self.inputfile = QLabel(self.inputfilename)
         self.inputfile.setWordWrap(True)
         hbox1 = QHBoxLayout()
@@ -75,11 +80,18 @@ class LoadFilePage(QIWizardPage):
             # self.settings.get_object('RBoutputxls')
 
     def handlebuttonbrowse(self):
-        self.inputfilename = str(QFileDialog().getOpenFileName())
+        dlg = QFileDialog()
+        dlg.setFilter("%s files (*%s)"
+                      "" % ('odml', '.odml'))
+        fn = self.settings.get_object('inputfilename')
+        if fn:
+            dlg.selectFile(fn)
+
+        if dlg.exec_():
+            self.inputfilename = str(dlg.selectedFiles()[0])
 
         self.settings.register('inputfilename', self, useconfig=False)
-        short_filename = shorten_path(self.inputfilename)
-        self.inputfile.setText(short_filename)
+        self.inputfile.setText(shorten_path(self.inputfilename))
 
         if str(self.inputfilename[-4:]) in ['.xls', '.csv']:
             self.cbcustominput.setEnabled(True)

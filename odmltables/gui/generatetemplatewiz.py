@@ -11,7 +11,7 @@ class GenerateTemplateWizard(OdmltablesWizard):
 
     (PageHeaderOrder, PageSaveFile) = range(NUM_PAGES)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(GenerateTemplateWizard, self).__init__('Generate Template Wizard',
                                                      parent)
 

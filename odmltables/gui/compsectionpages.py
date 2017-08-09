@@ -25,8 +25,15 @@ class ChooseFilePage(QIWizardPage):
     """
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(ChooseFilePage, self).__init__(parent)
+
+        if filename is None:
+            self.inputfilename = ''
+        else:
+            self.inputfilename = filename
+        self.settings.register('inputfilename', self, useconfig=False)
+
         self.initUI()
 
     def initUI(self):
@@ -41,7 +48,6 @@ class ChooseFilePage(QIWizardPage):
         # Add first horizontal box
         self.buttonbrowse = QPushButton("Browse")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
-        self.inputfilename = ''
         self.inputfile = QLabel(self.inputfilename)
         self.inputfile.setWordWrap(True)
         hbox1 = QHBoxLayout()
@@ -83,8 +89,15 @@ class ChooseFilePage(QIWizardPage):
         self.rbuttonxls.setChecked(True)
 
     def handlebuttonbrowse(self):
-        self.inputfilename = str(QFileDialog().getOpenFileName(filter="*.odml"))
-        self.settings.register('inputfilename', self, useconfig=False)
+        dlg = QFileDialog()
+        dlg.setFilter("%s files (*%s)"
+                      "" % ('odml', '.odml'))
+        fn = self.settings.get_object('inputfilename')
+        if fn:
+            dlg.selectFile(fn)
+
+        if dlg.exec_():
+            self.inputfilename = str(dlg.selectedFiles()[0])
 
         self.settings.register('inputfilename', self, useconfig=False)
         self.inputfile.setText(shorten_path(self.inputfilename))

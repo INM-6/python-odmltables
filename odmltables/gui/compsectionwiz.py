@@ -5,6 +5,8 @@ Created on Wed Feb  3 13:12:21 2016
 @author: pick
 """
 
+import sys
+import argparse
 from PyQt4.QtGui import QApplication
 
 from settings import Settings
@@ -18,7 +20,7 @@ class CompSectionWizard(OdmltablesWizard):
     NUM_PAGES = 3
     (PageChooseFile, PageChooseSections, PageSaveTable) = range(NUM_PAGES)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(CompSectionWizard, self).__init__('Compare Section Wizard',
                                                 parent)
 
@@ -27,7 +29,10 @@ class CompSectionWizard(OdmltablesWizard):
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
 
-        self.setPage(self.PageChooseFile, ChooseFilePage(settings))
+        if isinstance(filename, list):
+            filename = filename[0]
+        self.setPage(self.PageChooseFile, ChooseFilePage(settings,
+                                                         filename=filename))
         self.setPage(self.PageChooseSections, ChooseSectionsPage(settings))
         self.setPage(self.PageSaveTable, SaveTablePage(settings))
 
@@ -55,10 +60,12 @@ class CompSectionWizard(OdmltablesWizard):
 
 # main ========================================================================
 def main():
-    import sys
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", type=str, nargs=1,
+                        help="odml file to load")
+    args = parser.parse_args()
     app = QApplication(sys.argv)
-    wiz = CompSectionWizard()
+    wiz = CompSectionWizard(filename=args.file)
     wiz.show()
 
     sys.exit(app.exec_())

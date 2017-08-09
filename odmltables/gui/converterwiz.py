@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-
+import sys
+import argparse
 from PyQt4.QtGui import QApplication
 
 from converterpages import (LoadFilePage, CustomInputHeaderPage,
@@ -17,11 +18,14 @@ class ConversionWizard(OdmltablesWizard):
     (PageLoadFile, PageCustomInputHeader, PageHeaderOrder, PageCustomColumNames,
      PageColorPattern, PageChangeStyle, PageSaveFile) = range(NUM_PAGES)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(ConversionWizard, self).__init__('Conversion Wizard', parent)
         settings = Settings(self.settingsfile)
 
-        self.setPage(self.PageLoadFile, LoadFilePage(settings))
+        if isinstance(filename, list):
+            filename = filename[0]
+        self.setPage(self.PageLoadFile,
+                     LoadFilePage(settings, filename=filename))
         self.setPage(self.PageCustomInputHeader,
                      CustomInputHeaderPage(settings))
         self.setPage(self.PageHeaderOrder, HeaderOrderPage(settings))
@@ -75,10 +79,12 @@ class ConversionWizard(OdmltablesWizard):
 
 # main ========================================================================
 def main():
-    import sys
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", type=str, nargs=1,
+                        help="file to load")
+    args = parser.parse_args()
     app = QApplication(sys.argv)
-    wiz = ConversionWizard()
+    wiz = ConversionWizard(filename=args.file)
     wiz.show()
 
     sys.exit(app.exec_())

@@ -5,7 +5,7 @@ Created on Tue Jan 26 12:58:23 2016
 @author: zehl
 """
 
-import os
+import sys, argparse
 from PyQt4.QtGui import QApplication
 
 from filterpages import (LoadFilePage, CustomInputHeaderPage, FilterPage,
@@ -21,11 +21,13 @@ class FilterWizard(OdmltablesWizard):
     (PageLoadFile, PageCustomInputHeader, PageFilter, PageSaveFile) = range(
             NUM_PAGES)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(FilterWizard, self).__init__('Filter Wizard', parent)
         settings = Settings(self.settingsfile)
 
-        self.setPage(self.PageLoadFile, LoadFilePage(settings))
+        if isinstance(filename, list):
+            filename = filename[0]
+        self.setPage(self.PageLoadFile, LoadFilePage(settings, filename))
         self.setPage(self.PageCustomInputHeader,
                      CustomInputHeaderPage(settings))
         self.setPage(self.PageFilter, FilterPage(settings))
@@ -51,10 +53,12 @@ class FilterWizard(OdmltablesWizard):
 
 # main ========================================================================
 def main():
-    import sys
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", type=str, nargs=1,
+                        help="odml file to load")
+    args = parser.parse_args()
     app = QApplication(sys.argv)
-    wiz = FilterWizard()
+    wiz = FilterWizard(filename=args.file)
     wiz.show()
 
     sys.exit(app.exec_())

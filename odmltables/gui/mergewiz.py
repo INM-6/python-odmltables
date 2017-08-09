@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import sys, argparse
 from PyQt4.QtGui import QApplication
 
 from mergepages import (LoadFilePage)
@@ -14,11 +14,15 @@ class MergeWizard(OdmltablesWizard):
 
     (PageLoadFile) = 1
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filename=None):
         super(MergeWizard, self).__init__('Merge Wizard', parent)
         settings = Settings(self.settingsfile)
 
-        self.setPage(self.PageLoadFile, LoadFilePage(settings))
+        if isinstance(filename, str):
+            filenames = [filename]
+        else:
+            filenames = filename
+        self.setPage(self.PageLoadFile, LoadFilePage(settings, filenames))
 
     def _createHelpMsgs(self):
         msgs = {}
@@ -32,10 +36,12 @@ class MergeWizard(OdmltablesWizard):
 
 # main ========================================================================
 def main():
-    import sys
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--files", type=str, nargs='+',
+                        help="odml files to load")
+    args = parser.parse_args()
     app = QApplication(sys.argv)
-    wiz = MergeWizard()
+    wiz = MergeWizard(filenames=args.files)
     wiz.show()
 
     sys.exit(app.exec_())

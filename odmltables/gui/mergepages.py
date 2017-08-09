@@ -16,8 +16,16 @@ from  odmltables import odml_table, odml_xls_table, odml_csv_table, \
 
 
 class LoadFilePage(QIWizardPage):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filenames=None):
         super(LoadFilePage, self).__init__(parent)
+
+        self.inputfilename1 = ''
+        self.inputfilename2 = ''
+        if filenames:
+            if len(filenames) > 0:
+                self.inputfilename1 = filenames[0]
+            if len(filenames) > 1:
+                self.inputfilename2 = filenames[1]
 
         graphic_path = get_graphic_path()
 
@@ -32,8 +40,6 @@ class LoadFilePage(QIWizardPage):
         vbox = self.layout
 
         # setting inputfile variables
-        self.inputfilename1 = ''
-        self.inputfilename2 = ''
         self.settings.register('inputfilename1', self, useconfig=False)
         self.settings.register('inputfilename2', self, useconfig=False)
 
@@ -46,7 +52,6 @@ class LoadFilePage(QIWizardPage):
         self.buttonbrowse1 = self.generate_toolbutton("Browse for basic\nodml"
                                                       "file", 'odmlA.svg')
         self.buttonbrowse1.clicked.connect(self.browse2open, 1)
-        self.inputfilename1 = ''
         self.inputfile1 = QLabel(self.inputfilename1)
         self.inputfile1.setWordWrap(True)
         hbox1 = QHBoxLayout()
@@ -66,7 +71,6 @@ class LoadFilePage(QIWizardPage):
                                                       "extending file",
                                                       'odmlB.svg')
         self.buttonbrowse2.clicked.connect(self.browse2open, 2)
-        self.inputfilename2 = ''
         self.inputfile2 = QLabel(self.inputfilename2)
         self.inputfile2.setWordWrap(True)
         hbox2 = QHBoxLayout()
@@ -180,7 +184,6 @@ class LoadFilePage(QIWizardPage):
         dlg.setFilter("%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
                             self.expected_extension))
-
         inputname = ''
         if dlg.exec_():
             inputname = str(dlg.selectedFiles()[0])
