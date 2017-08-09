@@ -31,9 +31,6 @@ def run(wizard=None, filenames=None):
         w = wiz(filename=filenames)
         w.exec_()
 
-#TODO: handle filenames in individual wizards
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-w", "--wizard", type=str, choices=list(wizards),
