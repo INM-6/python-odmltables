@@ -3,6 +3,7 @@
 
 """
 import os
+import re
 import odml
 import csv
 import datetime
@@ -276,6 +277,18 @@ class OdmlTable(object):
                 if ('date' in dtype or 'time' in dtype) and (value != ''):
                     if isinstance(value,float):
                         value = xlrd.xldate_as_tuple(value, workbook.datemode)
+                    if isinstance(value, unicode):
+                        # try explicit conversion of unicode like '2000-03-23'
+                        m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
+                                     '(?P<day>[0-3][0-9])',
+                                     value)
+                        if m:
+                            date_dict = m.groupdict()
+                            value = (int(date_dict['year']),
+                                     int(date_dict['month']),
+                                     int(date_dict['day']),
+                                     0,0,0)
+
                     else:
                         raise TypeError('Expected xls date or time object, '
                                         'but got instead %s of %s'
