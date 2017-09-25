@@ -277,7 +277,7 @@ class OdmlTable(object):
                 if ('date' in dtype or 'time' in dtype) and (value != ''):
                     if isinstance(value,float):
                         value = xlrd.xldate_as_tuple(value, workbook.datemode)
-                    if isinstance(value, unicode):
+                    elif isinstance(value, unicode):
                         # try explicit conversion of unicode like '2000-03-23'
                         m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
                                      '(?P<day>[0-3][0-9])',
@@ -288,7 +288,6 @@ class OdmlTable(object):
                                      int(date_dict['month']),
                                      int(date_dict['day']),
                                      0,0,0)
-
                     else:
                         raise TypeError('Expected xls date or time object, '
                                         'but got instead %s of %s'
@@ -686,6 +685,10 @@ class OdmlTable(object):
         self.load_from_odmldoc(doc1)
 
     def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
+        """
+        Merging values of odml documents, which contain the IDENTICAL
+        sections and properties and only differ in the odml values
+        """
         if mode not in ['strict', 'overwrite']:
             raise ValueError('Merge mode "%s" does not exist. '
                              'Valid modes are %s' % ((mode, ['strict',
