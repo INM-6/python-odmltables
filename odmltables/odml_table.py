@@ -214,7 +214,11 @@ class OdmlTable(object):
                 self._header = [inv_header_titles[h] if h != '' else None for h in
                             header]
             except KeyError as e:
-                raise ValueError('%s is not a valid header title.'%e.message)
+                if hasattr(e,'message'):
+                    m = e.message
+                else:
+                    m = str(e)
+                raise ValueError('%s is not a valid header title.'%m)
             row += 1
 
             old_dic = {"Path": "",
