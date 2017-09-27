@@ -66,6 +66,19 @@ class OdmlTable(object):
         """
         function to create the odml-dict
         """
+        # in odml 1.3 itervalues returns a list of all .values objects and
+        # not a list of individual value objects -> unwrap list entries
+        values = list(doc.itervalues())
+        id = 0
+        while id < len(values):
+            val = values[id]
+            id += 1
+            if isinstance(val, list):
+                id -= 1
+                values.remove(val)
+                for v in val:
+                    values.append(v)
+
         odmldict = [{'Path': v.parent.parent.get_path(),
                      'SectionName': v.parent.parent.name,
                      'SectionType': v.parent.parent.type,
@@ -78,7 +91,7 @@ class OdmlTable(object):
                      'DataUnit': v.unit,
                      'DataUncertainty': v.uncertainty,
                      'odmlDatatype': v.dtype}
-                    for v in doc.itervalues()]
+                    for v in values]
         return odmldict
 
     def _create_documentdict(self, doc):
