@@ -132,7 +132,7 @@ class OdmlTable(object):
         '''
         if self._docdict == None:
             self._docdict = {}
-        for col_id in range(len(row) / 2):
+        for col_id in range(int(len(row) / 2)):
             if row[2 * col_id + 1] != '':
                 key = row[2 * col_id + 1]
                 # in case last entry was empty and document
@@ -214,7 +214,7 @@ class OdmlTable(object):
                 self._header = [inv_header_titles[h] if h != '' else None for h in
                             header]
             except KeyError as e:
-                if hasattr(e,'message'):
+                if hasattr(e, 'message'):
                     m = e.message
                 else:
                     m = str(e)
@@ -856,7 +856,7 @@ class OdmlDtypes(object):
     def valid_dtypes(self):
         # if not done yet: generate validDtype list with unique entries
         if self._validDtypes == None:
-            validDtypes = self._basedtypes.keys()
+            validDtypes = list(self._basedtypes.keys())
             for syn in self._synonyms.keys():
                 if syn not in validDtypes:
                     validDtypes.append(syn)
