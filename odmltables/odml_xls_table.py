@@ -3,9 +3,9 @@
 
 """
 
-from odml_table import OdmlTable
+from odmltables.odml_table import OdmlTable
 import xlwt
-from xls_style import XlsStyle
+from odmltables.xls_style import XlsStyle
 import datetime
 
 

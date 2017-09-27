@@ -3,7 +3,7 @@
 
 """
 
-from odml_table import OdmlTable
+from odmltables.odml_table import OdmlTable
 import csv
 
 

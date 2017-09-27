@@ -287,10 +287,10 @@ class TestOdmlTable(unittest.TestCase):
 
         backup_table = copy.deepcopy(self.test_table)
 
-        self.test_table.merge(doc2,mode='overwrite')
-        backup_table.merge(table2,mode='overwrite')
+        self.test_table.merge(doc2, mode='overwrite')
+        backup_table.merge(table2, mode='overwrite')
 
-        self.assertListEqual(self.test_table._odmldict,backup_table._odmldict)
+        self.assertListEqual(self.test_table._odmldict, backup_table._odmldict)
 
         expected = len(table2._odmldict) + 2 # only additional prop and
         # section will be counted; additional value is overwritten
@@ -321,7 +321,7 @@ class TestOdmlTable(unittest.TestCase):
         doc2 = create_compare_test(sections=0,properties=1,levels=2)
         table2 = OdmlTable()
         table2.load_from_odmldoc(doc2)
-        self.test_table.merge(doc2,mode='strict')
+        self.test_table.merge(doc2, mode='strict')
 
         self.assertListEqual(table2._odmldict,self.test_table._odmldict)
 

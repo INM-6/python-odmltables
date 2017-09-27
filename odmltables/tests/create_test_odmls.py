@@ -135,9 +135,9 @@ def create_datatype_test_odml():
 
     text_value = "this is a text. It is longer than a string and contains " +\
                  "punctuation marks!"
-    datetime_value = datetime.datetime(2014, 12, 11, 15, 02, 00)
+    datetime_value = datetime.datetime(2014, 12, 11, 15, 2, 0)
     date_value = datetime.date(2014, 12, 11)
-    time_value = datetime.time(15, 02, 00)
+    time_value = datetime.time(15, 2, 0)
 
     # create a new odml document
     doc = odml.Document(version='0.1')
