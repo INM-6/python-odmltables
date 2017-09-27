@@ -680,14 +680,8 @@ class OdmlTable(object):
             doc2 = odmltable
         doc1 = self.convert2odml()
 
-        for sec in doc2:
-            if sec.name in doc1.sections:
-                doc1.sections[sec.name].merge(sec)
-            else:
-                doc1.append(sec)
-
-        # since only sections and properties are merged with odml.section.merge
-        # individual values need to be merged explicitely
+        # TODO: include value merge in section merge
+        self._merge_odml_sections(doc1,doc2)
         self._merge_odml_values(doc1, doc2, mode=mode)
 
         # TODO: What should happen to the document properties?
@@ -700,6 +694,30 @@ class OdmlTable(object):
 
         # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
+
+    def _merge_odml_sections(self, sec1, sec2, mode='overwrite'):
+        """
+        Merging subsections of odml sections
+        """
+        # TODO: Reintroduce mode keyword
+        # if mode not in ['strict', 'overwrite']:
+        #     raise ValueError('Merge mode "%s" does not exist. '
+        #                      'Valid modes are %s' % ((mode, ['strict',
+        #                                                      'overwrite'])))
+
+        for childsec2 in sec2.sections:
+            sec_name = childsec2.name
+            if not sec_name in sec1.sections:
+                sec1.append(childsec2)
+            else:
+                self._merge_odml_sections(sec1[sec_name], childsec2)
+
+            # merge properties
+            if hasattr(sec1, 'properties') and hasattr(sec2, 'properties'):
+                for prop2 in sec2.properties:
+                    if prop2.name not in sec1.properties:
+                        sec1.properties.append(prop2)
+
 
     def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
         """
