@@ -21,17 +21,8 @@ wizards = {'compare': CompSectionWizard,
            'merge': MergeWizard,
            'convert': ConversionWizard}
 
-def run(wizard=None, filenames=None):
-    app = QtGui.QApplication(sys.argv)
-    if wizard is None:
-        w = MainWindow()
-        sys.exit(app.exec_())
-    else:
-        wiz = wizards[wizard]
-        w = wiz(filename=filenames)
-        w.exec_()
 
-if __name__ == '__main__':
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-w", "--wizard", type=str, choices=list(wizards),
                         help="select odmltables wizard")
@@ -42,3 +33,18 @@ if __name__ == '__main__':
     if not args.wizard and args.file:
         parser.error('--file can only be set when --wizard is set.')
     run(wizard=args.wizard, filenames=args.file)
+
+
+def run(wizard=None, filenames=None):
+    app = QtGui.QApplication(sys.argv)
+    if wizard is None:
+        w = MainWindow()
+        sys.exit(app.exec_())
+    else:
+        wiz = wizards[wizard]
+        w = wiz(filename=filenames)
+        w.exec_()
+
+
+if __name__ == '__main__':
+    parse_args()
