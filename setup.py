@@ -47,7 +47,7 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        'gui_scripts': ['odmltables = odmltables.gui.main:run []']},
+        'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
     zip_safe=False,
     keywords = ['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
