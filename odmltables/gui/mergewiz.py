@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import sys, argparse
+import argparse
+import sys
+
 from PyQt4.QtGui import QApplication
 
-from mergepages import (LoadFilePage)
-from wizutils import OdmltablesWizard
-
-from settings import Settings
+from .mergepages import (LoadFilePage)
+from .settings import Settings
+from .wizutils import OdmltablesWizard
 
 
 class MergeWizard(OdmltablesWizard):

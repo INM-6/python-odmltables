@@ -5,23 +5,21 @@ Created on Tue Jan 26 12:57:46 2016
 @author: zehl
 """
 
-import os
 import datetime
-from PyQt4 import QtCore
-# import wizards
-from converterwiz import ConversionWizard
-from compsectionwiz import CompSectionWizard
-from generatetemplatewiz import GenerateTemplateWizard
-from filterwiz import FilterWizard
-from mergewiz import MergeWizard
-
-from wizutils import get_graphic_path
-
+import os
 import sys
+import traceback
+
+from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-import os.path
-import traceback
+# import wizards
+from .compsectionwiz import CompSectionWizard
+from .converterwiz import ConversionWizard
+from .filterwiz import FilterWizard
+from .generatetemplatewiz import GenerateTemplateWizard
+from .mergewiz import MergeWizard
+from .wizutils import get_graphic_path
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):

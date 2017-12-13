@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import argparse
+import sys
 from PyQt4.QtGui import QApplication
 
-from converterpages import (LoadFilePage, CustomInputHeaderPage,
-                            HeaderOrderPage, CustomColumnNamesPage,
-                            ColorPatternPage, ChangeStylePage, SaveFilePage)
-from wizutils import OdmltablesWizard
-
-from settings import Settings
+from .converterpages import (LoadFilePage, CustomInputHeaderPage,
+                             HeaderOrderPage, CustomColumnNamesPage,
+                             ColorPatternPage, ChangeStylePage, SaveFilePage)
+from .settings import Settings
+from .wizutils import OdmltablesWizard
 
 
 class ConversionWizard(OdmltablesWizard):

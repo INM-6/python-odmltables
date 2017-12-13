@@ -5,12 +5,12 @@
 
 import odml
 import datetime
-from odml_csv_table import OdmlCsvTable
-from odml_xls_table import OdmlXlsTable
-from odml_table import OdmlTable
-from compare_section_table import CompareSectionTable
-from compare_section_csv_table import CompareSectionCsvTable
-from compare_section_xls_table import CompareSectionXlsTable
+from .odml_csv_table import OdmlCsvTable
+from .odml_xls_table import OdmlXlsTable
+from .odml_table import OdmlTable
+from .compare_section_table import CompareSectionTable
+from .compare_section_csv_table import CompareSectionCsvTable
+from .compare_section_xls_table import CompareSectionXlsTable
 
 
 def create_odmltable_example():

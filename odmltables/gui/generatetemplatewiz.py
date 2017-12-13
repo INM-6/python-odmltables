@@ -2,8 +2,8 @@
 
 from PyQt4.QtGui import (QApplication)
 
-from wizutils import OdmltablesWizard
-from generatetemplatepages import HeaderOrderPage, SaveFilePage
+from .generatetemplatepages import HeaderOrderPage, SaveFilePage
+from .wizutils import OdmltablesWizard
 
 
 class GenerateTemplateWizard(OdmltablesWizard):

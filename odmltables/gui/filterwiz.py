@@ -5,14 +5,15 @@ Created on Tue Jan 26 12:58:23 2016
 @author: zehl
 """
 
-import sys, argparse
+import argparse
+import sys
+
 from PyQt4.QtGui import QApplication
 
-from filterpages import (LoadFilePage, CustomInputHeaderPage, FilterPage,
-                         SaveFilePage)
-from wizutils import OdmltablesWizard
-
-from settings import Settings
+from .filterpages import (LoadFilePage, CustomInputHeaderPage, FilterPage,
+                          SaveFilePage)
+from .settings import Settings
+from .wizutils import OdmltablesWizard
 
 
 class FilterWizard(OdmltablesWizard):

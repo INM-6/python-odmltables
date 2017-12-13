@@ -3,10 +3,11 @@
 
 """
 
-from odmltables.odml_table import OdmlTable
-import xlwt
-from odmltables.xls_style import XlsStyle
 import datetime
+import xlwt
+
+from .odml_table import OdmlTable
+from .xls_style import XlsStyle
 
 
 class OdmlXlsTable(OdmlTable):

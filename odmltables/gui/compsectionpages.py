@@ -6,7 +6,7 @@ Created on Tue Mar 29 09:31:26 2016
 """
 import os
 import subprocess
-from pageutils import QIWizardPage, shorten_path
+
 from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QMessageBox,
                          QLineEdit, QPushButton, QLabel, QGroupBox,
                          QGridLayout, QTreeWidget, QTreeWidgetItem,
@@ -14,11 +14,11 @@ from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QMessageBox,
                          QFrame, QSizePolicy, QRadioButton)
 
 from PyQt4.QtCore import Qt
+
+from .pageutils import QIWizardPage, clearLayout, shorten_path
 import odml
 import odmltables.compare_section_csv_table
 import odmltables.compare_section_xls_table
-
-from pageutils import clearLayout
 
 
 class ChooseFilePage(QIWizardPage):

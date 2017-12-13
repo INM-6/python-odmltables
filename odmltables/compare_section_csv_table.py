@@ -2,9 +2,10 @@
 """
 """
 
-import odml
-from compare_section_table import CompareSectionTable
 import csv
+import odml
+
+from .compare_section_table import CompareSectionTable
 
 
 class CompareSectionCsvTable(CompareSectionTable):

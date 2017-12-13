@@ -5,9 +5,10 @@
 
 import datetime
 import odml
-from compare_section_table import CompareSectionTable
 import xlwt
-from xls_style import XlsStyle
+
+from .compare_section_table import CompareSectionTable
+from .xls_style import XlsStyle
 
 
 class CompareSectionXlsTable(CompareSectionTable):

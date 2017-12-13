@@ -6,15 +6,17 @@ Created on Tue Jan 26 12:57:16 2016
 """
 
 import argparse
-from PyQt4 import QtGui
 import sys
-from mainwindow import MainWindow
+
+from PyQt4 import QtGui
+
 from odmltables import VERSION
-from odmltables.gui.compsectionwiz import CompSectionWizard
-from odmltables.gui.filterwiz import FilterWizard
-from odmltables.gui.generatetemplatewiz import GenerateTemplateWizard
-from odmltables.gui.mergewiz import MergeWizard
-from odmltables.gui.converterwiz import ConversionWizard
+from .mainwindow import MainWindow
+from .compsectionwiz import CompSectionWizard
+from .converterwiz import ConversionWizard
+from .filterwiz import FilterWizard
+from .generatetemplatewiz import GenerateTemplateWizard
+from .mergewiz import MergeWizard
 
 wizards = {'compare': CompSectionWizard,
            'filter': FilterWizard,

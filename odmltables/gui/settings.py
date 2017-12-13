@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import copy
 import os
 import pickle
-import copy
+
 from PyQt4.QtGui import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
                          QListWidget,
                          QListWidgetItem, QTableView, QPushButton)

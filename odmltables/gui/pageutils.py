@@ -2,10 +2,10 @@
 
 import os
 import re
+import xlwt
 
 from PyQt4.QtGui import QWizardPage, QWidgetItem, QSpacerItem, QComboBox, QColor
 from PyQt4.QtCore import Qt
-import xlwt
 
 
 class QIWizardPage(QWizardPage):

@@ -12,7 +12,7 @@ try:
 except:
     have_odmltables = False
 
-from settings import Settings
+from .settings import Settings
 
 
 class OdmltablesWizard(QWizard):
