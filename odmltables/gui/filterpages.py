@@ -4,6 +4,8 @@ import copy
 import os
 import subprocess
 
+from future.utils import iteritems
+
 from PyQt4.QtCore import Qt
 import PyQt4.QtGui as Qtg
 
@@ -790,7 +792,7 @@ class FilterPage(QIWizardPage):
         # keeping filtered_table object and not substituting whole object to
         # be able to retrieve data from registered object
         self.filtered_table._odmldict = copy.deepcopy(self.table._odmldict)
-        for filter_name, filter in self.filters.iteritems():
+        for filter_name, filter in iteritems(self.filters):
             #     self.filtered_table.filter(mode=filter['mode'],
             #                                invert=filter['invert'],
             #                                recursive=filter['recursive'],
@@ -798,7 +800,7 @@ class FilterPage(QIWizardPage):
             #                                             eval(filter[
             # 'compfuncstr']),
             #                                **{key:eval(value) for key,value in
-            #                                 filter['kwargs'].iteritems()})
+            #                                 iteritems(filter['kwargs'])})
             # self.update_tree(self.filtered_table)
 
             self.run_single_filter(filter_name)
@@ -825,7 +827,7 @@ class FilterPage(QIWizardPage):
                                    comparison_func=lambda x, y: \
                                        eval(filter['compfuncstr']),
                                    **{key: eval(value) for key, value in
-                                      filter['kwargs'].iteritems()})
+                                      iteritems(filter['kwargs'])})
         self.update_tree(self.filtered_table)
 
     # TODO: check if this can also be done via XPath + provide xpath
@@ -837,7 +839,7 @@ class FilterPage(QIWizardPage):
 
         # setting xls_table or csv_table headers if necessary
         title_translator = {v: k for k, v in
-                            self.table._header_titles.iteritems()}
+                            iteritems(self.table._header_titles)}
         if ((os.path.splitext(self.settings.get_object('inputfilename'))[1]
              in ['.xls', '.csv']) and
                 (self.settings.get_object('CBcustominput').isChecked())):

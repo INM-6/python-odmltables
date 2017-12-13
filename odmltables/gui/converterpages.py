@@ -4,6 +4,8 @@ import os
 import subprocess
 import xlwt
 
+from future.utils import iteritems
+
 from PyQt4.QtCore import Qt
 import PyQt4.QtGui as Qtg
 
@@ -1175,7 +1177,7 @@ def convert(settings):
                 'outputfilename'))[1])
 
     # setting xls_table or csv_table headers if necessary
-    title_translator = {v: k for k, v in table._header_titles.iteritems()}
+    title_translator = {v: k for k, v in iteritems(table._header_titles)}
     if ((os.path.splitext(settings.get_object('inputfilename'))[1]
          in ['.xls', '.csv']) and
             (settings.get_object('CBcustominput').isChecked())):

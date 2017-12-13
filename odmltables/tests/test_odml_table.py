@@ -5,18 +5,21 @@ Created on Fri Apr 17 08:11:32 2015
 @author: pick
 """
 
+import copy
+import os
+import unittest
+
+from future.utils import iteritems
+
 import odml
 from odmltables.odml_table import OdmlTable
 from odmltables.odml_table import OdmlDtypes
 from odmltables.odml_csv_table import OdmlCsvTable
 from odmltables.odml_xls_table import OdmlXlsTable
 
-import unittest
 from create_test_odmls import create_small_test_odml
 from create_test_odmls import create_showall_test_odml
 from create_test_odmls import create_compare_test
-import os
-import copy
 
 
 class TestLoadOdmlFromTable(unittest.TestCase):
@@ -423,13 +426,13 @@ class TestOdmlDtypes(unittest.TestCase):
 
     def test_default_values(self):
         basedefaults = self.test_dtypes.default_basedtypes
-        syndefaults = dict([(syn,basedefaults[base]) for syn,base in self.test_dtypes.default_synonyms.iteritems()])
+        syndefaults = dict([(syn,basedefaults[base]) for syn,base in iteritems(self.test_dtypes.default_synonyms)])
         expected_defaults = basedefaults.copy()
         expected_defaults.update(syndefaults)
 
         self.assertEqual(expected_defaults,self.test_dtypes.default_values)
 
-        for dtype,expected_default in expected_defaults.iteritems():
+        for dtype,expected_default in iteritems(expected_defaults):
             self.assertEqual(expected_default,self.test_dtypes.default_value(dtype))
 
     def test_synonym_adder(self):

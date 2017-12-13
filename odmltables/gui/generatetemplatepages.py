@@ -4,6 +4,8 @@ import datetime
 import os
 import subprocess
 
+from future.utils import iteritems
+
 import PyQt4.QtGui as Qtg
 from PyQt4.QtCore import Qt
 
@@ -355,7 +357,7 @@ def createfile(settings):
     table.load_from_odmldoc(odmldoc)
     table.changing_point = None
 
-    title_translator = {v: k for k, v in table._header_titles.iteritems()}
+    title_translator = {v: k for k, v in iteritems(table._header_titles)}
     # mandatory_titles = [title_translator[m] for m in mandatory_headers]
 
     # setting custom header columns

@@ -3,6 +3,7 @@ import copy
 import os
 import pickle
 
+from future.utils import iteritems
 from past.builtins import long
 from PyQt4.QtGui import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
                          QListWidget,
@@ -106,10 +107,10 @@ class Settings():
 
     def simplify_pyqt(self, conf):
         conf = copy.deepcopy(conf)
-        for name, property in conf['attributes'].iteritems():
+        for name, property in iteritems(conf['attributes']):
             conf['attributes'][name] = self.simplifyprop(
                     getattr(self.config['attributes'][name], name))
-        for name, property in conf['objects'].iteritems():
+        for name, property in iteritems(conf['objects']):
             conf['objects'][name] = self.simplifyprop(
                     self.config['objects'][name])
         return conf
@@ -136,8 +137,7 @@ class Settings():
         elif type(prop) == list:  # List of objects
             return [self.simplifyprop(item) for item in prop]
         elif type(prop) == dict:
-            return {key: self.simplifyprop(value) for key, value in \
-                    prop.iteritems()}
+            return {key: self.simplifyprop(value) for key, value in iteritems(prop)}
         else:
             raise ValueError('Can not simplify "%s"' % (prop))
 
@@ -216,7 +216,7 @@ class Settings():
         #     if element not in obj:
         #         obj[element] = {}
         #     obj=obj[element]
-        for key, value in prop.iteritems():
+        for key, value in iteritems(prop):
             self.update_data(obj, prop[key], name=key, index=key)
 
     def _get_saved_obj(self, name):
@@ -300,9 +300,9 @@ class Settings():
 
             # def reinflate_pyqt(self,conf):
             #     conf = copy.deepcopy(conf)
-            #     for name, property in conf['attributes'].iteritems():
+            #     for name, property in iteritems(conf['attributes']):
             #         conf['attributes'][name] = self.reinflateprop(getattr(
             # self.config['attributes'][name], name))
-            #     for name, property in conf['objects'].iteritems():
+            #     for name, property in iteritems(conf['objects']):
             #         conf['objects'][name] = self.reinflateprop(self.config['objects'][name])
             #     return conf
