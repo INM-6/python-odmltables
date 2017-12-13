@@ -18,6 +18,7 @@ The following packages are required to use python-odmltables:
     * odml_ >= 1.1
     * xlrd >= 0.9.4
     * xlwt >= 1.0.0
+    * future >= 0.16.0
     * For building the documentation:
         * numpydoc >= 0.5
         * sphinx >= 1.2.2
@@ -43,8 +44,8 @@ Download
 
 The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using::
 
-	$ cd /home/usr/toolbox/
-	$ git clone https://github.com/INM-6/python-odmltables.git
+    $ cd /home/usr/toolbox/
+    $ git clone https://github.com/INM-6/python-odmltables.git
 
 or alternatively download python-odmltables as ZIP file and unzip it to a folder.
 
@@ -70,18 +71,18 @@ Linux
 
 On Linux, to set up python-odmltables you navigate to your python-odmltables folder and install it via::
 
-	$ cd /home/usr/toolbox/python-odmltables/
-	$ python setup.py install
+    $ cd /home/usr/toolbox/python-odmltables/
+    $ python setup.py install
 
 You can start the odmltables graphical wizard by calling::
 
     $ odml-tables
-	
+
 Alternatively, you may navigate to the python-odmltables folder and run::
 
     $ ./odmltables-gui
-	
-	
+
+
 Windows/Mac OS X
 ****************
 
@@ -99,6 +100,15 @@ On Windows, to run the graphical wizard, execute odml-tables.exe in the Anaconda
 Alternatively, on Windows or Mac OS X you may navigate to the python-odmltables folder and run::
 
     $ python odmltables-gui.py
+
+
+
+Anaconda environments
+*********************
+
+Anaconda environments require the following additional package::
+
+    $ conda install pyqt=4
 
 
 Bugs
