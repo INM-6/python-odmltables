@@ -3,6 +3,7 @@ import copy
 import os
 import pickle
 
+from past.builtins import long
 from PyQt4.QtGui import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
                          QListWidget,
                          QListWidgetItem, QTableView, QPushButton)
