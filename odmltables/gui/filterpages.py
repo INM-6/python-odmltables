@@ -6,6 +6,12 @@ import subprocess
 
 from future.utils import iteritems
 
+# Workaround Python 2 and 3 unicode handling.
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 from PyQt4.QtCore import Qt
 import PyQt4.QtGui as Qtg
 

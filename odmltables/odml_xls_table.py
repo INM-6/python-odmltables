@@ -6,6 +6,12 @@
 import datetime
 import xlwt
 
+# Workaround Python 2 and 3 unicode handling.
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 from .odml_table import OdmlTable
 from .xls_style import XlsStyle
 
