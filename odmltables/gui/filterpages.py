@@ -1118,7 +1118,7 @@ class SaveFilePage(QIWizardPage):
                     'outputfilename'))
 
             self.issaved = True
-            print 'Complete!'
+            print('Complete!')
 
             self.buttonshow.setEnabled(True)
 

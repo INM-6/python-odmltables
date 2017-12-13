@@ -59,9 +59,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                                "Unexpected Error in odMLtables",
                                msg_text)
 
-    print "An error occurred. This is the full error report:"
-    print
-    print complete_error
+    print("An error occurred. This is the full error report:")
+    print()
+    print(complete_error)
 
     now = str(datetime.datetime.now())
     errorpath = os.path.dirname(error_logfile)

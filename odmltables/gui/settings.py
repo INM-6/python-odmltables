@@ -35,7 +35,7 @@ class Settings():
             # self.config = self.settings[config_name]
             self.config_name = config_name
             # self.configchanged = False
-            print 'Loading config "%s"' % config_name
+            print('Loading config "%s"' % config_name)
         else:
             raise ValueError('Configuration %s does not exist' % config_name)
 
@@ -221,7 +221,7 @@ class Settings():
         prop = None
         if name not in self.settings[self.config_name]['attributes'].keys() + \
                 self.settings[self.config_name]['objects'].keys():
-            print 'Object %s not present in saved config' % name
+            print('Object %s not present in saved config' % name)
         else:
             if name in self.settings[self.config_name]['attributes']:
                 prop = self.settings[self.config_name]['attributes'][name]
@@ -231,14 +231,14 @@ class Settings():
 
     def update_from_config(self, name, obj):
         if not self.config_name:
-            # print 'Can not get %s from config. No config loaded.'%name
+            # print('Can not get %s from config. No config loaded.'%name)
             return
 
         # # break criteria: not a saved tuple
         # if (type(self.get_object(name)) not in [tuple,list] or
         #     len(self.get_object(name))==0 or
         #     type(self.get_object(name)[0]) in self.basicdtypes):
-        #     print 'Exiting update_from_config, because of invalid input
+        #     print('Exiting update_from_config, because of invalid input)
         # %s'%(str(self.get_object(name)))
         #     return
 

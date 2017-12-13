@@ -19,16 +19,16 @@ def clearLayout(layout):
         item = layout.itemAt(i)
 
         if isinstance(item, QWidgetItem):
-            # print "widget" + str(item)
+            # print("widget" + str(item))
             item.widget().close()
             # or
             # item.widget().setParent(None)
         elif isinstance(item, QSpacerItem):
             pass
-            # print "spacer " + str(item)
+            # print("spacer " + str(item))
             # no need to do extra stuff
         else:
-            # print "layout " + str(item)
+            # print("layout " + str(item))
             clearLayout(item.layout())
 
         # remove the item from layout

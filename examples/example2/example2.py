@@ -63,8 +63,8 @@ def manual_enrichment():
 
 if __name__=='__main__':
     if os.path.isfile(pre_enriched_file):
-        print 'Mimicing manual odml enrichment.'
+        print('Mimicing manual odml enrichment.')
         run_example()
     else:
-        print 'Performing automatic pre enrichment of odml template.'
+        print('Performing automatic pre enrichment of odml template.')
         automatic_enrichment()

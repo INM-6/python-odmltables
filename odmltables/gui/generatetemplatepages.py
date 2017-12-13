@@ -304,7 +304,7 @@ class SaveFilePage(QIWizardPage):
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
 
-        print self.outputfilename
+        print(self.outputfilename)
 
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
@@ -323,7 +323,7 @@ class SaveFilePage(QIWizardPage):
             createfile(self.settings)
             self.issaved = True
 
-            print 'Complete!'
+            print('Complete!')
 
             self.buttonshow.setEnabled(True)
 

@@ -256,7 +256,7 @@ class LoadFilePage(QIWizardPage):
 
             if success:
                 self.issaved = True
-                print 'Complete!'
+                print('Complete!')
                 self.buttonshow.setEnabled(True)
 
     def show_file(self):
