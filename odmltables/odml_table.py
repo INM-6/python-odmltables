@@ -638,7 +638,7 @@ class OdmlTable(object):
 
         def filter_func(dict_prop):
             keep_property = False
-            for filter_key, filter_value in kwargs.iteritems():
+            for filter_key, filter_value in kwargs.items():
                 if filter_key not in dict_prop:
                     raise ValueError(
                             'Key "%s" is missing in property dictionary %s' % (
@@ -936,7 +936,7 @@ class OdmlDtypes(object):
     @property
     def default_values(self):
         def_values = self._basedtypes.copy()
-        for syn, base in self._synonyms.iteritems():
+        for syn, base in self._synonyms.items():
             def_values[syn] = self._basedtypes[base]
         return def_values
 
