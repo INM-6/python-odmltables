@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from odmltables import VERSION
 from setuptools import setup
 
 long_description = open("README.rst").read()
@@ -23,7 +24,7 @@ dependency_links = [
 
 setup(
     name="python-odmltables",
-    version='0.1.1.3',
+    version=VERSION,
     packages=['odmltables', 'odmltables.gui', 'odmltables.tests'],
     package_data={'odmltables': ['gui/graphics/*']},
     install_requires=install_requires,
@@ -47,7 +48,7 @@ setup(
         'Topic :: Scientific/Engineering'],
 
     entry_points={
-        'gui_scripts': ['odmltables = odmltables.gui.main:run []']},
+        'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
     zip_safe=False,
     keywords = ['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
