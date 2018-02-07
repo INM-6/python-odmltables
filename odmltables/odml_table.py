@@ -895,8 +895,8 @@ class OdmlDtypes(object):
     def valid_dtypes(self):
         # if not done yet: generate validDtype list with unique entries
         if self._validDtypes == None:
-            validDtypes = list(self._basedtypes.keys())
-            for syn in self._synonyms.keys():
+            validDtypes = list(self._basedtypes)
+            for syn in list(self._synonyms):
                 if syn not in validDtypes:
                     validDtypes.append(syn)
             self._validDtypes = validDtypes
@@ -931,7 +931,7 @@ class OdmlDtypes(object):
 
     @property
     def basedtypes(self):
-        return self._basedtypes.keys()
+        return list(self._basedtypes)
 
     def add_basedtypes(self, basedtype, default_value):
         if basedtype in self._basedtypes:

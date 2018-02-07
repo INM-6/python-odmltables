@@ -137,7 +137,7 @@ class OdmlXlsTable(OdmlTable):
         """
         cols = []
         for arg in args:
-            if arg in self._header_titles.keys():
+            if arg in list(self._header_titles):
                 cols.append(arg)
             else:
                 raise Exception("wrong argument")

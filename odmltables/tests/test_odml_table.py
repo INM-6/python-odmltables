@@ -414,14 +414,14 @@ class TestOdmlDtypes(unittest.TestCase):
 
     def test_defaults(self):
 
-        expected_basedtypes = self.test_dtypes.default_basedtypes.keys()
+        expected_basedtypes = list(self.test_dtypes.default_basedtypes)
         self.assertItemsEqual(expected_basedtypes,self.test_dtypes.basedtypes)
 
         expected_synonyms = self.test_dtypes.default_synonyms
         self.assertEqual(expected_synonyms,self.test_dtypes.synonyms)
 
     def test_valid_dtypes(self):
-        expected_dtypes = self.test_dtypes.default_basedtypes.keys() + self.test_dtypes.default_synonyms.keys()
+        expected_dtypes = list(self.test_dtypes.default_basedtypes) + list(self.test_dtypes.default_synonyms)
         self.assertItemsEqual(expected_dtypes,self.test_dtypes.valid_dtypes)
 
     def test_default_values(self):

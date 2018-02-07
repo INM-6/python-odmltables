@@ -62,7 +62,7 @@ class Settings():
                 pickle.dump(self.settings, handle)
 
     def get_all_config_names(self):
-        return [n for n in self.settings.keys() if n != '']
+        return [n for n in list(self.settings) if n != '']
 
     def register(self, name, obj, useconfig=True):
         if (useconfig and self.config):  # TODO: Go on here. Consistent data
@@ -221,8 +221,8 @@ class Settings():
 
     def _get_saved_obj(self, name):
         prop = None
-        if name not in self.settings[self.config_name]['attributes'].keys() + \
-                self.settings[self.config_name]['objects'].keys():
+        if name not in list(self.settings[self.config_name]['attributes']) + \
+                list(self.settings[self.config_name]['objects']):
             print('Object %s not present in saved config' % name)
         else:
             if name in self.settings[self.config_name]['attributes']:
