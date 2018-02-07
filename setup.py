@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from odmltables import VERSION
 from setuptools import setup
 
 long_description = open("README.rst").read()
 install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
-                    'enum >= 0.4.6',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
-                    'odml >= 1.1.1']
+                    'odml >= 1.1.1',
+                    'future >= 0.16.0']
+
+# Add python 2 only install requirements
+if sys.version_info.major < 3:
+    install_requires.append('enum >= 0.4.6')
 
 extras_require = {'docs': ['numpydoc>=0.5',
                            'sphinx>=1.2.2'],

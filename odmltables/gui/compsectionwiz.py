@@ -9,9 +9,9 @@ import sys
 import argparse
 from PyQt4.QtGui import QApplication
 
-from settings import Settings
-from compsectionpages import ChooseFilePage, ChooseSectionsPage, SaveTablePage
-from wizutils import OdmltablesWizard
+from .settings import Settings
+from .compsectionpages import ChooseFilePage, ChooseSectionsPage, SaveTablePage
+from .wizutils import OdmltablesWizard
 
 
 class CompSectionWizard(OdmltablesWizard):

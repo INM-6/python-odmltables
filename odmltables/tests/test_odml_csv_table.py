@@ -8,8 +8,8 @@ Created on Mon Apr 20 15:01:13 2015
 
 from odmltables.odml_csv_table import OdmlCsvTable
 import unittest
-from create_test_odmls import create_showall_test_odml
-from create_test_odmls import create_2samerows_test_odml
+from .create_test_odmls import create_showall_test_odml
+from .create_test_odmls import create_2samerows_test_odml
 import os
 import csv
 

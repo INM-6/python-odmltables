@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 
-
 import sys
 import os
 import subprocess
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import QSize
+import PyQt4.QtGui as Qtg
+from PyQt4.QtCore import QSize, Qt
 
-from pageutils import *
-from wizutils import get_graphic_path
-
-from  odmltables import odml_table, odml_xls_table, odml_csv_table, \
-    xls_style
+from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
+from .pageutils import QIWizardPage, shorten_path
+from .wizutils import get_graphic_path
 
 
 class LoadFilePage(QIWizardPage):
@@ -30,7 +27,7 @@ class LoadFilePage(QIWizardPage):
         graphic_path = get_graphic_path()
 
         # Set up layout
-        self.layout = QVBoxLayout()
+        self.layout = Qtg.QVBoxLayout()
         self.setLayout(self.layout)
 
         self.setTitle("Select an input file")
@@ -44,7 +41,7 @@ class LoadFilePage(QIWizardPage):
         self.settings.register('inputfilename2', self, useconfig=False)
 
         # Adding primary input part
-        topLabel = QLabel(self.tr("Choose two odml files to load"))
+        topLabel = Qtg.QLabel(self.tr("Choose two odml files to load"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
 
@@ -52,9 +49,9 @@ class LoadFilePage(QIWizardPage):
         self.buttonbrowse1 = self.generate_toolbutton("Browse for basic\nodml"
                                                       "file", 'odmlA.svg')
         self.buttonbrowse1.clicked.connect(self.browse2open, 1)
-        self.inputfile1 = QLabel(self.inputfilename1)
+        self.inputfile1 = Qtg.QLabel(self.inputfilename1)
         self.inputfile1.setWordWrap(True)
-        hbox1 = QHBoxLayout()
+        hbox1 = Qtg.QHBoxLayout()
         hbox1.addWidget(self.buttonbrowse1)
         hbox1.addWidget(self.inputfile1)
 
@@ -71,9 +68,9 @@ class LoadFilePage(QIWizardPage):
                                                       "extending file",
                                                       'odmlB.svg')
         self.buttonbrowse2.clicked.connect(self.browse2open, 2)
-        self.inputfile2 = QLabel(self.inputfilename2)
+        self.inputfile2 = Qtg.QLabel(self.inputfilename2)
         self.inputfile2.setWordWrap(True)
-        hbox2 = QHBoxLayout()
+        hbox2 = Qtg.QHBoxLayout()
         hbox2.addWidget(self.buttonbrowse2)
         hbox2.addWidget(self.inputfile2)
         hbox2.addStretch()
@@ -82,19 +79,19 @@ class LoadFilePage(QIWizardPage):
         vbox.addStretch()
 
         # adding first separator
-        horizontalLine = QFrame()
-        horizontalLine.setFrameStyle(QFrame.HLine)
-        horizontalLine.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        horizontalLine = Qtg.QFrame()
+        horizontalLine.setFrameStyle(Qtg.QFrame.HLine)
+        horizontalLine.setSizePolicy(Qtg.QSizePolicy.Expanding, Qtg.QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
 
         # adding merge mode part
-        vbox.addWidget(QLabel('Select a mode for merging the two files'))
-        self.rbstrict = QRadioButton('strict merge')
-        self.rbstrict.setIcon(QIcon(os.path.join(graphic_path,
+        vbox.addWidget(Qtg.QLabel('Select a mode for merging the two files'))
+        self.rbstrict = Qtg.QRadioButton('strict merge')
+        self.rbstrict.setIcon(Qtg.QIcon(os.path.join(graphic_path,
                                                  'mergestrict.svg')))
         self.rbstrict.setIconSize(QSize(100, 100))
-        self.rboverwrite = QRadioButton('overwrite')
-        self.rboverwrite.setIcon(QIcon(os.path.join(graphic_path,
+        self.rboverwrite = Qtg.QRadioButton('overwrite')
+        self.rboverwrite.setIcon(Qtg.QIcon(os.path.join(graphic_path,
                                                     'mergeoverwrite.svg')))
         self.rboverwrite.setIconSize(QSize(100, 100))
 
@@ -103,7 +100,7 @@ class LoadFilePage(QIWizardPage):
 
         self.rbstrict.setChecked(True)
 
-        hbox3 = QHBoxLayout()
+        hbox3 = Qtg.QHBoxLayout()
         hbox3.addWidget(self.rbstrict)
 
         hbox3.addSpacing(20)
@@ -111,28 +108,28 @@ class LoadFilePage(QIWizardPage):
         vbox.addLayout(hbox3)
 
         # adding second separator
-        horizontalLine = QFrame()
-        horizontalLine.setFrameStyle(QFrame.HLine)
-        horizontalLine.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        horizontalLine = Qtg.QFrame()
+        horizontalLine.setFrameStyle(Qtg.QFrame.HLine)
+        horizontalLine.setSizePolicy(Qtg.QSizePolicy.Expanding, Qtg.QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
 
         # adding save part
-        self.topLabel = QLabel(self.tr("Where do you want to save your file?"))
+        self.topLabel = Qtg.QLabel(self.tr("Where do you want to save your file?"))
         self.topLabel.setWordWrap(True)
         vbox.addWidget(self.topLabel)
 
-        self.buttonbrowsesave = QPushButton("Browse")
+        self.buttonbrowsesave = Qtg.QPushButton("Browse")
         self.buttonbrowsesave.clicked.connect(self.browse2save)
         self.buttonbrowsesave.setEnabled(False)
         self.outputfilename = ''
         self.settings.register('outputfilename', self)
-        self.outputfile = QLabel(self.outputfilename)
+        self.outputfile = Qtg.QLabel(self.outputfilename)
         self.outputfile.setWordWrap(True)
-        self.buttonshow = QPushButton("Open file")
+        self.buttonshow = Qtg.QPushButton("Open file")
         self.buttonshow.clicked.connect(self.show_file)
         self.buttonshow.setEnabled(False)
 
-        hbox = QHBoxLayout()
+        hbox = Qtg.QHBoxLayout()
         hbox.addWidget(self.buttonbrowsesave)
         hbox.addWidget(self.outputfile)
         hbox.addStretch()
@@ -146,9 +143,9 @@ class LoadFilePage(QIWizardPage):
 
     def generate_toolbutton(self, text, graphic_name):
         graphic_path = get_graphic_path()
-        button = QToolButton()
+        button = Qtg.QToolButton()
         button.setText(self.tr(text))
-        button.setIcon(QIcon(os.path.join(graphic_path, graphic_name)))
+        button.setIcon(Qtg.QIcon(os.path.join(graphic_path, graphic_name)))
         button.setIconSize(QSize(60, 60))
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         button.setFixedWidth(200)
@@ -166,10 +163,10 @@ class LoadFilePage(QIWizardPage):
 
         self.expected_extension = '.odml'
 
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.AnyFile)
-        dlg.setAcceptMode(QFileDialog.AcceptOpen)
-        dlg.setLabelText(QFileDialog.Accept, "Open")
+        dlg = Qtg.QFileDialog()
+        dlg.setFileMode(Qtg.QFileDialog.AnyFile)
+        dlg.setAcceptMode(Qtg.QFileDialog.AcceptOpen)
+        dlg.setLabelText(Qtg.QFileDialog.Accept, "Open")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
         dir = None
@@ -200,23 +197,23 @@ class LoadFilePage(QIWizardPage):
     def browse2save(self):
         # check generation prerequisites
         if (not self.inputfilename1) or (not self.inputfilename2):
-            QMessageBox.warning(self, 'Not enough input files provided',
+            Qtg.QMessageBox.warning(self, 'Not enough input files provided',
                                 'You need to provide two inputfiles to be '
                                 'merged')
             return
         elif ((not self.rbstrict.isChecked()) and
                   (not self.rboverwrite.isChecked())):
-            QMessageBox.warning(self, 'No merge mode selected',
+            Qtg.QMessageBox.warning(self, 'No merge mode selected',
                                 'You need to select one of the two merge '
                                 'modes: "strict merge" or "overwrite merge".')
             return
 
         self.expected_extension = '.odml'
 
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.AnyFile)
-        dlg.setAcceptMode(QFileDialog.AcceptSave)
-        dlg.setLabelText(QFileDialog.Accept, "Generate File")
+        dlg = Qtg.QFileDialog()
+        dlg.setFileMode(Qtg.QFileDialog.AnyFile)
+        dlg.setAcceptMode(Qtg.QFileDialog.AcceptSave)
+        dlg.setLabelText(Qtg.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
         dlg.setDirectory(self.settings.get_object('inputfilename1'))
 
@@ -229,7 +226,7 @@ class LoadFilePage(QIWizardPage):
             self.outputfilename = str(dlg.selectedFiles()[0])
 
         if not self.outputfilename:
-            QMessageBox.warning(self, 'No output file selected',
+            Qtg.QMessageBox.warning(self, 'No output file selected',
                                 'You need to select an output odml file to '
                                 'save your data.')
             return
@@ -244,7 +241,7 @@ class LoadFilePage(QIWizardPage):
         if ((os.path.splitext(self.outputfilename)[
                  1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
-            QMessageBox.warning(self, 'Wrong file format',
+            Qtg.QMessageBox.warning(self, 'Wrong file format',
                                 'The output file format is supposed to be "%s",'
                                 ' but you selected "%s"'
                                 '' % (self.expected_extension,
@@ -256,7 +253,7 @@ class LoadFilePage(QIWizardPage):
 
             if success:
                 self.issaved = True
-                print 'Complete!'
+                print('Complete!')
                 self.buttonshow.setEnabled(True)
 
     def show_file(self):
@@ -272,9 +269,9 @@ class LoadFilePage(QIWizardPage):
         if self.issaved == False:
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
-            reply = QMessageBox.question(self, 'Message',
-                             quit_msg, QMessageBox.Yes, QMessageBox.No)
-            if reply == QMessageBox.No:
+            reply = Qtg.QMessageBox.question(self, 'Message',
+                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
+            if reply == Qtg.QMessageBox.No:
                 return 0
         return 1
 
@@ -299,7 +296,7 @@ class LoadFilePage(QIWizardPage):
         try:
             table1.merge(table2, mode=mode)
         except ValueError as e:
-            QMessageBox.warning(self, 'Error while merging files',
+            Qtg.QMessageBox.warning(self, 'Error while merging files',
                                 'Value error: %s. Can not merge into '
                                 'non-default values in merge mode "strict". '
                                 'Data '
@@ -309,7 +306,7 @@ class LoadFilePage(QIWizardPage):
                                     e.message))
             return False
         except:
-            QMessageBox.warning(self, 'Unexpected error:', sys.exc_info()[0])
+            Qtg.QMessageBox.warning(self, 'Unexpected error:', sys.exc_info()[0])
             return False
 
         # saving file

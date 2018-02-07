@@ -8,8 +8,8 @@ Created on Mon May  4 13:49:47 2015
 from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 import os
-from create_test_odmls import create_2samerows_test_odml
-from create_test_odmls import create_datatype_test_odml
+from .create_test_odmls import create_2samerows_test_odml
+from .create_test_odmls import create_datatype_test_odml
 
 import xlrd
 

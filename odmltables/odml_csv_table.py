@@ -3,8 +3,9 @@
 
 """
 
-from odmltables.odml_table import OdmlTable
 import csv
+
+from .odml_table import OdmlTable
 
 
 class OdmlCsvTable(OdmlTable):

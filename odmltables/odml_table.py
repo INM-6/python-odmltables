@@ -9,6 +9,14 @@ import csv
 import datetime
 import xlrd
 
+from future.utils import iteritems
+
+# Workaround Python 2 and 3 unicode handling.
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 
 class OdmlTable(object):
     """
@@ -638,7 +646,7 @@ class OdmlTable(object):
 
         def filter_func(dict_prop):
             keep_property = False
-            for filter_key, filter_value in kwargs.items():
+            for filter_key, filter_value in iteritems(kwargs):
                 if filter_key not in dict_prop:
                     raise ValueError(
                             'Key "%s" is missing in property dictionary %s' % (
@@ -936,7 +944,7 @@ class OdmlDtypes(object):
     @property
     def default_values(self):
         def_values = self._basedtypes.copy()
-        for syn, base in self._synonyms.items():
+        for syn, base in iteritems(self._synonyms):
             def_values[syn] = self._basedtypes[base]
         return def_values
 

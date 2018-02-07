@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import copy
 import os
 import pickle
-import copy
+
+from future.utils import iteritems
+from past.builtins import long
 from PyQt4.QtGui import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
                          QListWidget,
                          QListWidgetItem, QTableView, QPushButton)
@@ -35,7 +38,7 @@ class Settings():
             # self.config = self.settings[config_name]
             self.config_name = config_name
             # self.configchanged = False
-            print 'Loading config "%s"' % config_name
+            print('Loading config "%s"' % config_name)
         else:
             raise ValueError('Configuration %s does not exist' % config_name)
 
@@ -104,10 +107,10 @@ class Settings():
 
     def simplify_pyqt(self, conf):
         conf = copy.deepcopy(conf)
-        for name, property in conf['attributes'].iteritems():
+        for name, property in iteritems(conf['attributes']):
             conf['attributes'][name] = self.simplifyprop(
                     getattr(self.config['attributes'][name], name))
-        for name, property in conf['objects'].iteritems():
+        for name, property in iteritems(conf['objects']):
             conf['objects'][name] = self.simplifyprop(
                     self.config['objects'][name])
         return conf
@@ -134,8 +137,7 @@ class Settings():
         elif type(prop) == list:  # List of objects
             return [self.simplifyprop(item) for item in prop]
         elif type(prop) == dict:
-            return {key: self.simplifyprop(value) for key, value in \
-                    prop.iteritems()}
+            return {key: self.simplifyprop(value) for key, value in iteritems(prop)}
         else:
             raise ValueError('Can not simplify "%s"' % (prop))
 
@@ -214,14 +216,14 @@ class Settings():
         #     if element not in obj:
         #         obj[element] = {}
         #     obj=obj[element]
-        for key, value in prop.iteritems():
+        for key, value in iteritems(prop):
             self.update_data(obj, prop[key], name=key, index=key)
 
     def _get_saved_obj(self, name):
         prop = None
         if name not in self.settings[self.config_name]['attributes'].keys() + \
                 self.settings[self.config_name]['objects'].keys():
-            print 'Object %s not present in saved config' % name
+            print('Object %s not present in saved config' % name)
         else:
             if name in self.settings[self.config_name]['attributes']:
                 prop = self.settings[self.config_name]['attributes'][name]
@@ -231,14 +233,14 @@ class Settings():
 
     def update_from_config(self, name, obj):
         if not self.config_name:
-            # print 'Can not get %s from config. No config loaded.'%name
+            # print('Can not get %s from config. No config loaded.'%name)
             return
 
         # # break criteria: not a saved tuple
         # if (type(self.get_object(name)) not in [tuple,list] or
         #     len(self.get_object(name))==0 or
         #     type(self.get_object(name)[0]) in self.basicdtypes):
-        #     print 'Exiting update_from_config, because of invalid input
+        #     print('Exiting update_from_config, because of invalid input)
         # %s'%(str(self.get_object(name)))
         #     return
 
@@ -298,9 +300,9 @@ class Settings():
 
             # def reinflate_pyqt(self,conf):
             #     conf = copy.deepcopy(conf)
-            #     for name, property in conf['attributes'].iteritems():
+            #     for name, property in iteritems(conf['attributes']):
             #         conf['attributes'][name] = self.reinflateprop(getattr(
             # self.config['attributes'][name], name))
-            #     for name, property in conf['objects'].iteritems():
+            #     for name, property in iteritems(conf['objects']):
             #         conf['objects'][name] = self.reinflateprop(self.config['objects'][name])
             #     return conf
