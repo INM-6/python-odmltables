@@ -127,8 +127,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
@@ -160,8 +160,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
 

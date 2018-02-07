@@ -19,8 +19,7 @@ from .wizutils import OdmltablesWizard
 class FilterWizard(OdmltablesWizard):
     NUM_PAGES = 4
 
-    (PageLoadFile, PageCustomInputHeader, PageFilter, PageSaveFile) = range(
-            NUM_PAGES)
+    (PageLoadFile, PageCustomInputHeader, PageFilter, PageSaveFile) = list(range(NUM_PAGES))
 
     def __init__(self, parent=None, filename=None):
         super(FilterWizard, self).__init__('Filter Wizard', parent)

@@ -15,7 +15,7 @@ class ConversionWizard(OdmltablesWizard):
     NUM_PAGES = 7
 
     (PageLoadFile, PageCustomInputHeader, PageHeaderOrder, PageCustomColumNames,
-     PageColorPattern, PageChangeStyle, PageSaveFile) = range(NUM_PAGES)
+     PageColorPattern, PageChangeStyle, PageSaveFile) = list(range(NUM_PAGES))
 
     def __init__(self, parent=None, filename=None):
         super(ConversionWizard, self).__init__('Conversion Wizard', parent)

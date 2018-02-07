@@ -15,7 +15,7 @@ class QIWizardPage(QWizardPage):
 
 
 def clearLayout(layout):
-    for i in reversed(range(layout.count())):
+    for i in reversed(list(range(layout.count()))):
         item = layout.itemAt(i)
 
         if isinstance(item, QWidgetItem):
@@ -67,7 +67,7 @@ class ColorListWidget(QComboBox):
         self.xlwt_color_index = []
         self.xlwt_rgbcolors = []
         # self._xlwt_colorlabels = []
-        for i in range(64):
+        for i in list(range(64)):
             cnames = [name for name, index in cmap.items() if index == i]
             # self._xlwt_colorlabels.append(cnames[0] if len(cnames)>0 else '')
             if cnames != []:
