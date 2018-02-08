@@ -35,7 +35,7 @@ setup(
     package_data={'odmltables': ['gui/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
-    dependency_links=dependency_links,
+    # dependency_links=dependency_links,
 
     author="odMLtables authors and contributors",
     author_email="j.sprenger@fz-juelich.de",
