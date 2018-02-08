@@ -97,7 +97,7 @@ def create_electrode_example():
     parent = doc['Multielectrode Array']['Electrodes']
     parent.append(odml.Property(name='count', value=count))
 
-    for i in range(count):
+    for i in list(range(count)):
         parent = doc['Multielectrode Array']
         sec_name = 'Electrode' + str(i + 1)
         parent.append(odml.Section(name=sec_name))
@@ -129,7 +129,7 @@ def create_mice_example():
 
     doc = odml.Document()
 
-    for i in range(10):
+    for i in list(range(10)):
         sec_name = 'day' + str(i * 2)
 
         doc.append(odml.Section(name=sec_name))

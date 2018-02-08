@@ -237,7 +237,7 @@ class CustomInputHeaderPage(QIWizardPage):
             raise TypeError('Header can be only read for xls or csv files.')
 
         odtables = odml_table.OdmlTable()
-        header_names = odtables._header_titles.values()
+        header_names = list(odtables._header_titles.values())
 
         self.headerlabels = []
         self.customheaders = []
@@ -327,7 +327,7 @@ class HeaderOrderPage(QIWizardPage):
 
         # Adding input part
         odtables = odml_table.OdmlTable()
-        self.header_names = odtables._header_titles.values()
+        self.header_names = list(odtables._header_titles.values())
 
         # generating selection lists
         self.header_list = Qtg.QListWidget()
@@ -449,8 +449,8 @@ class HeaderOrderPage(QIWizardPage):
             return 0
 
         selectedheaderstrings = []
-        for itemid in range(self.settings.get_object(
-                'LWselectedcolumns').count()):
+        for itemid in list(range(self.settings.get_object(
+                'LWselectedcolumns').count())):
             selectedheaderstrings.append(self.settings.get_object(
                     'LWselectedcolumns').item(itemid).text())
 
@@ -499,8 +499,8 @@ class CustomColumnNamesPage(QIWizardPage):
         # Adding input part
         # get selected columns from HeaderOrderPage
         selectedheaderstrings = []
-        for itemid in range(self.settings.get_object(
-                'LWselectedcolumns').count()):
+        for itemid in list(range(self.settings.get_object(
+                'LWselectedcolumns').count())):
             selectedheaderstrings.append(self.settings.get_object(
                     'LWselectedcolumns').item(itemid).text())
 
@@ -730,7 +730,7 @@ class ChangeStylePage(QIWizardPage):
         self.tablebuttons = [None] * len(texts)
 
         gridtable = Qtg.QGridLayout()
-        for i in range(len(self.tablebuttons)):
+        for i in list(range(len(self.tablebuttons))):
             self.tablebuttons[i] = Qtg.QPushButton()
             self.tablebuttons[i].setText(texts[i])
             self.tablebuttons[i].setStyleSheet(default_styles[i])
@@ -794,7 +794,7 @@ class ChangeStylePage(QIWizardPage):
 
         self.currentbutton = self.tablebuttons[0]
 
-        for i in range(len(self.tablebuttons)):
+        for i in list(range(len(self.tablebuttons))):
             self.settings.register(texts[i], self.tablebuttons[i])
 
         self.cbitalicfont.toggled.connect(self.updatetable)
@@ -1145,8 +1145,9 @@ class ColorListWidget(Qtg.QComboBox):
         self.xlwt_color_index = []
         self.xlwt_rgbcolors = []
         # self._xlwt_colorlabels = []
-        for i in range(64):
-            cnames = [name for name, index in cmap.items() if index == i]
+        for i in list(range(64)):
+            cnames = [name for (name, index) in list(cmap.items()) if index == i]
+
             # self._xlwt_colorlabels.append(cnames[0] if len(cnames)>0 else '')
             if cnames != []:
                 self.xlwt_colornames.append(', '.join(cnames))
@@ -1209,10 +1210,10 @@ def convert(settings):
         # setting custom header columns
         output_headers = [title_translator[str(settings.get_object(
                 'LWselectedcolumns').item(index).text())] for index in
-                          range(settings.get_object(
-                                  'LWselectedcolumns').count())]
+                          list(range(settings.get_object(
+                                  'LWselectedcolumns').count()))]
         table.change_header(**dict(zip(output_headers,
-                                       range(1, len(output_headers) + 1))))
+                                       list(range(1, len(output_headers) + 1)))))
 
         # setting custom header labels
         # if settings.get_object('CBcustomheader').isChecked():

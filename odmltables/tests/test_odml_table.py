@@ -414,15 +414,15 @@ class TestOdmlDtypes(unittest.TestCase):
 
     def test_defaults(self):
 
-        expected_basedtypes = self.test_dtypes.default_basedtypes.keys()
-        self.assertItemsEqual(expected_basedtypes,self.test_dtypes.basedtypes)
+        expected_basedtypes = list(self.test_dtypes.default_basedtypes)
+        self.assertListEqual(sorted(expected_basedtypes), sorted(self.test_dtypes.basedtypes))
 
         expected_synonyms = self.test_dtypes.default_synonyms
         self.assertEqual(expected_synonyms,self.test_dtypes.synonyms)
 
     def test_valid_dtypes(self):
-        expected_dtypes = self.test_dtypes.default_basedtypes.keys() + self.test_dtypes.default_synonyms.keys()
-        self.assertItemsEqual(expected_dtypes,self.test_dtypes.valid_dtypes)
+        expected_dtypes = list(self.test_dtypes.default_basedtypes) + list(self.test_dtypes.default_synonyms)
+        self.assertListEqual(sorted(expected_dtypes), sorted(self.test_dtypes.valid_dtypes))
 
     def test_default_values(self):
         basedefaults = self.test_dtypes.default_basedtypes
@@ -445,12 +445,12 @@ class TestOdmlDtypes(unittest.TestCase):
         self.assertEqual(self.test_dtypes.default_value('testsyn1'),self.test_dtypes.default_value('int'))
 
     def test_basedtype_adder(self):
-        basedtype, default = 'testbasetype','testdefault'
+        basedtype, default = 'testbasetype', 'testdefault'
         self.test_dtypes.add_basedtypes(basedtype,default)
 
         expected_basedtypes = self.test_dtypes.default_basedtypes.copy()
         expected_basedtypes.update({basedtype:default})
-        self.assertItemsEqual(self.test_dtypes.basedtypes,expected_basedtypes)
+        self.assertListEqual(self.test_dtypes.basedtypes, list(expected_basedtypes))
 
     def test_default_value_setter(self):
         default_value = 1
@@ -459,11 +459,6 @@ class TestOdmlDtypes(unittest.TestCase):
         self.test_dtypes.default_value('int')
 
         self.assertEqual(self.test_dtypes.default_value('int'),default_value)
-
-
-
-
-
 
 
 if __name__ == '__main__':

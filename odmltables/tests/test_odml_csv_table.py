@@ -33,8 +33,8 @@ class TestOdmlCsvTable(unittest.TestCase):
         expected = [['Document Information', 'author', '', 'date', '',
                      'repository', '', 'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
-                    ['/section1', 'section1', 'property1','','','','','',''],
-                    ['/section2', 'section2', 'property1','','','','','','']]
+                    ['/section2', 'section2', 'property1', '', '', '', '', '', ''],
+                    ['/section1', 'section1', 'property1','','','','','','']]
 
         self.test_csv_table.load_from_function(create_2samerows_test_odml)
 
@@ -46,7 +46,7 @@ class TestOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -85,34 +85,34 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_properties=True
         """
 
-        expected = [['Document Information', 'author', '', 'date', '',
-                     'repository', '', 'version', ''],
-                    ['Path to Section', 'Section Name', 'Section Definition',
-                     'Property Name', 'Property Definition', 'Value',
-                     'Data Unit', 'Data Uncertainty', 'odML Data Type'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value2', 'g', '1', 'string'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value3', 'g', '1', 'text'],
-                    ['/section1', 'section1', 'sec1', 'property2', 'prop2',
-                     'value1', 'g', '1', 'text'],
-                    ['/section1', 'section1', 'sec1', 'property3', 'prop3',
-                     'value1', 'g', '1', 'text'],
-                    ['/section2', 'section2', 'sec2', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', 'property1', 'prop1',
-                     'value2', 'g', '2', 'string']]
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
+                     'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+                     'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty',
+                     'odML Data Type'],
+                    ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', '1',
+                     'text'],
+                    ['/section1', 'section1', 'sec1', 'property3', 'prop3', 'value1', 'g', '1',
+                     'text'],
+                    ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value2', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value3', 'g', '1',
+                     'text'],
+                    ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value2', 'g', '2',
+                     'string']]
 
         self.test_csv_table.show_all_sections = True
         self.test_csv_table.show_all_properties = True
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -124,34 +124,30 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=False
         showall_properties=False
         """
-        expected = [['Document Information', 'author', '', 'date', '',
-                     'repository', '', 'version', ''],
-                    ['Path to Section', 'Section Name', 'Section Definition',
-                     'Property Name', 'Property Definition', 'Value',
-                     'Data Unit', 'Data Uncertainty', 'odML Data Type'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['', '', '', '', '',
-                     'value2', 'g', '1', 'string'],
-                    ['', '', '', '', '',
-                     'value3', 'g', '1', 'text'],
-                    ['', '', '', 'property2', 'prop2',
-                     'value1', 'g', '1', 'text'],
-                    ['', '', '', 'property3', 'prop3',
-                     'value1', 'g', '1', 'text'],
-                    ['/section2', 'section2', 'sec2', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['', '', '', '', '',
-                     'value2', 'g', '2', 'string']]
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
+                      'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+                     'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty',
+                     'odML Data Type'],
+                    ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', '1',
+                     'text'],
+                    ['', '', '', 'property3', 'prop3', 'value1', 'g', '1', 'text'],
+                    ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['', '', '', '', '', 'value2', 'g', '1', 'string'],
+                    ['', '', '', '', '', 'value3', 'g', '1', 'text'],
+                    ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['', '', '', '', '', 'value2', 'g', '2', 'string']]
 
         self.test_csv_table.show_all_sections = False
         self.test_csv_table.show_all_properties = False
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -163,34 +159,30 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=False
         showall_properties=True
         """
-        expected = [['Document Information', 'author', '', 'date', '',
-                     'repository', '', 'version', ''],
-                    ['Path to Section', 'Section Name', 'Section Definition',
-                     'Property Name', 'Property Definition', 'Value',
-                     'Data Unit', 'Data Uncertainty', 'odML Data Type'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['', '', '', 'property1', 'prop1',
-                     'value2', 'g', '1', 'string'],
-                    ['', '', '', 'property1', 'prop1',
-                     'value3', 'g', '1', 'text'],
-                    ['', '', '', 'property2', 'prop2',
-                     'value1', 'g', '1', 'text'],
-                    ['', '', '', 'property3', 'prop3',
-                     'value1', 'g', '1', 'text'],
-                    ['/section2', 'section2', 'sec2', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['', '', '', 'property1', 'prop1',
-                     'value2', 'g', '2', 'string']]
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
+                     'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+                     'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty',
+                     'odML Data Type'],
+                    ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', '1',
+                     'text'],
+                    ['', '', '', 'property3', 'prop3', 'value1', 'g', '1', 'text'],
+                    ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['', '', '', 'property1', 'prop1', 'value2', 'g', '1', 'string'],
+                    ['', '', '', 'property1', 'prop1', 'value3', 'g', '1', 'text'],
+                    ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['', '', '', 'property1', 'prop1', 'value2', 'g', '2', 'string']]
 
         self.test_csv_table.show_all_sections = False
         self.test_csv_table.show_all_properties = True
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -202,34 +194,31 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_sections=True
         showall_properties=False
         """
-        expected = [['Document Information', 'author', '', 'date', '',
-                     'repository', '', 'version', ''],
-                    ['Path to Section', 'Section Name', 'Section Definition',
-                     'Property Name', 'Property Definition', 'Value',
-                     'Data Unit', 'Data Uncertainty', 'odML Data Type'],
-                    ['/section1', 'section1', 'sec1', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section1', 'section1', 'sec1', '', '',
-                     'value2', 'g', '1', 'string'],
-                    ['/section1', 'section1', 'sec1', '', '',
-                     'value3', 'g', '1', 'text'],
-                    ['/section1', 'section1', 'sec1', 'property2', 'prop2',
-                     'value1', 'g', '1', 'text'],
-                    ['/section1', 'section1', 'sec1', 'property3', 'prop3',
-                     'value1', 'g', '1', 'text'],
-                    ['/section2', 'section2', 'sec2', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', 'property1', 'prop1',
-                     'value1', 'g', '1', 'string'],
-                    ['/section3', 'section3', 'sec3', '', '',
-                     'value2', 'g', '2', 'string']]
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
+                     'version', ''],
+                    ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+                     'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty',
+                     'odML Data Type'],
+                    ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', '1',
+                     'text'],
+                    ['/section1', 'section1', 'sec1', 'property3', 'prop3', 'value1', 'g', '1',
+                     'text'],
+                    ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section1', 'section1', 'sec1', '', '', 'value2', 'g', '1', 'string'],
+                    ['/section1', 'section1', 'sec1', '', '', 'value3', 'g', '1', 'text'],
+                    ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', '1',
+                     'string'],
+                    ['/section3', 'section3', 'sec3', '', '', 'value2', 'g', '2', 'string']]
 
         self.test_csv_table.show_all_sections = True
         self.test_csv_table.show_all_properties = False
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:

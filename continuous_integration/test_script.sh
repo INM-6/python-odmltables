@@ -12,7 +12,7 @@ python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 
 if [[ "$COVERAGE" == "true" ]]; then
-    nosetests --with-coverage --cover-package=python-odmltables
+    nosetests --with-coverage --cover-package=odmltables
 else
     nosetests
 fi

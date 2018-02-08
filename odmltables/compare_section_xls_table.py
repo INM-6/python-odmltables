@@ -137,11 +137,11 @@ class CompareSectionXlsTable(CompareSectionTable):
                     #            else:
                     #                csvwriter.writerow([''] + sections)
                     #
-                    #                for i in range(len(table[0])):
+                    #                for i in list(range(len(table[0]))):
                     #                    csvwriter.writerow([properties[i]] +
                         #  [table[j][i]
-                    #                                       for j in range(
-                        # len(table))])
+                    #                                       for j in list(range(
+                        # len(table)))])
                     #
                     #        for col, h in enumerate(header):
                     #            sheet.write(0, col, h, headerstyle)
@@ -174,6 +174,6 @@ class CompareSectionXlsTable(CompareSectionTable):
                     #                    max_col_len[col] = len(str(cell_content))
                     #
                     #        # adjust width of he columns
-                    #        for col in range(len(header)):
+                    #        for col in list(range(len(header))):
                     #            sheet.col(col).width = (256 * (max_col_len[col]+1))
         workbook.save(save_to)
