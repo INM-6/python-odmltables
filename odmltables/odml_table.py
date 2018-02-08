@@ -331,12 +331,12 @@ class OdmlTable(object):
         with open(load_from, 'rb') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            row = csvreader.next()
+            row = next(csvreader)
 
             # check if first line contains document information
             if row[0] == 'Document Information':
                 try:
-                    row = csvreader.next()
+                    row = next(csvreader)
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
                                   ' Filename "%s"' % load_from)
@@ -364,13 +364,13 @@ class OdmlTable(object):
         with open(load_from, 'rb') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            row = csvreader.next()
+            row = next(csvreader)
 
             # check if first line contains document information
             if row[0] == 'Document Information':
                 self._get_docdict(row)
                 try:
-                    row = csvreader.next()
+                    row = next(csvreader)
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
                                   ' Filename "%s"' % load_from)
