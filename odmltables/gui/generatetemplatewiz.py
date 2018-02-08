@@ -9,7 +9,7 @@ from .wizutils import OdmltablesWizard
 class GenerateTemplateWizard(OdmltablesWizard):
     NUM_PAGES = 2
 
-    (PageHeaderOrder, PageSaveFile) = range(NUM_PAGES)
+    (PageHeaderOrder, PageSaveFile) = list(range(NUM_PAGES))
 
     def __init__(self, parent=None, filename=None):
         super(GenerateTemplateWizard, self).__init__('Generate Template Wizard',

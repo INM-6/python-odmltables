@@ -188,8 +188,8 @@ class HeaderOrderPage(QIWizardPage):
             return 0
 
         selectedheaderstrings = []
-        for itemid in range(
-                self.settings.get_object('LWselectedcolumns').count()):
+        for itemid in list(range(
+                self.settings.get_object('LWselectedcolumns').count())):
             selectedheaderstrings.append(
                     self.settings.get_object('LWselectedcolumns').item(
                             itemid).text())
@@ -364,9 +364,9 @@ def createfile(settings):
     output_headers = [title_translator[str(
             settings.get_object('LWselectedcolumns').item(index).text())]
                       for index in
-                      range(settings.get_object('LWselectedcolumns').count())]
+                      list(range(settings.get_object('LWselectedcolumns').count()))]
     table.change_header(
-            **dict(zip(output_headers, range(1, len(output_headers) + 1))))
+            **dict(zip(output_headers, list(range(1, len(output_headers) + 1)))))
     # table.mark_columns(
     #         *[h for i, h in enumerate(output_headers) if h in mandatory_titles])
 

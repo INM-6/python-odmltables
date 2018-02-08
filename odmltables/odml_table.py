@@ -153,7 +153,7 @@ class OdmlTable(object):
         '''
         if self._docdict == None:
             self._docdict = {}
-        for col_id in range(int(len(row) / 2)):
+        for col_id in list(range(int(len(row) / 2))):
             if row[2 * col_id + 1] != '':
                 key = row[2 * col_id + 1]
                 # in case last entry was empty and document
@@ -224,7 +224,7 @@ class OdmlTable(object):
             # read the header
             header = [h.value for h in header_row]
             # strip trailing empty cells from header
-            for i in range(len(header_row) - 1, -1, -1):
+            for i in list(range(len(header_row) - 1, -1, -1)):
                 if header_row[i].ctype == 0:
                     header.pop(i)
                 else:
@@ -254,7 +254,7 @@ class OdmlTable(object):
                        "DataUncertainty": "",
                        "odmlDatatype": ""}
 
-            for row_n in range(row, worksheet.nrows):
+            for row_n in list(range(row, worksheet.nrows)):
                 current_dic = {"Path": "",
                                "SectionName": "",
                                "SectionType": "",
@@ -267,7 +267,7 @@ class OdmlTable(object):
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
 
-                for col_n in range(n_cols):
+                for col_n in list(range(n_cols)):
                     cell = worksheet.cell(row_n, col_n)
                     value = cell.value
 
@@ -419,7 +419,7 @@ class OdmlTable(object):
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
 
-                for col_n in range(len(row)):
+                for col_n in list(range(len(row))):
                     # using only columns with header
                     if col_n in header_title_order:
                         current_dic[header_title_order[col_n]] = row[col_n]

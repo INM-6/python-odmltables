@@ -83,13 +83,22 @@ class TestOdmlXlsTable(unittest.TestCase):
         test for all datatypes, if the information in the table is right
         """
 
-        expected = [['Document Information', 'author', '', 'date',
-                     '', 'repository', '', 'version', '0.1'],
-                    ['Path to Section', 'Property Name', 'Value',
-                     'odML Data Type', '', '', '', '', ''],
-                    ['/numbers', 'Integer', -10, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 0, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 10, 'int', '', '', '', '', ''],
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
+                     'version', '0.1'],
+                    ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '',
+                     '', ''],
+                    ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '',
+                     '', ''],
+                    ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
+                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
+                    ['/texts/string-like', 'String', 'this is a string', 'string', '', '', '',
+                     '', ''],
+                    ['/texts/string-like', 'Text', 'this is a text. It is longer than a string '
+                                                   'and contains punctuation marks!', 'text', '', '', '', '', ''],
+                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
+                    ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
                     ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
                     ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
                     ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
@@ -101,19 +110,8 @@ class TestOdmlXlsTable(unittest.TestCase):
                     ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 1, 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 0, 'boolean', '', '', '', '', ''],
-                    ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0),
-                     'datetime', '', '', '', '', ''],
-                    ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0),
-                     'date', '', '', '', '', ''],
-                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
-                    ['/texts/string-like', 'String', 'this is a string',
-                     'string', '', '', '', '', ''],
-                    ['/texts/string-like', 'Text', 'this is a text. It is ' +
-                     'longer than a string and contains punctuation marks!',
-                     'text', '', '', '', '', ''],
-                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', '']]
+                    ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -127,12 +125,12 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
-                        # if its a date,convert it to a tuple
+                        # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
                     self.assertEquals(value, expected[row][col])
 
@@ -143,8 +141,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         expected = [['Document Information', 'author', '', 'date',
                      '', 'repository', '', 'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
-                    ['/section1', 'section1', 'property1','','','','','','',''],
-                    ['/section2', 'section2', 'property1','','','','','','','']]
+                    ['/section2', 'section2', 'property1', '', '', '', '', '', '', ''],
+                    ['/section1', 'section1', 'property1','','','','','','','']]
 
         self.test_xls_table.load_from_function(create_2samerows_test_odml)
 
@@ -160,8 +158,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
 
