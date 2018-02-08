@@ -1146,7 +1146,7 @@ class ColorListWidget(Qtg.QComboBox):
         self.xlwt_rgbcolors = []
         # self._xlwt_colorlabels = []
         for i in range(64):
-            cnames = [name for name, index in cmap.items() if index == i]
+            cnames = [name for (name, index) in list(cmap.items()) if index == i]
             # self._xlwt_colorlabels.append(cnames[0] if len(cnames)>0 else '')
             if cnames != []:
                 self.xlwt_colornames.append(', '.join(cnames))

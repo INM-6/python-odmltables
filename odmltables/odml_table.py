@@ -202,7 +202,7 @@ class OdmlTable(object):
         :type load_from: string
         """
         # create a inverted header_titles dictionary for an inverted lookup
-        inv_header_titles = {v: k for k, v in self._header_titles.items()}
+        inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
         self._odmldict = []
         workbook = xlrd.open_workbook(load_from)
@@ -359,7 +359,7 @@ class OdmlTable(object):
 
         self._odmldict = []
         # create a inverted header_titles dictionary for an inverted lookup
-        inv_header_titles = {v: k for k, v in self._header_titles.items()}
+        inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
         with open(load_from, 'rb') as csvfile:
             csvreader = csv.reader(csvfile)
