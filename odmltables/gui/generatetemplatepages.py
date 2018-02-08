@@ -48,7 +48,7 @@ class HeaderOrderPage(QIWizardPage):
 
         # Adding input part
         odtables = odml_table.OdmlTable()
-        self.header_names = odtables._header_titles.values()
+        self.header_names = list(odtables._header_titles.values())
 
         # generating selection lists
         self.header_list = Qtg.QListWidget()

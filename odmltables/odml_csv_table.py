@@ -90,7 +90,7 @@ class OdmlCsvTable(OdmlTable):
                        for h in self._header if h is not None}
 
                 # check if row is empty, otherwise write it to the csv-file
-                if not (row.values() == ['' for r in row]):
+                if not (list(row.values()) == ['' for r in row]):
                     csvwriter.writerow(row)
                 else:
                     pass

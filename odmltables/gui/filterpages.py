@@ -177,7 +177,7 @@ class CustomInputHeaderPage(QIWizardPage):
             raise TypeError('Header can be only read for xls or csv files.')
 
         odtables = odml_table.OdmlTable()
-        header_names = odtables._header_titles.values()
+        header_names = list(odtables._header_titles.values())
 
         self.headerlabels = []
         self.customheaders = []
@@ -475,7 +475,7 @@ class FilterPage(QIWizardPage):
 
         self.lwfilters.clear()
 
-        for filter in self.filters.values():
+        for filter in list(self.filters.values()):
             filter_name = self._get_filter_name(filter)
             self._show_applied_filter(filter, filter_name)
 
@@ -818,7 +818,7 @@ class FilterPage(QIWizardPage):
         filter = self.filters[filter_name]
 
         try:
-            [eval(value) for value in filter['kwargs'].values()]
+            [eval(value) for value in list(filter['kwargs'].values())]
         except:
             Qtg.QMessageBox.warning(self, 'Non-interpretable value',
                                 'Can not interpret "%s". This is not a valid '
@@ -959,7 +959,7 @@ class FilterPage(QIWizardPage):
                     parent_sec = new_sec
 
     def replace_Nones(self, data_dict):
-        for value_list in data_dict.values():
+        for value_list in list(data_dict.values()):
             for i in range(len(value_list)):
                 if value_list[i] == None:
                     value_list[i] = ''

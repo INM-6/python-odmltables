@@ -237,7 +237,7 @@ class CustomInputHeaderPage(QIWizardPage):
             raise TypeError('Header can be only read for xls or csv files.')
 
         odtables = odml_table.OdmlTable()
-        header_names = odtables._header_titles.values()
+        header_names = list(odtables._header_titles.values())
 
         self.headerlabels = []
         self.customheaders = []
@@ -327,7 +327,7 @@ class HeaderOrderPage(QIWizardPage):
 
         # Adding input part
         odtables = odml_table.OdmlTable()
-        self.header_names = odtables._header_titles.values()
+        self.header_names = list(odtables._header_titles.values())
 
         # generating selection lists
         self.header_list = Qtg.QListWidget()

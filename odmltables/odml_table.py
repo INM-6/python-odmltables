@@ -744,7 +744,7 @@ class OdmlTable(object):
             if mode == 'strict':
                 if (len(prop1.values) != 1) or \
                         (prop1.values[0].data not in
-                             self.odtypes._basedtypes.values()):
+                             list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
                                                                 prop1.values))
