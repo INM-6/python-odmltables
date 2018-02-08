@@ -205,28 +205,28 @@ def create_compare_test(sections=3, properties=3,levels=1):
 
     def append_children(sec,level):
         if level < levels:
-            for i in range(sections):
+            for i in list(range(sections)):
                 sec.append(odml.Section(name='Section' + str(i+1)))
                 parent = sec['Section' + str(i+1)]
                 append_children(parent,level+1)
                 if(i != 2):
-                    for j in range(properties):
+                    for j in list(range(properties)):
                         parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
                 else:
-                    for j in range(properties-2):
+                    for j in list(range(properties-2)):
                         parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
                     parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
 
     # sec = doc
-    # for l in range(levels):
-    #     for i in range(sections):
+    # for l in list(range(levels)):
+    #     for i in list(range(sections)):
     #         doc.append(odml.Section(name='Section' + str(i+1)))
     #         parent = doc['Section' + str(i+1)]
     #         if(i != 2):
-    #             for j in range(properties):
+    #             for j in list(range(properties)):
     #                 parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
     #         else:
-    #             for j in range(properties-2):
+    #             for j in list(range(properties-2)):
     #                 parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
     #             parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
 

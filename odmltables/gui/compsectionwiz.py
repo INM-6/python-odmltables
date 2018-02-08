@@ -18,7 +18,7 @@ class CompSectionWizard(OdmltablesWizard):
     settings = {}
     settingsfile = 'odmlconverter.conf'
     NUM_PAGES = 3
-    (PageChooseFile, PageChooseSections, PageSaveTable) = range(NUM_PAGES)
+    (PageChooseFile, PageChooseSections, PageSaveTable) = list(range(NUM_PAGES))
 
     def __init__(self, parent=None, filename=None):
         super(CompSectionWizard, self).__init__('Compare Section Wizard',

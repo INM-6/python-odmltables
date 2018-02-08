@@ -551,14 +551,14 @@ class FilterPage(QIWizardPage):
         if self.grid_attributes.itemAtPosition(location[0], location[1] + 1):
             # deleting row
             tbr = [self.grid_attributes.itemAtPosition(location[0], location[
-                1] + i).widget() for i in range(3)]
+                1] + i).widget() for i in list(range(3))]
             for widget in tbr:
                 self.grid_attributes.removeWidget(widget)
                 widget.deleteLater()
 
             # moving lower widgets upward
-            for row_id in range(location[0] + 1, nattributes + 1):
-                for col_id in range(3):
+            for row_id in list(range(location[0] + 1, nattributes + 1)):
+                for col_id in list(range(3)):
                     item = self.grid_attributes.itemAtPosition(row_id,
                                                                col_id)
                     widget = item.widget() if hasattr(item, 'widget') else None
@@ -590,7 +590,7 @@ class FilterPage(QIWizardPage):
                 all_keys = self.odmltreeheaders[1:]
                 # get previously selected ids
                 selected_ids = []
-                for combobox_id in range(1, self._get_number_of_keys()):
+                for combobox_id in list(range(1, self._get_number_of_keys())):
                     combobox = self.grid_attributes.itemAtPosition(combobox_id,
                                                                    1).widget()
                     selected_ids.append(combobox.currentIndex())
@@ -604,7 +604,7 @@ class FilterPage(QIWizardPage):
                                                wloc[1] + 2)
 
                 # set to first non-selected id
-                for id in range(len(self.odmltreeheaders)):
+                for id in list(range(len(self.odmltreeheaders))):
                     if id not in selected_ids:
                         keycb.setCurrentIndex(id)
                         break
@@ -620,16 +620,16 @@ class FilterPage(QIWizardPage):
     def update_enabled_keys(self):
         # get selected item_ids
         selected_ids = []
-        for combobox_id in range(1, self._get_number_of_keys()):
+        for combobox_id in list(range(1, self._get_number_of_keys())):
             combobox = self.grid_attributes.itemAtPosition(combobox_id,
                                                            1).widget()
             selected_ids.append(combobox.currentIndex())
 
         # set selected ids disabled in other comboboxes
-        for combobox_id in range(1, self._get_number_of_keys()):
+        for combobox_id in list(range(1, self._get_number_of_keys())):
             combobox = self.grid_attributes.itemAtPosition(combobox_id,
                                                            1).widget()
-            for item_id in range(combobox.count()):
+            for item_id in list(range(combobox.count())):
                 if item_id in selected_ids and \
                                 combobox.currentIndex() != item_id:
                     combobox.model().item(item_id).setEnabled(False)
@@ -645,7 +645,7 @@ class FilterPage(QIWizardPage):
     def applyfilter(self):
 
         # get selected filterfunction
-        for id in range(self.grid_filterfunction.count()):
+        for id in list(range(self.grid_filterfunction.count())):
             widget = self.grid_filterfunction.itemAt(id).widget()
             if hasattr(widget, 'isChecked') and widget.isChecked():
                 wloc = self.grid_filterfunction.getItemPosition(id)
@@ -656,7 +656,7 @@ class FilterPage(QIWizardPage):
         # checking data consistency
         if filterfuncstr in ['hasattr(x,"endswith") and x.endswith(y)',
                              'hasattr(x,"startswith") and x.startswith(y)']:
-            for i in range(1, self._get_number_of_keys()):
+            for i in list(range(1, self._get_number_of_keys())):
                 value = str(self.grid_attributes.
                             itemAtPosition(i, 2).widget().text())
                 try:
@@ -680,7 +680,7 @@ class FilterPage(QIWizardPage):
                     return
 
         elif filterfuncstr == 'x in y':
-            for i in range(1, self._get_number_of_keys()):
+            for i in list(range(1, self._get_number_of_keys())):
                 value = str(self.grid_attributes.
                             itemAtPosition(i, 2).widget().text())
                 # if (value[0] !='[') or (value[-1] != ']'):
@@ -716,7 +716,7 @@ class FilterPage(QIWizardPage):
                                 'syntax. Please fix it and try again.')
             return
         filter['kwargs'] = {}
-        for i in range(1, self._get_number_of_keys()):
+        for i in list(range(1, self._get_number_of_keys())):
             key = self.grid_attributes. \
                 itemAtPosition(i, 1).widget().currentText()
             value = self.grid_attributes.itemAtPosition(i, 2).widget().text()
@@ -906,7 +906,7 @@ class FilterPage(QIWizardPage):
         for sec in sorted(sections):
             sec_names = sec.split('/')
             parent_sec = tree.invisibleRootItem()
-            for i in range(len(sec_names)):
+            for i in list(range(len(sec_names))):
                 child = self.find_child(parent_sec, sec_names[i])
                 if child:
                     parent_sec = child
@@ -926,7 +926,7 @@ class FilterPage(QIWizardPage):
         for prop in props:
             prop_path = prop.split('/')
             parent_sec = tree.invisibleRootItem()
-            for i in range(len(prop_path)):
+            for i in list(range(len(prop_path))):
                 child = self.find_child(parent_sec, prop_path[i])
                 if child:
                     parent_sec = child
@@ -949,7 +949,7 @@ class FilterPage(QIWizardPage):
         for value in sorted(values):
             value_path = value.split('/')
             parent_sec = tree.invisibleRootItem()
-            for i in range(len(value_path)):
+            for i in list(range(len(value_path))):
                 child = self.find_child(parent_sec, value_path[i])
                 if child:
                     parent_sec = child
@@ -960,7 +960,7 @@ class FilterPage(QIWizardPage):
 
     def replace_Nones(self, data_dict):
         for value_list in data_dict.values():
-            for i in range(len(value_list)):
+            for i in list(range(len(value_list))):
                 if value_list[i] == None:
                     value_list[i] = ''
 
