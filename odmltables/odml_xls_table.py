@@ -307,7 +307,7 @@ class OdmlXlsTable(OdmlTable):
 
                     # finding longest string in the column
                     if len(unicode(cell_content)) > max_col_len[col]:
-                        max_col_len[col] = len(str(cell_content))
+                        max_col_len[col] = len(unicode(cell_content))
 
                     sheet.write(row, col, cell_content, style)
 
