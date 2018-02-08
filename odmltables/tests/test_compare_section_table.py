@@ -38,7 +38,7 @@ class TestCompareSectionTable(unittest.TestCase):
                                           x.name in ['Section1', 'Section3', 'One more Section'])]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
-        self.assertItemsEqual(expected, result)
+        self.assertListEqual(expected, result)
 
     def test_choose_start(self):
         self.test_table.choose_sections_startwith('Section')
@@ -47,7 +47,7 @@ class TestCompareSectionTable(unittest.TestCase):
                                           x.name.startswith('Section'))]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
-        self.assertItemsEqual(expected, result)
+        self.assertListEqual(expected, result)
 
 
 include_true_expected = [['', 'Section1', 'Section2', 'Section3', 'One more Section'],

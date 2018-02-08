@@ -49,11 +49,11 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
 
     def test_mark_columns(self):
         self.test_xls_table.mark_columns('SectionName', 'Path', 'Value')
-        self.assertItemsEqual(self.test_xls_table._marked_cols, ['SectionName',
-                                                                 'Path',
-                                                                 'Value'])
+        self.assertListEqual(self.test_xls_table._marked_cols, ['SectionName',
+                                                                'Path',
+                                                                'Value'])
         self.test_xls_table.mark_columns('DataUnit')
-        self.assertItemsEqual(self.test_xls_table._marked_cols, ['DataUnit'])
+        self.assertListEqual(self.test_xls_table._marked_cols, ['DataUnit'])
 
     def test_highlight_defaults(self):
         self.test_xls_table.highlight_defaults = True
