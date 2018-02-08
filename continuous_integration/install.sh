@@ -29,7 +29,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
 
     # Configure the conda environment and put it in the path using the
     # provided versions
-    conda create -n testenv --yes python=$PYTHON_VERSION pip nose coverage \
+    conda create -n testenv --yes python=$PYTHON_VERSION pip nose coverage lxml pyyaml\
         numpy=$NUMPY_VERSION xlwt=$XLWT_VERSION xlrd=$XLRD_VERSION
     source activate testenv
     conda install libgfortran=1
@@ -50,7 +50,7 @@ elif [[ "$DISTRIB" == "conda_min" ]]; then
 
     # Configure the conda environment and put it in the path using the
     # provided versions
-    conda create -n testenv --yes python=$PYTHON_VERSION pip nose coverage  \
+    conda create -n testenv --yes python=$PYTHON_VERSION pip nose coverage lxml pyyaml \
         numpy=$NUMPY_VERSION xlwt=$XLWT_VERSION xlrd=$XLRD_VERSION
     source activate testenv
 
@@ -60,8 +60,8 @@ elif [[ "$DISTRIB" == "conda_min" ]]; then
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
     # deactivate
     # Create a new virtualenv using system site packages for numpy
-    virtualenv --system-site-packages testenv
-    source testenv/bin/activate
+    # virtualenv testenv
+    # source testenv/bin/activate
     pip install nose
     pip install coverage
     pip install quantities
