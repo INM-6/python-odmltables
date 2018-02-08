@@ -84,7 +84,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.include_all = True
         self.test_table.switch = False
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -96,7 +96,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.switch = False
         self.test_table.choose_sections_startwith('S')
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -107,7 +107,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.switch = True
         self.test_table.include_all = True
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -133,6 +133,7 @@ class TestCompareXls(unittest.TestCase):
 
     def test_switch(self):
         self.test_table.switch = True
+
 
 if __name__ == "__main__":
     unittest.main()

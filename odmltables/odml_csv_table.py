@@ -34,7 +34,7 @@ class OdmlCsvTable(OdmlTable):
 
         self.consistency_check()
 
-        with open(save_to, 'wb') as csvfile:
+        with open(save_to, 'w') as csvfile:
 
             len_docdict = 0 if not self._docdict else len(self._docdict)
             fieldnames = range(max(len(self._header), len_docdict * 2 + 1))

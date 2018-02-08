@@ -24,7 +24,7 @@ class CompareSectionCsvTable(CompareSectionTable):
 
         properties, sections, table = self._build_table()
 
-        with open(save_to, "wb") as csvfile:
+        with open(save_to, "w") as csvfile:
             csvwriter = csv.writer(csvfile, dialect='excel',
                                    quoting=csv.QUOTE_NONNUMERIC)
 

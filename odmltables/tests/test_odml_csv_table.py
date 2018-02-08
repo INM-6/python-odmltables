@@ -46,7 +46,7 @@ class TestOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -112,7 +112,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -151,7 +151,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -190,7 +190,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -229,7 +229,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.write2file(self.filename)
 
-        with open(self.filename, 'rb') as csvfile:
+        with open(self.filename, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:

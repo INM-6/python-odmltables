@@ -328,7 +328,7 @@ class OdmlTable(object):
         gui only
         :return:
         '''
-        with open(load_from, 'rb') as csvfile:
+        with open(load_from, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
 
             row = next(csvreader)
@@ -361,7 +361,7 @@ class OdmlTable(object):
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
-        with open(load_from, 'rb') as csvfile:
+        with open(load_from, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
 
             row = next(csvreader)
