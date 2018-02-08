@@ -66,8 +66,8 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     pip install coverage
     pip install quantities
     pip install numpy==$NUMPY_VERSION
-    pip install xlwt=$XLWT_VERSION
-    pip install xlrd=$XLRD_VERSION
+    pip install xlwt==$XLWT_VERSION
+    pip install xlrd==$XLRD_VERSION
  
 fi
 

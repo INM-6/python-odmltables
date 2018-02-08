@@ -10,7 +10,7 @@ install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
-                    'odml >= 1.1.1',
+                    'odml <= 1.3.3',
                     'future >= 0.16.0']
 
 # Add python 2 only install requirements
