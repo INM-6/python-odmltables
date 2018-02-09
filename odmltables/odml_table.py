@@ -74,32 +74,23 @@ class OdmlTable(object):
         """
         function to create the odml-dict
         """
-        # in odml 1.3 itervalues returns a list of all .values objects and
-        # not a list of individual value objects -> unwrap list entries
-        values = list(doc.itervalues())
-        id = 0
-        while id < len(values):
-            val = values[id]
-            id += 1
-            if isinstance(val, list):
-                id -= 1
-                values.remove(val)
-                for v in val:
-                    values.append(v)
+        # In odml 1.4 properties are the leaves of the odml tree; unwrap from there.
+        props = list(doc.iterproperties())
 
-        odmldict = [{'Path': v.parent.parent.get_path(),
-                     'SectionName': v.parent.parent.name,
-                     'SectionType': v.parent.parent.type,
-                     'SectionDefinition': v.parent.parent.definition,
-                     'PropertyName': v.parent.name,
-                     'PropertyDefinition': v.parent.definition,
-                     'Value': v.data if type(v.data) is not bool else
-                     str(v.data),
-                     'ValueDefinition': v.definition,
-                     'DataUnit': v.unit,
-                     'DataUncertainty': v.uncertainty,
-                     'odmlDatatype': v.dtype}
-                    for v in values]
+        # TODO 'ValueDefinition' is no longer available in odml 1.4; remove from codebase
+        odmldict = [{'Path': p.get_path(),
+                     'SectionName': p.parent.name,
+                     'SectionType': p.parent.type,
+                     'SectionDefinition': p.parent.definition,
+                     'PropertyName': p.name,
+                     'PropertyDefinition': p.definition,
+                     # Since value now returns a list the check for bool might be useless.
+                     'Value': p.value if type(p.value) is not bool else str(p.value),
+                     'DataUnit': p.unit,
+                     'DataUncertainty': p.uncertainty,
+                     'odmlDatatype': p.dtype}
+                    for p in props]
+
         odmldict = self._sort_odmldict(odmldict)
         return odmldict
 
