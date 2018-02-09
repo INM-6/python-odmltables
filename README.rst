@@ -3,8 +3,18 @@ python-odmltables
 =================
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
-odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata management structure using odML. 
+odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata management structure using odML.
 In addition to the Python API, python-odmltables provides its main functionality also via a graphical user interface.
+
+
+Code Status
+-----------
+.. image:: https://travis-ci.org/INM-6/python-odmltables.png?branch=master
+   :target: https://travis-ci.org/INM-6/python-odmltables
+   :alt: Unit Test Status
+.. image:: https://coveralls.io/repos/INM-6/python-odmltables/badge.png
+   :target: https://coveralls.io/r/INM-6/python-odmltables
+   :alt: Unit Test Coverage
 
 
 Dependencies
@@ -90,7 +100,7 @@ On non-Linux operating systems we recommend using the Anaconda_ Python distribut
 
     $ conda create -n neuroscience python numpy scipy pip six
     $ source activate neuroscience
-    
+
 Then navigate to the folder where you downloaded python-odmltables and run::
 
     $ python setup.py install
