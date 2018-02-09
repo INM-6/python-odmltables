@@ -83,25 +83,14 @@ class TestOdmlXlsTable(unittest.TestCase):
         test for all datatypes, if the information in the table is right
         """
 
-        expected = [['Document Information', 'author', '', 'date', '', 'repository', '',
-                     'version', '0.1'],
-                    ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '',
-                     '', ''],
-                    ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '',
-                     '', ''],
-                    ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
-                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
-                    ['/texts/string-like', 'String', 'this is a string', 'string', '', '', '',
-                     '', ''],
-                    ['/texts/string-like', 'Text', 'this is a text. It is longer than a string '
-                                                   'and contains punctuation marks!', 'text', '', '', '', '', ''],
-                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
-                    ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '','version', '0.1'],
+                    ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '','', ''],
                     ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
                     ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
                     ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
+                    ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
+                    ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
                     ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
@@ -111,7 +100,13 @@ class TestOdmlXlsTable(unittest.TestCase):
                     ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', '']]
+                    ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', ''],
+                    ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
+                    ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '','', ''],
+                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
+                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
+                    ['/texts/string-like', 'String', 'this is a string', 'string', '', '','', '',''],
+                    ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -141,8 +136,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         expected = [['Document Information', 'author', '', 'date',
                      '', 'repository', '', 'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
-                    ['/section2', 'section2', 'property1', '', '', '', '', '', '', ''],
-                    ['/section1', 'section1', 'property1','','','','','','','']]
+                    ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
+                    ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_2samerows_test_odml)
 

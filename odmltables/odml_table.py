@@ -100,7 +100,12 @@ class OdmlTable(object):
                      'DataUncertainty': v.uncertainty,
                      'odmlDatatype': v.dtype}
                     for v in values]
+        odmldict = self._sort_odmldict(odmldict)
         return odmldict
+
+    def _sort_odmldict(self, odmldict):
+        return sorted(odmldict, key=lambda x: (x['Path'], x['PropertyName']))
+
 
     def _create_documentdict(self, doc):
         attributes = ['author', 'date', 'repository', 'version']
@@ -320,6 +325,7 @@ class OdmlTable(object):
                 current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
 
                 self._odmldict.append(current_dic)
+        self._odmldict = self._sort_odmldict(self._odmldict)
 
     @staticmethod
     def get_csv_header(load_from):
@@ -453,6 +459,7 @@ class OdmlTable(object):
                 current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
 
                 self._odmldict.append(current_dic)
+        self._odmldict = self._sort_odmldict(self._odmldict)
 
     def change_header_titles(self, **kwargs):
         """

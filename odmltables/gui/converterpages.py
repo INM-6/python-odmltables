@@ -311,6 +311,12 @@ class HeaderOrderPage(QIWizardPage):
         vbox = Qtg.QVBoxLayout()
         self.setLayout(vbox)
 
+
+        topLabel = Qtg.QLabel(self.tr("Select the columns for the output table"))
+        topLabel.setWordWrap(True)
+        vbox.addWidget(topLabel)
+        vbox.addSpacing(20)
+
         hbox0 = Qtg.QHBoxLayout()
         hbox0.addStretch()
         hbox0.addWidget(Qtg.QLabel('available columns'))
@@ -320,10 +326,7 @@ class HeaderOrderPage(QIWizardPage):
         hbox0.addStretch()
         hbox0.addSpacing(30)
 
-        topLabel = Qtg.QLabel(self.tr("Select the columns for the output table"))
-        topLabel.setWordWrap(True)
-        vbox.addWidget(topLabel)
-        vbox.addSpacing(20)
+        vbox.addLayout(hbox0)
 
         # Adding input part
         odtables = odml_table.OdmlTable()
