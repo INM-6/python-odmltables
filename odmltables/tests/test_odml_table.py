@@ -186,15 +186,6 @@ class TestChangeHeader(unittest.TestCase):
         self.assertEqual(self.test_table._header, ["Path", None, "SectionType",
                                                    "Value"])
 
-    # def test_empty_cols_forbidden(self):
-    #     """
-    #     Test change_header leaving empty columns, while this is forbidden
-    #     """
-    #     self.test_table.allow_empty_columns = False
-    #     # TODO: exception
-    #     with self.assertRaises(Exception):
-    #         self.test_table.change_header(Path=1, SectionType=3, Value=4)
-
     def test_same_indizes(self):
         """
         Test change_header with two columns with same indizes
@@ -241,30 +232,6 @@ class TestOdmlTable(unittest.TestCase):
                                              odmlDatatype="Datentyp")
         self.assertEqual(self.test_table._header_titles, expected)
 
-    # def test_change_allow_free_cols(self):
-    #     """
-    #     set allow_free_columns
-    #     """
-    #
-    #     # self.test_table.allow_empty_columns = True
-    #     # self.assertEqual(self.test_table._allow_empty_columns, True)
-    #     # self.test_table.allow_empty_columns = False
-    #     # self.assertEqual(self.test_table._allow_empty_columns, False)
-    #     # # TODO: Exception
-    #     # with self.assertRaises(Exception):
-    #     #     self.test_table.allow_empty_columns = 4
-    #
-    # def test_forbid_free_cols(self):
-    #     """
-    #     test forbidding free columns while there are already free columns in
-    #     the header
-    #     """
-    #
-    #     self.test_table.allow_empty_columns = True
-    #     self.test_table.change_header(Path=1, PropertyDefinition=3, Value=4)
-    #     # TODO: Exception aendern
-    #     with self.assertRaises(Exception):
-    #         self.test_table.allow_empty_columns = False
 
     def test_merge(self):
         doc1 = create_compare_test(sections=2,properties=2,levels=2)
@@ -302,11 +269,10 @@ class TestOdmlTable(unittest.TestCase):
 
 
     def test_strict_merge_error(self):
-        doc1 = create_compare_test(sections=2,properties=2,levels=2)
+        doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
         # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
-                                                         dtype='str'))
+        doc1.sections[1].properties[0].append(odml.Value(data='testvalue', dtype='str'))
 
         self.test_table.load_from_odmldoc(doc1)
 

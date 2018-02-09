@@ -41,48 +41,37 @@ def create_showall_test_odml():
     doc.append(odml.Section(name='section3', definition='sec3'))
 
     parent = doc['section1']
-    parent.append(odml.Property(name='property1', definition='prop1', value=
-                                [odml.Value(data='value1',
-                                            dtype=odml.DType.string,
-                                            unit='g',
-                                            uncertainty=1),
-                                 odml.Value(data='value2',
-                                            dtype=odml.DType.string,
-                                            unit='g',
-                                            uncertainty=1),
-                                 odml.Value(data='value3',
-                                            dtype=odml.DType.text,
-                                            unit='g',
-                                            uncertainty=1)]))
+    parent.append(odml.Property(name='property1', definition='prop1',
+                                value=['value1', 'value2', 'value3'],
+                                dtype = odml.DType.string,
+                                unit='g',
+                                uncertainty=1))
 
-    parent.append(odml.Property(name='property2', definition='prop2', value=
-                  odml.Value(data='value1',
-                             dtype=odml.DType.text,
-                             unit='g',
-                             uncertainty=1)))
-    parent.append(odml.Property(name='property3', definition='prop3', value=
-                  odml.Value(data='value1',
-                             dtype=odml.DType.text,
-                             unit='g',
-                             uncertainty=1)))
+    parent.append(odml.Property(name='property2', definition='prop2',
+                                value='value1',
+                                dtype=odml.DType.text,
+                                unit='g',
+                                uncertainty=1))
+    parent.append(odml.Property(name='property3', definition='prop3',
+                                value='value1',
+                                dtype=odml.DType.text,
+                                unit='g',
+                                uncertainty=1))
 
     parent = doc['section2']
-    parent.append(odml.Property(name='property1', definition='prop1', value=
-                  odml.Value(data='value1',
-                             dtype=odml.DType.string,
-                             unit='g',
-                             uncertainty=1)))
+    parent.append(odml.Property(name='property1', definition='prop1',
+                                value='value1',
+                                dtype=odml.DType.string,
+                                unit='g',
+                                uncertainty=1))
 
     parent = doc['section3']
-    parent.append(odml.Property(name='property1', definition='prop1', value=
-                  [odml.Value(data='value1',
-                              dtype=odml.DType.string,
-                              unit='g',
-                              uncertainty=1),
-                   odml.Value(data='value2',
-                              dtype=odml.DType.string,
-                              unit='g',
-                              uncertainty=2)]))
+    parent.append(odml.Property(name='property1', definition='prop1',
+                                value=['value1','value2'],
+                                dtype=odml.DType.string,
+                                unit='g',
+                                uncertainty=1
+                                ))
 
     return doc
 
@@ -99,37 +88,21 @@ def create_small_test_odml():
     parent = doc['section1']
 
     parent.append(odml.Property(name='property1',
-                                value=odml.Value(data='bla',
-                                                 dtype=odml.DType.text)))
+                                value='bla',
+                                dtype=odml.DType.text))
 
     return doc
 
 
 def create_datatype_test_odml():
     """
-    create an odml-document using every odml-datatype at least once
+    create an odml-document using every odml datatype at least once
     """
 
     # data that will be written in the odml-document
-    int_values = [odml.Value(data=-10,
-                             dtype=odml.DType.int,
-                             definition='a negative test int'),
-                  odml.Value(data=0,
-                             dtype=odml.DType.int,
-                             definition='test int null'),
-                  odml.Value(data=10,
-                             dtype=odml.DType.int,
-                             definition='a positive test int')]
+    int_values = [-10, 0, 10]
 
-    float_values = [odml.Value(data=-1.234,
-                               dtype=odml.DType.float,
-                               definition='a negative test float'),
-                    odml.Value(data=0.0,
-                               dtype=odml.DType.float,
-                               definition='test float null'),
-                    odml.Value(data=1.234,
-                               dtype=odml.DType.float,
-                               definition='a positive test float')]
+    float_values = [-1.234, 0.0, 1.234]
 
     bool_values = ['true', 'false', 'True', 'False', 't', 'f', 'T', 'F', 1, 0]
 
@@ -165,35 +138,34 @@ def create_datatype_test_odml():
 
     parent = doc['texts']['datetime']
     parent.append(odml.Property(name='Datetime',
-                                value=odml.Value(data=datetime_value,
-                                                 dtype=odml.DType.datetime)))
+                                value=datetime_value,
+                                dtype=odml.DType.datetime))
     parent.append(odml.Property(name='Date',
-                                value=odml.Value(data=date_value,
-                                                 dtype=odml.DType.date)))
+                                value=date_value,
+                                dtype=odml.DType.date))
 
     parent.append(odml.Property(name='Time',
-                                value=odml.Value(data=time_value,
-                                                 dtype=odml.DType.time)))
+                                value=time_value,
+                                dtype=odml.DType.time))
 
     parent = doc['texts']['string-like']
 
     parent.append(odml.Property(name='String',
-                                value=odml.Value(data='this is a string',
-                                                 dtype=odml.DType.string)))
+                                value='this is a string',
+                                dtype=odml.DType.string))
     parent.append(odml.Property(name='Text',
-                                value=odml.Value(data=text_value,
-                                                 dtype=odml.DType.text)))
+                                value=text_value,
+                                dtype=odml.DType.text))
 
     parent.append(odml.Property(name='Person',
-                                value=odml.Value(data='Jana Pick',
-                                                 dtype=odml.DType.person)))
+                                value='Jana Pick',
+                                dtype=odml.DType.person))
 
     parent = doc['other']
 
     parent.append(odml.Property(name='Boolean',
-                                value=[odml.Value(data=data,
-                                                  dtype=odml.DType.boolean)
-                                       for data in bool_values]))
+                                value=bool_values,
+                                dtype=odml.DType.boolean))
     return doc
 
 

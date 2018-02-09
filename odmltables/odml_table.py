@@ -114,7 +114,7 @@ class OdmlTable(object):
         :type load_from: string
 
         """
-        doc = odml.tools.xmlparser.load(load_from)
+        doc = odml.load(load_from)
         self._odmldict = self.__create_odmldict(doc)
         self._docdict = self._create_documentdict(doc)
 

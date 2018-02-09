@@ -38,8 +38,7 @@ class TestOdmlCsvTable(unittest.TestCase):
 
         self.test_csv_table.load_from_function(create_2samerows_test_odml)
 
-        self.test_csv_table.change_header(Path=1, SectionName=2,
-                                          PropertyName=3)
+        self.test_csv_table.change_header(Path=1, SectionName=2, PropertyName=3)
 
         self.test_csv_table.show_all_sections = False
         self.test_csv_table.show_all_properties = False
