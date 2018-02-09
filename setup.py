@@ -10,7 +10,7 @@ install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
                     'numpy >= 1.8.2',
                     'quantities >= 0.10.1',
-                    'odml <= 1.3.3',
+                    'odml >= 1.4',
                     'future >= 0.16.0']
 
 # Add python 2 only install requirements
@@ -25,9 +25,6 @@ extras_require = {'docs': ['numpydoc>=0.5',
                   #           'libxml2 >= 2.9.2'],
                   }
 
-dependency_links = [
-    'https://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1.1']
-
 setup(
     name="python-odmltables",
     version=VERSION,
@@ -35,7 +32,6 @@ setup(
     package_data={'odmltables': ['gui/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
-    # dependency_links=dependency_links,
 
     author="odMLtables authors and contributors",
     author_email="j.sprenger@fz-juelich.de",
@@ -43,20 +39,20 @@ setup(
     long_description=long_description,
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
-    download_url='https://github.com/INM-6/python-odmltables/archive/0.1.1.tar.gz',
+    # download_url='https://github.com/INM-6/python-odmltables/archive/0.1.1.tar.gz',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
+        'Programming Language :: Python',
         'Topic :: Scientific/Engineering'],
 
     entry_points={
         'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
     zip_safe=False,
-    keywords = ['odml', 'excel', 'metadata management']
+    keywords=['odml', 'excel', 'metadata management']
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
     #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
 )
