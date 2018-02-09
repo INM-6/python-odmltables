@@ -38,7 +38,7 @@ class TestCompareSectionTable(unittest.TestCase):
                                           x.name in ['Section1', 'Section3', 'One more Section'])]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
-        self.assertItemsEqual(expected, result)
+        self.assertListEqual(expected, result)
 
     def test_choose_start(self):
         self.test_table.choose_sections_startwith('Section')
@@ -47,7 +47,7 @@ class TestCompareSectionTable(unittest.TestCase):
                                           x.name.startswith('Section'))]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
-        self.assertItemsEqual(expected, result)
+        self.assertListEqual(expected, result)
 
 
 include_true_expected = [['', 'Section1', 'Section2', 'Section3', 'One more Section'],
@@ -84,7 +84,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.include_all = True
         self.test_table.switch = False
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -96,7 +96,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.switch = False
         self.test_table.choose_sections_startwith('S')
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -107,7 +107,7 @@ class TestCompareCsv(unittest.TestCase):
         self.test_table.switch = True
         self.test_table.include_all = True
         self.test_table.write2file('test.csv')
-        with open('test.csv', 'rb') as csvfile:
+        with open('test.csv', 'r') as csvfile:
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
@@ -133,6 +133,7 @@ class TestCompareXls(unittest.TestCase):
 
     def test_switch(self):
         self.test_table.switch = True
+
 
 if __name__ == "__main__":
     unittest.main()

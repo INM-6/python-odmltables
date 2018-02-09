@@ -54,7 +54,7 @@ class CompareSectionTable():
                     properties.append(prop.name)
         sec_num = len(sections)
         prop_num = len(properties)
-        table = [[None for p in range(prop_num)] for s in range(sec_num)]
+        table = [[None for p in list(range(prop_num))] for s in list(range(sec_num))]
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             for prop in sect.properties:
@@ -69,7 +69,7 @@ class CompareSectionTable():
         if self.include_all:
             pass
         else:
-            to_delete = [properties[i] for i in range(len(table[0]))
+            to_delete = [properties[i] for i in list(range(len(table[0])))
                          if None in [s[i] for s in table]]
             for prop in to_delete:
                 for section in table:

@@ -62,7 +62,7 @@ class Settings():
                 pickle.dump(self.settings, handle)
 
     def get_all_config_names(self):
-        return [n for n in self.settings.keys() if n != '']
+        return [n for n in list(self.settings) if n != '']
 
     def register(self, name, obj, useconfig=True):
         if (useconfig and self.config):  # TODO: Go on here. Consistent data
@@ -125,12 +125,12 @@ class Settings():
             return (str(prop.text()), str(type(prop)), 'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop, 'itemText') and hasattr(
                 prop, 'currentIndex'):  # QComboBox
-            return ([str(prop.itemText(c)) for c in range(prop.count())],
+            return ([str(prop.itemText(c)) for c in list(range(prop.count()))],
                     prop.currentIndex(), str(type(prop)), 'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop,
                                                 'selectedIndexes'):  #
             # QListWidget
-            return ([str(prop.item(c).text()) for c in range(prop.count())],
+            return ([str(prop.item(c).text()) for c in list(range(prop.count()))],
                     prop.selectedIndexes(), str(type(prop)), 'pyqt')
         elif type(prop) in self.basicdtypes:  # Basic datatypes
             return (prop, str(type(prop)), 'basic')
@@ -170,7 +170,7 @@ class Settings():
                 item = QListWidgetItem()
                 item.setText(itemlabel)
                 obj.addItem(item)
-            for itemid in range(obj.count()):
+            for itemid in list(range(obj.count())):
                 if itemid in config_data[1]:
                     obj.item(itemid).setSelected(True)
                 else:
@@ -221,8 +221,8 @@ class Settings():
 
     def _get_saved_obj(self, name):
         prop = None
-        if name not in self.settings[self.config_name]['attributes'].keys() + \
-                self.settings[self.config_name]['objects'].keys():
+        if name not in list(self.settings[self.config_name]['attributes']) + \
+                list(self.settings[self.config_name]['objects']):
             print('Object %s not present in saved config' % name)
         else:
             if name in self.settings[self.config_name]['attributes']:
@@ -279,7 +279,7 @@ class Settings():
         # elif type(obj)==list: # List of objects
         #     # list of strings can be generated
         #     if type(obj[0])==str and prop[0][1] == str(type('')):
-        #         for o in range(len(obj)):
+        #         for o in list(range(len(obj))):
         #             obj.pop(0)
         #         for p, pro in enumerate(prop):
         #             obj.append(prop[p][0])

@@ -49,11 +49,11 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
 
     def test_mark_columns(self):
         self.test_xls_table.mark_columns('SectionName', 'Path', 'Value')
-        self.assertItemsEqual(self.test_xls_table._marked_cols, ['SectionName',
-                                                                 'Path',
-                                                                 'Value'])
+        self.assertListEqual(self.test_xls_table._marked_cols, ['SectionName',
+                                                                'Path',
+                                                                'Value'])
         self.test_xls_table.mark_columns('DataUnit')
-        self.assertItemsEqual(self.test_xls_table._marked_cols, ['DataUnit'])
+        self.assertListEqual(self.test_xls_table._marked_cols, ['DataUnit'])
 
     def test_highlight_defaults(self):
         self.test_xls_table.highlight_defaults = True
@@ -120,12 +120,12 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
-                        # if its a date,convert it to a tuple
+                        # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
                     self.assertEquals(value, expected[row][col])
 
@@ -136,8 +136,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         expected = [['Document Information', 'author', '', 'date',
                      '', 'repository', '', 'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
-                    ['/section1', 'section1', 'property1','','','','','','',''],
-                    ['/section2', 'section2', 'property1','','','','','','','']]
+                    ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
+                    ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_2samerows_test_odml)
 
@@ -153,8 +153,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
 
-            for row in range(worksheet.nrows):
-                for col in range(worksheet.ncols):
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
 

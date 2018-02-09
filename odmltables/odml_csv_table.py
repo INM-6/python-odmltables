@@ -34,10 +34,10 @@ class OdmlCsvTable(OdmlTable):
 
         self.consistency_check()
 
-        with open(save_to, 'wb') as csvfile:
+        with open(save_to, 'w') as csvfile:
 
             len_docdict = 0 if not self._docdict else len(self._docdict)
-            fieldnames = range(max(len(self._header), len_docdict * 2 + 1))
+            fieldnames = list(range(max(len(self._header), len_docdict * 2 + 1)))
 
             csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames,
                                        dialect='excel',
@@ -90,7 +90,7 @@ class OdmlCsvTable(OdmlTable):
                        for h in self._header if h is not None}
 
                 # check if row is empty, otherwise write it to the csv-file
-                if not (row.values() == ['' for r in row]):
+                if not (list(row.values()) == ['' for r in row]):
                     csvwriter.writerow(row)
                 else:
                     pass

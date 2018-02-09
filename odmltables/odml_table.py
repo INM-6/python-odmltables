@@ -158,7 +158,7 @@ class OdmlTable(object):
         '''
         if self._docdict == None:
             self._docdict = {}
-        for col_id in range(int(len(row) / 2)):
+        for col_id in list(range(int(len(row) / 2))):
             if row[2 * col_id + 1] != '':
                 key = row[2 * col_id + 1]
                 # in case last entry was empty and document
@@ -207,7 +207,7 @@ class OdmlTable(object):
         :type load_from: string
         """
         # create a inverted header_titles dictionary for an inverted lookup
-        inv_header_titles = {v: k for k, v in self._header_titles.items()}
+        inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
         self._odmldict = []
         workbook = xlrd.open_workbook(load_from)
@@ -229,7 +229,7 @@ class OdmlTable(object):
             # read the header
             header = [h.value for h in header_row]
             # strip trailing empty cells from header
-            for i in range(len(header_row) - 1, -1, -1):
+            for i in list(range(len(header_row) - 1, -1, -1)):
                 if header_row[i].ctype == 0:
                     header.pop(i)
                 else:
@@ -259,7 +259,7 @@ class OdmlTable(object):
                        "DataUncertainty": "",
                        "odmlDatatype": ""}
 
-            for row_n in range(row, worksheet.nrows):
+            for row_n in list(range(row, worksheet.nrows)):
                 current_dic = {"Path": "",
                                "SectionName": "",
                                "SectionType": "",
@@ -272,7 +272,7 @@ class OdmlTable(object):
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
 
-                for col_n in range(n_cols):
+                for col_n in list(range(n_cols)):
                     cell = worksheet.cell(row_n, col_n)
                     value = cell.value
 
@@ -334,15 +334,15 @@ class OdmlTable(object):
         gui only
         :return:
         '''
-        with open(load_from, 'rb') as csvfile:
+        with open(load_from, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            row = csvreader.next()
+            row = next(csvreader)
 
             # check if first line contains document information
             if row[0] == 'Document Information':
                 try:
-                    row = csvreader.next()
+                    row = next(csvreader)
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
                                   ' Filename "%s"' % load_from)
@@ -365,18 +365,18 @@ class OdmlTable(object):
 
         self._odmldict = []
         # create a inverted header_titles dictionary for an inverted lookup
-        inv_header_titles = {v: k for k, v in self._header_titles.items()}
+        inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
-        with open(load_from, 'rb') as csvfile:
+        with open(load_from, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
 
-            row = csvreader.next()
+            row = next(csvreader)
 
             # check if first line contains document information
             if row[0] == 'Document Information':
                 self._get_docdict(row)
                 try:
-                    row = csvreader.next()
+                    row = next(csvreader)
                 except StopIteration():
                     raise IOError('Csv file does not contain header row.'
                                   ' Filename "%s"' % load_from)
@@ -425,7 +425,7 @@ class OdmlTable(object):
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
 
-                for col_n in range(len(row)):
+                for col_n in list(range(len(row))):
                     # using only columns with header
                     if col_n in header_title_order:
                         current_dic[header_title_order[col_n]] = row[col_n]
@@ -751,7 +751,7 @@ class OdmlTable(object):
             if mode == 'strict':
                 if (len(prop1.values) != 1) or \
                         (prop1.values[0].data not in
-                             self.odtypes._basedtypes.values()):
+                             list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
                                                                 prop1.values))
@@ -902,8 +902,8 @@ class OdmlDtypes(object):
     def valid_dtypes(self):
         # if not done yet: generate validDtype list with unique entries
         if self._validDtypes == None:
-            validDtypes = list(self._basedtypes.keys())
-            for syn in self._synonyms.keys():
+            validDtypes = list(self._basedtypes)
+            for syn in list(self._synonyms):
                 if syn not in validDtypes:
                     validDtypes.append(syn)
             self._validDtypes = validDtypes
@@ -938,7 +938,7 @@ class OdmlDtypes(object):
 
     @property
     def basedtypes(self):
-        return self._basedtypes.keys()
+        return list(self._basedtypes)
 
     def add_basedtypes(self, basedtype, default_value):
         if basedtype in self._basedtypes:
