@@ -417,68 +417,52 @@ def setup_tutorodml():
     # ADDING PROPERTIES
     parent = doc['MySection']
     parent.append(odml.Property(name='MyFirstProperty',
-                                value=odml.Value('MyFirstValue',
-                                                 dtype='str',
-                                                 unit='',
-                                                 uncertainty='',
-                                                 definition='<Describe the '
-                                                            'meaning of this '
-                                                            'value in more '
-                                                            'detail here.>'),
+                                value='MyFirstValue',
+                                dtype='str',
+                                unit='',
+                                uncertainty='',
                                 definition='<Enter a short definition of '
-                                           'the property described here>'))
+                                           'the property and the associated '
+                                           'value described here>'))
     parent.append(odml.Property(name='OneMoreProperty',
-                                value=odml.Value(2.001,
-                                                 dtype='float',
-                                                 unit='mm',
-                                                 uncertainty=0.02,
-                                                 definition='A section can '
-                                                            'have more than '
-                                                            'one property '
-                                                            'attached and a '
-                                                            'value can be of '
-                                                            'different type '
-                                                            'than string.'),
-                                definition='<Enter a short definition of '
-                                           'the property described here>'))
+                                value=2.001,
+                                dtype='float',
+                                unit='mm',
+                                uncertainty=0.02,
+                                definition='A section can have more than '
+                                           'one property attached and a '
+                                           'value can be of different type '
+                                           'than string.'))
 
     # ADDING MORE VALUES
     parent = doc['MySection'].properties['OneMoreProperty']
-    parent.append(odml.Value(4.,
-                             dtype='float',
-                             unit='',
-                             uncertainty=0.4,
-                             definition='A property can have more than one '
-                                        'value attached.'))
+    parent.value=4.
+    parent.dtype='float'
+    parent.unit=''
+    parent.uncertainty=0.4
+    parent.definition='A property can have more than one value attached.'
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
-                                value=odml.Value(-1,
-                                                 dtype='int',
-                                                 unit='',
-                                                 uncertainty='',
-                                                 definition='This integer '
-                                                            'value still '
-                                                            'contains the '
-                                                            'default value '
-                                                            '"-1", which can '
-                                                            'be highlighted '
-                                                            'using '
-                                                            'odml-tables.'),
+                                value=-1,
+                                dtype='int',
+                                unit='',
+                                uncertainty='',
                                 definition='This property contains an '
-                                           'empty/default value.'))
+                                           'empty/default value.'
+                                           'The integer value still '
+                                           'contains the default value '
+                                           '"-1", which can be highlighted '
+                                           'using odml-tables.'))
 
     parent = doc['OneMoreSection']['MySubsection']
     parent.append(odml.Property(name='MyLastProperty',
-                                value=odml.Value(
-                                        datetime.datetime.today().date(),
-                                        dtype='date',
-                                        unit='',
-                                        uncertainty='',
-                                        definition='This value '
-                                                   'contains todays '
-                                                   'date.'),
+                                value=datetime.datetime.today().date(),
+                                dtype='date',
+                                unit='',
+                                uncertainty='',
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'
-                                           ' "path to section" column.'))
+                                           ' "path to section" column.'
+                                           'The value contains todays date.'))
     return doc

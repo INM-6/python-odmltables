@@ -38,39 +38,36 @@ def create_odmltable_example():
 
     parent.append(odml.Property(name='Species',
                                 definition='Binomial species name',
-                                value=odml.Value(data=species,
-                                                 dtype=odml.DType.string)))
+                                value=species,
+                                dtype=odml.DType.string))
 
     parent.append(odml.Property(name='Gender',
-                                definition='',
-                                value=odml.Value(data=gender,
-                                                 definition='Gender (male or '
-                                                            'female)',
-                                                 dtype=odml.DType.string)))
+                                definition='Gender (male or female)',
+                                value=gender,
+                                dtype=odml.DType.string))
 
     parent.append(odml.Property(name='Weight',
-                                value=odml.Value(data=weight,
-                                                 dtype=odml.DType.float,
-                                                 unit='kg',
-                                                 uncertainty=5)))
+                                value=weight,
+                                dtype=odml.DType.float,
+                                unit='kg',
+                                uncertainty=5))
 
     parent = doc['Subject']['Training']
-    parent.append(odml.Property(name='Period',
-                                definition='start and end date of training',
-                                value=[odml.Value(data=start_date,
-                                                  definition='start date of '
-                                                             'training',
-                                                  dtype=odml.DType.date),
-                                       odml.Value(data=end_date,
-                                                  definition='end date of '
-                                                             'training',
-                                                  dtype=odml.DType.date)]))
+    parent.append(odml.Property(name='PeriodStart',
+                                definition='start date of training',
+                                value=start_date,
+                                dtype=odml.DType.date))
+
+    parent.append(odml.Property(name='PeriodEnd',
+                                definition='end date of training',
+                                value=end_date,
+                                dtype=odml.DType.date))
 
     parent.append(odml.Property(name='Duration',
                                 definition='Duration of the training',
-                                value=odml.Value(data=duration,
-                                                 dtype=odml.DType.int,
-                                                 unit='work days')))
+                                value=duration,
+                                dtype=odml.DType.int,
+                                unit='work days'))
     return doc
 
 

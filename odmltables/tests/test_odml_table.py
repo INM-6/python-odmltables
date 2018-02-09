@@ -12,6 +12,7 @@ import unittest
 from future.utils import iteritems
 
 import odml
+from odml import DType
 from odmltables.odml_table import OdmlTable
 from odmltables.odml_table import OdmlDtypes
 from odmltables.odml_csv_table import OdmlCsvTable
@@ -237,8 +238,8 @@ class TestOdmlTable(unittest.TestCase):
         doc1 = create_compare_test(sections=2,properties=2,levels=2)
 
         # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
-                                                         dtype='str'))
+        doc1.sections[1].properties[0].value = 'testvalue'
+        doc1.sections[1].properties[0].dtype = DType.string
 
         # generate one additional Property, which is not present in doc2
         doc1.sections[0].append(odml.Property(name='Doc1Property2',value=5))
@@ -272,7 +273,8 @@ class TestOdmlTable(unittest.TestCase):
         doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
         # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].append(odml.Value(data='testvalue', dtype='str'))
+        doc1.sections[1].properties[0].value = 'testvalue'
+        doc1.sections[1].properties[0].dtype = DType.string
 
         self.test_table.load_from_odmldoc(doc1)
 
