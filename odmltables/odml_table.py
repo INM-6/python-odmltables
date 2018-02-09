@@ -776,45 +776,40 @@ class OdmlTable(object):
         """
         doc = odml.Document()
         oldpath = []
-        oldpropname = ''
-        oldpropdef = ''
-        valuelist = []
         parent = ''
 
         self.consistency_check()
 
         for dic in self._odmldict:
 
-            # get the actual Value
-            value = odml.Value(data=dic['Value'], dtype=dic['odmlDatatype'])
-            if 'ValueDefinition' in self._header:
-                value.definition = dic['ValueDefinition']
-            if 'DataUnit' in self._header:
-                value.unit = dic['DataUnit']
-            if 'DataUncertainty' in self._header:
-                value.uncertainty = dic['DataUncertainty']
-
             if dic['Path'] == oldpath:
-                # parent is still the same
-                if dic['PropertyName'] == oldpropname:
-                    # still the same property
-                    valuelist.append(value)
-                else:
-                    prop = odml.Property(name=oldpropname, value=valuelist)
-                    if 'PropertyDefinition' in self._header:
-                        prop.definition = oldpropdef
-                    parent.append(prop)
-                    valuelist = [value]
+                prop = odml.Property(name=dic['PropertyName'],
+                                     value=dic['Value'],
+                                     dtype=dic['odmlDatatype'])
+
+                if 'PropertyDefinition' in self._header:
+                    prop.definition = dic['PropertyDefinition']
+                if 'DataUnit' in self._header:
+                    prop.unit = dic['DataUnit']
+                if 'DataUncertainty' in self._header:
+                    prop.uncertainty = dic['DataUncertainty']
+
+                parent.append(prop)
             else:
 
                 if parent != '':
-                    prop = odml.Property(name=oldpropname, value=valuelist)
+                    prop = odml.Property(name=dic['PropertyName'],
+                                         value=dic['Value'],
+                                         dtype=dic['odmlDatatype'])
+
                     if 'PropertyDefinition' in self._header:
-                        prop.definition = oldpropdef
+                        prop.definition = dic['PropertyDefinition']
+                    if 'DataUnit' in self._header:
+                        prop.unit = dic['DataUnit']
+                    if 'DataUncertainty' in self._header:
+                        prop.uncertainty = dic['DataUncertainty']
+
                     parent.append(prop)
-                    valuelist = [value]
-                else:
-                    valuelist.append(value)
 
                 parent = doc
                 for section in dic['Path'].split('/')[1:]:
@@ -830,13 +825,18 @@ class OdmlTable(object):
                     parent.definition = dic['SectionDefinition']
 
             oldpath = dic['Path']
-            oldpropname = dic['PropertyName']
-            if 'PropertyDefinition' in self._header:
-                oldpropdef = dic['PropertyDefinition']
 
-        prop = odml.Property(name=oldpropname, value=valuelist)
+        prop = odml.Property(name=dic['PropertyName'],
+                             value=dic['Value'],
+                             dtype=dic['odmlDatatype'])
+
         if 'PropertyDefinition' in self._header:
-            prop.definition = oldpropdef
+            prop.definition = dic['PropertyDefinition']
+        if 'DataUnit' in self._header:
+            prop.unit = dic['DataUnit']
+        if 'DataUncertainty' in self._header:
+            prop.uncertainty = dic['DataUncertainty']
+
         parent.append(prop)
 
         return doc
@@ -1006,6 +1006,6 @@ class OdmlDtypes(object):
             except ValueError:
                 result = eval('%s(%s)' % (dtype, value))
         else:
-            raise TypeError('Unkown dtype {0}'.format(dtype))
+            raise TypeError('Unknown dtype {0}'.format(dtype))
 
         return result
