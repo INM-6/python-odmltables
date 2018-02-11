@@ -286,7 +286,7 @@ class TestOdmlTable(unittest.TestCase):
 
     def test_strict_merge(self):
         doc1 = create_compare_test(sections=0,properties=1,levels=2)
-        doc1.sections[0].properties[0].values[0].data = -1
+        doc1.sections[0].properties[0].value[0] = -1
         self.test_table.load_from_odmldoc(doc1)
 
         doc2 = create_compare_test(sections=0,properties=1,levels=2)
