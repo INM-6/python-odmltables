@@ -725,6 +725,7 @@ class OdmlTable(object):
                         sec1.properties.append(prop2)
 
 
+    # TODO adjust function to new value model
     def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
         """
         Merging values of odml documents, which contain the IDENTICAL
@@ -740,25 +741,25 @@ class OdmlTable(object):
             prop1 = doc1.get_property_by_path(path)
 
             if mode == 'strict':
-                if (len(prop1.values) != 1) or \
+                if (len(prop1.value) != 1) or \
                         (prop1.value[0] not in
                              list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
-                                                                prop1.values))
+                                                                prop1.value))
 
             if mode in ['overwrite', 'strict']:
                 # removing old values, but keeping first element, because a
                 # property needs to contain at least one value at any time
                 if prop1 != prop2:  # properties can be identical, when section
                     #  was copied. Then no value transfer is necessary.
-                    for val in prop1.values[1:]:
+                    for val in prop1.value[1:]:
                         prop1.remove(val)
                     # adding new values (which is at least one, see comment
                     # above)
-                    for val in prop2.values:
+                    for val in prop2.value:
                         prop1.append(val)
-                    prop1.remove(prop1.values[0])
+                    prop1.remove(prop1.value[0])
 
     def write2file(self, save_to):
         """

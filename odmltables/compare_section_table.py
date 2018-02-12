@@ -65,7 +65,7 @@ class CompareSectionTable():
                 if isinstance(prop.value, list) and len(prop.value) > 1:
                     warnings.warn('Property %s contains %i values. Only '
                                   'showing first one in comparison table'
-                                  '' % (prop.name, len(prop.values)))
+                                  '' % (prop.name, len(prop.value)))
             sec_ind += 1
 
         if self.include_all:
