@@ -239,8 +239,7 @@ class FilterPage(QIWizardPage):
 
         self.odmltreeheaders = ['Content',
                                 'Value', 'DataUncertainty', 'DataUnit',
-                                'odmlDatatype', 'ValueDefinition',
-                                'PropertyName', 'PropertyDefinition',
+                                'odmlDatatype', 'PropertyName', 'PropertyDefinition',
                                 'SectionName', 'SectionType',
                                 'SectionDefinition']
 
@@ -890,8 +889,7 @@ class FilterPage(QIWizardPage):
         self.odmltree.expandToDepth(0)
 
     # ['Content','Value','DataUncertainty','DataUnit','odmlDatatype',
-    #                                 'Value','ValueDefinition',
-    #                                 'PropertyName','PropertyDefinition',
+    #                                 'Value', 'PropertyName','PropertyDefinition',
     #                                 'SectionName','SectionType',
     # 'SectionDefinition']
 
@@ -942,7 +940,6 @@ class FilterPage(QIWizardPage):
                        value['DataUncertainty'],
                        value['DataUnit'],
                        value['odmlDatatype'],
-                       value['ValueDefinition'],
                        '', '', '', '', '']
                   for v, value in enumerate(table._odmldict)}
         self.replace_Nones(values)

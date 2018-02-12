@@ -48,7 +48,6 @@ class OdmlTable(object):
                                "PropertyName": "Property Name",
                                "PropertyDefinition": "Property Definition",
                                "Value": "Value",
-                               "ValueDefinition": "Value Definition",
                                "DataUnit": "Data Unit",
                                "DataUncertainty": "Data Uncertainty",
                                "odmlDatatype": "odML Data Type"}
@@ -77,7 +76,6 @@ class OdmlTable(object):
         # In odml 1.4 properties are the leaves of the odml tree; unwrap from there.
         props = list(doc.iterproperties())
 
-        # TODO 'ValueDefinition' is no longer available in odml 1.4; remove from codebase
         odmldict = [{'Path': p.get_path(),
                      'SectionName': p.parent.name,
                      'SectionType': p.parent.type,
@@ -245,7 +243,6 @@ class OdmlTable(object):
                        "PropertyName": "",
                        "PropertyDefinition": "",
                        "Value": "",
-                       "ValueDefinition": "",
                        "DataUnit": "",
                        "DataUncertainty": "",
                        "odmlDatatype": ""}
@@ -258,7 +255,6 @@ class OdmlTable(object):
                                "PropertyName": "",
                                "PropertyDefinition": "",
                                "Value": "",
-                               "ValueDefinition": "",
                                "DataUnit": "",
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
@@ -397,7 +393,6 @@ class OdmlTable(object):
                        "PropertyName": "",
                        "PropertyDefinition": "",
                        "Value": "",
-                       "ValueDefinition": "",
                        "DataUnit": "",
                        "DataUncertainty": "",
                        "odmlDatatype": ""}
@@ -411,7 +406,6 @@ class OdmlTable(object):
                                "PropertyName": "",
                                "PropertyDefinition": "",
                                "Value": "",
-                               "ValueDefinition": "",
                                "DataUnit": "",
                                "DataUncertainty": "",
                                "odmlDatatype": ""}
@@ -467,8 +461,6 @@ class OdmlTable(object):
         :param PropertyDefinition: Name of the 'Property Definition'-Column in
             the table
         :param Value: Name of the 'Value'-Column in the table
-        :param ValueDefinition: Name of the 'Value Definition'-Column in the
-            table
         :param DataUnit: Name of the 'Data Unit'-Column in the table
         :param DataUncertainty: Name of the 'Data Uncertainty'-Column in the
             table
@@ -480,7 +472,6 @@ class OdmlTable(object):
         :type ProgertyName: string, optional
         :type PropertyDefinition: string, optional
         :type Value: string, optional
-        :type ValueDefinition: string, optional
         :type DataUnit: string, optional
         :type DataUncertainty: string, optional
         :type odmlDatatype: string, optional
@@ -519,8 +510,6 @@ class OdmlTable(object):
         :param PropertyDefinition: Position of the 'Property Definition'-Column
             in the table
         :param Value: Position of the 'Value'-Column in the table
-        :param ValueDefinition: Position of the 'Value Definition'-Column in
-            the table
         :param DataUnit: Position of the 'Data Unit'-Column in the table
         :param DataUncertainty: Position of the 'Data Uncertainty'-Column in
             the table
@@ -533,7 +522,6 @@ class OdmlTable(object):
         :type PropertyName: int, optional
         :type PropertyDefinition: int, optional
         :type Value: int, optional
-        :type ValueDefinition: int,
         :type DataUnit: int, optional
         :type DataUncertainty: int, optional
         :type odmlDatatype: int, optional

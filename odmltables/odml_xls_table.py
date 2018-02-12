@@ -129,7 +129,6 @@ class OdmlXlsTable(OdmlTable):
           - 'PropertyName'
           - 'PropertyDefinition'
           - 'Value'
-          - 'ValueDefinition'
           - 'DataUnit'
           - 'DataUncertainty'
           - 'odmlDatatype'.

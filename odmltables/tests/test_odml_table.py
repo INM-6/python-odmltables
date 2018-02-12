@@ -41,7 +41,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
                     else '' for key in dic} for dic in table._odmldict]
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
-                            PropertyDefinition=6, Value=7, ValueDefinition=8,
+                            PropertyDefinition=6, Value=7,
                             DataUnit=9, DataUncertainty=10, odmlDatatype=11)
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_csv_table(self.filename + '.' +
@@ -57,7 +57,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
                     else '' for key in dic} for dic in table._odmldict]
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
-                            PropertyDefinition=6, Value=7, ValueDefinition=8,
+                            PropertyDefinition=6, Value=7,
                             DataUnit=9, DataUncertainty=10, odmlDatatype=11)
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_xls_table(self.filename + '.' +
@@ -91,7 +91,6 @@ class TestLoadSaveOdml(unittest.TestCase):
                                    'odmlDatatype': 'text',
                                    'DataUnit': None,
                                    'SectionType': 'undefined',
-                                   'ValueDefinition': None,
                                    'DataUncertainty': None,
                                    'SectionDefinition': None,
                                    'Path': '/section1'}]
@@ -135,8 +134,7 @@ class TestLoadSaveOdml(unittest.TestCase):
 
         self.test_table.change_header(Path=1, SectionName=2, SectionType=3,
                                       SectionDefinition=4, PropertyName=5,
-                                      PropertyDefinition=6, Value=7,
-                                      ValueDefinition=8, DataUnit=9,
+                                      PropertyDefinition=6, Value=7, DataUnit=9,
                                       DataUncertainty=10, odmlDatatype=11)
         self.test_table.write2odml(file2)
 
@@ -223,7 +221,6 @@ class TestOdmlTable(unittest.TestCase):
                     "PropertyName": "Eigenschaft",
                     "PropertyDefinition": "Property Definition",
                     "Value": "Wert",
-                    "ValueDefinition": "Value Definition",
                     "DataUnit": "Einheit",
                     "DataUncertainty": "Data Uncertainty",
                     "odmlDatatype": "Datentyp"}

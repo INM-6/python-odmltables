@@ -21,7 +21,6 @@ This table is basically just a flat version of the hierarchical odML file. Every
 * **PropertyName** The name of the property the value belongs to (required).
 * **PropertyDefinition** The definition of the property (optional).
 * **Value** The metadata value itself. Every row must have a value (required).
-* **ValueDefinition** The definition of the value (optional).
 * **DataUnit** The unit of measurement of the value (optional).
 * **DataUncertainty** The uncertainty of the value (optional).
 * **odmlDatatype** The odML data type of the value (required). Note that this may differ from the datatypes used to represent the value in Python or Excel.
