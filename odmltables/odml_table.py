@@ -77,10 +77,8 @@ class OdmlTable(object):
         props = list(doc.iterproperties())
 
         odmldict = [{'Path': p.get_path(),
-                     'SectionName': p.parent.name,
                      'SectionType': p.parent.type,
                      'SectionDefinition': p.parent.definition,
-                     'PropertyName': p.name,
                      'PropertyDefinition': p.definition,
                      # Since value now returns a list the check for bool might be useless.
                      'Value': p.value if type(p.value) is not bool else str(p.value),
@@ -93,7 +91,7 @@ class OdmlTable(object):
         return odmldict
 
     def _sort_odmldict(self, odmldict):
-        return sorted(odmldict, key=lambda x: (x['Path'], x['PropertyName']))
+        return sorted(odmldict, key=lambda x: x['Path'])
 
 
     def _create_documentdict(self, doc):
@@ -237,10 +235,8 @@ class OdmlTable(object):
             row += 1
 
             old_dic = {"Path": "",
-                       "SectionName": "",
                        "SectionType": "",
                        "SectionDefinition": "",
-                       "PropertyName": "",
                        "PropertyDefinition": "",
                        "Value": "",
                        "DataUnit": "",
@@ -249,10 +245,8 @@ class OdmlTable(object):
 
             for row_n in list(range(row, worksheet.nrows)):
                 current_dic = {"Path": "",
-                               "SectionName": "",
                                "SectionType": "",
                                "SectionDefinition": "",
-                               "PropertyName": "",
                                "PropertyDefinition": "",
                                "Value": "",
                                "DataUnit": "",
@@ -269,9 +263,8 @@ class OdmlTable(object):
                             current_dic['Path'] == old_dic['Path']):
                     # it is not the start of a new section
 
-                    if (current_dic['PropertyName'] == '' or
-                                current_dic['PropertyName'] ==
-                                old_dic['PropertyName']):
+                    if (current_dic['Path'].split(':')[1] == '' or
+                                current_dic['Path'].split(':')[1] == old_dic['Path'].split(':')[1]):
                         # old section, old property
                         for key in self._SECTION_INF:
                             current_dic[key] = old_dic[key]
@@ -387,10 +380,8 @@ class OdmlTable(object):
                 raise ValueError(err_msg)
 
             old_dic = {"Path": "",
-                       "SectionName": "",
                        "SectionType": "",
                        "SectionDefinition": "",
-                       "PropertyName": "",
                        "PropertyDefinition": "",
                        "Value": "",
                        "DataUnit": "",
@@ -400,10 +391,8 @@ class OdmlTable(object):
             for row in csvreader:
 
                 current_dic = {"Path": "",
-                               "SectionName": "",
                                "SectionType": "",
                                "SectionDefinition": "",
-                               "PropertyName": "",
                                "PropertyDefinition": "",
                                "Value": "",
                                "DataUnit": "",
@@ -415,13 +404,11 @@ class OdmlTable(object):
                     if col_n in header_title_order:
                         current_dic[header_title_order[col_n]] = row[col_n]
 
-                if (current_dic['Path'] == '' or
-                            current_dic['Path'] == old_dic['Path']):
+                if (current_dic['Path'].split(':')[0] == ''
+                    or current_dic['Path'].split(':')[0] == old_dic['Path'].split(':')[0]):
                     # it is not the start of a new section
 
-                    if (current_dic['PropertyName'] == ''
-                        or current_dic['PropertyName'] ==
-                            old_dic['PropertyName']):
+                    if current_dic['Path'] == '' or (current_dic['Path'] == old_dic['Path']):
                         # old section, old property
                         for key in self._SECTION_INF:
                             current_dic[key] = old_dic[key]

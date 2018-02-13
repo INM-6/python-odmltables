@@ -62,8 +62,11 @@ class OdmlCsvTable(OdmlTable):
                 # will be changed
                 tmp_row = dic.copy()
 
-                # removing section entries (if necessary)
+                # inflate dictionary to fit to column headers
+                tmp_row['Path'], tmp_row['PropertyName'] = tmp_row['Path'].split(':')
+                tmp_row['SectionName'] = tmp_row['Path'].split('/')[-1]
 
+                # removing section entries (if necessary)
                 if dic["Path"] == oldpath:
                     if not self.show_all_sections:
                         for h in self._SECTION_INF:
@@ -77,12 +80,12 @@ class OdmlCsvTable(OdmlTable):
 
                 # removing property entries (if neccessary)
 
-                if dic["PropertyName"] == oldprop:
+                if dic['Path'].split(':')[1] == oldprop:
                     if not self.show_all_properties:
                         for h in self._PROPERTY_INF:
                             tmp_row[h] = ""
                 else:
-                    oldprop = dic["PropertyName"]
+                    oldprop = dic['Path'].split(':')[1]
 
                 # eliminate those fields that wont show up in the table
 
