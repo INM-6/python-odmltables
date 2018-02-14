@@ -4,6 +4,7 @@
 """
 import os
 import re
+import copy
 import odml
 import csv
 import datetime
@@ -53,9 +54,8 @@ class OdmlTable(object):
                                "odmlDatatype": "odML Data Type"}
         self.show_all_sections = False
         self.show_all_properties = False
-        self._SECTION_INF = ["Path", "SectionName", "SectionType",
-                             "SectionDefinition"]
-        self._PROPERTY_INF = ["PropertyName", "PropertyDefinition"]
+        self._SECTION_INF = ["Path", "SectionType", "SectionDefinition"]
+        self._PROPERTY_INF = ["PropertyDefinition", "DataUnit", "DataUncertainty", "odmlDatatype"]
 
         if load_from is not None:
             filename, file_extension = os.path.splitext(load_from)
@@ -93,6 +93,10 @@ class OdmlTable(object):
     def _sort_odmldict(self, odmldict):
         return sorted(odmldict, key=lambda x: x['Path'])
 
+    def _split_path(self, dic):
+        path, property_name = dic['Path'].split(':')
+        section_name = path.split('/')[-1]
+        return path, section_name, property_name
 
     def _create_documentdict(self, doc):
         attributes = ['author', 'date', 'repository', 'version']
@@ -368,8 +372,7 @@ class OdmlTable(object):
                                   enumerate(row) if h != ''}
 
             # reconstruct headers
-            self._header = [inv_header_titles[h] if h != '' else None for h in
-                            row]
+            self._header = [inv_header_titles[h] if h != '' else None for h in row]
 
             must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
@@ -379,58 +382,71 @@ class OdmlTable(object):
                            " attributes: {0}").format(must_haves)
                 raise ValueError(err_msg)
 
-            old_dic = {"Path": "",
-                       "SectionType": "",
-                       "SectionDefinition": "",
-                       "PropertyDefinition": "",
-                       "Value": "",
-                       "DataUnit": "",
-                       "DataUncertainty": "",
-                       "odmlDatatype": ""}
+            current_dic = {"Path": "",
+                           "SectionType": "",
+                           "SectionDefinition": "",
+                           "PropertyDefinition": "",
+                           "Value": "",
+                           "DataUnit": "",
+                           "DataUncertainty": "",
+                           "odmlDatatype": ""}
 
-            for row in csvreader:
+            for row_id, row in enumerate(csvreader):
+                is_new_property = False
+                new_dic = {}
 
-                current_dic = {"Path": "",
-                               "SectionType": "",
-                               "SectionDefinition": "",
-                               "PropertyDefinition": "",
-                               "Value": "",
-                               "DataUnit": "",
-                               "DataUncertainty": "",
-                               "odmlDatatype": ""}
+                # current_dic = {"Path": "",
+                #                "SectionType": "",
+                #                "SectionDefinition": "",
+                #                "PropertyDefinition": "",
+                #                "Value": "",
+                #                "DataUnit": "",
+                #                "DataUncertainty": "",
+                #                "odmlDatatype": ""}
 
                 for col_n in list(range(len(row))):
                     # using only columns with header
                     if col_n in header_title_order:
-                        current_dic[header_title_order[col_n]] = row[col_n]
+                        new_dic[header_title_order[col_n]] = row[col_n]
 
-                if (current_dic['Path'].split(':')[0] == ''
-                    or current_dic['Path'].split(':')[0] == old_dic['Path'].split(':')[0]):
-                    # it is not the start of a new section
-
-                    if current_dic['Path'] == '' or (current_dic['Path'] == old_dic['Path']):
-                        # old section, old property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                        for key in self._PROPERTY_INF:
-                            current_dic[key] = old_dic[key]
-                    else:
-                        # old section, new property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                else:
-                    # new section, => new property
-                    pass
-
-                old_dic = current_dic.copy()
+                # update path and remove section and property names
+                new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+                new_dic.pop('PropertyName')
+                new_dic.pop('SectionName')
 
                 # convert to python datatypes
-                dtype = current_dic['odmlDatatype']
-                value = current_dic['Value']
+                dtype = new_dic['odmlDatatype']
+                value = new_dic['Value']
+                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
-                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
+                if (new_dic['Path'].split(':')[0] == ''
+                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+                    # it is not the start of a new section
 
-                self._odmldict.append(current_dic)
+                    if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+                        # old section, old property
+                        # for key in self._SECTION_INF:
+                        #     current_dic[key] = old_dic[key]
+                        # for key in self._PROPERTY_INF:
+                        #     current_dic[key] = old_dic[key]
+                        current_dic['Value'].extend(new_dic['Value'])
+                    else:
+                        # old section, new property
+                        for key in self._PROPERTY_INF:
+                            current_dic[key] = new_dic[key]
+                        is_new_property = True
+                else:
+                    is_new_property = True
+
+                if is_new_property and row_id > 0:
+                    self._odmldict.append(copy.deepcopy(current_dic))
+                    current_dic = new_dic
+
+            # copy final property
+            if row_id == 0:
+                self._odmldict.append(copy.deepcopy(new_dic))
+            else:
+                self._odmldict.append(copy.deepcopy(current_dic))
         self._odmldict = self._sort_odmldict(self._odmldict)
 
     def change_header_titles(self, **kwargs):
@@ -751,69 +767,40 @@ class OdmlTable(object):
         :return:
         """
         doc = odml.Document()
-        oldpath = []
+        oldpath = ''
         parent = ''
 
         self.consistency_check()
 
         for dic in self._odmldict:
+            # build property object
+            prop_name = self._split_path(dic)[-1]
+            prop = odml.Property(name=prop_name,
+                                 value=dic['Value'],
+                                 dtype=dic['odmlDatatype'])
 
-            if dic['Path'] == oldpath:
-                prop = odml.Property(name=dic['PropertyName'],
-                                     value=dic['Value'],
-                                     dtype=dic['odmlDatatype'])
+            if 'PropertyDefinition' in self._header:
+                prop.definition = dic['PropertyDefinition']
+            if 'DataUnit' in self._header:
+                prop.unit = dic['DataUnit']
+            if 'DataUncertainty' in self._header:
+                prop.uncertainty = dic['DataUncertainty']
 
-                if 'PropertyDefinition' in self._header:
-                    prop.definition = dic['PropertyDefinition']
-                if 'DataUnit' in self._header:
-                    prop.unit = dic['DataUnit']
-                if 'DataUncertainty' in self._header:
-                    prop.uncertainty = dic['DataUncertainty']
+            sec_path = dic['Path'].split(':')[0]
+            current_sec = doc
+            # build section tree for this property
+            for sec_pathlet in sec_path.split('/')[1:]:
+                # append new section if not present yet
+                if sec_pathlet not in current_sec.sections:
+                    current_sec.append(odml.Section(name=sec_pathlet))
+                current_sec = current_sec[sec_pathlet]
 
-                parent.append(prop)
-            else:
+            if 'SectionType' in self._header:
+                current_sec.type = dic['SectionType']
+            if 'SectionDefinition' in self._header:
+                current_sec.definition = dic['SectionDefinition']
 
-                if parent != '':
-                    prop = odml.Property(name=dic['PropertyName'],
-                                         value=dic['Value'],
-                                         dtype=dic['odmlDatatype'])
-
-                    if 'PropertyDefinition' in self._header:
-                        prop.definition = dic['PropertyDefinition']
-                    if 'DataUnit' in self._header:
-                        prop.unit = dic['DataUnit']
-                    if 'DataUncertainty' in self._header:
-                        prop.uncertainty = dic['DataUncertainty']
-
-                    parent.append(prop)
-
-                parent = doc
-                for section in dic['Path'].split('/')[1:]:
-                    try:
-                        parent = parent[section]
-                    except KeyError:
-                        parent.append(odml.Section(name=section))
-                        parent = parent[section]
-
-                if 'SectionType' in self._header:
-                    parent.type = dic['SectionType']
-                if 'SectionDefinition' in self._header:
-                    parent.definition = dic['SectionDefinition']
-
-            oldpath = dic['Path']
-
-        prop = odml.Property(name=dic['PropertyName'],
-                             value=dic['Value'],
-                             dtype=dic['odmlDatatype'])
-
-        if 'PropertyDefinition' in self._header:
-            prop.definition = dic['PropertyDefinition']
-        if 'DataUnit' in self._header:
-            prop.unit = dic['DataUnit']
-        if 'DataUncertainty' in self._header:
-            prop.uncertainty = dic['DataUncertainty']
-
-        parent.append(prop)
+            current_sec.append(prop)
 
         return doc
 

@@ -67,12 +67,12 @@ class OdmlCsvTable(OdmlTable):
                 tmp_row['SectionName'] = tmp_row['Path'].split('/')[-1]
 
                 # removing section entries (if necessary)
-                if dic["Path"] == oldpath:
+                if dic["Path"].split(':')[0] == oldpath:
                     if not self.show_all_sections:
-                        for h in self._SECTION_INF:
+                        for h in self._SECTION_INF + ['SectionName']:
                             tmp_row[h] = ""
                 else:
-                    oldpath = dic["Path"]
+                    oldpath = dic["Path"].split(':')[0]
                     # if a new section begins all property- and value-
                     # information should be written, even if its the same as
                     # in the line before, so oldvalinf and oldprop are reset
@@ -82,7 +82,7 @@ class OdmlCsvTable(OdmlTable):
 
                 if dic['Path'].split(':')[1] == oldprop:
                     if not self.show_all_properties:
-                        for h in self._PROPERTY_INF:
+                        for h in self._PROPERTY_INF + ['PropertyName']:
                             tmp_row[h] = ""
                 else:
                     oldprop = dic['Path'].split(':')[1]
@@ -92,8 +92,22 @@ class OdmlCsvTable(OdmlTable):
                 row = {header_list.index(self._header_titles[h]): tmp_row[h]
                        for h in self._header if h is not None}
 
-                # check if row is empty, otherwise write it to the csv-file
-                if not (list(row.values()) == ['' for r in row]):
-                    csvwriter.writerow(row)
-                else:
-                    pass
+                def write_row(row):
+                    # check if row is empty, otherwise write it to the csv-file
+                    if not (list(row.values()) == ['' for r in row]):
+                        csvwriter.writerow(row)
+                    else:
+                        pass
+
+                for v in dic['Value']:
+                    if 'Value' in header_list:
+                        row[header_list.index('Value')] = v
+                    write_row(row)
+                    # empty entries for further values to be added
+                    for h in self._header:
+                        if ((not self.show_all_properties
+                             and h in self._PROPERTY_INF + ['PropertyName']) or
+                            (not self.show_all_sections
+                             and h in self._SECTION_INF + ['SectionName'])):
+                            row[header_list.index(self._header_titles[h])] = ''
+

@@ -44,8 +44,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
                             PropertyDefinition=6, Value=7,
                             DataUnit=9, DataUncertainty=10, odmlDatatype=11)
         table.write2file(self.filename + '.' + self.filetype)
-        self.test_table.load_from_csv_table(self.filename + '.' +
-                                            self.filetype)
+        self.test_table.load_from_csv_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
         self.assertEquals(dict_in, dict_out)
 
@@ -85,15 +84,13 @@ class TestLoadSaveOdml(unittest.TestCase):
     def setUp(self):
         self.test_table = OdmlTable()
         self.expected_odmldict = [{'PropertyDefinition': None,
-                                   'SectionName': 'section1',
-                                   'PropertyName': 'property1',
-                                   'Value': 'bla',
+                                   'Value': ['bla'],
                                    'odmlDatatype': 'text',
                                    'DataUnit': None,
-                                   'SectionType': 'undefined',
+                                   'SectionType': None,
                                    'DataUncertainty': None,
                                    'SectionDefinition': None,
-                                   'Path': '/section1'}]
+                                   'Path': '/section1:property1'}]
 
     def test_load_from_file(self):
         """
