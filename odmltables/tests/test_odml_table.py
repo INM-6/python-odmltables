@@ -57,10 +57,9 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
                             PropertyDefinition=6, Value=7,
-                            DataUnit=9, DataUncertainty=10, odmlDatatype=11)
+                            DataUnit=8, DataUncertainty=9, odmlDatatype=10)
         table.write2file(self.filename + '.' + self.filetype)
-        self.test_table.load_from_xls_table(self.filename + '.' +
-                                            self.filetype)
+        self.test_table.load_from_xls_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
         self.assertEquals(dict_in, dict_out)
 

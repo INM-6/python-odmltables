@@ -197,25 +197,24 @@ class OdmlTable(object):
         :param load_from: name(path) of the xls-file
         :type load_from: string
         """
+
+        self._odmldict = []
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
-        self._odmldict = []
         workbook = xlrd.open_workbook(load_from)
-
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
-
-            row = 0
+            row_id = 0
 
             # read document information if present
             if worksheet.cell(0, 0).value == 'Document Information':
-                doc_row = [r.value for r in worksheet.row(row)]
+                doc_row = [r.value for r in worksheet.row(row_id)]
                 self._get_docdict(doc_row)
-                row += 1
+                row_id += 1
 
             # get number of non-empty odml colums
-            header_row = worksheet.row(row)
+            header_row = worksheet.row(row_id)
 
             # read the header
             header = [h.value for h in header_row]
@@ -228,69 +227,60 @@ class OdmlTable(object):
 
             n_cols = len(header)
             try:
-                self._header = [inv_header_titles[h] if h != '' else None for h in
-                            header]
+                self._header = [inv_header_titles[h] if h != '' else None for h in header]
             except KeyError as e:
                 if hasattr(e, 'message'):
                     m = e.message
                 else:
                     m = str(e)
                 raise ValueError('%s is not a valid header title.'%m)
-            row += 1
+            row_id += 1
 
-            old_dic = {"Path": "",
-                       "SectionType": "",
-                       "SectionDefinition": "",
-                       "PropertyDefinition": "",
-                       "Value": "",
-                       "DataUnit": "",
-                       "DataUncertainty": "",
-                       "odmlDatatype": ""}
+            # get column ids of non-empty header cells
+            header_title_ids = {h: id for id, h in
+                                enumerate(self._header) if h != ''}
+            header_title_order = {id: h for id, h in
+                                  enumerate(self._header) if h != ''}
 
-            for row_n in list(range(row, worksheet.nrows)):
-                current_dic = {"Path": "",
-                               "SectionType": "",
-                               "SectionDefinition": "",
-                               "PropertyDefinition": "",
-                               "Value": "",
-                               "DataUnit": "",
-                               "DataUncertainty": "",
-                               "odmlDatatype": ""}
+            must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
-                for col_n in list(range(n_cols)):
-                    cell = worksheet.cell(row_n, col_n)
-                    value = cell.value
+            # check, if all of the needed information are in the table
+            if any([(m not in self._header) for m in must_haves]):
+                err_msg = ("your table has to contain all of the following " +
+                           " attributes: {0}").format(must_haves)
+                raise ValueError(err_msg)
 
-                    current_dic[self._header[col_n]] = value
+            current_dic = {"Path": "",
+                           "SectionType": "",
+                           "SectionDefinition": "",
+                           "PropertyDefinition": "",
+                           "Value": "",
+                           "DataUnit": "",
+                           "DataUncertainty": "",
+                           "odmlDatatype": ""}
 
-                if (current_dic['Path'] == '' or
-                            current_dic['Path'] == old_dic['Path']):
-                    # it is not the start of a new section
+            header_end_row_id = row_id
+            for row_id in range(header_end_row_id, worksheet.nrows):
+                row = worksheet.row_values(row_id)
+                is_new_property = False
+                new_dic = {}
 
-                    if (current_dic['Path'].split(':')[1] == '' or
-                                current_dic['Path'].split(':')[1] == old_dic['Path'].split(':')[1]):
-                        # old section, old property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                        for key in self._PROPERTY_INF:
-                            current_dic[key] = old_dic[key]
-                    else:
-                        # old section, new property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                else:
-                    # new section, => new property
-                    pass
+                for col_n in list(range(len(row))):
+                    # using only columns with header
+                    if col_n in header_title_order and header_title_order[col_n] is not None:
+                        new_dic[header_title_order[col_n]] = row[col_n]
 
-                old_dic = current_dic.copy()
+                # update path and remove section and property names
+                new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+                new_dic.pop('PropertyName')
+                new_dic.pop('SectionName')
 
                 # convert to python datatypes
-                dtype = current_dic['odmlDatatype']
-                value = current_dic['Value']
-
+                dtype = new_dic['odmlDatatype']
+                value = new_dic['Value']
                 if ('date' in dtype or 'time' in dtype) and (value != ''):
                     if isinstance(value,float):
-                        value = xlrd.xldate_as_tuple(value, workbook.datemode)
+                                    value = xlrd.xldate_as_tuple(value, workbook.datemode)
                     elif isinstance(value, unicode):
                         # try explicit conversion of unicode like '2000-03-23'
                         m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
@@ -306,9 +296,32 @@ class OdmlTable(object):
                         raise TypeError('Expected xls date or time object, '
                                         'but got instead %s of %s'
                                         ''%(value,type(value)))
-                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
+                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
-                self._odmldict.append(current_dic)
+                if (new_dic['Path'].split(':')[0] == ''
+                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+                    # it is not the start of a new section
+
+                    if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+                        # old section, old property
+                        current_dic['Value'].extend(new_dic['Value'])
+                    else:
+                        # old section, new property
+                        for key in self._PROPERTY_INF:
+                            current_dic[key] = new_dic[key]
+                        is_new_property = True
+                else:
+                    is_new_property = True
+
+                if is_new_property and row_id > header_end_row_id:
+                    self._odmldict.append(copy.deepcopy(current_dic))
+                    current_dic = new_dic
+
+            # copy final property
+            if row_id <= header_end_row_id:
+                self._odmldict.append(copy.deepcopy(new_dic))
+            else:
+                self._odmldict.append(copy.deepcopy(current_dic))
         self._odmldict = self._sort_odmldict(self._odmldict)
 
     @staticmethod
@@ -935,39 +948,48 @@ class OdmlDtypes(object):
             dtype = self._synonyms[dtype]
 
         if dtype == 'datetime':
-            try:
-                result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-            except TypeError:
-                result = datetime.datetime(*value)
+            if isinstance(value, datetime.datetime):
+                result = value
+            else:
+                try:
+                    result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                except TypeError:
+                    result = datetime.datetime(*value)
         elif dtype == 'datetime.date':
-            try:
-                result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
-            except ValueError:
+            if isinstance(value, datetime.date):
+                result = value
+            else:
                 try:
-                    result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+                    result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
                 except ValueError:
-                    raise ValueError(
-                            'The value "%s" can not be converted to a date as '
-                            'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
-            except TypeError:
-                result = datetime.datetime(*value).date()
+                    try:
+                        result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+                    except ValueError:
+                        raise ValueError(
+                                'The value "%s" can not be converted to a date as '
+                                'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
+                except TypeError:
+                    result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':
-            try:
-                result = datetime.datetime.strptime(value, '%H:%M:%S').time()
-            except TypeError:
+            if isinstance(value, datetime.time):
+                result = value
+            else:
                 try:
-                    result = datetime.datetime(*value).time()
-                except ValueError:
-                    result = datetime.time(*value[-3:])
+                    result = datetime.datetime.strptime(value, '%H:%M:%S').time()
+                except TypeError:
+                    try:
+                        result = datetime.datetime(*value).time()
+                    except ValueError:
+                        result = datetime.time(*value[-3:])
 
         elif dtype == 'url':
             result = str(value)
 
         elif dtype in self._basedtypes:
             try:
-                result = eval('%s("%s")' % (dtype, value))
-            except ValueError:
                 result = eval('%s(%s)' % (dtype, value))
+            except Exception:
+                result = eval('%s("%s")' % (dtype, value))
         else:
             raise TypeError('Unknown dtype {0}'.format(dtype))
 

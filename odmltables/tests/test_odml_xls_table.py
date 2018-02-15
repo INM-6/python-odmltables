@@ -83,6 +83,31 @@ class TestOdmlXlsTable(unittest.TestCase):
         test for all datatypes, if the information in the table is right
         """
 
+        # input = [['Document Information', 'author', '', 'date', '', 'repository', '','version', '0.1'],
+        #             ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '','', ''],
+        #             ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 't', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', ''],
+        #             ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
+        #             ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '','', ''],
+        #             ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
+        #             ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
+        #             ['/texts/string-like', 'String', 'this is a string', 'string', '', '','', '',''],
+        #             ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
+
         expected = [['Document Information', 'author', '', 'date', '', 'repository', '','version', '0.1'],
                     ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '','', ''],
                     ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
@@ -91,22 +116,23 @@ class TestOdmlXlsTable(unittest.TestCase):
                     ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
                     ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
                     ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
                     ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 't', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
                     ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
                     ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '','', ''],
                     ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
                     ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
                     ['/texts/string-like', 'String', 'this is a string', 'string', '', '','', '',''],
                     ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
+
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -124,6 +150,7 @@ class TestOdmlXlsTable(unittest.TestCase):
                 for col in list(range(worksheet.ncols)):
                     cell = worksheet.cell(row, col)
                     value = cell.value
+                    print(value)
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
@@ -133,8 +160,7 @@ class TestOdmlXlsTable(unittest.TestCase):
         """
         test, if emtpy rows appear in the table
         """
-        expected = [['Document Information', 'author', '', 'date',
-                     '', 'repository', '', 'version', ''],
+        expected = [['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
                     ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
                     ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
