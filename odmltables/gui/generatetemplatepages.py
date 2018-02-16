@@ -13,7 +13,6 @@ import odml
 from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 from .pageutils import QIWizardPage, clearLayout, shorten_path
 
-
 mandatory_headers = ['Path to Section',
                      'Property Name',
                      'Value',
@@ -26,10 +25,10 @@ class HeaderOrderPage(QIWizardPage):
 
         self.setTitle("Customize the output table")
         self.setSubTitle(
-                "Select the columns for the output table by putting them in "
-                "the "
-                "list of selected columns and arranging the order using the "
-                "buttons to the right")
+            "Select the columns for the output table by putting them in "
+            "the "
+            "list of selected columns and arranging the order using the "
+            "buttons to the right")
 
         # Set up layout
         vbox = Qtg.QVBoxLayout()
@@ -131,8 +130,8 @@ class HeaderOrderPage(QIWizardPage):
         # sort rows in descending order in order to compensate shifting due
         # to takeItem
         rows = sorted(
-                [index.row() for index in self.header_list.selectedIndexes()],
-                reverse=True)
+            [index.row() for index in self.header_list.selectedIndexes()],
+            reverse=True)
         for row in rows:
             self.selection_list.addItem(self.header_list.takeItem(row))
 
@@ -145,13 +144,13 @@ class HeaderOrderPage(QIWizardPage):
         for row in rows:
             if self.selection_list.item(row).text() in self.mandatory_headers:
                 Qtg.QMessageBox.warning(self, self.tr("Mandatory header"),
-                                    self.tr(
+                                        self.tr(
                                             "'%s' is a mandatory header. This "
                                             "header is necessary to "
                                             "be able to convert the table "
                                             "into an "
                                             "odml." % self.selection_list.item(
-                                                    row).text()))
+                                                row).text()))
             else:
                 self.header_list.addItem(self.selection_list.takeItem(row))
 
@@ -182,17 +181,17 @@ class HeaderOrderPage(QIWizardPage):
         # check number of selected headers
         if self.settings.get_object('LWselectedcolumns').count() < 1:
             Qtg.QMessageBox.warning(self, self.tr("No header selected"),
-                                self.tr("You need to select at least one header"
-                                        " to generate a table representation "
-                                        "of an odml."))
+                                    self.tr("You need to select at least one header"
+                                            " to generate a table representation "
+                                            "of an odml."))
             return 0
 
         selectedheaderstrings = []
         for itemid in list(range(
                 self.settings.get_object('LWselectedcolumns').count())):
             selectedheaderstrings.append(
-                    self.settings.get_object('LWselectedcolumns').item(
-                            itemid).text())
+                self.settings.get_object('LWselectedcolumns').item(
+                    itemid).text())
 
         missing_headers = []
         for mand_header in self.mandatory_headers:
@@ -201,11 +200,11 @@ class HeaderOrderPage(QIWizardPage):
 
         if missing_headers != []:
             Qtg.QMessageBox.warning(self, self.tr("Incomplete odml"),
-                                self.tr("You need to include the headers %s "
-                                        " in your table if you want to be "
-                                        "able to"
-                                        " generate an odml from the table." % (
-                                            missing_headers)))
+                                    self.tr("You need to include the headers %s "
+                                            " in your table if you want to be "
+                                            "able to"
+                                            " generate an odml from the table." % (
+                                                missing_headers)))
 
         return 1
 
@@ -235,15 +234,15 @@ class SaveFilePage(QIWizardPage):
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
             Qtg.QMessageBox.warning(self, 'No configuration selected',
-                                'You need to select a configuration in'
-                                ' order to delete it.')
+                                    'You need to select a configuration in'
+                                    ' order to delete it.')
         else:
             conf_name = str(self.configlist.currentItem().text())
             quit_msg = "Are you sure you want to delete the configuration " \
                        "'%s'?" % (
                            conf_name)
             reply = Qtg.QMessageBox.question(self, 'Message',
-                                         quit_msg, Qtg.QMessageBox.Yes,
+                                             quit_msg, Qtg.QMessageBox.Yes,
                                              Qtg.QMessageBox.No)
 
             if reply == Qtg.QMessageBox.Yes:
@@ -317,10 +316,10 @@ class SaveFilePage(QIWizardPage):
                  1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtg.QMessageBox.warning(self, 'Wrong file format',
-                                'The output file format is supposed to be "%s",'
-                                ' but you selected "%s"'
-                                '' % (self.expected_extension,
-                                      os.path.splitext(self.outputfilename)[1]))
+                                    'The output file format is supposed to be "%s",'
+                                    ' but you selected "%s"'
+                                    '' % (self.expected_extension,
+                                          os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
@@ -345,7 +344,7 @@ class SaveFilePage(QIWizardPage):
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
             reply = Qtg.QMessageBox.question(self, 'Message',
-                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
+                                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
             if reply == Qtg.QMessageBox.No:
                 return 0
         return 1
@@ -362,17 +361,17 @@ def createfile(settings):
 
     # setting custom header columns
     output_headers = [title_translator[str(
-            settings.get_object('LWselectedcolumns').item(index).text())]
+        settings.get_object('LWselectedcolumns').item(index).text())]
                       for index in
                       list(range(settings.get_object('LWselectedcolumns').count()))]
     table.change_header(
-            **dict(zip(output_headers, list(range(1, len(output_headers) + 1)))))
+        **dict(zip(output_headers, list(range(1, len(output_headers) + 1)))))
     # table.mark_columns(
     #         *[h for i, h in enumerate(output_headers) if h in mandatory_titles])
 
     # set all styles to plan black and white
-    styles = ['first_style','second_style','first_marked_style',
-              'second_marked_style','highlight_style']
+    styles = ['first_style', 'second_style', 'first_marked_style',
+              'second_marked_style', 'highlight_style']
 
     for style in styles:
         setattr(getattr(table, style), 'backcolor', 'white')
@@ -436,11 +435,11 @@ def setup_tutorodml():
 
     # ADDING MORE VALUES
     parent = doc['MySection'].properties['OneMoreProperty']
-    parent.value=4.
-    parent.dtype='float'
-    parent.unit=''
-    parent.uncertainty=0.4
-    parent.definition='A property can have more than one value attached.'
+    parent.value = 4.
+    parent.dtype = 'float'
+    parent.unit = ''
+    parent.uncertainty = 0.4
+    parent.definition = 'A property can have more than one value attached.'
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',

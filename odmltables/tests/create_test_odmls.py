@@ -8,7 +8,6 @@ import odml
 import datetime
 
 
-
 def create_2samerows_test_odml():
     """
     creates an odml-document in which there is a property with two same values
@@ -43,7 +42,7 @@ def create_showall_test_odml():
     parent = doc['section1']
     parent.append(odml.Property(name='property1', definition='prop1',
                                 value=['value1', 'value2', 'value3'],
-                                dtype = odml.DType.string,
+                                dtype=odml.DType.string,
                                 unit='g',
                                 uncertainty=1))
 
@@ -67,7 +66,7 @@ def create_showall_test_odml():
 
     parent = doc['section3']
     parent.append(odml.Property(name='property1', definition='prop1',
-                                value=['value1','value2'],
+                                value=['value1', 'value2'],
                                 dtype=odml.DType.string,
                                 unit='g',
                                 uncertainty=1
@@ -106,7 +105,7 @@ def create_datatype_test_odml():
 
     bool_values = ['true', 'false', 'True', 'False', 't', 'f', 'T', 'F', 1, 0]
 
-    text_value = "this is a text. It is longer than a string and contains " +\
+    text_value = "this is a text. It is longer than a string and contains " + \
                  "punctuation marks!"
     datetime_value = datetime.datetime(2014, 12, 11, 15, 2, 0)
     date_value = datetime.date(2014, 12, 11)
@@ -169,35 +168,31 @@ def create_datatype_test_odml():
     return doc
 
 
-def create_compare_test(sections=3, properties=3,levels=1):
+def create_compare_test(sections=3, properties=3, levels=1):
     """
     """
 
     doc = odml.Document()
 
-    def append_children(sec,level):
+    def append_children(sec, level):
         if level < levels:
             for i in list(range(sections)):
-                sec.append(odml.Section(name='Section' + str(i+1)))
-                parent = sec['Section' + str(i+1)]
-                append_children(parent,level+1)
-                if(i != 2):
+                sec.append(odml.Section(name='Section' + str(i + 1)))
+                parent = sec['Section' + str(i + 1)]
+                append_children(parent, level + 1)
+                if (i != 2):
                     for j in list(range(properties)):
-                        parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
+                        parent.append(odml.Property(name='Property' + str(j + 1), value=i + j))
                 else:
-                    for j in list(range(properties-2)):
-                        parent.append(odml.Property(name='Property' + str(j+1), value= i+j))
-                    parent.append(odml.Property(name='Property' + str(properties), value= i+properties-1))
+                    for j in list(range(properties - 2)):
+                        parent.append(odml.Property(name='Property' + str(j + 1), value=i + j))
+                    parent.append(
+                        odml.Property(name='Property' + str(properties), value=i + properties - 1))
 
-    append_children(doc,0)
+    append_children(doc, 0)
 
     doc.append(odml.Section(name='One more Section'))
     parent = doc['One more Section']
     parent.append(odml.Property(name='Property2', value=11))
 
     return doc
-
-
-
-
-

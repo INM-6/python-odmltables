@@ -111,12 +111,12 @@ def get_property(style, property):
 
 def get_rgb(style_string):
     rgbregex = re.compile(
-            " *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{"
-            "1,3})\) *")
+        " *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{"
+        "1,3})\) *")
     match = rgbregex.match(style_string)
     if match:
         groups = match.groupdict()
         return tuple([int(groups['r']), int(groups['g']), int(groups['b'])])
     else:
         raise ValueError(
-                'No rgb identification possible from "%s"' % style_string)
+            'No rgb identification possible from "%s"' % style_string)

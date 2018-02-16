@@ -59,11 +59,11 @@ class OdmlTable(object):
 
         if load_from is not None:
             filename, file_extension = os.path.splitext(load_from)
-            if file_extension=='.odml':
+            if file_extension == '.odml':
                 self.load_from_file(load_from)
-            elif file_extension=='.xls':
+            elif file_extension == '.xls':
                 self.load_from_xls_table(load_from)
-            elif file_extension=='.csv':
+            elif file_extension == '.csv':
                 self.load_from_csv_table(load_from)
             else:
                 raise IOError('Can not read file format "%s". odMLtables '
@@ -233,7 +233,7 @@ class OdmlTable(object):
                     m = e.message
                 else:
                     m = str(e)
-                raise ValueError('%s is not a valid header title.'%m)
+                raise ValueError('%s is not a valid header title.' % m)
             row_id += 1
 
             # get column ids of non-empty header cells
@@ -279,8 +279,8 @@ class OdmlTable(object):
                 dtype = new_dic['odmlDatatype']
                 value = new_dic['Value']
                 if ('date' in dtype or 'time' in dtype) and (value != ''):
-                    if isinstance(value,float):
-                                    value = xlrd.xldate_as_tuple(value, workbook.datemode)
+                    if isinstance(value, float):
+                        value = xlrd.xldate_as_tuple(value, workbook.datemode)
                     elif isinstance(value, unicode):
                         # try explicit conversion of unicode like '2000-03-23'
                         m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
@@ -291,11 +291,11 @@ class OdmlTable(object):
                             value = (int(date_dict['year']),
                                      int(date_dict['month']),
                                      int(date_dict['day']),
-                                     0,0,0)
+                                     0, 0, 0)
                     else:
                         raise TypeError('Expected xls date or time object, '
                                         'but got instead %s of %s'
-                                        ''%(value,type(value)))
+                                        '' % (value, type(value)))
                 new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
                 if (new_dic['Path'].split(':')[0] == ''
@@ -598,8 +598,8 @@ class OdmlTable(object):
                 if property_dict[
                     'odmlDatatype'] not in self.odtypes.valid_dtypes:
                     raise TypeError(
-                            'Non valid dtype "{0}" in odmldict. Valid types are {1}'
-                            ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
+                        'Non valid dtype "{0}" in odmldict. Valid types are {1}'
+                        ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -686,7 +686,7 @@ class OdmlTable(object):
         doc1 = self.convert2odml()
 
         # TODO: include value merge in section merge
-        self._merge_odml_sections(doc1,doc2)
+        self._merge_odml_sections(doc1, doc2)
         self._merge_odml_values(doc1, doc2, mode=mode)
 
         # TODO: What should happen to the document properties?
@@ -722,7 +722,6 @@ class OdmlTable(object):
                 for prop2 in sec2.properties:
                     if prop2.name not in sec1.properties:
                         sec1.properties.append(prop2)
-
 
     # TODO adjust function to new value model
     def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
@@ -889,9 +888,9 @@ class OdmlDtypes(object):
                 self._synonyms.pop(synonym)
             else:
                 raise ValueError(
-                        'Can not add synonym "%s=%s". %s is not a base dtype.'
-                        'Valid basedtypes are %s.' % (
-                            basedtype, synonym, basedtype, self.basedtypes))
+                    'Can not add synonym "%s=%s". %s is not a base dtype.'
+                    'Valid basedtypes are %s.' % (
+                        basedtype, synonym, basedtype, self.basedtypes))
 
         elif synonym is None or synonym == '':
             raise ValueError('"%s" is not a valid synonym.' % synonym)
@@ -922,8 +921,8 @@ class OdmlDtypes(object):
             return self.default_values[basedtype]
         else:
             raise ValueError(
-                    '"%s" is not a basedtype. Valid basedtypes are %s' % (
-                        basedtype, self.basedtypes))
+                '"%s" is not a basedtype. Valid basedtypes are %s' % (
+                    basedtype, self.basedtypes))
 
     def set_default_value(self, basedtype, default_value):
         if basedtype in self.basedtypes:
@@ -961,8 +960,8 @@ class OdmlDtypes(object):
                         result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
                     except ValueError:
                         raise ValueError(
-                                'The value "%s" can not be converted to a date as '
-                                'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
+                            'The value "%s" can not be converted to a date as '
+                            'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
                 except TypeError:
                     result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':

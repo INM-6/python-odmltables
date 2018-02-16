@@ -107,7 +107,6 @@ class OdmlCsvTable(OdmlTable):
                     for h in self._header:
                         if ((not self.show_all_properties
                              and h in self._PROPERTY_INF + ['PropertyName']) or
-                            (not self.show_all_sections
-                             and h in self._SECTION_INF + ['SectionName'])):
+                                (not self.show_all_sections
+                                 and h in self._SECTION_INF + ['SectionName'])):
                             row[header_list.index(self._header_titles[h])] = ''
-

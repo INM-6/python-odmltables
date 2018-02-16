@@ -209,7 +209,7 @@ class ChooseSectionsPage(QIWizardPage):
 
         # load sections and properties from the selected file
         odmldoc = odml.tools.xmlparser.load(self.settings.get_object(
-                "inputfilename"))
+            "inputfilename"))
         for section in odmldoc.itersections():
             self.sections.append([section.name,
                                   section.get_path(),
@@ -253,9 +253,9 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.section_tree)
         for row in rows:
             self.selection_tree.addTopLevelItem(
-                    self.section_tree.takeTopLevelItem(row))
+                self.section_tree.takeTopLevelItem(row))
             self.selected_sections.append(self.sections.pop(
-                    self.sections.index(self.filtered_sections[row])))
+                self.sections.index(self.filtered_sections[row])))
             self.filtered_sections.pop(row)
 
     def toleft(self):
@@ -266,7 +266,7 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.selection_tree)
         for row in rows:
             self.section_tree.addTopLevelItem(
-                    self.selection_tree.takeTopLevelItem(row))
+                self.selection_tree.takeTopLevelItem(row))
             item = self.selected_sections.pop(row)
             self.sections.append(item)
             self.filtered_sections.append(item)
@@ -391,7 +391,7 @@ class SaveTablePage(QIWizardPage):
         inputfilename = self.settings.get_object('inputfilename')
         dirname = os.path.dirname(inputfilename)
         suggested_filename = os.path.splitext(os.path.basename(
-                inputfilename))[0] + self.expected_extension
+            inputfilename))[0] + self.expected_extension
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
@@ -454,7 +454,7 @@ class SaveTablePage(QIWizardPage):
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
             reply = QMessageBox.question(self, 'Message',
-                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+                                         quit_msg, QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.No:
                 return 0
         return 1

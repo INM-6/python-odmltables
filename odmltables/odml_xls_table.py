@@ -46,7 +46,7 @@ class OdmlXlsTable(OdmlTable):
 
     """
 
-    def __init__(self, load_from = None):
+    def __init__(self, load_from=None):
         super(OdmlXlsTable, self).__init__(load_from=load_from)
         self.sheetname = "sheet1"
         self._marked_cols = ["Value"]
@@ -161,16 +161,16 @@ class OdmlXlsTable(OdmlTable):
 
         styles = {"document_info": xlwt.easyxf(
             self.document_info_style.get_style_string()),
-                  "header": xlwt.easyxf(self.header_style.get_style_string()),
-                  "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
-                  "row1col0":
-                      xlwt.easyxf(self.second_style.get_style_string()),
-                  "row0col1":
-                      xlwt.easyxf(self.first_marked_style.get_style_string()),
-                  "row1col1":
-                      xlwt.easyxf(self.second_marked_style.get_style_string()),
-                  "highlight":
-                      xlwt.easyxf(self.highlight_style.get_style_string())}
+            "header": xlwt.easyxf(self.header_style.get_style_string()),
+            "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
+            "row1col0":
+                xlwt.easyxf(self.second_style.get_style_string()),
+            "row0col1":
+                xlwt.easyxf(self.first_marked_style.get_style_string()),
+            "row1col1":
+                xlwt.easyxf(self.second_marked_style.get_style_string()),
+            "highlight":
+                xlwt.easyxf(self.highlight_style.get_style_string())}
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheetname)
 
@@ -197,7 +197,7 @@ class OdmlXlsTable(OdmlTable):
                 if len(attribute) > max_col_len[2 * a + 1]:
                     max_col_len[2 * a + 1] = len(attribute)
                 if self._docdict[attribute] != None and (
-                    len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
+                            len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
                     max_col_len[2 * a + 2] = len(self._docdict[attribute])
 
             row_id += 1
@@ -211,7 +211,7 @@ class OdmlXlsTable(OdmlTable):
 
         # set default styles as bool values for simplicity
         if self._pattern is "checkerboard":
-            row_style_default = np.array([0, 1]*(len(self._header)), dtype=bool)
+            row_style_default = np.array([0, 1] * (len(self._header)), dtype=bool)
             row_style_default = row_style_default[:len(self._header)]
         elif self._pattern is "alternating":
             row_style_default = np.array([0] * len(self._header), dtype=bool)
@@ -222,7 +222,6 @@ class OdmlXlsTable(OdmlTable):
 
         self.row_style = row_style_default
         self.column_style = column_style_default
-
 
         def _write_row(row_id, row_content, stylestrings):
             assert len(row_content) == len(stylestrings)
@@ -285,7 +284,8 @@ class OdmlXlsTable(OdmlTable):
                                    for r, c in zip(self.row_style, self.column_style)]
                     # introduce highlighted values
                     if (self._highlight_defaults and
-                        row_dic['Value'] == self.odtypes.default_value(row_dic['odmlDatatype'])):
+                                row_dic['Value'] == self.odtypes.default_value(
+                                row_dic['odmlDatatype'])):
                         stylestring[self._header.index('Value')] = 'highlight'
 
                     # update value entry and write line
@@ -298,7 +298,7 @@ class OdmlXlsTable(OdmlTable):
                     _write_row(row_id, row_content, stylestring)
                     row_id += 1
 
-                     # continue with next property if values are not exported
+                    # continue with next property if values are not exported
                     if 'Value' not in self._header:
                         break
 
@@ -309,8 +309,8 @@ class OdmlXlsTable(OdmlTable):
                     for h in self._header:
                         if ((not self.show_all_properties
                              and h in self._PROPERTY_INF + ['PropertyName']) or
-                            (not self.show_all_sections
-                             and h in self._SECTION_INF + ['SectionName'])):
+                                (not self.show_all_sections
+                                 and h in self._SECTION_INF + ['SectionName'])):
                             row_content[self._header.index(h)] = ''
 
                 oldpath = row_dic["Path"]

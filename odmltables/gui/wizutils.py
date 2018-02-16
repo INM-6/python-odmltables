@@ -79,4 +79,3 @@ def get_graphic_path():
                                  'gui',
                                  'graphics')
     return data_path
-
