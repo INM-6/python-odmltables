@@ -231,11 +231,10 @@ class TestOdmlTable(unittest.TestCase):
         doc1 = create_compare_test(sections=2,properties=2,levels=2)
 
         # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].value = 'testvalue'
-        doc1.sections[1].properties[0].dtype = DType.string
+        doc1.sections[1].properties[0].value.append('42')
 
         # generate one additional Property, which is not present in doc2
-        doc1.sections[0].append(odml.Property(name='Doc1Property2',value=5))
+        doc1.sections[0].append(odml.Property(name='Doc1Property2', value=5))
 
         #generate one additional Section, which is not present in doc2
         new_prop = odml.Property(name='Doc1Property2',value=10)
@@ -266,8 +265,7 @@ class TestOdmlTable(unittest.TestCase):
         doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
         # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].value = 'testvalue'
-        doc1.sections[1].properties[0].dtype = DType.string
+        doc1.sections[1].properties[0].value = 101
 
         self.test_table.load_from_odmldoc(doc1)
 
@@ -346,10 +344,17 @@ class TestFilter(unittest.TestCase):
         testing recursive setting of filter function
         """
 
+        #total_number of properties
+        doc = self.test_table.convert2odml()
+        tot_props = len(list(doc.iterproperties()))
+        sec2s = list(doc.itersections(filter_func=lambda x: x.name=='Section2'))
+        sec2_props = sum([len(list(sec.properties)) for sec in sec2s])
+
+        # removing all sections with name 'Section2' independent of location in odml tree
         self.test_table.filter(mode='and',recursive=True,invert=True,SectionName='Section2')
         num_props_new = len(self.test_table._odmldict)
 
-        self.assertEqual(16,num_props_new)
+        self.assertEqual(tot_props - sec2_props, num_props_new)
 
 
     def test_filter_comparison_func_false(self):

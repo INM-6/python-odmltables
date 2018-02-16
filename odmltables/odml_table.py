@@ -598,16 +598,18 @@ class OdmlTable(object):
                 if property_dict[
                     'odmlDatatype'] not in self.odtypes.valid_dtypes:
                     raise TypeError(
-                            'Non valid dtype "{0}" in odmldict. Valid types '
-                            'are {'
-                            '1}'.format(
-                                    property_dict['odmlDatatype'],
-                                    self.odtypes.valid_dtypes))
+                            'Non valid dtype "{0}" in odmldict. Valid types are {1}'
+                            ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
         remove odmldict entries which do not match filter_func.
         """
+        # inflate odmldict for filtering
+        for dic in self._odmldict:
+            sec_path, dic['PropertyName'] = dic['Path'].split(':')
+            dic['SectionName'] = sec_path.split('/')[-1]
+
         new_odmldict = [d for d in self._odmldict if filter_func(d)]
         deleted_properties = [d for d in self._odmldict if not filter_func(d)]
 
@@ -620,12 +622,9 @@ class OdmlTable(object):
         filters odml properties according to provided kwargs.
 
         :param mode: Possible values: 'and', 'or'. For 'and' all keyword
-        arguments
-                must be satisfied for a property to be selected. For 'or'
-                only one
-                of the keyword arguments must be satisfied for the property
-                to be
-                selected. Default: 'and'
+                arguments must be satisfied for a property to be selected. For 'or'
+                only one of the keyword arguments must be satisfied for the property
+                to be selected. Default: 'and'
         :param invert: Inverts filter function. Previously accepted properties
                 are rejected and the other way round. Default: False
         :param recursive: Delete also properties attached to subsections of the
@@ -638,21 +637,17 @@ class OdmlTable(object):
         :return: None
         """
         if not kwargs:
-            raise ValueError(
-                    'No filter keywords provided for property filtering.')
+            raise ValueError('No filter keywords provided for property filtering.')
         if mode not in ['and', 'or']:
-            raise ValueError(
-                    'Invalid operation mode "%s". Accepted values are "and",'
-                    '"or".' % (
-                        mode))
+            raise ValueError('Invalid operation mode "%s". Accepted values are "and", "or".'
+                             '' % (mode))
 
         def filter_func(dict_prop):
             keep_property = False
             for filter_key, filter_value in iteritems(kwargs):
                 if filter_key not in dict_prop:
-                    raise ValueError(
-                            'Key "%s" is missing in property dictionary %s' % (
-                                filter_key, dict_prop))
+                    raise ValueError('Key "%s" is missing in property dictionary %s'
+                                     '' % (filter_key, dict_prop))
 
                 if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
