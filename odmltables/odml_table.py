@@ -762,7 +762,7 @@ class OdmlTable(object):
                     # adding new values (which is at least one, see comment
                     # above)
                     for val in prop2.value:
-                        prop1.append(val)
+                        prop1.value.append(val)
                     prop1.remove(prop1.value[0])
 
     def write2file(self, save_to):
