@@ -20,7 +20,7 @@ if sys.version_info.major < 3:
 extras_require = {'docs': ['numpydoc>=0.5',
                            'sphinx>=1.2.2'],
                   'tests': ['nose>=1.3.3'],
-                  'gui': ['pyqt4>=4.0.0'],
+                  'gui': ['pyqt5>=5.0.0'],
                   # 'basics':['gcc >= 4.8.5',
                   #           'libxml2 >= 2.9.2'],
                   }
