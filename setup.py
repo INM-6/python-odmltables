@@ -40,6 +40,9 @@ setup(
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
     # download_url='https://github.com/INM-6/python-odmltables/archive/0.1.1.tar.gz',
+    # keep this dependency link only until odml 1.4 release on PyPi
+    dependency_links=[
+        'git+https://github.com/g-node/python-odml.git@master#egg=odml-1.4'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
