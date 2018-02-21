@@ -6,8 +6,9 @@ import subprocess
 
 from future.utils import iteritems
 
-import PyQt4.QtGui as Qtg
-from PyQt4.QtCore import Qt
+import PyQt5.QtWidgets as Qtw
+import PyQt5.QtGui as Qtg
+from PyQt5.QtCore import Qt
 
 import odml
 from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
@@ -31,15 +32,15 @@ class HeaderOrderPage(QIWizardPage):
             "buttons to the right")
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         self.setLayout(vbox)
 
-        hbox0 = Qtg.QHBoxLayout()
+        hbox0 = Qtw.QHBoxLayout()
         hbox0.addStretch()
-        hbox0.addWidget(Qtg.QLabel('available columns'))
+        hbox0.addWidget(Qtw.QLabel('available columns'))
         hbox0.addStretch()
         hbox0.addSpacing(90)
-        hbox0.addWidget(Qtg.QLabel('selected columns'))
+        hbox0.addWidget(Qtw.QLabel('selected columns'))
         hbox0.addStretch()
         hbox0.addSpacing(30)
 
@@ -50,23 +51,23 @@ class HeaderOrderPage(QIWizardPage):
         self.header_names = list(odtables._header_titles.values())
 
         # generating selection lists
-        self.header_list = Qtg.QListWidget()
+        self.header_list = Qtw.QListWidget()
         self.header_list.setSelectionMode(3)
         self.header_list.itemDoubleClicked.connect(self.itemdoubleclicked)
-        self.selection_list = Qtg.QListWidget()
+        self.selection_list = Qtw.QListWidget()
         self.selection_list.setSelectionMode(3)
         self.selection_list.itemDoubleClicked.connect(self.itemdoubleclicked)
 
-        toright = Qtg.QToolButton()
+        toright = Qtw.QToolButton()
         toright.setArrowType(Qt.RightArrow)
         toright.clicked.connect(self.toright)
-        toleft = Qtg.QToolButton()
+        toleft = Qtw.QToolButton()
         toleft.setArrowType(Qt.LeftArrow)
         toleft.clicked.connect(self.toleft)
 
-        hbox = Qtg.QHBoxLayout()
+        hbox = Qtw.QHBoxLayout()
         hbox.addWidget(self.header_list)
-        vboxbuttons = Qtg.QVBoxLayout()
+        vboxbuttons = Qtw.QVBoxLayout()
         vboxbuttons.addStretch()
         vboxbuttons.addWidget(toright)
         vboxbuttons.addSpacing(30)
@@ -82,35 +83,34 @@ class HeaderOrderPage(QIWizardPage):
                                   'Data Uncertainty',
                                   'Data Unit',
                                   'odML Data Type',
-                                  'Value Definition',
                                   'Property Definition',
                                   'Section Definition']
         self.mandatory_headers = mandatory_headers
         for i, h in enumerate(self.header_names):
             if h not in default_selection_list:
-                item = Qtg.QListWidgetItem()
+                item = Qtw.QListWidgetItem()
                 item.setText(h)
                 self.header_list.addItem(item)
 
         for i, h in enumerate(default_selection_list):
-            item = Qtg.QListWidgetItem()
+            item = Qtw.QListWidgetItem()
             item.setText(h)
             self.selection_list.addItem(item)
 
             if h in self.mandatory_headers:
-                item.setTextColor(Qtg.QColor('red'))
+                item.setForeground(Qtg.QColor('red'))
 
         hbox.addWidget(self.selection_list)
 
         # adding up and down buttons
-        up = Qtg.QToolButton()
+        up = Qtw.QToolButton()
         up.setArrowType(Qt.UpArrow)
         up.clicked.connect(self.up)
-        down = Qtg.QToolButton()
+        down = Qtw.QToolButton()
         down.setArrowType(Qt.DownArrow)
         down.clicked.connect(self.down)
 
-        vboxbuttons2 = Qtg.QVBoxLayout()
+        vboxbuttons2 = Qtw.QVBoxLayout()
         vboxbuttons2.addStretch()
         vboxbuttons2.addWidget(up)
         vboxbuttons2.addSpacing(30)
@@ -143,7 +143,7 @@ class HeaderOrderPage(QIWizardPage):
                       reverse=True)
         for row in rows:
             if self.selection_list.item(row).text() in self.mandatory_headers:
-                Qtg.QMessageBox.warning(self, self.tr("Mandatory header"),
+                Qtw.QMessageBox.warning(self, self.tr("Mandatory header"),
                                         self.tr(
                                             "'%s' is a mandatory header. This "
                                             "header is necessary to "
@@ -180,7 +180,7 @@ class HeaderOrderPage(QIWizardPage):
 
         # check number of selected headers
         if self.settings.get_object('LWselectedcolumns').count() < 1:
-            Qtg.QMessageBox.warning(self, self.tr("No header selected"),
+            Qtw.QMessageBox.warning(self, self.tr("No header selected"),
                                     self.tr("You need to select at least one header"
                                             " to generate a table representation "
                                             "of an odml."))
@@ -199,7 +199,7 @@ class HeaderOrderPage(QIWizardPage):
                 missing_headers.append(mand_header)
 
         if missing_headers != []:
-            Qtg.QMessageBox.warning(self, self.tr("Incomplete odml"),
+            Qtw.QMessageBox.warning(self, self.tr("Incomplete odml"),
                                     self.tr("You need to include the headers %s "
                                             " in your table if you want to be "
                                             "able to"
@@ -214,14 +214,14 @@ class SaveFilePage(QIWizardPage):
         super(SaveFilePage, self).__init__(parent)
 
         # Set up layout
-        self.vbox = Qtg.QVBoxLayout()
+        self.vbox = Qtw.QVBoxLayout()
         self.setLayout(self.vbox)
 
         self.setTitle("Save the result")
         self.setSubTitle("Select a location to save your file")
 
     def add_new_conf(self, configlist):
-        item = Qtg.QListWidgetItem()
+        item = Qtw.QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText('<New Configuration>')
         configlist.insertItem(-1, item)
@@ -233,7 +233,7 @@ class SaveFilePage(QIWizardPage):
 
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
-            Qtg.QMessageBox.warning(self, 'No configuration selected',
+            Qtw.QMessageBox.warning(self, 'No configuration selected',
                                     'You need to select a configuration in'
                                     ' order to delete it.')
         else:
@@ -241,11 +241,11 @@ class SaveFilePage(QIWizardPage):
             quit_msg = "Are you sure you want to delete the configuration " \
                        "'%s'?" % (
                            conf_name)
-            reply = Qtg.QMessageBox.question(self, 'Message',
-                                             quit_msg, Qtg.QMessageBox.Yes,
-                                             Qtg.QMessageBox.No)
+            reply = Qtw.QMessageBox.question(self, 'Message',
+                                             quit_msg, Qtw.QMessageBox.Yes,
+                                             Qtw.QMessageBox.No)
 
-            if reply == Qtg.QMessageBox.Yes:
+            if reply == Qtw.QMessageBox.Yes:
                 self.configlist.takeItem(self.configlist.currentRow())
                 self.settings.delete_config(conf_name)
             else:
@@ -256,24 +256,24 @@ class SaveFilePage(QIWizardPage):
         self.expected_extension = '.xls'
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
         vbox.addSpacing(40)
 
         # Add first horizontal box
-        self.buttonbrowse = Qtg.QPushButton("Browse")
+        self.buttonbrowse = Qtw.QPushButton("Browse")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
         self.buttonbrowse.setFocus()
         self.outputfilename = ''
-        self.outputfile = Qtg.QLabel(self.outputfilename)
+        self.outputfile = Qtw.QLabel(self.outputfilename)
         self.outputfile.setWordWrap(True)
-        self.buttonshow = Qtg.QPushButton("Open file")
+        self.buttonshow = Qtw.QPushButton("Open file")
         self.buttonshow.clicked.connect(self.show_file)
         self.buttonshow.setEnabled(False)
 
-        hbox = Qtg.QHBoxLayout()
+        hbox = Qtw.QHBoxLayout()
         hbox.addWidget(self.buttonbrowse)
         hbox.addWidget(self.outputfile)
         hbox.addStretch()
@@ -291,18 +291,18 @@ class SaveFilePage(QIWizardPage):
         self.issaved = False
 
     def handlebuttonbrowse(self):
-        dlg = Qtg.QFileDialog()
-        dlg.setFileMode(Qtg.QFileDialog.AnyFile)
-        dlg.setAcceptMode(Qtg.QFileDialog.AcceptSave)
-        dlg.setLabelText(Qtg.QFileDialog.Accept, "Generate File")
+        dlg = Qtw.QFileDialog()
+        dlg.setFileMode(Qtw.QFileDialog.AnyFile)
+        dlg.setAcceptMode(Qtw.QFileDialog.AcceptSave)
+        dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
         # dlg.setDirectory(self.settings.get_object('inputfilename'))
         suggested_filename = 'template' + self.expected_extension
         dlg.selectFile(suggested_filename)
 
-        dlg.setFilter("%s files (*%s);;all files (*)" % (
-            self.expected_extension.strip('.'), self.expected_extension))
+        dlg.setNameFilters(["%s files (*%s);;all files (*)" % (
+            self.expected_extension.strip('.'), self.expected_extension)])
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
@@ -315,7 +315,7 @@ class SaveFilePage(QIWizardPage):
         if ((os.path.splitext(self.outputfilename)[
                  1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
-            Qtg.QMessageBox.warning(self, 'Wrong file format',
+            Qtw.QMessageBox.warning(self, 'Wrong file format',
                                     'The output file format is supposed to be "%s",'
                                     ' but you selected "%s"'
                                     '' % (self.expected_extension,
@@ -343,9 +343,9 @@ class SaveFilePage(QIWizardPage):
         if self.issaved == False:
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
-            reply = Qtg.QMessageBox.question(self, 'Message',
-                                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
-            if reply == Qtg.QMessageBox.No:
+            reply = Qtw.QMessageBox.question(self, 'Message',
+                                             quit_msg, Qtw.QMessageBox.Yes, Qtw.QMessageBox.No)
+            if reply == Qtw.QMessageBox.No:
                 return 0
         return 1
 

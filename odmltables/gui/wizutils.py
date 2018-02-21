@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from PyQt4.QtGui import (QWizard, QPixmap, QMessageBox)
-from PyQt4.QtCore import (pyqtSlot)
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import (QWizard, QMessageBox)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt
 
 try:
     import odmltables

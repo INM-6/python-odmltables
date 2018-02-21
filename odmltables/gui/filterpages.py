@@ -12,8 +12,8 @@ try:
 except NameError:
     unicode = str
 
-from PyQt4.QtCore import Qt
-import PyQt4.QtGui as Qtg
+from PyQt5.QtCore import Qt
+import PyQt5.QtWidgets as Qtg
 
 from odmltables import odml_table
 from .pageutils import QIWizardPage, clearLayout, shorten_path
@@ -90,8 +90,8 @@ class LoadFilePage(QIWizardPage):
 
     def handlebuttonbrowse(self):
         dlg = Qtg.QFileDialog()
-        dlg.setFilter("%s files (*%s)"
-                      "" % ('odml', '.odml'))
+        dlg.setNameFilters(["%s files (*%s)"
+                      "" % ('odml', '.odml')])
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)
@@ -1093,9 +1093,9 @@ class SaveFilePage(QIWizardPage):
 
         dlg.setDirectory(self.settings.get_object('inputfilename'))
 
-        dlg.setFilter("%s files (*%s);;all files "
+        dlg.setNameFilters(["%s files (*%s);;all files "
                       "(*)" % (self.expected_extension.strip('.'),
-                               self.expected_extension))
+                               self.expected_extension)])
         # filenames = []
 
         if dlg.exec_():

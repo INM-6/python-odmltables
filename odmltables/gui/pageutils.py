@@ -4,8 +4,9 @@ import os
 import re
 import xlwt
 
-from PyQt4.QtGui import QWizardPage, QWidgetItem, QSpacerItem, QComboBox, QColor
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import QWizardPage, QWidgetItem, QSpacerItem, QComboBox
+from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt
 
 
 class QIWizardPage(QWizardPage):
