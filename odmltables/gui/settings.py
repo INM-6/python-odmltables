@@ -28,8 +28,8 @@ class Settings():
         except:
             if os.path.isfile(filename):
                 raise IOError(
-                        'Configuration file "%s" could not be loaded. Delete '
-                        'broken file and restart.' % filename)
+                    'Configuration file "%s" could not be loaded. Delete '
+                    'broken file and restart.' % filename)
 
         self.basicdtypes = [bool, str, float, int, long, complex]
 
@@ -74,8 +74,8 @@ class Settings():
         else:
             if type(obj) in [bool, str, float, int, long, complex]:
                 raise TypeError(
-                        'You should only register mutable objects as '
-                        'non-attributes.')
+                    'You should only register mutable objects as '
+                    'non-attributes.')
             else:
                 self.config['objects'][name] = obj
 
@@ -109,10 +109,10 @@ class Settings():
         conf = copy.deepcopy(conf)
         for name, property in iteritems(conf['attributes']):
             conf['attributes'][name] = self.simplifyprop(
-                    getattr(self.config['attributes'][name], name))
+                getattr(self.config['attributes'][name], name))
         for name, property in iteritems(conf['objects']):
             conf['objects'][name] = self.simplifyprop(
-                    self.config['objects'][name])
+                self.config['objects'][name])
         return conf
 
     def simplifyprop(self, prop):
@@ -180,8 +180,8 @@ class Settings():
         if config_data[1] not in [str(p) for p in
                                   self.basicdtypes]:  # Basic datatypes
             raise TypeError(
-                    'Attribute of type %s can not be recovered' % type(
-                        config_data))
+                'Attribute of type %s can not be recovered' % type(
+                    config_data))
         elif index != None:
             if type(parent) == list and index >= len(parent):
                 parent.append(config_data[0])
@@ -296,7 +296,7 @@ class Settings():
 
         else:
             raise ValueError(
-                    'Can not update object "%s" from config "%s"' % (obj, name))
+                'Can not update object "%s" from config "%s"' % (obj, name))
 
             # def reinflate_pyqt(self,conf):
             #     conf = copy.deepcopy(conf)

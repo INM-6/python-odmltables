@@ -5,7 +5,6 @@ Created on Tue Jun  9 09:54:02 2015
 @author: pick
 """
 
-
 from odmltables.compare_section_table import CompareSectionTable
 from odmltables.compare_section_csv_table import CompareSectionCsvTable
 from odmltables.compare_section_xls_table import CompareSectionXlsTable
@@ -17,7 +16,6 @@ import unittest
 
 
 class TestCompareSectionTable(unittest.TestCase):
-
     def setUp(self):
         self.test_table = CompareSectionTable()
         self.doc = create_compare_test()
@@ -35,7 +33,7 @@ class TestCompareSectionTable(unittest.TestCase):
             'Section3', 'Section1', 'One more Section')
         expected = [section.name for section in
                     self.doc.itersections(filter_func=lambda x:
-                                          x.name in ['Section1', 'Section3', 'One more Section'])]
+                    x.name in ['Section1', 'Section3', 'One more Section'])]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
         self.assertListEqual(expected, result)
@@ -44,7 +42,7 @@ class TestCompareSectionTable(unittest.TestCase):
         self.test_table.choose_sections_startwith('Section')
         expected = [section.name for section in
                     self.doc.itersections(filter_func=lambda x:
-                                          x.name.startswith('Section'))]
+                    x.name.startswith('Section'))]
         result = [section.name for section in
                   self.doc.itersections(filter_func=self.test_table._sel_fun)]
         self.assertListEqual(expected, result)
@@ -67,7 +65,6 @@ switch_expected = [['', 'Property1', 'Property2', 'Property3'],
 
 
 class TestCompareCsv(unittest.TestCase):
-
     def setUp(self):
 
         self.test_table = CompareSectionCsvTable()
@@ -116,7 +113,6 @@ class TestCompareCsv(unittest.TestCase):
 
 
 class TestCompareXls(unittest.TestCase):
-
     def setUp(self):
         self.test_table = CompareSectionXlsTable()
 

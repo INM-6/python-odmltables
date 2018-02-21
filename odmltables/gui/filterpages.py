@@ -58,7 +58,7 @@ class LoadFilePage(QIWizardPage):
         vbox.addLayout(hbox1)
 
         self.cbcustominput = Qtg.QCheckBox('I changed the column names in the i'
-                                       'nput table.')
+                                           'nput table.')
         self.cbcustominput.setEnabled(False)
         self.settings.register('CBcustominput', self.cbcustominput)
         vbox.addWidget(self.cbcustominput)
@@ -84,7 +84,7 @@ class LoadFilePage(QIWizardPage):
             self.settings.register('CBcustominput', self.cbcustominput)
             self.settings.register('inputfilename', self, useconfig=False)
             short_filename = shorten_path(self.settings.get_object(
-                    'inputfilename'))
+                'inputfilename'))
             self.inputfile.setText(short_filename)
             # self.settings.get_object('RBoutputxls')
 
@@ -112,14 +112,14 @@ class LoadFilePage(QIWizardPage):
         if ((not self.settings.is_registered('inputfilename')) or
                 (not self.settings.get_object('inputfilename'))):
             Qtg.QMessageBox.warning(self, 'Select an input file',
-                                'You need to select an input file to continue.')
+                                    'You need to select an input file to continue.')
             return 0
 
         elif self.settings.get_object('inputfilename').split('.')[-1] \
                 not in ['xls', 'csv', 'odml']:
             Qtg.QMessageBox.warning(self, 'Wrong input format',
-                                'The input file has to be an ".xls", ".csv" or '
-                                '".odml" file.')
+                                    'The input file has to be an ".xls", ".csv" or '
+                                    '".odml" file.')
             return 0
 
         return 1
@@ -156,7 +156,7 @@ class CustomInputHeaderPage(QIWizardPage):
 
         # Adding input part
         topLabel = Qtg.QLabel(self.tr("Provide the column types used in the "
-                                  "input table"))
+                                      "input table"))
         topLabel.setWordWrap(True)
         vbox.addSpacing(20)
         vbox.addWidget(topLabel)
@@ -209,10 +209,10 @@ class CustomInputHeaderPage(QIWizardPage):
             header_name = h.currentText()
             if header_name in header_names:
                 Qtg.QMessageBox.warning(self, self.tr("Non-unique headers"),
-                                    self.tr("Header assignment has"
-                                            " to be unique. '%s' has been"
-                                            " assigned multiple times" %
-                                            header_name))
+                                        self.tr("Header assignment has"
+                                                " to be unique. '%s' has been"
+                                                " assigned multiple times" %
+                                                header_name))
                 return 0
             header_names.append(header_name)
 
@@ -222,10 +222,10 @@ class CustomInputHeaderPage(QIWizardPage):
         for mand_head in mandatory_headers:
             if mand_head not in header_names:
                 Qtg.QMessageBox.warning(self, self.tr("Incomplete headers"),
-                                    self.tr("You need to have the mandatory"
-                                            " headers %s in you table to be"
-                                            " able to reconstruct an odml"
-                                            "" % mandatory_headers))
+                                        self.tr("You need to have the mandatory"
+                                                " headers %s in you table to be"
+                                                " able to reconstruct an odml"
+                                                "" % mandatory_headers))
                 return 0
         return 1
 
@@ -239,8 +239,7 @@ class FilterPage(QIWizardPage):
 
         self.odmltreeheaders = ['Content',
                                 'Value', 'DataUncertainty', 'DataUnit',
-                                'odmlDatatype', 'ValueDefinition',
-                                'PropertyName', 'PropertyDefinition',
+                                'odmlDatatype', 'PropertyName', 'PropertyDefinition',
                                 'SectionName', 'SectionType',
                                 'SectionDefinition']
 
@@ -307,7 +306,7 @@ class FilterPage(QIWizardPage):
 
         # set up ADD FILTER FUNCTION FRAME
         groupbox_addfilterfunction = Qtg.QGroupBox(self.tr('Custom Filter '
-                                                       'Function Creator'))
+                                                           'Function Creator'))
         groupbox_addfilterfunction.setStyleSheet('QGroupBox {border: 1px solid '
                                                  'gray; '
                                                  'border-radius: 5px; '
@@ -504,7 +503,7 @@ class FilterPage(QIWizardPage):
 
         if len(self.filterfunctions) >= len(self.default_filter_functions) + 5:
             Qtg.QMessageBox.warning(self, 'Too many functions',
-                                'You can only define up to 5 custom functions.')
+                                    'You can only define up to 5 custom functions.')
             return
 
         fname = str(self.lineedit_filtername.text())
@@ -513,21 +512,21 @@ class FilterPage(QIWizardPage):
         # consistency checks
         if not (fname and fstr):
             Qtg.QMessageBox.warning(self, 'No function defined',
-                                'You need to define your a function name and '
-                                'a function expression depending on the '
-                                'attribute (x) and the value (y).')
+                                    'You need to define your a function name and '
+                                    'a function expression depending on the '
+                                    'attribute (x) and the value (y).')
             return
         elif '[' in fname or '[' in fstr or ']' in fname or ']' in fstr:
             Qtg.QMessageBox.warning(self, 'Invalid expression',
-                                'You can not use square brackets to define '
-                                'your function. Please adapt your function '
-                                'accordingly.')
+                                    'You can not use square brackets to define '
+                                    'your function. Please adapt your function '
+                                    'accordingly.')
             return
         elif '%s\t[%s]' % (fname, fstr) in self.filterfunctionnames:
             Qtg.QMessageBox.warning(self, 'Function already exists',
-                                'You can not define a function with name %s, '
-                                'a function of this name already exists' % (
-                                    fname))
+                                    'You can not define a function with name %s, '
+                                    'a function of this name already exists' % (
+                                        fname))
             return
 
         self.filterfunctionnames.append('%s\t[%s]' % (fname, fstr))
@@ -539,7 +538,7 @@ class FilterPage(QIWizardPage):
         while self.grid_filterfunction.itemAtPosition(i, 2):
             i += 1
         self.grid_filterfunction.itemAtPosition(i - 1, 2).widget().setChecked(
-                True)
+            True)
 
     def update_attributes(self):
         sender = self.sender()
@@ -611,8 +610,8 @@ class FilterPage(QIWizardPage):
 
             else:
                 Qtg.QMessageBox.warning(self, 'Too many attributes',
-                                    'You can not define more than %s '
-                                    'attributes.' % (len(
+                                        'You can not define more than %s '
+                                        'attributes.' % (len(
                                             self.odmltreeheaders) - 1))
 
         self.layout().invalidate()
@@ -668,15 +667,15 @@ class FilterPage(QIWizardPage):
 
                 if valuetype not in [str, unicode]:
                     Qtg.QMessageBox.warning(self, 'String input required',
-                                        'To be able to use the startswith or '
-                                        'endswith '
-                                        'filter function you need to provide '
-                                        'a string '
-                                        'to compare to. You can define a '
-                                        'string by using '
-                                        'quotation marks at the beginning and '
-                                        'end of your '
-                                        'text (eg. "my string")')
+                                            'To be able to use the startswith or '
+                                            'endswith '
+                                            'filter function you need to provide '
+                                            'a string '
+                                            'to compare to. You can define a '
+                                            'string by using '
+                                            'quotation marks at the beginning and '
+                                            'end of your '
+                                            'text (eg. "my string")')
                     return
 
         elif filterfuncstr == 'x in y':
@@ -691,15 +690,15 @@ class FilterPage(QIWizardPage):
 
                 if not hasattr(valuetype, '__iter__'):
                     Qtg.QMessageBox.warning(self, 'List input required',
-                                        'To be able to use the "is in" '
-                                        'filter function you need to provide '
-                                        'a list '
-                                        'to compare to. You can define a list '
-                                        'by using '
-                                        'square brackets at the beginning and '
-                                        'end of your '
-                                        'list (eg. ["option1","option2"] or ['
-                                        '1,2,3,4])')
+                                            'To be able to use the "is in" '
+                                            'filter function you need to provide '
+                                            'a list '
+                                            'to compare to. You can define a list '
+                                            'by using '
+                                            'square brackets at the beginning and '
+                                            'end of your '
+                                            'list (eg. ["option1","option2"] or ['
+                                            '1,2,3,4])')
                     return
 
         filter = {}
@@ -712,8 +711,8 @@ class FilterPage(QIWizardPage):
                 eval(filter['compfuncstr'])
         except SyntaxError:
             Qtg.QMessageBox.warning(self, 'Incorrect syntax',
-                                'Your filter function has an incorrect '
-                                'syntax. Please fix it and try again.')
+                                    'Your filter function has an incorrect '
+                                    'syntax. Please fix it and try again.')
             return
         filter['kwargs'] = {}
         for i in list(range(1, self._get_number_of_keys())):
@@ -730,7 +729,7 @@ class FilterPage(QIWizardPage):
 
         else:
             Qtg.QMessageBox.warning(self, 'Filter already exists',
-                                'You can not apply the same filter twice.')
+                                    'You can not apply the same filter twice.')
 
     def _get_filter_name(self, filter):
         filterfuncstr = filter['compfuncstr']
@@ -741,10 +740,10 @@ class FilterPage(QIWizardPage):
         if filter['recursive']:
             filter_name += 'recursive; '
         filter_name += (' ' + filter['mode'].upper() + ' ').join(
-                ['(%s %s %s)' % (key,
-                                 filterfuncstr.split('[')[0].rstrip('\t'),
-                                 filter['kwargs'][key])
-                 for key in filter['kwargs']])
+            ['(%s %s %s)' % (key,
+                             filterfuncstr.split('[')[0].rstrip('\t'),
+                             filter['kwargs'][key])
+             for key in filter['kwargs']])
 
         return filter_name
 
@@ -821,10 +820,10 @@ class FilterPage(QIWizardPage):
             [eval(value) for value in list(filter['kwargs'].values())]
         except:
             Qtg.QMessageBox.warning(self, 'Non-interpretable value',
-                                'Can not interpret "%s". This is not a valid '
-                                'python object. To generate a string put your '
-                                'text into quotation marks. To define a list '
-                                'use square brackets.')
+                                    'Can not interpret "%s". This is not a valid '
+                                    'python object. To generate a string put your '
+                                    'text into quotation marks. To define a list '
+                                    'use square brackets.')
             return
 
         self.filtered_table.filter(mode=filter['mode'],
@@ -862,18 +861,18 @@ class FilterPage(QIWizardPage):
         if os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
                 '.xls':
             self.table.load_from_xls_table(self.settings.get_object(
-                    'inputfilename'))
+                'inputfilename'))
         elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
                 '.csv':
             self.table.load_from_csv_table(self.settings.get_object(
-                    'inputfilename'))
+                'inputfilename'))
         elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
                 '.odml':
             self.table.load_from_file(self.settings.get_object('inputfilename'))
         else:
             raise ValueError('Unknown input file extension '
                              '"%s"' % os.path.splitext(
-                    self.settings.get_object('inputfilename'))[1])
+                self.settings.get_object('inputfilename'))[1])
 
         self.update_tree(self.table)
 
@@ -890,8 +889,7 @@ class FilterPage(QIWizardPage):
         self.odmltree.expandToDepth(0)
 
     # ['Content','Value','DataUncertainty','DataUnit','odmlDatatype',
-    #                                 'Value','ValueDefinition',
-    #                                 'PropertyName','PropertyDefinition',
+    #                                 'Value', 'PropertyName','PropertyDefinition',
     #                                 'SectionName','SectionType',
     # 'SectionDefinition']
 
@@ -912,7 +910,7 @@ class FilterPage(QIWizardPage):
                     parent_sec = child
                 else:
                     new_sec = Qtg.QTreeWidgetItem(parent_sec, [sec_names[i]] +
-                                              list(sections[sec]))
+                                                  list(sections[sec]))
                     parent_sec = new_sec
 
     def create_proptree(self, tree, table):
@@ -921,7 +919,7 @@ class FilterPage(QIWizardPage):
             value['PropertyName'],
             value['PropertyDefinition'],
             '', '']
-                 for value in table._odmldict}
+            for value in table._odmldict}
         self.replace_Nones(props)
         for prop in props:
             prop_path = prop.split('/')
@@ -932,7 +930,7 @@ class FilterPage(QIWizardPage):
                     parent_sec = child
                 else:
                     new_sec = Qtg.QTreeWidgetItem(parent_sec, [prop_path[i]] +
-                                              list(props[prop]))
+                                                  list(props[prop]))
                     parent_sec = new_sec
 
     def create_valuetree(self, tree, table):
@@ -942,7 +940,6 @@ class FilterPage(QIWizardPage):
                        value['DataUncertainty'],
                        value['DataUnit'],
                        value['odmlDatatype'],
-                       value['ValueDefinition'],
                        '', '', '', '', '']
                   for v, value in enumerate(table._odmldict)}
         self.replace_Nones(values)
@@ -1004,14 +1001,14 @@ class SaveFilePage(QIWizardPage):
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
             Qtg.QMessageBox.warning(self, 'No configuration selected',
-                                'You need to select a configuration in'
-                                ' order to delete it.')
+                                    'You need to select a configuration in'
+                                    ' order to delete it.')
         else:
             conf_name = str(self.configlist.currentItem().text())
             quit_msg = "Are you sure you want to delete the configuration " \
                        "'%s'?" % (conf_name)
             reply = Qtg.QMessageBox.question(self, 'Message',
-                                         quit_msg, Qtg.QMessageBox.Yes,
+                                             quit_msg, Qtg.QMessageBox.Yes,
                                              Qtg.QMessageBox.No)
 
             if reply == Qtg.QMessageBox.Yes:
@@ -1064,7 +1061,7 @@ class SaveFilePage(QIWizardPage):
         horizontalLine.setSizePolicy(Qtg.QSizePolicy.Expanding, Qtg.QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
         vbox.addWidget(Qtg.QLabel('You can save the configuration '
-                              'used in this run'))
+                                  'used in this run'))
         grid = Qtg.QGridLayout()
         self.configlist = Qtg.QListWidget()
         self.configlist.itemActivated.connect(self.newconfname)
@@ -1115,16 +1112,16 @@ class SaveFilePage(QIWizardPage):
                  self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtg.QMessageBox.warning(self, 'Wrong file format',
-                                'The output file format is supposed to be "%s",'
-                                ' but you selected "%s"'
-                                '' % (self.expected_extension,
-                                      os.path.splitext(self.outputfilename)[1]))
+                                    'The output file format is supposed to be "%s",'
+                                    ' but you selected "%s"'
+                                    '' % (self.expected_extension,
+                                          os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
             filtered_table = self.settings.get_object('filtered_table')
             filtered_table.write2odml(self.settings.get_object(
-                    'outputfilename'))
+                'outputfilename'))
 
             self.issaved = True
             print('Complete!')
@@ -1145,22 +1142,22 @@ class SaveFilePage(QIWizardPage):
                 (str(self.configlist.currentItem().text()) in
                      ['', '<Click here enter a new configuration name>'])):
             Qtg.QMessageBox.warning(self, 'No configuration name selected',
-                                'You need to select a name for your '
-                                'configuration if you want to save it or '
-                                'define a new one (<Click here enter a new '
-                                'configuration name>)')
+                                    'You need to select a name for your '
+                                    'configuration if you want to save it or '
+                                    'define a new one (<Click here enter a new '
+                                    'configuration name>)')
         else:
             config_name = str(self.configlist.currentItem().text())
             curritem = self.configlist.currentItem()
             if self.configlist.currentRow() != 0:
                 self.configlist.item(0).setText(
-                        '<Click here enter a new configuration name>')
+                    '<Click here enter a new configuration name>')
             elif config_name in self.settings.get_all_config_names():
                 Qtg.QMessageBox.warning(self, 'Configuration already exists',
-                                    'You need to chose a new name for your '
-                                    'configuration.'
-                                    'The name "%s" already exists' %
-                                    config_name)
+                                        'You need to chose a new name for your '
+                                        'configuration.'
+                                        'The name "%s" already exists' %
+                                        config_name)
             else:
                 curritem.setFlags((Qt.ItemIsSelectable | Qt.ItemIsEnabled))
                 self.add_new_conf(self.configlist)
@@ -1176,7 +1173,7 @@ class SaveFilePage(QIWizardPage):
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
             reply = Qtg.QMessageBox.question(self, 'Message',
-                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
+                                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
             if reply == Qtg.QMessageBox.No:
                 return 0
         return 1

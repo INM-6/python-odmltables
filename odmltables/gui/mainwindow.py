@@ -51,7 +51,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                 "<br><br>"
                 "For a detailed error report see log file at <i>%s</i>"
                 "</html>" % (
-                error.replace('<', '').replace('>', ''), error_logfile))
+                    error.replace('<', '').replace('>', ''), error_logfile))
 
     QtGui.QMessageBox.critical(None,
                                "Unexpected Error in odMLtables",
@@ -69,9 +69,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         myfile.writelines(['################### %s ###################\n' % now,
                            complete_error, '\n'])
 
-    # sys.exit(1)
-
-
+        # sys.exit(1)
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -179,15 +177,15 @@ class MainWindow(QtGui.QMainWindow):
         button.clicked.connect(self.startWizard)
 
         button.setStyleSheet(
-                            'QToolButton {'
-                            'background-color:#FF9955;'
-                            'border: 2px solid #404040;'
-                            'border-radius: 5px;'
-                            'color: black};'  # 'FF7F2A'
+            'QToolButton {'
+            'background-color:#FF9955;'
+            'border: 2px solid #404040;'
+            'border-radius: 5px;'
+            'color: black};'  # 'FF7F2A'
 
-                            'QToolButton:hover{'
-                            'background-color:red};'
-                             )
+            'QToolButton:hover{'
+            'background-color:red};'
+        )
         return button
 
     def startWizard(self):

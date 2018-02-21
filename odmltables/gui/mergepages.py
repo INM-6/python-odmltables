@@ -88,11 +88,11 @@ class LoadFilePage(QIWizardPage):
         vbox.addWidget(Qtg.QLabel('Select a mode for merging the two files'))
         self.rbstrict = Qtg.QRadioButton('strict merge')
         self.rbstrict.setIcon(Qtg.QIcon(os.path.join(graphic_path,
-                                                 'mergestrict.svg')))
+                                                     'mergestrict.svg')))
         self.rbstrict.setIconSize(QSize(100, 100))
         self.rboverwrite = Qtg.QRadioButton('overwrite')
         self.rboverwrite.setIcon(Qtg.QIcon(os.path.join(graphic_path,
-                                                    'mergeoverwrite.svg')))
+                                                        'mergeoverwrite.svg')))
         self.rboverwrite.setIconSize(QSize(100, 100))
 
         self.settings.register('rbstrict', self.rbstrict)
@@ -198,14 +198,14 @@ class LoadFilePage(QIWizardPage):
         # check generation prerequisites
         if (not self.inputfilename1) or (not self.inputfilename2):
             Qtg.QMessageBox.warning(self, 'Not enough input files provided',
-                                'You need to provide two inputfiles to be '
-                                'merged')
+                                    'You need to provide two inputfiles to be '
+                                    'merged')
             return
         elif ((not self.rbstrict.isChecked()) and
                   (not self.rboverwrite.isChecked())):
             Qtg.QMessageBox.warning(self, 'No merge mode selected',
-                                'You need to select one of the two merge '
-                                'modes: "strict merge" or "overwrite merge".')
+                                    'You need to select one of the two merge '
+                                    'modes: "strict merge" or "overwrite merge".')
             return
 
         self.expected_extension = '.odml'
@@ -227,8 +227,8 @@ class LoadFilePage(QIWizardPage):
 
         if not self.outputfilename:
             Qtg.QMessageBox.warning(self, 'No output file selected',
-                                'You need to select an output odml file to '
-                                'save your data.')
+                                    'You need to select an output odml file to '
+                                    'save your data.')
             return
 
         # # extending filename if no extension is present
@@ -242,10 +242,10 @@ class LoadFilePage(QIWizardPage):
                  1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtg.QMessageBox.warning(self, 'Wrong file format',
-                                'The output file format is supposed to be "%s",'
-                                ' but you selected "%s"'
-                                '' % (self.expected_extension,
-                                      os.path.splitext(self.outputfilename)[1]))
+                                    'The output file format is supposed to be "%s",'
+                                    ' but you selected "%s"'
+                                    '' % (self.expected_extension,
+                                          os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
@@ -270,7 +270,7 @@ class LoadFilePage(QIWizardPage):
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
             reply = Qtg.QMessageBox.question(self, 'Message',
-                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
+                                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
             if reply == Qtg.QMessageBox.No:
                 return 0
         return 1
@@ -297,13 +297,13 @@ class LoadFilePage(QIWizardPage):
             table1.merge(table2, mode=mode)
         except ValueError as e:
             Qtg.QMessageBox.warning(self, 'Error while merging files',
-                                'Value error: %s. Can not merge into '
-                                'non-default values in merge mode "strict". '
-                                'Data '
-                                'could be lost in the process. Please fix '
-                                'your odml '
-                                'files or change to merge mode "overwrite".' % (
-                                    e.message))
+                                    'Value error: %s. Can not merge into '
+                                    'non-default values in merge mode "strict". '
+                                    'Data '
+                                    'could be lost in the process. Please fix '
+                                    'your odml '
+                                    'files or change to merge mode "overwrite".' % (
+                                        e.message))
             return False
         except:
             Qtg.QMessageBox.warning(self, 'Unexpected error:', sys.exc_info()[0])

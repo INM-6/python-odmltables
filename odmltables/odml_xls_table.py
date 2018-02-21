@@ -5,6 +5,7 @@
 
 import datetime
 import xlwt
+import numpy as np
 
 # Workaround Python 2 and 3 unicode handling.
 try:
@@ -45,7 +46,7 @@ class OdmlXlsTable(OdmlTable):
 
     """
 
-    def __init__(self, load_from = None):
+    def __init__(self, load_from=None):
         super(OdmlXlsTable, self).__init__(load_from=load_from)
         self.sheetname = "sheet1"
         self._marked_cols = ["Value"]
@@ -129,7 +130,6 @@ class OdmlXlsTable(OdmlTable):
           - 'PropertyName'
           - 'PropertyDefinition'
           - 'Value'
-          - 'ValueDefinition'
           - 'DataUnit'
           - 'DataUncertainty'
           - 'odmlDatatype'.
@@ -154,60 +154,99 @@ class OdmlXlsTable(OdmlTable):
 
         self.consistency_check()
 
+        valid_changing_points = ['sections', 'properties', 'values', None]
+        if not self._changing_point in valid_changing_points:
+            raise Exception("Invalid argument for changing_point: Your changing_point must"
+                            " be one of {}".format(str(valid_changing_points)))
+
         styles = {"document_info": xlwt.easyxf(
             self.document_info_style.get_style_string()),
-                  "header": xlwt.easyxf(self.header_style.get_style_string()),
-                  "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
-                  "row1col0":
-                      xlwt.easyxf(self.second_style.get_style_string()),
-                  "row0col1":
-                      xlwt.easyxf(self.first_marked_style.get_style_string()),
-                  "row1col1":
-                      xlwt.easyxf(self.second_marked_style.get_style_string()),
-                  "highlight":
-                      xlwt.easyxf(self.highlight_style.get_style_string())}
+            "header": xlwt.easyxf(self.header_style.get_style_string()),
+            "row0col0": xlwt.easyxf(self.first_style.get_style_string()),
+            "row1col0":
+                xlwt.easyxf(self.second_style.get_style_string()),
+            "row0col1":
+                xlwt.easyxf(self.first_marked_style.get_style_string()),
+            "row1col1":
+                xlwt.easyxf(self.second_marked_style.get_style_string()),
+            "highlight":
+                xlwt.easyxf(self.highlight_style.get_style_string())}
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheetname)
 
         oldpath = ""
-        oldprop = ""
-        oldrow = []
-        row = 0
+        row_id = 0
 
         doclen = len(self._docdict) if self._docdict else 0
-        
+
         max_col_len = [1] * max(len(self._header), 2 * doclen + 1)
         for i, h in enumerate(self._header):
             if h != None:
                 max_col_len[i] = len(self._header_titles[h])
-        col_style = 0
-        row_style = 0
 
         if self._docdict:
             # add document information in first row
-            sheet.write(row, 0, 'Document Information', styles["document_info"])
+            sheet.write(row_id, 0, 'Document Information', styles["document_info"])
 
             for a, attribute in enumerate(sorted(self._docdict)):
-                sheet.write(row, 2 * a + 1, attribute, styles["document_info"])
-                sheet.write(row, 2 * a + 2, self._docdict[attribute],
+                sheet.write(row_id, 2 * a + 1, attribute, styles["document_info"])
+                sheet.write(row_id, 2 * a + 2, self._docdict[attribute],
                             styles["document_info"])
 
                 # adjusting cell widths
                 if len(attribute) > max_col_len[2 * a + 1]:
                     max_col_len[2 * a + 1] = len(attribute)
                 if self._docdict[attribute] != None and (
-                    len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
+                            len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
                     max_col_len[2 * a + 2] = len(self._docdict[attribute])
 
-            row += 1
+            row_id += 1
 
         # write the header
         for col, h in enumerate(self._header):
-            sheet.write(row, col, self._header_titles[h] if h in
-                                                            self._header_titles else "",
+            sheet.write(row_id, col, self._header_titles[h] if h in self._header_titles else "",
                         styles['header'])
 
-        row += 1
+        row_id += 1
+
+        # set default styles as bool values for simplicity
+        if self._pattern is "checkerboard":
+            row_style_default = np.array([0, 1] * (len(self._header)), dtype=bool)
+            row_style_default = row_style_default[:len(self._header)]
+        elif self._pattern is "alternating":
+            row_style_default = np.array([0] * len(self._header), dtype=bool)
+        else:
+            raise Exception("{} is not a valid pattern".format(self._pattern))
+        column_style_default = np.array([1 if h in self._marked_cols else 0 for h in self._header],
+                                        dtype=bool)
+
+        self.row_style = row_style_default
+        self.column_style = column_style_default
+
+        def _write_row(row_id, row_content, stylestrings):
+            assert len(row_content) == len(stylestrings)
+            xls_styles = [styles[rs] for rs in stylestrings]
+            for col_id, cell_content in enumerate(row_content):
+                style = xls_styles[col_id]
+                if cell_content == None:
+                    cell_content = ''
+                if isinstance(cell_content, datetime.datetime):
+                    style.num_format_str = "DD-MM-YYYY HH:MM:SS"
+                elif isinstance(cell_content, datetime.date):
+                    style.num_format_str = "DD-MM-YYYY"
+                elif isinstance(cell_content, datetime.time):
+                    style.num_format_str = "HH:MM:SS"
+                else:
+                    style.num_format_str = ""
+
+                sheet.write(row_id, col_id, cell_content, style)
+
+                # finding longest string in the column
+                if len(unicode(cell_content)) > max_col_len[col]:
+                    max_col_len[col] = len(unicode(cell_content))
+
+        def _switch_row_style():
+            self.row_style = np.invert(self.row_style)
 
         if self._odmldict != None:
             # write the rest of the rows
@@ -216,102 +255,65 @@ class OdmlXlsTable(OdmlTable):
                 # make a copy of the actual dic
                 row_dic = dic.copy()
 
-                # removing unneccessary entries
-                if dic["Path"] == oldpath:
+                # inflate row_dic
+                row_dic['Path'], row_dic['PropertyName'] = row_dic['Path'].split(':')
+                row_dic['SectionName'] = row_dic['Path'].split('/')[-1]
+
+                # removing unnecessary entries
+                if row_dic["Path"] == oldpath:
                     if not self.show_all_sections:
                         for h in self._SECTION_INF:
                             row_dic[h] = ""
-                else:
-                    # start of a new section
-                    if self._changing_point is 'sections':
-                        row_style = (row_style + 1) % 2  # switch row-color
-                    oldpath = dic["Path"]
-                    oldprop = ""
+                # if dic["Path"].split(':')[-1] == oldprop:
+                #     if not self.show_all_properties:
+                #         for h in self._PROPERTY_INF:
+                #             row_dic[h] = ""
 
-                if dic["PropertyName"] == oldprop:
-                    if not self.show_all_properties:
-                        for h in self._PROPERTY_INF:
-                            row_dic[h] = ""
-                else:
-                    # start of a new property
-                    if self._changing_point is 'properties':
-                        row_style = (row_style + 1) % 2  # switch row-color
-                    oldprop = dic["PropertyName"]
 
-                # check the changing point
-                if self._changing_point is 'values':
-                    row_style = (row_style + 1) % 2
-                elif self._changing_point is None:
-                    pass
-                elif not self._changing_point in ['sections', 'properties']:
-                    raise Exception(
-                        "Invalid argument for changing_point: Your " +
-                        "changing_point must be 'sections', " +
-                        "'properties', 'values' or None")
-                    # TODO: change exception
+                # handling row styles
+                if self._changing_point is 'properties':
+                    _switch_row_style()
+                elif self._changing_point is 'sections' and (row_dic["Path"] != oldpath):
+                    _switch_row_style()
 
-                # row_content: only those elements of row_dic, that will be
-                # visible in the table
-                row_content = [row_dic[h] if h != None else '' for h in
-                               self._header]
+                # row_content: only those elements of row_dic, that will be visible in the table
+                row_content = [row_dic[h] if h != None else '' for h in self._header]
 
-                # check, if row would be empty or same as the row before;
-                # if so, skip the row
-                if ((row_content == oldrow) or
-                        (row_content == ['' for h in self._header])):
-                    continue
-                else:
-                    oldrow = list(row_content)
-
-                for col, h in enumerate(self._header):
-
-                    if self._pattern is "checkerboard":
-                        row_style = (row_style + 1) % 2
-                    elif self._pattern is "alternating":
-                        row_style = row_style
-                    else:
-                        raise Exception("this is not a valid argument")
-                        # TODO: better exception
-
-                    # adjust column style
-                    if h in self._marked_cols:
-                        col_style = 1
-                    else:
-                        col_style = 0
-
-                    stylestring = "row" + str(row_style) + "col" + str(
-                            col_style)
-
-                    # special style for highlighting default values
-                    if (h == 'Value' and self._highlight_defaults
-                        and row_dic['Value'] == self.odtypes.default_value(
+                for v in row_dic['Value']:
+                    stylestring = ["row{:d}col{:d}".format(r, c)
+                                   for r, c in zip(self.row_style, self.column_style)]
+                    # introduce highlighted values
+                    if (self._highlight_defaults and
+                                row_dic['Value'] == self.odtypes.default_value(
                                 row_dic['odmlDatatype'])):
-                        stylestring = 'highlight'
+                        stylestring[self._header.index('Value')] = 'highlight'
 
-                    style = styles[stylestring]
-                    if h != None:
-                        cell_content = row_dic[h]
-                    else:
-                        cell_content = ''
+                    # update value entry and write line
+                    if 'Value' in self._header:
+                        v = self.odtypes.to_odml_value(v, row_dic['odmlDatatype'])
+                        # explicitely replacing 0-1 representation by string representation
+                        if isinstance(v, bool):
+                            v = 'True' if v else 'False'
+                        row_content[self._header.index('Value')] = v
+                    _write_row(row_id, row_content, stylestring)
+                    row_id += 1
 
-                    # special style for datetime-objects
+                    # continue with next property if values are not exported
+                    if 'Value' not in self._header:
+                        break
 
-                    if isinstance(cell_content, datetime.datetime):
-                        style.num_format_str = "DD-MM-YYYY HH:MM:SS"
-                    elif isinstance(cell_content, datetime.date):
-                        style.num_format_str = "DD-MM-YYYY"
-                    elif isinstance(cell_content, datetime.time):
-                        style.num_format_str = "HH:MM:SS"
-                    else:
-                        style.num_format_str = ""
+                    if self._changing_point is 'values':
+                        _switch_row_style()
 
-                    # finding longest string in the column
-                    if len(unicode(cell_content)) > max_col_len[col]:
-                        max_col_len[col] = len(unicode(cell_content))
+                    # adjust section and property entries for next value
+                    for h in self._header:
+                        if ((not self.show_all_properties
+                             and h in self._PROPERTY_INF + ['PropertyName']) or
+                                (not self.show_all_sections
+                                 and h in self._SECTION_INF + ['SectionName'])):
+                            row_content[self._header.index(h)] = ''
 
-                    sheet.write(row, col, cell_content, style)
-
-                row += 1
+                oldpath = row_dic["Path"]
 
         # adjust the size of the columns due to the max length of the content,
         # but no more than max_allowed_col_len characters

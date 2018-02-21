@@ -38,16 +38,16 @@ class FilterWizard(OdmltablesWizard):
     def _createHelpMsgs(self):
         msgs = {}
         msgs[self.PageLoadFile] = self.tr(
-                "Select an input file using the browser"
-                " and choose your output file format.")
+            "Select an input file using the browser"
+            " and choose your output file format.")
         msgs[self.PageCustomInputHeader] = self.tr(
-                "You need to assign the header "
-                " titles used in the input file "
-                " to valid odml column types.")
+            "You need to assign the header "
+            " titles used in the input file "
+            " to valid odml column types.")
 
         # TODO: Add more help info
         msgs[self.NUM_PAGES + 1] = self.tr(
-                "Sorry, for this page there is no help available.")
+            "Sorry, for this page there is no help available.")
         return msgs
 
 

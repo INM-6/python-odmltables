@@ -4,6 +4,7 @@
 """
 import os
 import re
+import copy
 import odml
 import csv
 import datetime
@@ -48,23 +49,21 @@ class OdmlTable(object):
                                "PropertyName": "Property Name",
                                "PropertyDefinition": "Property Definition",
                                "Value": "Value",
-                               "ValueDefinition": "Value Definition",
                                "DataUnit": "Data Unit",
                                "DataUncertainty": "Data Uncertainty",
                                "odmlDatatype": "odML Data Type"}
         self.show_all_sections = False
         self.show_all_properties = False
-        self._SECTION_INF = ["Path", "SectionName", "SectionType",
-                             "SectionDefinition"]
-        self._PROPERTY_INF = ["PropertyName", "PropertyDefinition"]
+        self._SECTION_INF = ["Path", "SectionType", "SectionDefinition"]
+        self._PROPERTY_INF = ["PropertyDefinition", "DataUnit", "DataUncertainty", "odmlDatatype"]
 
         if load_from is not None:
             filename, file_extension = os.path.splitext(load_from)
-            if file_extension=='.odml':
+            if file_extension == '.odml':
                 self.load_from_file(load_from)
-            elif file_extension=='.xls':
+            elif file_extension == '.xls':
                 self.load_from_xls_table(load_from)
-            elif file_extension=='.csv':
+            elif file_extension == '.csv':
                 self.load_from_csv_table(load_from)
             else:
                 raise IOError('Can not read file format "%s". odMLtables '
@@ -74,38 +73,30 @@ class OdmlTable(object):
         """
         function to create the odml-dict
         """
-        # in odml 1.3 itervalues returns a list of all .values objects and
-        # not a list of individual value objects -> unwrap list entries
-        values = list(doc.itervalues())
-        id = 0
-        while id < len(values):
-            val = values[id]
-            id += 1
-            if isinstance(val, list):
-                id -= 1
-                values.remove(val)
-                for v in val:
-                    values.append(v)
+        # In odml 1.4 properties are the leaves of the odml tree; unwrap from there.
+        props = list(doc.iterproperties())
 
-        odmldict = [{'Path': v.parent.parent.get_path(),
-                     'SectionName': v.parent.parent.name,
-                     'SectionType': v.parent.parent.type,
-                     'SectionDefinition': v.parent.parent.definition,
-                     'PropertyName': v.parent.name,
-                     'PropertyDefinition': v.parent.definition,
-                     'Value': v.data if type(v.data) is not bool else
-                     str(v.data),
-                     'ValueDefinition': v.definition,
-                     'DataUnit': v.unit,
-                     'DataUncertainty': v.uncertainty,
-                     'odmlDatatype': v.dtype}
-                    for v in values]
+        odmldict = [{'Path': p.get_path(),
+                     'SectionType': p.parent.type,
+                     'SectionDefinition': p.parent.definition,
+                     'PropertyDefinition': p.definition,
+                     # Since value now returns a list the check for bool might be useless.
+                     'Value': p.value if type(p.value) is not bool else str(p.value),
+                     'DataUnit': p.unit,
+                     'DataUncertainty': p.uncertainty,
+                     'odmlDatatype': p.dtype}
+                    for p in props]
+
         odmldict = self._sort_odmldict(odmldict)
         return odmldict
 
     def _sort_odmldict(self, odmldict):
-        return sorted(odmldict, key=lambda x: (x['Path'], x['PropertyName']))
+        return sorted(odmldict, key=lambda x: x['Path'])
 
+    def _split_path(self, dic):
+        path, property_name = dic['Path'].split(':')
+        section_name = path.split('/')[-1]
+        return path, section_name, property_name
 
     def _create_documentdict(self, doc):
         attributes = ['author', 'date', 'repository', 'version']
@@ -123,7 +114,7 @@ class OdmlTable(object):
         :type load_from: string
 
         """
-        doc = odml.tools.xmlparser.load(load_from)
+        doc = odml.load(load_from)
         self._odmldict = self.__create_odmldict(doc)
         self._docdict = self._create_documentdict(doc)
 
@@ -206,25 +197,24 @@ class OdmlTable(object):
         :param load_from: name(path) of the xls-file
         :type load_from: string
         """
+
+        self._odmldict = []
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
-        self._odmldict = []
         workbook = xlrd.open_workbook(load_from)
-
         for sheet_name in workbook.sheet_names():
             worksheet = workbook.sheet_by_name(sheet_name)
-
-            row = 0
+            row_id = 0
 
             # read document information if present
             if worksheet.cell(0, 0).value == 'Document Information':
-                doc_row = [r.value for r in worksheet.row(row)]
+                doc_row = [r.value for r in worksheet.row(row_id)]
                 self._get_docdict(doc_row)
-                row += 1
+                row_id += 1
 
             # get number of non-empty odml colums
-            header_row = worksheet.row(row)
+            header_row = worksheet.row(row_id)
 
             # read the header
             header = [h.value for h in header_row]
@@ -237,95 +227,167 @@ class OdmlTable(object):
 
             n_cols = len(header)
             try:
-                self._header = [inv_header_titles[h] if h != '' else None for h in
-                            header]
+                self._header = [inv_header_titles[h] if h != '' else None for h in header]
             except KeyError as e:
                 if hasattr(e, 'message'):
                     m = e.message
                 else:
                     m = str(e)
-                raise ValueError('%s is not a valid header title.'%m)
-            row += 1
+                raise ValueError('%s is not a valid header title.' % m)
+            row_id += 1
 
-            old_dic = {"Path": "",
-                       "SectionName": "",
-                       "SectionType": "",
-                       "SectionDefinition": "",
-                       "PropertyName": "",
-                       "PropertyDefinition": "",
-                       "Value": "",
-                       "ValueDefinition": "",
-                       "DataUnit": "",
-                       "DataUncertainty": "",
-                       "odmlDatatype": ""}
+            # get column ids of non-empty header cells
+            header_title_ids = {h: id for id, h in
+                                enumerate(self._header) if h != ''}
+            header_title_order = {id: h for id, h in
+                                  enumerate(self._header) if h != ''}
 
-            for row_n in list(range(row, worksheet.nrows)):
-                current_dic = {"Path": "",
-                               "SectionName": "",
-                               "SectionType": "",
-                               "SectionDefinition": "",
-                               "PropertyName": "",
-                               "PropertyDefinition": "",
-                               "Value": "",
-                               "ValueDefinition": "",
-                               "DataUnit": "",
-                               "DataUncertainty": "",
-                               "odmlDatatype": ""}
+            must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
-                for col_n in list(range(n_cols)):
-                    cell = worksheet.cell(row_n, col_n)
-                    value = cell.value
+            # check, if all of the needed information are in the table
+            if any([(m not in self._header) for m in must_haves]):
+                err_msg = ("your table has to contain all of the following " +
+                           " attributes: {0}").format(must_haves)
+                raise ValueError(err_msg)
 
-                    current_dic[self._header[col_n]] = value
+            previous_dic = {"Path": "",
+                           "SectionType": "",
+                           "SectionDefinition": "",
+                           "PropertyDefinition": "",
+                           "Value": "",
+                           "DataUnit": "",
+                           "DataUncertainty": "",
+                           "odmlDatatype": ""}
 
-                if (current_dic['Path'] == '' or
-                            current_dic['Path'] == old_dic['Path']):
-                    # it is not the start of a new section
+            header_end_row_id = row_id
 
-                    if (current_dic['PropertyName'] == '' or
-                                current_dic['PropertyName'] ==
-                                old_dic['PropertyName']):
-                        # old section, old property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                        for key in self._PROPERTY_INF:
-                            current_dic[key] = old_dic[key]
-                    else:
-                        # old section, new property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
+            for row_id in range(header_end_row_id, worksheet.nrows):
+                row = worksheet.row_values(row_id)
+                new_dic = {}
+
+                for col_n in list(range(len(row))):
+                    # using only columns with header
+                    if col_n in header_title_order and header_title_order[col_n] is not None:
+                        new_dic[header_title_order[col_n]] = row[col_n]
+
+                if 'PropertyName' in new_dic and new_dic['PropertyName']=='':
+                    for key in self._PROPERTY_INF:
+                        new_dic[key] = previous_dic[key]
+
+                # copy section info if not present for this row
+                if new_dic['Path'] == '':
+                    for key in self._SECTION_INF:
+                        new_dic[key] = previous_dic[key]
                 else:
-                    # new section, => new property
-                    pass
+                    # update path and remove section and property names
+                    new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+                    new_dic.pop('PropertyName')
 
-                old_dic = current_dic.copy()
+                if 'SectionName' in new_dic:
+                    new_dic.pop('SectionName')
 
                 # convert to python datatypes
-                dtype = current_dic['odmlDatatype']
-                value = current_dic['Value']
+                dtype = new_dic['odmlDatatype']
+                value = self._convert_to_python_type(new_dic['Value'], dtype, workbook.datemode)
+                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
-                if ('date' in dtype or 'time' in dtype) and (value != ''):
-                    if isinstance(value,float):
-                        value = xlrd.xldate_as_tuple(value, workbook.datemode)
-                    elif isinstance(value, unicode):
-                        # try explicit conversion of unicode like '2000-03-23'
-                        m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
-                                     '(?P<day>[0-3][0-9])',
-                                     value)
-                        if m:
-                            date_dict = m.groupdict()
-                            value = (int(date_dict['year']),
-                                     int(date_dict['month']),
-                                     int(date_dict['day']),
-                                     0,0,0)
-                    else:
-                        raise TypeError('Expected xls date or time object, '
-                                        'but got instead %s of %s'
-                                        ''%(value,type(value)))
-                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
+                # same section, same property
+                if previous_dic['Path'] == new_dic['Path']:
+                    # old section, old property
+                    previous_dic['Value'].extend(new_dic['Value'])
+                    continue
 
-                self._odmldict.append(current_dic)
+                self._odmldict.append(new_dic)
+                previous_dic = new_dic
+
         self._odmldict = self._sort_odmldict(self._odmldict)
+
+
+    def _convert_to_python_type(self, value, dtype, datemode):
+        if ('date' in dtype or 'time' in dtype) and (value != ''):
+            if isinstance(value, float):
+                value = xlrd.xldate_as_tuple(value, datemode)
+            elif isinstance(value, unicode):
+                # try explicit conversion of unicode like '2000-03-23'
+                m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
+                             '(?P<day>[0-3][0-9])',
+                             value)
+                if m:
+                    date_dict = m.groupdict()
+                    value = (int(date_dict['year']),
+                             int(date_dict['month']),
+                             int(date_dict['day']),
+                             0, 0, 0)
+            else:
+                raise TypeError('Expected xls date or time object, '
+                                'but got instead %s of %s'
+                                '' % (value, type(value)))
+        return value
+
+        #     for row_id in range(header_end_row_id, worksheet.nrows):
+        #         row = worksheet.row_values(row_id)
+        #         is_new_property = False
+        #         new_dic = {}
+        #
+        #         for col_n in list(range(len(row))):
+        #             # using only columns with header
+        #             if col_n in header_title_order and header_title_order[col_n] is not None:
+        #                 new_dic[header_title_order[col_n]] = row[col_n]
+        #
+        #         # update path and remove section and property names
+        #         new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+        #         new_dic.pop('PropertyName')
+        #         if 'SectionName' in new_dic:
+        #             new_dic.pop('SectionName')
+        #
+        #         # convert to python datatypes
+        #         dtype = new_dic['odmlDatatype']
+        #         value = new_dic['Value']
+        #         if ('date' in dtype or 'time' in dtype) and (value != ''):
+        #             if isinstance(value, float):
+        #                 value = xlrd.xldate_as_tuple(value, workbook.datemode)
+        #             elif isinstance(value, unicode):
+        #                 # try explicit conversion of unicode like '2000-03-23'
+        #                 m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
+        #                              '(?P<day>[0-3][0-9])',
+        #                              value)
+        #                 if m:
+        #                     date_dict = m.groupdict()
+        #                     value = (int(date_dict['year']),
+        #                              int(date_dict['month']),
+        #                              int(date_dict['day']),
+        #                              0, 0, 0)
+        #             else:
+        #                 raise TypeError('Expected xls date or time object, '
+        #                                 'but got instead %s of %s'
+        #                                 '' % (value, type(value)))
+        #         new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
+        #
+        #         if (new_dic['Path'].split(':')[0] == ''
+        #             or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+        #             # it is not the start of a new section
+        #
+        #             if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+        #                 # old section, old property
+        #                 current_dic['Value'].extend(new_dic['Value'])
+        #             else:
+        #                 # old section, new property
+        #                 for key in self._PROPERTY_INF:
+        #                     current_dic[key] = new_dic[key]
+        #                 is_new_property = True
+        #         else:
+        #             is_new_property = True
+        #
+        #         if is_new_property and row_id > header_end_row_id:
+        #             self._odmldict.append(copy.deepcopy(current_dic))
+        #             current_dic = new_dic
+        #
+        #     # copy final property
+        #     if row_id <= header_end_row_id:
+        #         self._odmldict.append(copy.deepcopy(new_dic))
+        #     else:
+        #         self._odmldict.append(copy.deepcopy(current_dic))
+        # self._odmldict = self._sort_odmldict(self._odmldict)
 
     @staticmethod
     def get_csv_header(load_from):
@@ -388,8 +450,7 @@ class OdmlTable(object):
                                   enumerate(row) if h != ''}
 
             # reconstruct headers
-            self._header = [inv_header_titles[h] if h != '' else None for h in
-                            row]
+            self._header = [inv_header_titles[h] if h != '' else None for h in row]
 
             must_haves = ["Path", "PropertyName", "Value", "odmlDatatype"]
 
@@ -399,66 +460,71 @@ class OdmlTable(object):
                            " attributes: {0}").format(must_haves)
                 raise ValueError(err_msg)
 
-            old_dic = {"Path": "",
-                       "SectionName": "",
-                       "SectionType": "",
-                       "SectionDefinition": "",
-                       "PropertyName": "",
-                       "PropertyDefinition": "",
-                       "Value": "",
-                       "ValueDefinition": "",
-                       "DataUnit": "",
-                       "DataUncertainty": "",
-                       "odmlDatatype": ""}
+            current_dic = {"Path": "",
+                           "SectionType": "",
+                           "SectionDefinition": "",
+                           "PropertyDefinition": "",
+                           "Value": "",
+                           "DataUnit": "",
+                           "DataUncertainty": "",
+                           "odmlDatatype": ""}
 
-            for row in csvreader:
+            for row_id, row in enumerate(csvreader):
+                is_new_property = False
+                new_dic = {}
 
-                current_dic = {"Path": "",
-                               "SectionName": "",
-                               "SectionType": "",
-                               "SectionDefinition": "",
-                               "PropertyName": "",
-                               "PropertyDefinition": "",
-                               "Value": "",
-                               "ValueDefinition": "",
-                               "DataUnit": "",
-                               "DataUncertainty": "",
-                               "odmlDatatype": ""}
+                # current_dic = {"Path": "",
+                #                "SectionType": "",
+                #                "SectionDefinition": "",
+                #                "PropertyDefinition": "",
+                #                "Value": "",
+                #                "DataUnit": "",
+                #                "DataUncertainty": "",
+                #                "odmlDatatype": ""}
 
                 for col_n in list(range(len(row))):
                     # using only columns with header
                     if col_n in header_title_order:
-                        current_dic[header_title_order[col_n]] = row[col_n]
+                        new_dic[header_title_order[col_n]] = row[col_n]
 
-                if (current_dic['Path'] == '' or
-                            current_dic['Path'] == old_dic['Path']):
-                    # it is not the start of a new section
-
-                    if (current_dic['PropertyName'] == ''
-                        or current_dic['PropertyName'] ==
-                            old_dic['PropertyName']):
-                        # old section, old property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                        for key in self._PROPERTY_INF:
-                            current_dic[key] = old_dic[key]
-                    else:
-                        # old section, new property
-                        for key in self._SECTION_INF:
-                            current_dic[key] = old_dic[key]
-                else:
-                    # new section, => new property
-                    pass
-
-                old_dic = current_dic.copy()
+                # update path and remove section and property names
+                new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+                new_dic.pop('PropertyName')
+                new_dic.pop('SectionName')
 
                 # convert to python datatypes
-                dtype = current_dic['odmlDatatype']
-                value = current_dic['Value']
+                dtype = new_dic['odmlDatatype']
+                value = new_dic['Value']
+                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
-                current_dic['Value'] = self.odtypes.to_odml_value(value, dtype)
+                if (new_dic['Path'].split(':')[0] == ''
+                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+                    # it is not the start of a new section
 
-                self._odmldict.append(current_dic)
+                    if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+                        # old section, old property
+                        # for key in self._SECTION_INF:
+                        #     current_dic[key] = old_dic[key]
+                        # for key in self._PROPERTY_INF:
+                        #     current_dic[key] = old_dic[key]
+                        current_dic['Value'].extend(new_dic['Value'])
+                    else:
+                        # old section, new property
+                        for key in self._PROPERTY_INF:
+                            current_dic[key] = new_dic[key]
+                        is_new_property = True
+                else:
+                    is_new_property = True
+
+                if is_new_property and row_id > 0:
+                    self._odmldict.append(copy.deepcopy(current_dic))
+                    current_dic = new_dic
+
+            # copy final property
+            if row_id == 0:
+                self._odmldict.append(copy.deepcopy(new_dic))
+            else:
+                self._odmldict.append(copy.deepcopy(current_dic))
         self._odmldict = self._sort_odmldict(self._odmldict)
 
     def change_header_titles(self, **kwargs):
@@ -476,8 +542,6 @@ class OdmlTable(object):
         :param PropertyDefinition: Name of the 'Property Definition'-Column in
             the table
         :param Value: Name of the 'Value'-Column in the table
-        :param ValueDefinition: Name of the 'Value Definition'-Column in the
-            table
         :param DataUnit: Name of the 'Data Unit'-Column in the table
         :param DataUncertainty: Name of the 'Data Uncertainty'-Column in the
             table
@@ -489,7 +553,6 @@ class OdmlTable(object):
         :type ProgertyName: string, optional
         :type PropertyDefinition: string, optional
         :type Value: string, optional
-        :type ValueDefinition: string, optional
         :type DataUnit: string, optional
         :type DataUncertainty: string, optional
         :type odmlDatatype: string, optional
@@ -528,8 +591,6 @@ class OdmlTable(object):
         :param PropertyDefinition: Position of the 'Property Definition'-Column
             in the table
         :param Value: Position of the 'Value'-Column in the table
-        :param ValueDefinition: Position of the 'Value Definition'-Column in
-            the table
         :param DataUnit: Position of the 'Data Unit'-Column in the table
         :param DataUncertainty: Position of the 'Data Uncertainty'-Column in
             the table
@@ -542,7 +603,6 @@ class OdmlTable(object):
         :type PropertyName: int, optional
         :type PropertyDefinition: int, optional
         :type Value: int, optional
-        :type ValueDefinition: int,
         :type DataUnit: int, optional
         :type DataUncertainty: int, optional
         :type odmlDatatype: int, optional
@@ -603,16 +663,18 @@ class OdmlTable(object):
                 if property_dict[
                     'odmlDatatype'] not in self.odtypes.valid_dtypes:
                     raise TypeError(
-                            'Non valid dtype "{0}" in odmldict. Valid types '
-                            'are {'
-                            '1}'.format(
-                                    property_dict['odmlDatatype'],
-                                    self.odtypes.valid_dtypes))
+                        'Non valid dtype "{0}" in odmldict. Valid types are {1}'
+                        ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
         remove odmldict entries which do not match filter_func.
         """
+        # inflate odmldict for filtering
+        for dic in self._odmldict:
+            sec_path, dic['PropertyName'] = dic['Path'].split(':')
+            dic['SectionName'] = sec_path.split('/')[-1]
+
         new_odmldict = [d for d in self._odmldict if filter_func(d)]
         deleted_properties = [d for d in self._odmldict if not filter_func(d)]
 
@@ -625,12 +687,9 @@ class OdmlTable(object):
         filters odml properties according to provided kwargs.
 
         :param mode: Possible values: 'and', 'or'. For 'and' all keyword
-        arguments
-                must be satisfied for a property to be selected. For 'or'
-                only one
-                of the keyword arguments must be satisfied for the property
-                to be
-                selected. Default: 'and'
+                arguments must be satisfied for a property to be selected. For 'or'
+                only one of the keyword arguments must be satisfied for the property
+                to be selected. Default: 'and'
         :param invert: Inverts filter function. Previously accepted properties
                 are rejected and the other way round. Default: False
         :param recursive: Delete also properties attached to subsections of the
@@ -643,21 +702,17 @@ class OdmlTable(object):
         :return: None
         """
         if not kwargs:
-            raise ValueError(
-                    'No filter keywords provided for property filtering.')
+            raise ValueError('No filter keywords provided for property filtering.')
         if mode not in ['and', 'or']:
-            raise ValueError(
-                    'Invalid operation mode "%s". Accepted values are "and",'
-                    '"or".' % (
-                        mode))
+            raise ValueError('Invalid operation mode "%s". Accepted values are "and", "or".'
+                             '' % (mode))
 
         def filter_func(dict_prop):
             keep_property = False
             for filter_key, filter_value in iteritems(kwargs):
                 if filter_key not in dict_prop:
-                    raise ValueError(
-                            'Key "%s" is missing in property dictionary %s' % (
-                                filter_key, dict_prop))
+                    raise ValueError('Key "%s" is missing in property dictionary %s'
+                                     '' % (filter_key, dict_prop))
 
                 if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
@@ -696,7 +751,7 @@ class OdmlTable(object):
         doc1 = self.convert2odml()
 
         # TODO: include value merge in section merge
-        self._merge_odml_sections(doc1,doc2)
+        self._merge_odml_sections(doc1, doc2)
         self._merge_odml_values(doc1, doc2, mode=mode)
 
         # TODO: What should happen to the document properties?
@@ -733,7 +788,7 @@ class OdmlTable(object):
                     if prop2.name not in sec1.properties:
                         sec1.properties.append(prop2)
 
-
+    # TODO adjust function to new value model
     def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
         """
         Merging values of odml documents, which contain the IDENTICAL
@@ -749,25 +804,25 @@ class OdmlTable(object):
             prop1 = doc1.get_property_by_path(path)
 
             if mode == 'strict':
-                if (len(prop1.values) != 1) or \
-                        (prop1.values[0].data not in
+                if (len(prop1.value) != 1) or \
+                        (prop1.value[0] not in
                              list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
-                                                                prop1.values))
+                                                                prop1.value))
 
             if mode in ['overwrite', 'strict']:
                 # removing old values, but keeping first element, because a
                 # property needs to contain at least one value at any time
                 if prop1 != prop2:  # properties can be identical, when section
                     #  was copied. Then no value transfer is necessary.
-                    for val in prop1.values[1:]:
+                    for val in prop1.value[1:]:
                         prop1.remove(val)
                     # adding new values (which is at least one, see comment
                     # above)
-                    for val in prop2.values:
-                        prop1.append(val)
-                    prop1.remove(prop1.values[0])
+                    for val in prop2.value:
+                        prop1.value.append(val)
+                    prop1.remove(prop1.value[0])
 
     def write2file(self, save_to):
         """
@@ -784,69 +839,40 @@ class OdmlTable(object):
         :return:
         """
         doc = odml.Document()
-        oldpath = []
-        oldpropname = ''
-        oldpropdef = ''
-        valuelist = []
+        oldpath = ''
         parent = ''
 
         self.consistency_check()
 
         for dic in self._odmldict:
+            # build property object
+            prop_name = self._split_path(dic)[-1]
+            prop = odml.Property(name=prop_name,
+                                 value=dic['Value'],
+                                 dtype=dic['odmlDatatype'])
 
-            # get the actual Value
-            value = odml.Value(data=dic['Value'], dtype=dic['odmlDatatype'])
-            if 'ValueDefinition' in self._header:
-                value.definition = dic['ValueDefinition']
-            if 'DataUnit' in self._header:
-                value.unit = dic['DataUnit']
-            if 'DataUncertainty' in self._header:
-                value.uncertainty = dic['DataUncertainty']
-
-            if dic['Path'] == oldpath:
-                # parent is still the same
-                if dic['PropertyName'] == oldpropname:
-                    # still the same property
-                    valuelist.append(value)
-                else:
-                    prop = odml.Property(name=oldpropname, value=valuelist)
-                    if 'PropertyDefinition' in self._header:
-                        prop.definition = oldpropdef
-                    parent.append(prop)
-                    valuelist = [value]
-            else:
-
-                if parent != '':
-                    prop = odml.Property(name=oldpropname, value=valuelist)
-                    if 'PropertyDefinition' in self._header:
-                        prop.definition = oldpropdef
-                    parent.append(prop)
-                    valuelist = [value]
-                else:
-                    valuelist.append(value)
-
-                parent = doc
-                for section in dic['Path'].split('/')[1:]:
-                    try:
-                        parent = parent[section]
-                    except KeyError:
-                        parent.append(odml.Section(name=section))
-                        parent = parent[section]
-
-                if 'SectionType' in self._header:
-                    parent.type = dic['SectionType']
-                if 'SectionDefinition' in self._header:
-                    parent.definition = dic['SectionDefinition']
-
-            oldpath = dic['Path']
-            oldpropname = dic['PropertyName']
             if 'PropertyDefinition' in self._header:
-                oldpropdef = dic['PropertyDefinition']
+                prop.definition = dic['PropertyDefinition']
+            if 'DataUnit' in self._header:
+                prop.unit = dic['DataUnit']
+            if 'DataUncertainty' in self._header:
+                prop.uncertainty = dic['DataUncertainty']
 
-        prop = odml.Property(name=oldpropname, value=valuelist)
-        if 'PropertyDefinition' in self._header:
-            prop.definition = oldpropdef
-        parent.append(prop)
+            sec_path = dic['Path'].split(':')[0]
+            current_sec = doc
+            # build section tree for this property
+            for sec_pathlet in sec_path.split('/')[1:]:
+                # append new section if not present yet
+                if sec_pathlet not in current_sec.sections:
+                    current_sec.append(odml.Section(name=sec_pathlet))
+                current_sec = current_sec[sec_pathlet]
+
+            if 'SectionType' in self._header:
+                current_sec.type = dic['SectionType']
+            if 'SectionDefinition' in self._header:
+                current_sec.definition = dic['SectionDefinition']
+
+            current_sec.append(prop)
 
         return doc
 
@@ -927,9 +953,9 @@ class OdmlDtypes(object):
                 self._synonyms.pop(synonym)
             else:
                 raise ValueError(
-                        'Can not add synonym "%s=%s". %s is not a base dtype.'
-                        'Valid basedtypes are %s.' % (
-                            basedtype, synonym, basedtype, self.basedtypes))
+                    'Can not add synonym "%s=%s". %s is not a base dtype.'
+                    'Valid basedtypes are %s.' % (
+                        basedtype, synonym, basedtype, self.basedtypes))
 
         elif synonym is None or synonym == '':
             raise ValueError('"%s" is not a valid synonym.' % synonym)
@@ -960,8 +986,8 @@ class OdmlDtypes(object):
             return self.default_values[basedtype]
         else:
             raise ValueError(
-                    '"%s" is not a basedtype. Valid basedtypes are %s' % (
-                        basedtype, self.basedtypes))
+                '"%s" is not a basedtype. Valid basedtypes are %s' % (
+                    basedtype, self.basedtypes))
 
     def set_default_value(self, basedtype, default_value):
         if basedtype in self.basedtypes:
@@ -981,40 +1007,49 @@ class OdmlDtypes(object):
             dtype = self._synonyms[dtype]
 
         if dtype == 'datetime':
-            try:
-                result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-            except TypeError:
-                result = datetime.datetime(*value)
-        elif dtype == 'datetime.date':
-            try:
-                result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
-            except ValueError:
+            if isinstance(value, datetime.datetime):
+                result = value
+            else:
                 try:
-                    result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+                    result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                except TypeError:
+                    result = datetime.datetime(*value)
+        elif dtype == 'datetime.date':
+            if isinstance(value, datetime.date):
+                result = value
+            else:
+                try:
+                    result = datetime.datetime.strptime(value, '%Y-%m-%d').date()
                 except ValueError:
-                    raise ValueError(
+                    try:
+                        result = datetime.datetime.strptime(value, '%d-%m-%Y').date()
+                    except ValueError:
+                        raise ValueError(
                             'The value "%s" can not be converted to a date as '
                             'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
-            except TypeError:
-                result = datetime.datetime(*value).date()
+                except TypeError:
+                    result = datetime.datetime(*value).date()
         elif dtype == 'datetime.time':
-            try:
-                result = datetime.datetime.strptime(value, '%H:%M:%S').time()
-            except TypeError:
+            if isinstance(value, datetime.time):
+                result = value
+            else:
                 try:
-                    result = datetime.datetime(*value).time()
-                except ValueError:
-                    result = datetime.time(*value[-3:])
+                    result = datetime.datetime.strptime(value, '%H:%M:%S').time()
+                except TypeError:
+                    try:
+                        result = datetime.datetime(*value).time()
+                    except ValueError:
+                        result = datetime.time(*value[-3:])
 
         elif dtype == 'url':
             result = str(value)
 
         elif dtype in self._basedtypes:
             try:
-                result = eval('%s("%s")' % (dtype, value))
-            except ValueError:
                 result = eval('%s(%s)' % (dtype, value))
+            except Exception:
+                result = eval('%s("%s")' % (dtype, value))
         else:
-            raise TypeError('Unkown dtype {0}'.format(dtype))
+            raise TypeError('Unknown dtype {0}'.format(dtype))
 
         return result

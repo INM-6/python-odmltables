@@ -5,11 +5,12 @@ Created on Mon May  4 13:49:47 2015
 @author: pick
 """
 
+import copy
 from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 import os
-from .create_test_odmls import create_2samerows_test_odml
-from .create_test_odmls import create_datatype_test_odml
+from .create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
+                                create_complex_test_odml)
 
 import xlrd
 
@@ -70,7 +71,6 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
 
 
 class TestOdmlXlsTable(unittest.TestCase):
-
     def setUp(self):
         self.test_xls_table = OdmlXlsTable()
         self.filename = 'test.xls'
@@ -83,30 +83,59 @@ class TestOdmlXlsTable(unittest.TestCase):
         test for all datatypes, if the information in the table is right
         """
 
-        expected = [['Document Information', 'author', '', 'date', '', 'repository', '','version', '0.1'],
-                    ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '','', ''],
-                    ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
-                    ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
-                    ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
-                    ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
-                    ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 't', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
-                    ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', ''],
-                    ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
-                    ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '','', ''],
-                    ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
-                    ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
-                    ['/texts/string-like', 'String', 'this is a string', 'string', '', '','', '',''],
-                    ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
+        # input = [['Document Information', 'author', '', 'date', '', 'repository', '','version', '0.1'],
+        #             ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '','', ''],
+        #             ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
+        #             ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'true', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'false', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 't', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'f', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'T', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 'F', 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 1.0, 'boolean', '', '', '', '', ''],
+        #             ['/other', 'Boolean', 0.0, 'boolean', '', '', '', '', ''],
+        #             ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
+        #             ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '','', ''],
+        #             ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
+        #             ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
+        #             ['/texts/string-like', 'String', 'this is a string', 'string', '', '','', '',''],
+        #             ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
+
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', '0.1'],
+            ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '', '', ''],
+            ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
+            ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
+            ['/numbers', 'Float', 1.234, 'float', '', '', '', '', ''],
+            ['/numbers', 'Integer', -10.0, 'int', '', '', '', '', ''],
+            ['/numbers', 'Integer', 0.0, 'int', '', '', '', '', ''],
+            ['/numbers', 'Integer', 10.0, 'int', '', '', '', '', ''],
+            ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
+            ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
+            ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
+            ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '', '',
+             ''],
+            ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
+            ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
+            ['/texts/string-like', 'String', 'this is a string', 'string', '', '', '', '', ''],
+            ['/texts/string-like', 'Text',
+             'this is a text. It is longer than a string and contains punctuation marks!', 'text',
+             '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -133,11 +162,11 @@ class TestOdmlXlsTable(unittest.TestCase):
         """
         test, if emtpy rows appear in the table
         """
-        expected = [['Document Information', 'author', '', 'date',
-                     '', 'repository', '', 'version', ''],
-                    ['Path to Section', 'Section Name', 'Property Name','','','','','',''],
-                    ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
-                    ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Path to Section', 'Section Name', 'Property Name', '', '', '', '', '', ''],
+            ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
+            ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_2samerows_test_odml)
 
@@ -157,6 +186,27 @@ class TestOdmlXlsTable(unittest.TestCase):
                 for col in list(range(worksheet.ncols)):
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
+
+    def test_write_read(self):
+        self.test_xls_table.load_from_function(create_complex_test_odml)
+
+        self.test_xls_table.show_all_sections = True
+        self.test_xls_table.show_all_properties = True
+
+        old_dict = copy.deepcopy(self.test_xls_table._odmldict)
+
+        # including all columns available
+        self.test_xls_table.change_header(Path=1, SectionName=2, PropertyName=3, SectionType=4,
+                                          SectionDefinition=5, PropertyDefinition=6, Value=7,
+                                          DataUnit=8, DataUncertainty=9, odmlDatatype=10)
+
+        self.test_xls_table.write2file(self.filename)
+        self.test_xls_table.load_from_xls_table(self.filename)
+
+        new_dict = self.test_xls_table._odmldict
+
+        self.assertListEqual(old_dict, new_dict)
+
 
 if __name__ == '__main__':
     unittest.main()

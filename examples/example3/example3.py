@@ -76,7 +76,7 @@ def get_odml_doc(dtypes):
     parent.append(odml.Property(name='Strain', value=dtypes.default_value(DType.string), definition = 'Strain of the animal'))
     parent.append(odml.Property(name='Sex', value=dtypes.default_value(DType.string), definition = 'Sex of the animal'))
     parent.append(odml.Property(name='Birthdate', value=dtypes.default_value(DType.date), definition = 'Birthdate of the animal'))
-    parent.append(odml.Property(name='BirthAge', value=odml.Value(dtypes.default_value(DType.float), unit='days'), definition = 'Time of birth after conception'))
+    parent.append(odml.Property(name='BirthAge', value=dtypes.default_value(DType.float), unit='days', definition = 'Time of birth after conception'))
     parent.append(odml.Property(name='MotherID', value=dtypes.default_value(DType.string), definition = 'AnimalID of the mother'))
 
     parent = doc['Animal']['Development']
@@ -84,11 +84,11 @@ def get_odml_doc(dtypes):
     parent.append(odml.Property(name='GraspingReflex', value=dtypes.default_value(DType.date), definition = 'Date of first observation of grasping reflex'))
 
     parent = doc['Animal']['Development']['dev_measures_template']
-    parent.append(odml.Property(name='Weight', value=odml.Value(dtypes.default_value(DType.int), unit='g'), definition = 'Weight of the animal'))
-    parent.append(odml.Property(name='BodyLength', value=odml.Value(dtypes.default_value(DType.int), unit='cm'), definition = 'Distance from nose to tail tip [cm]'))
-    parent.append(odml.Property(name='TailLength', value=odml.Value(dtypes.default_value(DType.int), unit='cm'), definition = 'Length of the tail'))
+    parent.append(odml.Property(name='Weight', value=dtypes.default_value(DType.int), unit='g'), definition = 'Weight of the animal')
+    parent.append(odml.Property(name='BodyLength', value=dtypes.default_value(DType.int), unit='cm'), definition = 'Distance from nose to tail tip [cm]')
+    parent.append(odml.Property(name='TailLength', value=dtypes.default_value(DType.int), unit='cm'), definition = 'Length of the tail')
     parent.append(odml.Property(name='Date', value=dtypes.default_value(DType.date), definition = 'Date of recording of this set of developmental measures'))
-    parent.append(odml.Property(name='CliffAvoidance', value=odml.Value(dtypes.default_value(DType.float), unit='s'), definition = 'Time after which cliff aversion reflex is observed'))
+    parent.append(odml.Property(name='CliffAvoidance', value=dtypes.default_value(DType.float), unit='s'), definition = 'Time after which cliff aversion reflex is observed')
     parent.append(odml.Property(name='DevelopmentalAge', value=dtypes.default_value(DType.int), definition = 'Developmental age of the animal in days after birth (P_)'))
 
     return doc

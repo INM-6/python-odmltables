@@ -36,12 +36,12 @@ class ConversionWizard(OdmltablesWizard):
     def _createHelpMsgs(self):
         msgs = {}
         msgs[self.PageLoadFile] = self.tr(
-                "Select an input file using the browser"
-                " and choose your output file format.")
+            "Select an input file using the browser"
+            " and choose your output file format.")
         msgs[self.PageCustomInputHeader] = self.tr(
-                "You need to assign the header "
-                " titles used in the input file "
-                " to valid odml column types.")
+            "You need to assign the header "
+            " titles used in the input file "
+            " to valid odml column types.")
         msgs[self.PageHeaderOrder] = self.tr("Select the headers you want be"
                                              " present in the output table. "
                                              " You need to select at least "
@@ -53,15 +53,15 @@ class ConversionWizard(OdmltablesWizard):
                                              "into "
                                              " an odml file.")
         msgs[self.PageCustomColumNames] = self.tr(
-                "Select the colums you want to "
-                "have in the final table and move them to "
-                "the right list using the central "
-                "buttons. You can adjust the order "
-                "of the columns using the buttons "
-                "to the right.")
+            "Select the colums you want to "
+            "have in the final table and move them to "
+            "the right list using the central "
+            "buttons. You can adjust the order "
+            "of the columns using the buttons "
+            "to the right.")
         msgs[self.PageColorPattern] = self.tr(
-                "Select a pattern used for better "
-                "visualization of you table.")
+            "Select a pattern used for better "
+            "visualization of you table.")
         msgs[self.PageChangeStyle] = self.tr("Select change the style of the "
                                              "different cell schemes by "
                                              "clicking "
@@ -72,7 +72,7 @@ class ConversionWizard(OdmltablesWizard):
                                           "file by clicking on the browse "
                                           "button.")
         msgs[self.NUM_PAGES + 1] = self.tr(
-                "Sorry, for this page there is no help available.")
+            "Sorry, for this page there is no help available.")
         return msgs
 
 
