@@ -5,11 +5,12 @@ Created on Mon May  4 13:49:47 2015
 @author: pick
 """
 
+import copy
 from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 import os
-from .create_test_odmls import create_2samerows_test_odml
-from .create_test_odmls import create_datatype_test_odml
+from .create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
+                                create_complex_test_odml)
 
 import xlrd
 
@@ -185,6 +186,26 @@ class TestOdmlXlsTable(unittest.TestCase):
                 for col in list(range(worksheet.ncols)):
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
+
+    def test_write_read(self):
+        self.test_xls_table.load_from_function(create_complex_test_odml)
+
+        self.test_xls_table.show_all_sections = True
+        self.test_xls_table.show_all_properties = True
+
+        old_dict = copy.deepcopy(self.test_xls_table._odmldict)
+
+        # including all columns available
+        self.test_xls_table.change_header(Path=1, SectionName=2, PropertyName=3, SectionType=4,
+                                          SectionDefinition=5, PropertyDefinition=6, Value=7,
+                                          DataUnit=8, DataUncertainty=9, odmlDatatype=10)
+
+        self.test_xls_table.write2file(self.filename)
+        self.test_xls_table.load_from_xls_table(self.filename)
+
+        new_dict = self.test_xls_table._odmldict
+
+        self.assertListEqual(old_dict, new_dict)
 
 
 if __name__ == '__main__':

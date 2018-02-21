@@ -196,3 +196,79 @@ def create_compare_test(sections=3, properties=3, levels=1):
     parent.append(odml.Property(name='Property2', value=11))
 
     return doc
+
+
+def create_complex_test_odml():
+    doc = odml.Document(version='0.0.x')
+    doc.author = 'FirstName LastName'
+    doc.date = datetime.date.today()
+    doc.version = '0.0.x'
+    doc.repository = '/myserver/myrepo'
+
+    # APPEND MAIN SECTIONS
+    doc.append(odml.Section(name='MySection',
+                            type='<Enter the type of data you this section is'
+                                 ' associated with, e.g. hardware>',
+                            definition='<Describe the purpose of sections '
+                                       'in short statements in this '
+                                       'column.>'))
+    doc.append(odml.Section(name='OneMoreSection',
+                            type='<Enter the type of data you this section is'
+                                 ' associated with, e.g. software>',
+                            definition='<Use only the first cell in this '
+                                       'column to for the section '
+                                       'description.>'))
+
+    parent = doc['OneMoreSection']
+    parent.append(odml.Section('MySubsection',
+                               type='<Enter the type of data you this section'
+                                    ' is associated with, e.g. settings>',
+                               definition='<Describe the purpose of this '
+                                          'section here (eg. everything '
+                                          'concerning the amplifier '
+                                          'used...)'))
+
+    # ADDING PROPERTIES
+    parent = doc['MySection']
+    parent.append(odml.Property(name='MyFirstProperty',
+                                value='MyFirstValue',
+                                dtype='str',
+                                unit='',
+                                uncertainty='',
+                                definition='<Enter a short definition of '
+                                           'the property and the associated '
+                                           'value described here>'))
+    parent.append(odml.Property(name='OneMoreProperty',
+                                value=[2.001, 4],
+                                dtype='float',
+                                unit='mm',
+                                uncertainty=0.02,
+                                definition='A section can have more than '
+                                           'one property attached and a '
+                                           'value can be of different type '
+                                           'than string.'))
+
+    parent = doc['OneMoreSection']
+    parent.append(odml.Property(name='MyEmptyProperty',
+                                value=-1,
+                                dtype='int',
+                                unit='',
+                                uncertainty='',
+                                definition='This property contains an '
+                                           'empty/default value.'
+                                           'The integer value still '
+                                           'contains the default value '
+                                           '"-1", which can be highlighted '
+                                           'using odml-tables.'))
+
+    parent = doc['OneMoreSection']['MySubsection']
+    parent.append(odml.Property(name='MyLastProperty',
+                                value=datetime.datetime.today().date(),
+                                dtype='date',
+                                unit='',
+                                uncertainty='',
+                                definition='You can define the hierarchical'
+                                           ' location of a section via the'
+                                           ' "path to section" column.'
+                                           'The value contains todays date.'))
+    return doc

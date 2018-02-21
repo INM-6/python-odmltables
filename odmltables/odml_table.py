@@ -250,7 +250,7 @@ class OdmlTable(object):
                            " attributes: {0}").format(must_haves)
                 raise ValueError(err_msg)
 
-            current_dic = {"Path": "",
+            previous_dic = {"Path": "",
                            "SectionType": "",
                            "SectionDefinition": "",
                            "PropertyDefinition": "",
@@ -260,9 +260,9 @@ class OdmlTable(object):
                            "odmlDatatype": ""}
 
             header_end_row_id = row_id
+
             for row_id in range(header_end_row_id, worksheet.nrows):
                 row = worksheet.row_values(row_id)
-                is_new_property = False
                 new_dic = {}
 
                 for col_n in list(range(len(row))):
@@ -270,59 +270,124 @@ class OdmlTable(object):
                     if col_n in header_title_order and header_title_order[col_n] is not None:
                         new_dic[header_title_order[col_n]] = row[col_n]
 
-                # update path and remove section and property names
-                new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
-                new_dic.pop('PropertyName')
-                new_dic.pop('SectionName')
+                if 'PropertyName' in new_dic and new_dic['PropertyName']=='':
+                    for key in self._PROPERTY_INF:
+                        new_dic[key] = previous_dic[key]
+
+                # copy section info if not present for this row
+                if new_dic['Path'] == '':
+                    for key in self._SECTION_INF:
+                        new_dic[key] = previous_dic[key]
+                else:
+                    # update path and remove section and property names
+                    new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+                    new_dic.pop('PropertyName')
+
+                if 'SectionName' in new_dic:
+                    new_dic.pop('SectionName')
 
                 # convert to python datatypes
                 dtype = new_dic['odmlDatatype']
-                value = new_dic['Value']
-                if ('date' in dtype or 'time' in dtype) and (value != ''):
-                    if isinstance(value, float):
-                        value = xlrd.xldate_as_tuple(value, workbook.datemode)
-                    elif isinstance(value, unicode):
-                        # try explicit conversion of unicode like '2000-03-23'
-                        m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
-                                     '(?P<day>[0-3][0-9])',
-                                     value)
-                        if m:
-                            date_dict = m.groupdict()
-                            value = (int(date_dict['year']),
-                                     int(date_dict['month']),
-                                     int(date_dict['day']),
-                                     0, 0, 0)
-                    else:
-                        raise TypeError('Expected xls date or time object, '
-                                        'but got instead %s of %s'
-                                        '' % (value, type(value)))
+                value = self._convert_to_python_type(new_dic['Value'], dtype, workbook.datemode)
                 new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
-                if (new_dic['Path'].split(':')[0] == ''
-                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
-                    # it is not the start of a new section
+                # same section, same property
+                if previous_dic['Path'] == new_dic['Path']:
+                    # old section, old property
+                    previous_dic['Value'].extend(new_dic['Value'])
+                    continue
 
-                    if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
-                        # old section, old property
-                        current_dic['Value'].extend(new_dic['Value'])
-                    else:
-                        # old section, new property
-                        for key in self._PROPERTY_INF:
-                            current_dic[key] = new_dic[key]
-                        is_new_property = True
-                else:
-                    is_new_property = True
+                self._odmldict.append(new_dic)
+                previous_dic = new_dic
 
-                if is_new_property and row_id > header_end_row_id:
-                    self._odmldict.append(copy.deepcopy(current_dic))
-                    current_dic = new_dic
-
-            # copy final property
-            if row_id <= header_end_row_id:
-                self._odmldict.append(copy.deepcopy(new_dic))
-            else:
-                self._odmldict.append(copy.deepcopy(current_dic))
         self._odmldict = self._sort_odmldict(self._odmldict)
+
+
+    def _convert_to_python_type(self, value, dtype, datemode):
+        if ('date' in dtype or 'time' in dtype) and (value != ''):
+            if isinstance(value, float):
+                value = xlrd.xldate_as_tuple(value, datemode)
+            elif isinstance(value, unicode):
+                # try explicit conversion of unicode like '2000-03-23'
+                m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
+                             '(?P<day>[0-3][0-9])',
+                             value)
+                if m:
+                    date_dict = m.groupdict()
+                    value = (int(date_dict['year']),
+                             int(date_dict['month']),
+                             int(date_dict['day']),
+                             0, 0, 0)
+            else:
+                raise TypeError('Expected xls date or time object, '
+                                'but got instead %s of %s'
+                                '' % (value, type(value)))
+        return value
+
+        #     for row_id in range(header_end_row_id, worksheet.nrows):
+        #         row = worksheet.row_values(row_id)
+        #         is_new_property = False
+        #         new_dic = {}
+        #
+        #         for col_n in list(range(len(row))):
+        #             # using only columns with header
+        #             if col_n in header_title_order and header_title_order[col_n] is not None:
+        #                 new_dic[header_title_order[col_n]] = row[col_n]
+        #
+        #         # update path and remove section and property names
+        #         new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
+        #         new_dic.pop('PropertyName')
+        #         if 'SectionName' in new_dic:
+        #             new_dic.pop('SectionName')
+        #
+        #         # convert to python datatypes
+        #         dtype = new_dic['odmlDatatype']
+        #         value = new_dic['Value']
+        #         if ('date' in dtype or 'time' in dtype) and (value != ''):
+        #             if isinstance(value, float):
+        #                 value = xlrd.xldate_as_tuple(value, workbook.datemode)
+        #             elif isinstance(value, unicode):
+        #                 # try explicit conversion of unicode like '2000-03-23'
+        #                 m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
+        #                              '(?P<day>[0-3][0-9])',
+        #                              value)
+        #                 if m:
+        #                     date_dict = m.groupdict()
+        #                     value = (int(date_dict['year']),
+        #                              int(date_dict['month']),
+        #                              int(date_dict['day']),
+        #                              0, 0, 0)
+        #             else:
+        #                 raise TypeError('Expected xls date or time object, '
+        #                                 'but got instead %s of %s'
+        #                                 '' % (value, type(value)))
+        #         new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
+        #
+        #         if (new_dic['Path'].split(':')[0] == ''
+        #             or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+        #             # it is not the start of a new section
+        #
+        #             if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+        #                 # old section, old property
+        #                 current_dic['Value'].extend(new_dic['Value'])
+        #             else:
+        #                 # old section, new property
+        #                 for key in self._PROPERTY_INF:
+        #                     current_dic[key] = new_dic[key]
+        #                 is_new_property = True
+        #         else:
+        #             is_new_property = True
+        #
+        #         if is_new_property and row_id > header_end_row_id:
+        #             self._odmldict.append(copy.deepcopy(current_dic))
+        #             current_dic = new_dic
+        #
+        #     # copy final property
+        #     if row_id <= header_end_row_id:
+        #         self._odmldict.append(copy.deepcopy(new_dic))
+        #     else:
+        #         self._odmldict.append(copy.deepcopy(current_dic))
+        # self._odmldict = self._sort_odmldict(self._odmldict)
 
     @staticmethod
     def get_csv_header(load_from):
