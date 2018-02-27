@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import (QApplication)
+from PyQt5.QtWidgets import (QApplication)
 
 from .generatetemplatepages import HeaderOrderPage, SaveFilePage
 from .wizutils import OdmltablesWizard

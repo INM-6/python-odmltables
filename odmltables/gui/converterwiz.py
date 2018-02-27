@@ -2,7 +2,7 @@
 
 import argparse
 import sys
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from .converterpages import (LoadFilePage, CustomInputHeaderPage,
                              HeaderOrderPage, CustomColumnNamesPage,

@@ -4,8 +4,8 @@ import sys
 import os
 import subprocess
 
-import PyQt4.QtGui as Qtg
-from PyQt4.QtCore import QSize, Qt
+import PyQt5.QtWidgets as Qtg
+from PyQt5.QtCore import QSize, Qt
 
 from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
 from .pageutils import QIWizardPage, shorten_path
@@ -178,9 +178,9 @@ class LoadFilePage(QIWizardPage):
         if dir:
             dlg.setDirectory(dir)
 
-        dlg.setFilter("%s files (*%s);;all files (*)"
+        dlg.setNameFilters(["%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
-                            self.expected_extension))
+                            self.expected_extension)])
         inputname = ''
         if dlg.exec_():
             inputname = str(dlg.selectedFiles()[0])
@@ -217,9 +217,9 @@ class LoadFilePage(QIWizardPage):
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
         dlg.setDirectory(self.settings.get_object('inputfilename1'))
 
-        dlg.setFilter("%s files (*%s);;all files (*)"
+        dlg.setNameFilters(["%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
-                            self.expected_extension))
+                            self.expected_extension)])
 
         self.outputfilename = ''
         if dlg.exec_():

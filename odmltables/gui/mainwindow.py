@@ -10,8 +10,7 @@ import os
 import sys
 import traceback
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 # import wizards
 from .compsectionwiz import CompSectionWizard
@@ -32,8 +31,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     ## KeyboardInterrupt is a special case.
     ## We don't raise the error dialog when it occurs.
     if issubclass(exc_type, KeyboardInterrupt):
-        if QtGui.qApp:
-            QtGui.qApp.quit()
+        if QtWidgets.qApp:
+            QtWidgets.qApp.quit()
         return
 
     filename, lineid, func, line = traceback.extract_tb(exc_traceback).pop()
@@ -53,7 +52,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                 "</html>" % (
                     error.replace('<', '').replace('>', ''), error_logfile))
 
-    QtGui.QMessageBox.critical(None,
+    QtWidgets.QMessageBox.critical(None,
                                "Unexpected Error in odMLtables",
                                msg_text)
 
@@ -72,7 +71,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         # sys.exit(1)
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -83,7 +82,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def initUI(self):
 
-        centralWidget = QtGui.QWidget()
+        centralWidget = QtWidgets.QWidget()
         w, h = 450, 450
         self.setFixedSize(w, h)
         self.setCentralWidget(centralWidget)
@@ -100,12 +99,12 @@ class MainWindow(QtGui.QMainWindow):
         # (255,128,0) # for button background
         centralWidget.setPalette(p)
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        titlebox = QtGui.QHBoxLayout()
+        titlebox = QtWidgets.QHBoxLayout()
         vbox.addLayout(titlebox)
 
-        subtitlebox = QtGui.QVBoxLayout()
+        subtitlebox = QtWidgets.QVBoxLayout()
         titlebox.addLayout(subtitlebox)
         subtitlebox.addSpacing(8)
 
@@ -113,7 +112,7 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the graphical\nodMLtables interface!")
+        label = QtWidgets.QLabel("Welcome to the graphical\nodMLtables interface!")
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
@@ -122,12 +121,12 @@ class MainWindow(QtGui.QMainWindow):
 
         subtitlebox.addSpacing(5)
 
-        subtitle = QtGui.QLabel('Select one of the actions below')
+        subtitle = QtWidgets.QLabel('Select one of the actions below')
         subtitle.setPalette(pal)
         subtitlebox.addWidget(subtitle)
         # subtitlebox.addSpacing(10)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
         vbox.addLayout(grid)
@@ -146,7 +145,7 @@ class MainWindow(QtGui.QMainWindow):
         self.mergebutton = self.generate_button('Merge contents of odmls\n',
                                                 "mergeodml.svg")
 
-        icon = QtGui.QLabel()
+        icon = QtWidgets.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
         icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
@@ -168,7 +167,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def generate_button(self, text, graphic_name):
         graphic_path = get_graphic_path()
-        button = QtGui.QToolButton()
+        button = QtWidgets.QToolButton()
         button.setText(self.tr(text))
         button.setIcon(QtGui.QIcon(os.path.join(graphic_path, graphic_name)))
         button.setIconSize(QtCore.QSize(120, 60))

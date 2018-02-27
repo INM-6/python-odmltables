@@ -7,13 +7,13 @@ Created on Tue Mar 29 09:31:26 2016
 import os
 import subprocess
 
-from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QMessageBox,
+from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QMessageBox,
                          QLineEdit, QPushButton, QLabel, QGroupBox,
                          QGridLayout, QTreeWidget, QTreeWidgetItem,
                          QToolButton, QFileDialog, QCheckBox, QComboBox,
                          QFrame, QSizePolicy, QRadioButton)
 
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 from .pageutils import QIWizardPage, clearLayout, shorten_path
 import odml
@@ -90,8 +90,8 @@ class ChooseFilePage(QIWizardPage):
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
-        dlg.setFilter("%s files (*%s)"
-                      "" % ('odml', '.odml'))
+        dlg.setNameFilters(["%s files (*%s)"
+                            "" % ('odml', '.odml')])
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)
@@ -395,9 +395,8 @@ class SaveTablePage(QIWizardPage):
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
-        dlg.setFilter("%s files (*%s);;all files (*)"
-                      "" % (self.expected_extension.strip('.'),
-                            self.expected_extension))
+        dlg.setNameFilters(["%s files (*%s);;all files (*)"
+                           "" % (self.expected_extension.strip('.'), self.expected_extension)])
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])

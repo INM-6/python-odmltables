@@ -5,7 +5,7 @@ import pickle
 
 from future.utils import iteritems
 from past.builtins import long
-from PyQt4.QtGui import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
+from PyQt5.QtWidgets import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
                          QListWidget,
                          QListWidgetItem, QTableView, QPushButton)
 

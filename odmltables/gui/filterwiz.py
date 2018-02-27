@@ -8,7 +8,7 @@ Created on Tue Jan 26 12:58:23 2016
 import argparse
 import sys
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from .filterpages import (LoadFilePage, CustomInputHeaderPage, FilterPage,
                           SaveFilePage)

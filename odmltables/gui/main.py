@@ -8,7 +8,7 @@ Created on Tue Jan 26 12:57:16 2016
 import argparse
 import sys
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 from odmltables import VERSION
 from .mainwindow import MainWindow
@@ -41,7 +41,7 @@ def parse_args():
 
 
 def run(wizard=None, filenames=None):
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     if wizard is None:
         w = MainWindow()
         sys.exit(app.exec_())
