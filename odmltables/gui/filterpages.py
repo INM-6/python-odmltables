@@ -724,7 +724,6 @@ class FilterPage(QIWizardPage):
         filter_name = self._get_filter_name(filter)
 
         if filter_name not in self.filters:
-
             self._show_applied_filter(filter, filter_name)
 
         else:
@@ -750,7 +749,12 @@ class FilterPage(QIWizardPage):
     def _show_applied_filter(self, filter, filter_name):
         self.filters[filter_name] = filter
 
-        self.run_single_filter(filter_name)
+        try:
+            self.run_single_filter(filter_name)
+        except (ValueError, NameError) as e:
+            self.filters.pop(filter_name)
+            self.reset_filtersettings()
+            return
 
         self.lwfilters.addItems([filter_name])
 
@@ -820,19 +824,23 @@ class FilterPage(QIWizardPage):
             [eval(value) for value in list(filter['kwargs'].values())]
         except:
             Qtg.QMessageBox.warning(self, 'Non-interpretable value',
-                                    'Can not interpret "%s". This is not a valid '
-                                    'python object. To generate a string put your '
-                                    'text into quotation marks. To define a list '
-                                    'use square brackets.')
-            return
+                                'Can not interpret list of values "{}". There is a non-valid '
+                                'python object contained. To generate a string put your '
+                                'text into quotation marks. To define a list '
+                                'use square brackets.'.format(str(filter['kwargs'].values())))
+            raise ValueError('Can not interpret values "{}"'.format(str(filter['kwargs'].values())))
 
-        self.filtered_table.filter(mode=filter['mode'],
-                                   invert=filter['invert'],
-                                   recursive=filter['recursive'],
-                                   comparison_func=lambda x, y: \
-                                       eval(filter['compfuncstr']),
-                                   **{key: eval(value) for key, value in
-                                      iteritems(filter['kwargs'])})
+        try:
+            self.filtered_table.filter(mode=filter['mode'],
+                                       invert=filter['invert'],
+                                       recursive=filter['recursive'],
+                                       comparison_func=lambda x, y: \
+                                           eval(filter['compfuncstr']),
+                                       **{key: eval(value) for key, value in
+                                          iteritems(filter['kwargs'])})
+        except Exception as e:
+            Qtg.QMessageBox.warning(self, 'Filter Warning', e.message)
+            raise e
         self.update_tree(self.filtered_table)
 
     # TODO: check if this can also be done via XPath + provide xpath
