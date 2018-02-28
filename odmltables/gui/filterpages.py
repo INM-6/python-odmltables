@@ -903,11 +903,11 @@ class FilterPage(QIWizardPage):
 
 
     def create_sectiontree(self, tree, table):
-        sections = {value['Path'].strip('/'): ['', '', '', '', '', '', '',
-                                               value['SectionName'],
-                                               value['SectionType'],
-                                               value['SectionDefinition']]
-                    for value in table._odmldict}
+        sections = {prop['Path'].strip('/').split(':')[0]: ['', '', '', '', '', '', '',
+                                               prop['Path'].strip('/'),
+                                               prop['SectionType'],
+                                               prop['SectionDefinition']]
+                    for prop in table._odmldict}
         self.replace_Nones(sections)
         for sec in sorted(sections):
             sec_names = sec.split('/')
@@ -922,12 +922,14 @@ class FilterPage(QIWizardPage):
                     parent_sec = new_sec
 
     def create_proptree(self, tree, table):
-        props = {value['Path'].strip('/') + '/' + value['PropertyName']: [
-            '', '', '', '', '',
-            value['PropertyName'],
-            value['PropertyDefinition'],
-            '', '']
-            for value in table._odmldict}
+        props = {prop['Path'].strip('/').replace(':', '/'):
+                     [prop['Value'],
+                      prop['DataUncertainty'],
+                      prop['DataUnit'],
+                      prop['odmlDatatype'], '',
+                      prop['Path'].split(':')[-1],
+                      prop['PropertyDefinition'], '', '']
+                 for prop in table._odmldict}
         self.replace_Nones(props)
         for prop in props:
             prop_path = prop.split('/')
@@ -937,19 +939,18 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 else:
-                    new_sec = Qtg.QTreeWidgetItem(parent_sec, [prop_path[i]] +
-                                                  list(props[prop]))
-                    parent_sec = new_sec
+                    values = copy.deepcopy(props[prop][0])
+                    tmp_prop = props[prop]
+                    for val in values:
+                        tmp_prop[0] = str(val)
+                        new_sec = Qtg.QTreeWidgetItem(parent_sec, [prop_path[i]] + tmp_prop)
+                        tmp_prop = [''] * len(tmp_prop)
+                    # parent_sec = new_sec
 
     def create_valuetree(self, tree, table):
-        values = {value['Path'].strip('/') + '/' +
-                  value['PropertyName'] + '/' + str(v):
-                      [str(value['Value']),
-                       value['DataUncertainty'],
-                       value['DataUnit'],
-                       value['odmlDatatype'],
-                       '', '', '', '', '']
-                  for v, value in enumerate(table._odmldict)}
+        values = {prop['Path'].strip('/').replace(':', '/') + '/' + str(v):
+                      [value, '', '', '', '', '', '', '', '']
+                  for prop in table._odmldict for v, value in enumerate(prop['Value'])}
         self.replace_Nones(values)
         for value in sorted(values):
             value_path = value.split('/')
@@ -959,7 +960,7 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 if i == len(value_path) - 2:
-                    val = [unicode(v).encode('utf-8') for v in values[value]]
+                    val = [unicode(v) for v in values[value]]
                     new_sec = Qtg.QTreeWidgetItem(parent_sec, [''] + val)
                     parent_sec = new_sec
 
