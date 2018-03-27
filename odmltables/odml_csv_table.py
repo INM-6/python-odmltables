@@ -69,7 +69,7 @@ class OdmlCsvTable(OdmlTable):
                 # removing section entries (if necessary)
                 if dic["Path"].split(':')[0] == oldpath:
                     if not self.show_all_sections:
-                        for h in self._SECTION_INF + ['SectionName']:
+                        for h in self._SECTION_INF + ['SectionName', 'Path']:
                             tmp_row[h] = ""
                 else:
                     oldpath = dic["Path"].split(':')[0]
@@ -108,5 +108,5 @@ class OdmlCsvTable(OdmlTable):
                         if ((not self.show_all_properties
                              and h in self._PROPERTY_INF + ['PropertyName']) or
                                 (not self.show_all_sections
-                                 and h in self._SECTION_INF + ['SectionName'])):
+                                 and h in self._SECTION_INF + ['SectionName', 'Path'])):
                             row[header_list.index(self._header_titles[h])] = ''

@@ -6,11 +6,11 @@ Created on Mon Apr 20 15:01:13 2015
 """
 
 from odmltables.odml_csv_table import OdmlCsvTable
-import unittest
-from .create_test_odmls import create_showall_test_odml
-from .create_test_odmls import create_2samerows_test_odml
+from create_test_odmls import (create_showall_test_odml, create_2samerows_test_odml)
 import os
 import csv
+
+import unittest
 
 
 class TestOdmlCsvTable(unittest.TestCase):
@@ -29,8 +29,8 @@ class TestOdmlCsvTable(unittest.TestCase):
         test if a row that would be empty will appear in the table
         """
 
-        expected = [['Document Information', 'author', '', 'date', '',
-                     'repository', '', 'version', ''],
+        expected = [['Document Information', 'author', '', 'date', None, 'repository', '',
+                     'version', ''],
                     ['Path to Section', 'Section Name', 'Property Name', '', '', '', '', '', ''],
                     ['/section1', 'section1', 'property1', '', '', '', '', '', ''],
                     ['/section2', 'section2', 'property1', '', '', '', '', '', '']]
@@ -48,7 +48,12 @@ class TestOdmlCsvTable(unittest.TestCase):
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
-                self.assertEqual(row, expected[row_num])
+                if None in expected[row_num]:
+                    for id in range(len(expected[row_num])):
+                        if expected[row_num][id] is not None:
+                            self.assertEqual(row[id], expected[row_num][id])
+                else:
+                    self.assertEqual(row, expected[row_num])
                 row_num += 1
 
 
@@ -84,7 +89,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         """
 
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1', 'string'],
@@ -105,7 +110,12 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
-                self.assertEqual(row, expected[row_num])
+                if None in expected[row_num]:
+                    for id in range(len(expected[row_num])):
+                        if expected[row_num][id] is not None:
+                            self.assertEqual(row[id], expected[row_num][id])
+                else:
+                    self.assertEqual(row, expected[row_num])
                 row_num += 1
 
     def test_ff(self):
@@ -114,7 +124,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_properties=False
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1', 'string'],
@@ -135,7 +145,12 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
-                self.assertEqual(row, expected[row_num])
+                if None in expected[row_num]:
+                    for id in range(len(expected[row_num])):
+                        if expected[row_num][id] is not None:
+                            self.assertEqual(row[id], expected[row_num][id])
+                else:
+                    self.assertEqual(row, expected[row_num])
                 row_num += 1
 
     def test_ft(self):
@@ -144,7 +159,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_properties=True
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1', 'string'],
@@ -165,7 +180,12 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
-                self.assertEqual(row, expected[row_num])
+                if None in expected[row_num]:
+                    for id in range(len(expected[row_num])):
+                        if expected[row_num][id] is not None:
+                            self.assertEqual(row[id], expected[row_num][id])
+                else:
+                    self.assertEqual(row, expected[row_num])
                 row_num += 1
 
     def test_tf(self):
@@ -174,7 +194,7 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
         showall_properties=False
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', '1', 'string'],
@@ -195,7 +215,12 @@ class TestShowallOdmlCsvTable(unittest.TestCase):
             csvreader = csv.reader(csvfile)
             row_num = 0
             for row in csvreader:
-                self.assertEqual(row, expected[row_num])
+                if None in expected[row_num]:
+                    for id in range(len(expected[row_num])):
+                        if expected[row_num][id] is not None:
+                            self.assertEqual(row[id], expected[row_num][id])
+                else:
+                    self.assertEqual(row, expected[row_num])
                 row_num += 1
 
 
