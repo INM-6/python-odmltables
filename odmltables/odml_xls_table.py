@@ -189,16 +189,20 @@ class OdmlXlsTable(OdmlTable):
             sheet.write(row_id, 0, 'Document Information', styles["document_info"])
 
             for a, attribute in enumerate(sorted(self._docdict)):
-                sheet.write(row_id, 2 * a + 1, attribute, styles["document_info"])
-                sheet.write(row_id, 2 * a + 2, self._docdict[attribute],
-                            styles["document_info"])
+                style = styles["document_info"]
+                value = self._docdict[attribute]
+                if isinstance(value, datetime.date):
+                    style.num_format_str = "DD-MM-YYYY"
+                else:
+                    style.num_format_str = ""
+                sheet.write(row_id, 2 * a + 1, attribute, style)
+                sheet.write(row_id, 2 * a + 2, value, style)
 
                 # adjusting cell widths
                 if len(attribute) > max_col_len[2 * a + 1]:
                     max_col_len[2 * a + 1] = len(attribute)
-                if self._docdict[attribute] != None and (
-                            len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
-                    max_col_len[2 * a + 2] = len(self._docdict[attribute])
+                if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
+                    max_col_len[2 * a + 2] = len(str(value))
 
             row_id += 1
 
