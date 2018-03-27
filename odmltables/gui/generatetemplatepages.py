@@ -394,13 +394,13 @@ def setup_tutorodml():
 
     # APPEND MAIN SECTIONS
     doc.append(odml.Section(name='MySection',
-                            type='<Enter the type of data you this section is'
+                            type='<Enter the type of data this section is'
                                  ' associated with, e.g. hardware>',
                             definition='<Describe the purpose of sections '
                                        'in short statements in this '
                                        'column.>'))
     doc.append(odml.Section(name='OneMoreSection',
-                            type='<Enter the type of data you this section is'
+                            type='<Enter the type of data this section is'
                                  ' associated with, e.g. software>',
                             definition='<Use only the first cell in this '
                                        'column to for the section '
@@ -408,7 +408,7 @@ def setup_tutorodml():
 
     parent = doc['OneMoreSection']
     parent.append(odml.Section('MySubsection',
-                               type='<Enter the type of data you this section'
+                               type='<Enter the type of data this section'
                                     ' is associated with, e.g. settings>',
                                definition='<Describe the purpose of this '
                                           'section here (eg. everything '
