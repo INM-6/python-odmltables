@@ -355,6 +355,8 @@ def createfile(settings):
     table = odml_xls_table.OdmlXlsTable()
     table.load_from_odmldoc(odmldoc)
     table.changing_point = None
+    table.show_all_sections = False
+    table.show_all_properties = False
 
     title_translator = {v: k for k, v in iteritems(table._header_titles)}
     # mandatory_titles = [title_translator[m] for m in mandatory_headers]
@@ -424,7 +426,7 @@ def setup_tutorodml():
                                            'the property and the associated '
                                            'value described here>'))
     parent.append(odml.Property(name='OneMoreProperty',
-                                value=2.001,
+                                value=[2.001, 4],
                                 dtype='float',
                                 unit='mm',
                                 uncertainty=0.02,
@@ -433,19 +435,11 @@ def setup_tutorodml():
                                            'value can be of different type '
                                            'than string.'))
 
-    # ADDING MORE VALUES
-    parent = doc['MySection'].properties['OneMoreProperty']
-    parent.value = 4.
-    parent.dtype = 'float'
-    parent.unit = ''
-    parent.uncertainty = 0.4
-    parent.definition = 'A property can have more than one value attached.'
-
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
                                 value=-1,
                                 dtype='int',
-                                unit='',
+                                unit='mV',
                                 uncertainty='',
                                 definition='This property contains an '
                                            'empty/default value.'
@@ -458,7 +452,7 @@ def setup_tutorodml():
     parent.append(odml.Property(name='MyLastProperty',
                                 value=datetime.datetime.today().date(),
                                 dtype='date',
-                                unit='',
+                                unit='AD',
                                 uncertainty='',
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'
