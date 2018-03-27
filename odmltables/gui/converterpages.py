@@ -1184,12 +1184,9 @@ def convert(settings):
     if ((os.path.splitext(settings.get_object('inputfilename'))[1]
          in ['.xls', '.csv']) and
             (settings.get_object('CBcustominput').isChecked())):
-        inputheaderlabels = [str(l.text())
-                             for l in settings.get_object('headerlabels')]
-        inputcustomheaders = [str(cb.currentText())
-                              for cb in settings.get_object('customheaders')]
-        inputcolumnnames = [title_translator[label]
-                            for label in inputcustomheaders]
+        inputheaderlabels = [str(l.text()) for l in settings.get_object('headerlabels')]
+        inputcustomheaders = [str(cb.currentText()) for cb in settings.get_object('customheaders')]
+        inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
         table.change_header_titles(**dict(zip(inputcolumnnames,
                                               inputheaderlabels)))
 
@@ -1202,12 +1199,10 @@ def convert(settings):
         table.load_from_file(settings.get_object('inputfilename'))
     else:
         raise ValueError('Unknown input file extension "%s"'
-                         '' % os.path.splitext(settings.get_object(
-            'inputfilename'))[1])
+                         '' % os.path.splitext(settings.get_object('inputfilename'))[1])
 
     # setting custom header selection and custom header titles if necessary
-    if (os.path.splitext(settings.get_object('outputfilename'))[1]
-        in ['.xls', '.csv']):
+    if (os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls', '.csv']):
 
         # setting custom header columns
         output_headers = [title_translator[str(settings.get_object(
