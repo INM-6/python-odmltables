@@ -54,7 +54,7 @@ class OdmlTable(object):
                                "odmlDatatype": "odML Data Type"}
         self.show_all_sections = False
         self.show_all_properties = False
-        self._SECTION_INF = ["Path", "SectionType", "SectionDefinition"]
+        self._SECTION_INF = ["SectionType", "SectionDefinition"]
         self._PROPERTY_INF = ["PropertyDefinition", "DataUnit", "DataUncertainty", "odmlDatatype"]
 
         if load_from is not None:
@@ -271,13 +271,17 @@ class OdmlTable(object):
                         new_dic[header_title_order[col_n]] = row[col_n]
 
                 if 'PropertyName' in new_dic and new_dic['PropertyName']=='':
+                    new_dic['PropertyName'] = previous_dic['Path'].split(':')[1]
                     for key in self._PROPERTY_INF:
                         new_dic[key] = previous_dic[key]
+
 
                 # copy section info if not present for this row
                 if new_dic['Path'] == '':
                     for key in self._SECTION_INF:
                         new_dic[key] = previous_dic[key]
+                    new_dic['Path'] = '{}:{}'.format(previous_dic['Path'].split(':')[0],
+                                                     new_dic['PropertyName'])
                 else:
                     # update path and remove section and property names
                     new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
