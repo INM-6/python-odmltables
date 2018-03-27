@@ -240,7 +240,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
         """
 
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
@@ -263,6 +263,8 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skipping unspecified cells
+                        continue
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
@@ -283,7 +285,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
         showall_properties=False
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
@@ -306,6 +308,8 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skipping unspecified cells
+                        continue
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
@@ -319,7 +323,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
         showall_properties=True
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
@@ -342,6 +346,8 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skipping unspecified cells
+                        continue
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
@@ -355,7 +361,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
         showall_properties=False
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
              'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
             ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
@@ -378,6 +384,8 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skipping unspecified cells
+                        continue
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
