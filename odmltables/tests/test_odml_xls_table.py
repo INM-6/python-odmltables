@@ -9,8 +9,8 @@ import copy
 from odmltables.odml_xls_table import OdmlXlsTable
 import unittest
 import os
-from .create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
-                                create_complex_test_odml)
+from odmltables.tests.create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
+                                create_complex_test_odml, create_showall_test_odml)
 
 import xlrd
 
@@ -109,7 +109,7 @@ class TestOdmlXlsTable(unittest.TestCase):
         #             ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
 
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', '0.1'],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', '0.1'],
             ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '', '', ''],
             ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
             ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
@@ -128,20 +128,16 @@ class TestOdmlXlsTable(unittest.TestCase):
             ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
             ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
             ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
-            ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '', '',
-             ''],
+            ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '', '', ''],
             ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
             ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
             ['/texts/string-like', 'String', 'this is a string', 'string', '', '', '', '', ''],
-            ['/texts/string-like', 'Text',
-             'this is a text. It is longer than a string and contains punctuation marks!', 'text',
-             '', '', '', '', '']]
+            ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
         self.test_xls_table.show_all_sections = True
         self.test_xls_table.show_all_properties = True
-        self.test_xls_table.show_all_valueInformation = True
 
         self.test_xls_table.write2file(self.filename)
 
@@ -151,6 +147,8 @@ class TestOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skip undefined entries
+                        continue
                     cell = worksheet.cell(row, col)
                     value = cell.value
                     if cell.ctype == 3:
@@ -163,7 +161,7 @@ class TestOdmlXlsTable(unittest.TestCase):
         test, if emtpy rows appear in the table
         """
         expected = [
-            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', ''],
             ['Path to Section', 'Section Name', 'Property Name', '', '', '', '', '', ''],
             ['/section1', 'section1', 'property1', '', '', '', '', '', '', ''],
             ['/section2', 'section2', 'property1', '', '', '', '', '', '', '']]
@@ -184,6 +182,8 @@ class TestOdmlXlsTable(unittest.TestCase):
 
             for row in list(range(worksheet.nrows)):
                 for col in list(range(worksheet.ncols)):
+                    if expected[row][col] is None:  # skip undefined entries
+                        continue
                     c_value = worksheet.cell(row, col).value
                     self.assertEquals(c_value, expected[row][col])
 
@@ -206,6 +206,185 @@ class TestOdmlXlsTable(unittest.TestCase):
         new_dict = self.test_xls_table._odmldict
 
         self.assertListEqual(old_dict, new_dict)
+
+
+class TestShowallOdmlXlsTable(unittest.TestCase):
+    """
+    test possible combinations of the attributes showall_sections,
+    showall_properties and showall_valueinformation to see wether the same
+    values are not printed again, unless it is the start of a new section or
+    property
+    """
+
+    def setUp(self):
+        self.test_xls_table = OdmlXlsTable()
+        self.test_xls_table.load_from_function(create_showall_test_odml)
+        self.test_xls_table.change_header(Path=1,
+                                          SectionName=2,
+                                          SectionDefinition=3,
+                                          PropertyName=4,
+                                          PropertyDefinition=5,
+                                          Value=6,
+                                          DataUnit=7,
+                                          DataUncertainty=8,
+                                          odmlDatatype=9)
+        self.filename = 'testfile.xls'
+
+    def tearDown(self):
+        os.remove(self.filename)
+
+    def test_tt(self):
+        """
+        showall_sections=True
+        showall_properties=True
+        """
+
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+             'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value2', 'g', 1, 'string'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value3', 'g', 1, 'string'],
+            ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', 1, 'text'],
+            ['/section1', 'section1', 'sec1', 'property3', 'prop3', 'value1', 'g', 1, 'text'],
+            ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value2', 'g', 1, 'string']]
+
+        self.test_xls_table.show_all_sections = True
+        self.test_xls_table.show_all_properties = True
+
+        self.test_xls_table.write2file(self.filename)
+
+        workbook = xlrd.open_workbook(self.filename)
+        for sheet_name in workbook.sheet_names():
+            worksheet = workbook.sheet_by_name(sheet_name)
+
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
+                    cell = worksheet.cell(row, col)
+                    value = cell.value
+                    if cell.ctype == 3:
+                        # if its a date, convert it to a tuple
+                        value = xlrd.xldate_as_tuple(value, 0)
+                    self.assertEquals(value, expected[row][col])
+
+        # with open(self.filename, 'r') as xlsfile:
+        #     xlsreader = xls.reader(xlsfile)
+        #     row_num = 0
+        #     for row in xlsreader:
+        #         self.assertEqual(row, expected[row_num])
+        #         row_num += 1
+
+    def test_ff(self):
+        """
+        showall_sections=False
+        showall_properties=False
+        """
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+             'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['', '', '', '', '', 'value2', '', '', ''],
+            ['', '', '', '', '', 'value3', '', '', ''],
+            ['', '', '', 'property2', 'prop2', 'value1', 'g', 1, 'text'],
+            ['', '', '', 'property3', 'prop3', 'value1', 'g', 1, 'text'],
+            ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['', '', '', '', '', 'value2', '', '', '']]
+
+        self.test_xls_table.show_all_sections = False
+        self.test_xls_table.show_all_properties = False
+
+        self.test_xls_table.write2file(self.filename)
+
+        workbook = xlrd.open_workbook(self.filename)
+        for sheet_name in workbook.sheet_names():
+            worksheet = workbook.sheet_by_name(sheet_name)
+
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
+                    cell = worksheet.cell(row, col)
+                    value = cell.value
+                    if cell.ctype == 3:
+                        # if its a date, convert it to a tuple
+                        value = xlrd.xldate_as_tuple(value, 0)
+                    self.assertEquals(value, expected[row][col])
+
+    def test_ft(self):
+        """
+        showall_sections=False
+        showall_properties=True
+        """
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+             'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['', '', '', 'property1', 'prop1', 'value2', 'g', 1, 'string'],
+            ['', '', '', 'property1', 'prop1', 'value3', 'g', 1, 'string'],
+            ['', '', '', 'property2', 'prop2', 'value1', 'g', 1, 'text'],
+            ['', '', '', 'property3', 'prop3', 'value1', 'g', 1, 'text'],
+            ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['', '', '', 'property1', 'prop1', 'value2', 'g', 1, 'string']]
+
+        self.test_xls_table.show_all_sections = False
+        self.test_xls_table.show_all_properties = True
+
+        self.test_xls_table.write2file(self.filename)
+
+        workbook = xlrd.open_workbook(self.filename)
+        for sheet_name in workbook.sheet_names():
+            worksheet = workbook.sheet_by_name(sheet_name)
+
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
+                    cell = worksheet.cell(row, col)
+                    value = cell.value
+                    if cell.ctype == 3:
+                        # if its a date, convert it to a tuple
+                        value = xlrd.xldate_as_tuple(value, 0)
+                    self.assertEquals(value, expected[row][col])
+
+    def test_tf(self):
+        """
+        showall_sections=True
+        showall_properties=False
+        """
+        expected = [
+            ['Document Information', 'author', '', 'date', '', 'repository', '', 'version', ''],
+            ['Path to Section', 'Section Name', 'Section Definition', 'Property Name',
+             'Property Definition', 'Value', 'Data Unit', 'Data Uncertainty', 'odML Data Type'],
+            ['/section1', 'section1', 'sec1', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section1', 'section1', 'sec1', '', '', 'value2', '', '', ''],
+            ['/section1', 'section1', 'sec1', '', '', 'value3', '', '', ''],
+            ['/section1', 'section1', 'sec1', 'property2', 'prop2', 'value1', 'g', 1, 'text'],
+            ['/section1', 'section1', 'sec1', 'property3', 'prop3', 'value1', 'g', 1, 'text'],
+            ['/section2', 'section2', 'sec2', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', 'property1', 'prop1', 'value1', 'g', 1, 'string'],
+            ['/section3', 'section3', 'sec3', '', '', 'value2', '', '', '']]
+
+        self.test_xls_table.show_all_sections = True
+        self.test_xls_table.show_all_properties = False
+
+        self.test_xls_table.write2file(self.filename)
+
+        workbook = xlrd.open_workbook(self.filename)
+        for sheet_name in workbook.sheet_names():
+            worksheet = workbook.sheet_by_name(sheet_name)
+
+            for row in list(range(worksheet.nrows)):
+                for col in list(range(worksheet.ncols)):
+                    cell = worksheet.cell(row, col)
+                    value = cell.value
+                    if cell.ctype == 3:
+                        # if its a date, convert it to a tuple
+                        value = xlrd.xldate_as_tuple(value, 0)
+                    self.assertEquals(value, expected[row][col])
+
 
 
 if __name__ == '__main__':
