@@ -9,7 +9,7 @@ from odmltables.compare_section_table import CompareSectionTable
 from odmltables.compare_section_csv_table import CompareSectionCsvTable
 from odmltables.compare_section_xls_table import CompareSectionXlsTable
 import odml
-from .create_test_odmls import create_compare_test
+from create_test_odmls import create_compare_test
 import os
 import csv
 import unittest
