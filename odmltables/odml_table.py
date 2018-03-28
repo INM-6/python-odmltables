@@ -80,8 +80,7 @@ class OdmlTable(object):
                      'SectionType': p.parent.type,
                      'SectionDefinition': p.parent.definition,
                      'PropertyDefinition': p.definition,
-                     # Since value now returns a list the check for bool might be useless.
-                     'Value': p.value if type(p.value) is not bool else str(p.value),
+                     'Value': p.value,
                      'DataUnit': p.unit,
                      'DataUncertainty': p.uncertainty,
                      'odmlDatatype': p.dtype}
@@ -328,71 +327,6 @@ class OdmlTable(object):
                                 '' % (value, type(value)))
         return value
 
-        #     for row_id in range(header_end_row_id, worksheet.nrows):
-        #         row = worksheet.row_values(row_id)
-        #         is_new_property = False
-        #         new_dic = {}
-        #
-        #         for col_n in list(range(len(row))):
-        #             # using only columns with header
-        #             if col_n in header_title_order and header_title_order[col_n] is not None:
-        #                 new_dic[header_title_order[col_n]] = row[col_n]
-        #
-        #         # update path and remove section and property names
-        #         new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
-        #         new_dic.pop('PropertyName')
-        #         if 'SectionName' in new_dic:
-        #             new_dic.pop('SectionName')
-        #
-        #         # convert to python datatypes
-        #         dtype = new_dic['odmlDatatype']
-        #         value = new_dic['Value']
-        #         if ('date' in dtype or 'time' in dtype) and (value != ''):
-        #             if isinstance(value, float):
-        #                 value = xlrd.xldate_as_tuple(value, workbook.datemode)
-        #             elif isinstance(value, unicode):
-        #                 # try explicit conversion of unicode like '2000-03-23'
-        #                 m = re.match('(?P<year>[0-9]{4})-(?P<month>[0-1][0-9])-'
-        #                              '(?P<day>[0-3][0-9])',
-        #                              value)
-        #                 if m:
-        #                     date_dict = m.groupdict()
-        #                     value = (int(date_dict['year']),
-        #                              int(date_dict['month']),
-        #                              int(date_dict['day']),
-        #                              0, 0, 0)
-        #             else:
-        #                 raise TypeError('Expected xls date or time object, '
-        #                                 'but got instead %s of %s'
-        #                                 '' % (value, type(value)))
-        #         new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
-        #
-        #         if (new_dic['Path'].split(':')[0] == ''
-        #             or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
-        #             # it is not the start of a new section
-        #
-        #             if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
-        #                 # old section, old property
-        #                 current_dic['Value'].extend(new_dic['Value'])
-        #             else:
-        #                 # old section, new property
-        #                 for key in self._PROPERTY_INF:
-        #                     current_dic[key] = new_dic[key]
-        #                 is_new_property = True
-        #         else:
-        #             is_new_property = True
-        #
-        #         if is_new_property and row_id > header_end_row_id:
-        #             self._odmldict.append(copy.deepcopy(current_dic))
-        #             current_dic = new_dic
-        #
-        #     # copy final property
-        #     if row_id <= header_end_row_id:
-        #         self._odmldict.append(copy.deepcopy(new_dic))
-        #     else:
-        #         self._odmldict.append(copy.deepcopy(current_dic))
-        # self._odmldict = self._sort_odmldict(self._odmldict)
-
     @staticmethod
     def get_csv_header(load_from):
         '''
@@ -506,11 +440,6 @@ class OdmlTable(object):
                     # it is not the start of a new section
 
                     if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
-                        # old section, old property
-                        # for key in self._SECTION_INF:
-                        #     current_dic[key] = old_dic[key]
-                        # for key in self._PROPERTY_INF:
-                        #     current_dic[key] = old_dic[key]
                         current_dic['Value'].extend(new_dic['Value'])
                     else:
                         # old section, new property
@@ -741,7 +670,7 @@ class OdmlTable(object):
                             comparison_func=lambda x, y: x.startswith(y),
                             Path=del_prop['Path'])
 
-    def merge(self, odmltable, mode='overwrite'):
+    def merge(self, odmltable, mode='append'):
         """
         Merge odmltable into current odmltable.
         :param odmltable: OdmlTable object or Odml document object
@@ -755,8 +684,8 @@ class OdmlTable(object):
         doc1 = self.convert2odml()
 
         # TODO: include value merge in section merge
-        self._merge_odml_sections(doc1, doc2)
-        self._merge_odml_values(doc1, doc2, mode=mode)
+        self._merge_odml_sections(doc1, doc2, mode=mode)
+        # self._merge_odml_values(doc1, doc2, mode=mode)
 
         # TODO: What should happen to the document properties?
         """
@@ -769,39 +698,41 @@ class OdmlTable(object):
         # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
 
-    def _merge_odml_sections(self, sec1, sec2, mode='overwrite'):
+    def _merge_odml_sections(self, sec1, sec2, mode='append'):
         """
         Merging subsections of odml sections
         """
-        # TODO: Reintroduce mode keyword
-        # if mode not in ['strict', 'overwrite']:
-        #     raise ValueError('Merge mode "%s" does not exist. '
-        #                      'Valid modes are %s' % ((mode, ['strict',
-        #                                                      'overwrite'])))
+
+        if mode not in ['strict', 'append']:
+            raise ValueError('Merge mode "%s" does not exist. '
+                             'Valid modes are %s' % ((mode, ['strict',
+                                                             'append'])))
+        strict = mode == 'strict'
+
 
         for childsec2 in sec2.sections:
             sec_name = childsec2.name
             if not sec_name in sec1.sections:
                 sec1.append(childsec2)
             else:
-                self._merge_odml_sections(sec1[sec_name], childsec2)
+                sec1[sec_name].merge(childsec2, strict=strict)
 
-            # merge properties
-            if hasattr(sec1, 'properties') and hasattr(sec2, 'properties'):
-                for prop2 in sec2.properties:
-                    if prop2.name not in sec1.properties:
-                        sec1.properties.append(prop2)
+            # # merge properties
+            # if hasattr(sec1, 'properties') and hasattr(sec2, 'properties'):
+            #     for prop2 in sec2.properties:
+            #         if prop2.name not in sec1.properties:
+            #             sec1.properties.append(prop2)
 
     # TODO adjust function to new value model
-    def _merge_odml_values(self, doc1, doc2, mode='overwrite'):
+    def _merge_odml_values(self, doc1, doc2, mode='append'):
         """
         Merging values of odml documents, which contain the IDENTICAL
         sections and properties and only differ in the odml values
         """
-        if mode not in ['strict', 'overwrite']:
+        if mode not in ['strict', 'append']:
             raise ValueError('Merge mode "%s" does not exist. '
                              'Valid modes are %s' % ((mode, ['strict',
-                                                             'overwrite'])))
+                                                             'append'])))
 
         for prop2 in doc2.iterproperties():
             path = prop2.get_path()
@@ -815,7 +746,7 @@ class OdmlTable(object):
                                      'non-default values %s' % (prop1.name,
                                                                 prop1.value))
 
-            if mode in ['overwrite', 'strict']:
+            if mode in ['append', 'strict']:
                 # removing old values, but keeping first element, because a
                 # property needs to contain at least one value at any time
                 if prop1 != prop2:  # properties can be identical, when section
