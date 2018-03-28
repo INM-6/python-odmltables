@@ -246,8 +246,8 @@ class TestOdmlTable(unittest.TestCase):
 
         backup_table = copy.deepcopy(self.test_table)
 
-        self.test_table.merge(doc2, mode='overwrite')
-        backup_table.merge(table2, mode='overwrite')
+        self.test_table.merge(doc2, mode='append')
+        backup_table.merge(table2, mode='append')
 
         self.assertListEqual(self.test_table._odmldict, backup_table._odmldict)
 
@@ -259,8 +259,11 @@ class TestOdmlTable(unittest.TestCase):
     def test_strict_merge_error(self):
         doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
-        # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].value = 101
+        # add property with same name but different content
+        old_name = doc1.sections[1].properties[0].name
+        doc1.sections[1].remove(doc1.sections[1].properties[0])
+        doc1.sections[1].append(odml.Property(name=old_name,
+                                                       value='myval', dtype=odml.DType.string))
 
         self.test_table.load_from_odmldoc(doc1)
 
@@ -268,7 +271,8 @@ class TestOdmlTable(unittest.TestCase):
         table2 = OdmlTable()
         table2.load_from_odmldoc(doc2)
 
-        self.assertRaises(ValueError, self.test_table.merge, doc2, mode='strict')
+        with self.assertRaises(ValueError):
+            self.test_table.merge(doc2, mode='strict')
 
     def test_strict_merge(self):
         doc1 = create_compare_test(sections=0, properties=1, levels=2)
