@@ -724,7 +724,6 @@ class FilterPage(QIWizardPage):
         filter_name = self._get_filter_name(filter)
 
         if filter_name not in self.filters:
-
             self._show_applied_filter(filter, filter_name)
 
         else:
@@ -750,7 +749,12 @@ class FilterPage(QIWizardPage):
     def _show_applied_filter(self, filter, filter_name):
         self.filters[filter_name] = filter
 
-        self.run_single_filter(filter_name)
+        try:
+            self.run_single_filter(filter_name)
+        except (ValueError, NameError) as e:
+            self.filters.pop(filter_name)
+            self.reset_filtersettings()
+            return
 
         self.lwfilters.addItems([filter_name])
 
@@ -820,19 +824,23 @@ class FilterPage(QIWizardPage):
             [eval(value) for value in list(filter['kwargs'].values())]
         except:
             Qtg.QMessageBox.warning(self, 'Non-interpretable value',
-                                    'Can not interpret "%s". This is not a valid '
-                                    'python object. To generate a string put your '
-                                    'text into quotation marks. To define a list '
-                                    'use square brackets.')
-            return
+                                'Can not interpret list of values "{}". There is a non-valid '
+                                'python object contained. To generate a string put your '
+                                'text into quotation marks. To define a list '
+                                'use square brackets.'.format(str(filter['kwargs'].values())))
+            raise ValueError('Can not interpret values "{}"'.format(str(filter['kwargs'].values())))
 
-        self.filtered_table.filter(mode=filter['mode'],
-                                   invert=filter['invert'],
-                                   recursive=filter['recursive'],
-                                   comparison_func=lambda x, y: \
-                                       eval(filter['compfuncstr']),
-                                   **{key: eval(value) for key, value in
-                                      iteritems(filter['kwargs'])})
+        try:
+            self.filtered_table.filter(mode=filter['mode'],
+                                       invert=filter['invert'],
+                                       recursive=filter['recursive'],
+                                       comparison_func=lambda x, y: \
+                                           eval(filter['compfuncstr']),
+                                       **{key: eval(value) for key, value in
+                                          iteritems(filter['kwargs'])})
+        except Exception as e:
+            Qtg.QMessageBox.warning(self, 'Filter Warning', e.message)
+            raise e
         self.update_tree(self.filtered_table)
 
     # TODO: check if this can also be done via XPath + provide xpath
@@ -895,11 +903,11 @@ class FilterPage(QIWizardPage):
 
 
     def create_sectiontree(self, tree, table):
-        sections = {value['Path'].strip('/'): ['', '', '', '', '', '', '',
-                                               value['SectionName'],
-                                               value['SectionType'],
-                                               value['SectionDefinition']]
-                    for value in table._odmldict}
+        sections = {prop['Path'].strip('/').split(':')[0]: ['', '', '', '', '', '', '',
+                                               prop['Path'].strip('/'),
+                                               prop['SectionType'],
+                                               prop['SectionDefinition']]
+                    for prop in table._odmldict}
         self.replace_Nones(sections)
         for sec in sorted(sections):
             sec_names = sec.split('/')
@@ -914,12 +922,14 @@ class FilterPage(QIWizardPage):
                     parent_sec = new_sec
 
     def create_proptree(self, tree, table):
-        props = {value['Path'].strip('/') + '/' + value['PropertyName']: [
-            '', '', '', '', '',
-            value['PropertyName'],
-            value['PropertyDefinition'],
-            '', '']
-            for value in table._odmldict}
+        props = {prop['Path'].strip('/').replace(':', '/'):
+                     [prop['Value'],
+                      prop['DataUncertainty'],
+                      prop['DataUnit'],
+                      prop['odmlDatatype'], '',
+                      prop['Path'].split(':')[-1],
+                      prop['PropertyDefinition'], '', '']
+                 for prop in table._odmldict}
         self.replace_Nones(props)
         for prop in props:
             prop_path = prop.split('/')
@@ -929,19 +939,18 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 else:
-                    new_sec = Qtg.QTreeWidgetItem(parent_sec, [prop_path[i]] +
-                                                  list(props[prop]))
-                    parent_sec = new_sec
+                    values = copy.deepcopy(props[prop][0])
+                    tmp_prop = props[prop]
+                    for val in values:
+                        tmp_prop[0] = str(val)
+                        new_sec = Qtg.QTreeWidgetItem(parent_sec, [prop_path[i]] + tmp_prop)
+                        tmp_prop = [''] * len(tmp_prop)
+                    # parent_sec = new_sec
 
     def create_valuetree(self, tree, table):
-        values = {value['Path'].strip('/') + '/' +
-                  value['PropertyName'] + '/' + str(v):
-                      [str(value['Value']),
-                       value['DataUncertainty'],
-                       value['DataUnit'],
-                       value['odmlDatatype'],
-                       '', '', '', '', '']
-                  for v, value in enumerate(table._odmldict)}
+        values = {prop['Path'].strip('/').replace(':', '/') + '/' + str(v):
+                      [value, '', '', '', '', '', '', '', '']
+                  for prop in table._odmldict for v, value in enumerate(prop['Value'])}
         self.replace_Nones(values)
         for value in sorted(values):
             value_path = value.split('/')
@@ -951,7 +960,7 @@ class FilterPage(QIWizardPage):
                 if child:
                     parent_sec = child
                 if i == len(value_path) - 2:
-                    val = [unicode(v).encode('utf-8') for v in values[value]]
+                    val = [unicode(v) for v in values[value]]
                     new_sec = Qtg.QTreeWidgetItem(parent_sec, [''] + val)
                     parent_sec = new_sec
 
