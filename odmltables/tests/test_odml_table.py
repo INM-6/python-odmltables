@@ -16,7 +16,7 @@ from odmltables.odml_table import OdmlDtypes
 from odmltables.odml_csv_table import OdmlCsvTable
 from odmltables.odml_xls_table import OdmlXlsTable
 
-from create_test_odmls import (create_small_test_odml, create_showall_test_odml,
+from .create_test_odmls import (create_small_test_odml, create_showall_test_odml,
                                 create_compare_test)
 
 import unittest
