@@ -428,7 +428,8 @@ class OdmlTable(object):
                 # update path and remove section and property names
                 new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
                 new_dic.pop('PropertyName')
-                new_dic.pop('SectionName')
+                if 'SectionName' in new_dic:
+                    new_dic.pop('SectionName')
 
                 # convert to python datatypes
                 dtype = new_dic['odmlDatatype']
@@ -444,7 +445,10 @@ class OdmlTable(object):
                     else:
                         # old section, new property
                         for key in self._PROPERTY_INF:
-                            current_dic[key] = new_dic[key]
+                            if key in new_dic:
+                                current_dic[key] = new_dic[key]
+                            else:
+                                current_dic[key] = ''
                         is_new_property = True
                 else:
                     is_new_property = True
