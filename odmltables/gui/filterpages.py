@@ -839,7 +839,8 @@ class FilterPage(QIWizardPage):
                                        **{key: eval(value) for key, value in
                                           iteritems(filter['kwargs'])})
         except Exception as e:
-            Qtg.QMessageBox.warning(self, 'Filter Warning', e.message)
+            message = e.message if hasattr(e, 'message') else (str(e))
+            Qtg.QMessageBox.warning(self, 'Filter Warning', message)
             raise e
         self.update_tree(self.filtered_table)
 
@@ -1100,11 +1101,11 @@ class SaveFilePage(QIWizardPage):
         dlg.setLabelText(Qtg.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
-        dlg.setDirectory(self.settings.get_object('inputfilename'))
+        dlg.setDirectory(os.path.dirname(self.settings.get_object('inputfilename')))
 
         dlg.setNameFilters(["%s files (*%s);;all files "
-                      "(*)" % (self.expected_extension.strip('.'),
-                               self.expected_extension)])
+                            "(*)" % (self.expected_extension.strip('.'),
+                                     self.expected_extension)])
         # filenames = []
 
         if dlg.exec_():
@@ -1129,8 +1130,7 @@ class SaveFilePage(QIWizardPage):
 
         elif self.outputfilename != '':
             filtered_table = self.settings.get_object('filtered_table')
-            filtered_table.write2odml(self.settings.get_object(
-                'outputfilename'))
+            filtered_table.write2odml(self.settings.get_object('outputfilename'))
 
             self.issaved = True
             print('Complete!')

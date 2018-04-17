@@ -551,7 +551,7 @@ class CustomColumnNamesPage(QIWizardPage):
         try:
             self.settings.register('customheaderlabels',
                                    self.customheaderlabels)
-            self.settings.register('columnmarkings', self.columnmarkings)
+            self.settings.register('columnmarkings', self)
         except IndexError:
             self.settings.register('customheaderlabels',
                                    self.customheaderlabels,

@@ -175,7 +175,7 @@ class LoadFilePage(QIWizardPage):
             dir = self.settings.get_object('inputfilename2')
 
         if dir:
-            dlg.setDirectory(dir)
+            dlg.setDirectory(os.path.dirname(dir))
 
         dlg.setNameFilters(["%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
@@ -214,7 +214,7 @@ class LoadFilePage(QIWizardPage):
         dlg.setAcceptMode(Qtw.QFileDialog.AcceptSave)
         dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
-        dlg.setDirectory(self.settings.get_object('inputfilename1'))
+        dlg.setDirectory(os.path.dirname(self.settings.get_object('inputfilename1')))
 
         dlg.setNameFilters(["%s files (*%s);;all files (*)"
                       "" % (self.expected_extension.strip('.'),
@@ -295,11 +295,12 @@ class LoadFilePage(QIWizardPage):
         try:
             table1.merge(table2, mode=mode)
         except ValueError as e:
+            message = e.message if hasattr(e, 'message') else (str(e))
             Qtw.QMessageBox.warning(self, 'Error while merging files',
                                     'Value error: %s. Can not merge into non-default values in '
                                     'merge mode "strict". Data could be lost in the process. '
                                     'Please fix your odml files or change to merge mode "append".'
-                                    '' % (e.message))
+                                    '' % (message))
             return False
         except:
             Qtw.QMessageBox.warning(self, 'Unexpected error:', sys.exc_info()[0])

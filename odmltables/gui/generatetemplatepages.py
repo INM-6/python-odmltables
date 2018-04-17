@@ -297,7 +297,6 @@ class SaveFilePage(QIWizardPage):
         dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
-        # dlg.setDirectory(self.settings.get_object('inputfilename'))
         suggested_filename = 'template' + self.expected_extension
         dlg.selectFile(suggested_filename)
 
@@ -312,8 +311,7 @@ class SaveFilePage(QIWizardPage):
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
-        if ((os.path.splitext(self.outputfilename)[
-                 1] != self.expected_extension) and
+        if ((os.path.splitext(self.outputfilename)[1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtw.QMessageBox.warning(self, 'Wrong file format',
                                     'The output file format is supposed to be "%s",'
