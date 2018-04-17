@@ -297,7 +297,6 @@ class SaveFilePage(QIWizardPage):
         dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
         dlg.setDefaultSuffix(self.expected_extension.strip('.'))
 
-        # dlg.setDirectory(self.settings.get_object('inputfilename'))
         suggested_filename = 'template' + self.expected_extension
         dlg.selectFile(suggested_filename)
 
@@ -312,8 +311,7 @@ class SaveFilePage(QIWizardPage):
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
-        if ((os.path.splitext(self.outputfilename)[
-                 1] != self.expected_extension) and
+        if ((os.path.splitext(self.outputfilename)[1] != self.expected_extension) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtw.QMessageBox.warning(self, 'Wrong file format',
                                     'The output file format is supposed to be "%s",'
@@ -355,6 +353,8 @@ def createfile(settings):
     table = odml_xls_table.OdmlXlsTable()
     table.load_from_odmldoc(odmldoc)
     table.changing_point = None
+    table.show_all_sections = False
+    table.show_all_properties = False
 
     title_translator = {v: k for k, v in iteritems(table._header_titles)}
     # mandatory_titles = [title_translator[m] for m in mandatory_headers]
@@ -392,13 +392,13 @@ def setup_tutorodml():
 
     # APPEND MAIN SECTIONS
     doc.append(odml.Section(name='MySection',
-                            type='<Enter the type of data you this section is'
+                            type='<Enter the type of data this section is'
                                  ' associated with, e.g. hardware>',
                             definition='<Describe the purpose of sections '
                                        'in short statements in this '
                                        'column.>'))
     doc.append(odml.Section(name='OneMoreSection',
-                            type='<Enter the type of data you this section is'
+                            type='<Enter the type of data this section is'
                                  ' associated with, e.g. software>',
                             definition='<Use only the first cell in this '
                                        'column to for the section '
@@ -406,7 +406,7 @@ def setup_tutorodml():
 
     parent = doc['OneMoreSection']
     parent.append(odml.Section('MySubsection',
-                               type='<Enter the type of data you this section'
+                               type='<Enter the type of data this section'
                                     ' is associated with, e.g. settings>',
                                definition='<Describe the purpose of this '
                                           'section here (eg. everything '
@@ -424,7 +424,7 @@ def setup_tutorodml():
                                            'the property and the associated '
                                            'value described here>'))
     parent.append(odml.Property(name='OneMoreProperty',
-                                value=2.001,
+                                value=[2.001, 4],
                                 dtype='float',
                                 unit='mm',
                                 uncertainty=0.02,
@@ -433,19 +433,11 @@ def setup_tutorodml():
                                            'value can be of different type '
                                            'than string.'))
 
-    # ADDING MORE VALUES
-    parent = doc['MySection'].properties['OneMoreProperty']
-    parent.value = 4.
-    parent.dtype = 'float'
-    parent.unit = ''
-    parent.uncertainty = 0.4
-    parent.definition = 'A property can have more than one value attached.'
-
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
                                 value=-1,
                                 dtype='int',
-                                unit='',
+                                unit='mV',
                                 uncertainty='',
                                 definition='This property contains an '
                                            'empty/default value.'
@@ -458,7 +450,7 @@ def setup_tutorodml():
     parent.append(odml.Property(name='MyLastProperty',
                                 value=datetime.datetime.today().date(),
                                 dtype='date',
-                                unit='',
+                                unit='AD',
                                 uncertainty='',
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'

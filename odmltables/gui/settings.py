@@ -65,8 +65,7 @@ class Settings():
         return [n for n in list(self.settings) if n != '']
 
     def register(self, name, obj, useconfig=True):
-        if (useconfig and self.config):  # TODO: Go on here. Consistent data
-            # reconstruction.
+        if (useconfig and self.config and self.is_registered(name)):
             self.update_from_config(name, obj)
 
         if hasattr(obj, name):
@@ -106,14 +105,15 @@ class Settings():
             return self.config['objects'].pop(name)
 
     def simplify_pyqt(self, conf):
-        conf = copy.deepcopy(conf)
+        simple_conf = {'attributes': {},
+                       'objects': {}}
         for name, property in iteritems(conf['attributes']):
-            conf['attributes'][name] = self.simplifyprop(
+            simple_conf['attributes'][name] = self.simplifyprop(
                 getattr(self.config['attributes'][name], name))
         for name, property in iteritems(conf['objects']):
-            conf['objects'][name] = self.simplifyprop(
+            simple_conf['objects'][name] = self.simplifyprop(
                 self.config['objects'][name])
-        return conf
+        return simple_conf
 
     def simplifyprop(self, prop):
         if type(prop) == QPushButton:  # QPushButton

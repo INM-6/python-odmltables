@@ -189,16 +189,20 @@ class OdmlXlsTable(OdmlTable):
             sheet.write(row_id, 0, 'Document Information', styles["document_info"])
 
             for a, attribute in enumerate(sorted(self._docdict)):
-                sheet.write(row_id, 2 * a + 1, attribute, styles["document_info"])
-                sheet.write(row_id, 2 * a + 2, self._docdict[attribute],
-                            styles["document_info"])
+                style = styles["document_info"]
+                value = self._docdict[attribute]
+                if isinstance(value, datetime.date):
+                    style.num_format_str = "DD-MM-YYYY"
+                else:
+                    style.num_format_str = ""
+                sheet.write(row_id, 2 * a + 1, attribute, style)
+                sheet.write(row_id, 2 * a + 2, value, style)
 
                 # adjusting cell widths
                 if len(attribute) > max_col_len[2 * a + 1]:
                     max_col_len[2 * a + 1] = len(attribute)
-                if self._docdict[attribute] != None and (
-                            len(self._docdict[attribute]) > max_col_len[2 * a + 2]):
-                    max_col_len[2 * a + 2] = len(self._docdict[attribute])
+                if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
+                    max_col_len[2 * a + 2] = len(str(value))
 
             row_id += 1
 
@@ -258,12 +262,16 @@ class OdmlXlsTable(OdmlTable):
                 # inflate row_dic
                 row_dic['Path'], row_dic['PropertyName'] = row_dic['Path'].split(':')
                 row_dic['SectionName'] = row_dic['Path'].split('/')[-1]
+                row_dic_complete = row_dic.copy()
+
 
                 # removing unnecessary entries
                 if row_dic["Path"] == oldpath:
                     if not self.show_all_sections:
-                        for h in self._SECTION_INF:
+                        for h in self._SECTION_INF + ['SectionName']:
                             row_dic[h] = ""
+                        row_dic['Path'] = ""
+
                 # if dic["Path"].split(':')[-1] == oldprop:
                 #     if not self.show_all_properties:
                 #         for h in self._PROPERTY_INF:
@@ -307,13 +315,14 @@ class OdmlXlsTable(OdmlTable):
 
                     # adjust section and property entries for next value
                     for h in self._header:
-                        if ((not self.show_all_properties
-                             and h in self._PROPERTY_INF + ['PropertyName']) or
-                                (not self.show_all_sections
-                                 and h in self._SECTION_INF + ['SectionName'])):
+                        if (not self.show_all_properties
+                             and h in self._PROPERTY_INF + ['PropertyName']):
+                            row_content[self._header.index(h)] = ''
+                        elif (not self.show_all_sections
+                                 and h in self._SECTION_INF + ['SectionName', 'Path']):
                             row_content[self._header.index(h)] = ''
 
-                oldpath = row_dic["Path"]
+                oldpath = row_dic_complete["Path"]
 
         # adjust the size of the columns due to the max length of the content,
         # but no more than max_allowed_col_len characters
