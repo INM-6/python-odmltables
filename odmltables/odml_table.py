@@ -11,6 +11,7 @@ import datetime
 import xlrd
 
 from future.utils import iteritems
+from six import string_types
 
 # Workaround Python 2 and 3 unicode handling.
 try:
@@ -58,16 +59,21 @@ class OdmlTable(object):
         self._PROPERTY_INF = ["PropertyDefinition", "DataUnit", "DataUncertainty", "odmlDatatype"]
 
         if load_from is not None:
-            filename, file_extension = os.path.splitext(load_from)
-            if file_extension == '.odml':
-                self.load_from_file(load_from)
-            elif file_extension == '.xls':
-                self.load_from_xls_table(load_from)
-            elif file_extension == '.csv':
-                self.load_from_csv_table(load_from)
-            else:
-                raise IOError('Can not read file format "%s". odMLtables '
-                              'supports only .odml, .xls and .csv files.')
+            if isinstance(load_from, string_types):
+                filename, file_extension = os.path.splitext(load_from)
+                if file_extension == '.odml':
+                    self.load_from_file(load_from)
+                elif file_extension == '.xls':
+                    self.load_from_xls_table(load_from)
+                elif file_extension == '.csv':
+                    self.load_from_csv_table(load_from)
+                else:
+                    raise IOError('Can not read file format "%s". odMLtables '
+                                  'supports only .odml, .xls and .csv files.')
+            elif isinstance(load_from, odml.doc.BaseDocument):
+                self.load_from_odmldoc(load_from)
+            elif callable(load_from):
+                self.load_from_function(load_from)
 
     def __create_odmldict(self, doc):
         """

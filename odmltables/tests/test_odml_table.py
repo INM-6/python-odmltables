@@ -72,6 +72,34 @@ class TestLoadOdmlFromTable(unittest.TestCase):
 
         self.assertEquals(dict_in, dict_out)
 
+    def test_load_from_during_init(self):
+
+        def generate_doc():
+            doc = odml.Document()
+            doc.append(odml.Section('mysection'))
+            doc[0].append(odml.Property('myproperty', value=17))
+            return doc
+
+        # test loading from odml doc and odml doc generator
+        OdmlTable(generate_doc())
+        OdmlTable(generate_doc)
+
+        # saving to test load_from with filepath
+        # generate odml
+        table = OdmlTable(generate_doc)
+        table.write2odml(save_to='load_test.odml')
+        # generate xls
+        table = OdmlXlsTable(generate_doc)
+        table.write2file(save_to='load_test.xls')
+        # generate csv
+        table = OdmlCsvTable(generate_doc)
+        table.write2file(save_to='load_test.csv')
+
+        # loading from files
+        OdmlTable('load_test.odml')
+        OdmlTable('load_test.xls')
+        OdmlTable('load_test.csv')
+
 
 class TestLoadSaveOdml(unittest.TestCase):
     """
