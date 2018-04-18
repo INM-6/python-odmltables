@@ -178,8 +178,18 @@ class TestChangeHeader(unittest.TestCase):
         Tests simple changing of the header
         """
         self.test_table.change_header(Path=1, SectionType=2, Value=3)
-        self.assertEqual(self.test_table._header, ["Path", "SectionType",
-                                                   "Value"])
+        self.assertListEqual(self.test_table._header, ["Path", "SectionType", "Value"])
+
+    def test_shortcut_change(self):
+        self.test_table.change_header('full')
+        self.assertEqual(self.test_table._header,
+                         ['Path', 'SectionName', 'SectionType', 'SectionDefinition', 'PropertyName',
+                          'PropertyDefinition', 'Value', 'DataUnit', 'DataUncertainty',
+                          'odmlDatatype'])
+
+        self.test_table.change_header('minimal')
+        self.assertListEqual(self.test_table._header, ['Path', 'PropertyName', 'Value',
+                                                       'odmlDatatype'])
 
     def test_index_zero(self):
         """

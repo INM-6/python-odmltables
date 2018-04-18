@@ -510,7 +510,7 @@ class OdmlTable(object):
                 raise ValueError(errmsg)
                 # TODO: better exception
 
-    def change_header(self, **kwargs):
+    def change_header(self, *args, **kwargs):
         """
         Function to change the header of the table.
 
@@ -556,6 +556,12 @@ class OdmlTable(object):
                 => outcoming header: ['Path', 'odML Data Type', 'Value']
 
         """
+
+        if args[0] == 'full':
+            kwargs = {k: i+1 for i, k in enumerate(self._header_titles.keys())}
+        elif args[0] == 'minimal':
+            kwargs = {k: i+1 for i, k in enumerate(["Path", "PropertyName", "Value",
+                                                   "odmlDatatype"])}
 
         # sortieren nach values
         keys_sorted = sorted(kwargs, key=kwargs.get)
@@ -603,8 +609,7 @@ class OdmlTable(object):
         """
         if self._odmldict != None:
             for property_dict in self._odmldict:
-                if property_dict[
-                    'odmlDatatype'] not in self.odtypes.valid_dtypes:
+                if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
                     raise TypeError(
                         'Non valid dtype "{0}" in odmldict. Valid types are {1}'
                         ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
@@ -852,7 +857,8 @@ class OdmlDtypes(object):
                           'datetime.time': datetime.datetime(1900, 11, 11, 00,
                                                              00, 00).time(),
                           'str': '-',
-                          'url': 'file://-'}
+                          'url': 'file://-',
+                           None: None}
     default_synonyms = {'boolean': 'bool', 'binary': 'bool',
                         'date': 'datetime.date', 'time': 'datetime.time',
                         'integer': 'int', 'string': 'str', 'text': 'str',
