@@ -557,11 +557,12 @@ class OdmlTable(object):
 
         """
 
-        if args[0] == 'full':
-            kwargs = {k: i+1 for i, k in enumerate(self._header_titles.keys())}
-        elif args[0] == 'minimal':
-            kwargs = {k: i+1 for i, k in enumerate(["Path", "PropertyName", "Value",
-                                                   "odmlDatatype"])}
+        if args:
+            if args[0] == 'full':
+                kwargs = {k: i+1 for i, k in enumerate(self._header_titles.keys())}
+            elif args[0] == 'minimal':
+                kwargs = {k: i+1 for i, k in enumerate(["Path", "PropertyName", "Value",
+                                                       "odmlDatatype"])}
 
         # sortieren nach values
         keys_sorted = sorted(kwargs, key=kwargs.get)
