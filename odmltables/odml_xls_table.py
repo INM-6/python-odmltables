@@ -287,6 +287,10 @@ class OdmlXlsTable(OdmlTable):
                 # row_content: only those elements of row_dic, that will be visible in the table
                 row_content = [row_dic[h] if h != None else '' for h in self._header]
 
+                # generating row even when no value entry is present
+                if not row_dic['Value']:
+                    row_dic['Value'] = ['']
+
                 for v in row_dic['Value']:
                     stylestring = ["row{:d}col{:d}".format(r, c)
                                    for r, c in zip(self.row_style, self.column_style)]

@@ -233,8 +233,6 @@ def create_complex_test_odml():
     parent.append(odml.Property(name='MyFirstProperty',
                                 value='MyFirstValue',
                                 dtype='str',
-                                unit='',
-                                uncertainty='',
                                 definition='<Enter a short definition of '
                                            'the property and the associated '
                                            'value described here>'))
@@ -252,8 +250,6 @@ def create_complex_test_odml():
     parent.append(odml.Property(name='MyEmptyProperty',
                                 value=-1,
                                 dtype='int',
-                                unit='',
-                                uncertainty='',
                                 definition='This property contains an '
                                            'empty/default value.'
                                            'The integer value still '
@@ -265,8 +261,6 @@ def create_complex_test_odml():
     parent.append(odml.Property(name='MyLastProperty',
                                 value=datetime.datetime.today().date(),
                                 dtype='date',
-                                unit='',
-                                uncertainty='',
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'
                                            ' "path to section" column.'

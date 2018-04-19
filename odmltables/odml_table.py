@@ -306,6 +306,15 @@ class OdmlTable(object):
                     previous_dic['Value'].extend(new_dic['Value'])
                     continue
 
+                # explicitely converting empty cells ('') to None for compatiblity with loading
+                # from odml documents
+                for k, v in new_dic.items():
+                    if v == '':
+                        new_dic[k] = None
+                if new_dic['Value'] == ['']:
+                    new_dic['Value'] = []
+
+
                 self._odmldict.append(new_dic)
                 previous_dic = new_dic
 
@@ -610,10 +619,11 @@ class OdmlTable(object):
         """
         if self._odmldict != None:
             for property_dict in self._odmldict:
-                if property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
-                    raise TypeError(
-                        'Non valid dtype "{0}" in odmldict. Valid types are {1}'
-                        ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
+                if property_dict['odmlDatatype'] and \
+                        property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
+                    raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'
+                                    ''.format(property_dict['odmlDatatype'],
+                                              self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -840,30 +850,17 @@ class OdmlDtypes(object):
     Class to handle odml data types, synonyms and default values.
 
     :param basedtypes_dict: Dictionary containing additional basedtypes to
-    use as keys and default values as values.
+            use as keys and default values as values.
             Default: None
     :param synonyms_dict: Dictionary containing additional synonyms to use as
-    keys and basedtypes to associate as values.
+            keys and basedtypes to associate as values.
             Default: None
     :return: None
     """
 
-    default_basedtypes = {'int': -1,
-                          'float': -1.0,
-                          'bool': False,
-                          'datetime': datetime.datetime(1900, 11, 11, 00, 00,
-                                                        00),
-                          'datetime.date': datetime.datetime(1900, 11,
-                                                             11).date(),
-                          'datetime.time': datetime.datetime(1900, 11, 11, 00,
-                                                             00, 00).time(),
-                          'str': '-',
-                          'url': 'file://-',
-                           None: None}
-    default_synonyms = {'boolean': 'bool', 'binary': 'bool',
-                        'date': 'datetime.date', 'time': 'datetime.time',
-                        'integer': 'int', 'string': 'str', 'text': 'str',
-                        'person': 'str'}
+    default_basedtypes = [d.name for d in odml.DType]
+    default_synonyms = {'bool': 'boolean', 'datetime.date': 'date', 'datetime.time': 'time',
+                        'integer': 'int', 'str': 'string'} # mapping synonym -> default type
 
     def __init__(self, basedtypes_dict=None, synonyms_dict=None):
         self._basedtypes = self.default_basedtypes.copy()
@@ -918,42 +915,22 @@ class OdmlDtypes(object):
     def basedtypes(self):
         return list(self._basedtypes)
 
-    def add_basedtypes(self, basedtype, default_value):
-        if basedtype in self._basedtypes:
-            raise ValueError('Basedtype "%s" already exists. Can not be added. '
-                             'To customize the default value use '
-                             '"customize_default".')
-        else:
-            self._basedtypes.update({basedtype: default_value})
-
-    @property
-    def default_values(self):
-        def_values = self._basedtypes.copy()
-        for syn, base in iteritems(self._synonyms):
-            def_values[syn] = self._basedtypes[base]
-        return def_values
-
-    def default_value(self, basedtype):
-        if basedtype in self.default_values:
-            return self.default_values[basedtype]
-        else:
-            raise ValueError(
-                '"%s" is not a basedtype. Valid basedtypes are %s' % (
-                    basedtype, self.basedtypes))
-
-    def set_default_value(self, basedtype, default_value):
-        if basedtype in self.basedtypes:
-            self._basedtypes[basedtype] = default_value
-        else:
-            raise ValueError('Can not set default value for basedtype "%s". '
-                             'This is not a basedtype. Valid basedtypes are '
-                             '%s' % (
-                                 basedtype, self.basedtypes))
-
     def to_odml_value(self, value, dtype):
-        # return default value of dtype if value is empty
-        if value == '':
-            return self.default_value(dtype)
+        """
+        Convert single value entry or list of value entries to odml compatible format
+        """
+    #     if not isinstance(value, list):
+    #         value = [value]
+    #
+    #     for i in range(len(value)):
+    #         value[i] = self._convert_single_value(value[i], dtype)
+    #
+    #     return value
+    #
+    #
+    # def _convert_single_value(self, value, dtype):
+        if dtype == '':
+            return value
 
         if dtype in self._synonyms:
             dtype = self._synonyms[dtype]
@@ -966,7 +943,7 @@ class OdmlDtypes(object):
                     result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
                 except TypeError:
                     result = datetime.datetime(*value)
-        elif dtype == 'datetime.date':
+        elif dtype == 'date':
             if isinstance(value, datetime.date):
                 result = value
             else:
@@ -981,7 +958,7 @@ class OdmlDtypes(object):
                             'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
                 except TypeError:
                     result = datetime.datetime(*value).date()
-        elif dtype == 'datetime.time':
+        elif dtype == 'time':
             if isinstance(value, datetime.time):
                 result = value
             else:
@@ -993,15 +970,15 @@ class OdmlDtypes(object):
                     except ValueError:
                         result = datetime.time(*value[-3:])
 
-        elif dtype == 'url':
+        elif dtype == 'int':
+            result = int(value)
+        elif dtype == 'float':
+            result = float(value)
+        elif dtype == 'boolean':
+            result = bool(value)
+        elif dtype in ['string', 'text', 'url', 'person']:
             result = str(value)
-
-        elif dtype in self._basedtypes:
-            try:
-                result = eval('%s(%s)' % (dtype, value))
-            except Exception:
-                result = eval('%s("%s")' % (dtype, value))
         else:
-            raise TypeError('Unknown dtype {0}'.format(dtype))
+            result = value
 
         return result
