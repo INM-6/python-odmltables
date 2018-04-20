@@ -180,10 +180,13 @@ class TestChangeHeader(unittest.TestCase):
 
     def test_shortcut_change(self):
         self.test_table.change_header('full')
-        self.assertEqual(self.test_table._header,
-                         ['Path', 'SectionName', 'SectionType', 'SectionDefinition', 'PropertyName',
+        expected_entries = ['Path', 'SectionName', 'SectionType', 'SectionDefinition', 'PropertyName',
                           'PropertyDefinition', 'Value', 'DataUnit', 'DataUncertainty',
-                          'odmlDatatype'])
+                          'odmlDatatype']
+        self.assertEqual(len(self.test_table._header), len(expected_entries))
+        for entry in expected_entries:
+            self.assertIn(entry, self.test_table._header)
+
 
         self.test_table.change_header('minimal')
         self.assertListEqual(self.test_table._header, ['Path', 'PropertyName', 'Value',

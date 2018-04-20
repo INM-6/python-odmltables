@@ -863,7 +863,7 @@ class OdmlDtypes(object):
                         'integer': 'int', 'str': 'string'}  # mapping synonym -> default type
 
     def __init__(self, basedtypes_dict=None, synonyms_dict=None):
-        self._basedtypes = self.default_basedtypes.copy()
+        self._basedtypes = copy.copy(self.default_basedtypes)
         self._synonyms = self.default_synonyms.copy()
         self._validDtypes = None
 
