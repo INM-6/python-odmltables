@@ -451,6 +451,11 @@ class OdmlTable(object):
                 value = new_dic['Value']
                 new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
+                # remove empty entries
+                for k, v in new_dic.items():
+                    if v == '':
+                        new_dic[k] = None
+
                 if (new_dic['Path'].split(':')[0] == ''
                     or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
                     # it is not the start of a new section
@@ -463,7 +468,7 @@ class OdmlTable(object):
                             if key in new_dic:
                                 current_dic[key] = new_dic[key]
                             else:
-                                current_dic[key] = ''
+                                current_dic[key] = None
                         is_new_property = True
                 else:
                     is_new_property = True
