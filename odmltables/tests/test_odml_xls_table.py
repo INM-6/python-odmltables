@@ -6,11 +6,13 @@ Created on Mon May  4 13:49:47 2015
 """
 
 import copy
-from odmltables.odml_xls_table import OdmlXlsTable
+import odml
+from odmltables.odml_xls_table import OdmlXlsTable, OdmlTable
 import unittest
 import os
-from odmltables.tests.create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
-                                create_complex_test_odml, create_showall_test_odml)
+from odmltables.tests.create_test_odmls import (create_2samerows_test_odml,
+                                                create_datatype_test_odml,
+                                                create_complex_test_odml, create_showall_test_odml)
 
 import xlrd
 
@@ -76,7 +78,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         self.filename = 'test.xls'
 
     def tearDown(self):
-        os.remove(self.filename)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def test_xls_datatypes(self):
         """
@@ -109,7 +112,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         #             ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
 
         expected = [
-            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version', '0.1'],
+            ['Document Information', 'author', '', 'date', None, 'repository', '', 'version',
+             '0.1'],
             ['Path to Section', 'Property Name', 'Value', 'odML Data Type', '', '', '', '', ''],
             ['/numbers', 'Float', -1.234, 'float', '', '', '', '', ''],
             ['/numbers', 'Float', 0.0, 'float', '', '', '', '', ''],
@@ -128,11 +132,14 @@ class TestOdmlXlsTable(unittest.TestCase):
             ['/other', 'Boolean', 'True', 'boolean', '', '', '', '', ''],
             ['/other', 'Boolean', 'False', 'boolean', '', '', '', '', ''],
             ['/texts/datetime', 'Date', (2014, 12, 11, 0, 0, 0), 'date', '', '', '', '', ''],
-            ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '', '', ''],
+            ['/texts/datetime', 'Datetime', (2014, 12, 11, 15, 2, 0), 'datetime', '', '', '', '',
+             ''],
             ['/texts/datetime', 'Time', (0, 0, 0, 15, 2, 0), 'time', '', '', '', '', ''],
             ['/texts/string-like', 'Person', 'Jana Pick', 'person', '', '', '', '', ''],
             ['/texts/string-like', 'String', 'this is a string', 'string', '', '', '', '', ''],
-            ['/texts/string-like', 'Text', 'this is a text. It is longer than a string and contains punctuation marks!', 'text', '', '', '', '', '']]
+            ['/texts/string-like', 'Text',
+             'this is a text. It is longer than a string and contains punctuation marks!', 'text',
+             '', '', '', '', '']]
 
         self.test_xls_table.load_from_function(create_datatype_test_odml)
 
@@ -206,6 +213,24 @@ class TestOdmlXlsTable(unittest.TestCase):
         new_dict = self.test_xls_table._odmldict
 
         self.assertListEqual(old_dict, new_dict)
+
+    def test_saveload_empty_value(self):
+        doc = odml.Document()
+        doc.append(odml.Section('sec'))
+        doc[0].append(odml.Property('prop', value=[]))
+
+        table = OdmlXlsTable()
+        table.load_from_odmldoc(doc)
+        table.change_header('full')
+        table.write2file(self.filename)
+
+        table2 = OdmlTable()
+        table2.load_from_xls_table(self.filename)
+
+        # comparing values which are written to xls by default
+        self.assertEqual(len(table._odmldict), len(table2._odmldict))
+        self.assertEqual(len(table._odmldict), 1)
+        self.assertDictEqual(table._odmldict[0], table2._odmldict[0])
 
 
 class TestShowallOdmlXlsTable(unittest.TestCase):
@@ -392,7 +417,6 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
                     self.assertEquals(value, expected[row][col])
-
 
 
 if __name__ == '__main__':

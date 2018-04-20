@@ -5,7 +5,8 @@ Created on Mon Apr 20 15:01:13 2015
 @author: pick
 """
 
-from odmltables.odml_csv_table import OdmlCsvTable
+import odml
+from odmltables.odml_csv_table import OdmlCsvTable, OdmlTable
 from .create_test_odmls import (create_showall_test_odml, create_2samerows_test_odml)
 import os
 import csv
@@ -22,7 +23,8 @@ class TestOdmlCsvTable(unittest.TestCase):
         self.filename = 'test.csv'
 
     def tearDown(self):
-        os.remove(self.filename)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def test_empty_rows(self):
         """
@@ -55,6 +57,24 @@ class TestOdmlCsvTable(unittest.TestCase):
                 else:
                     self.assertEqual(row, expected[row_num])
                 row_num += 1
+
+    def test_saveload_empty_value(self):
+        doc = odml.Document()
+        doc.append(odml.Section('sec'))
+        doc[0].append(odml.Property('prop', value=[]))
+
+        table = OdmlCsvTable()
+        table.load_from_odmldoc(doc)
+        table.change_header('full')
+        table.write2file(self.filename)
+
+        table2 = OdmlTable()
+        table2.load_from_csv_table(self.filename)
+
+        # comparing values which are written to xls by default
+        self.assertEqual(len(table._odmldict), len(table2._odmldict))
+        self.assertEqual(len(table._odmldict), 1)
+        self.assertDictEqual(table._odmldict[0], table2._odmldict[0])
 
 
 class TestShowallOdmlCsvTable(unittest.TestCase):

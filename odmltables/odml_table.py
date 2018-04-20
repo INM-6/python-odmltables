@@ -11,6 +11,7 @@ import datetime
 import xlrd
 
 from future.utils import iteritems
+from six import string_types
 
 # Workaround Python 2 and 3 unicode handling.
 try:
@@ -58,16 +59,21 @@ class OdmlTable(object):
         self._PROPERTY_INF = ["PropertyDefinition", "DataUnit", "DataUncertainty", "odmlDatatype"]
 
         if load_from is not None:
-            filename, file_extension = os.path.splitext(load_from)
-            if file_extension == '.odml':
-                self.load_from_file(load_from)
-            elif file_extension == '.xls':
-                self.load_from_xls_table(load_from)
-            elif file_extension == '.csv':
-                self.load_from_csv_table(load_from)
-            else:
-                raise IOError('Can not read file format "%s". odMLtables '
-                              'supports only .odml, .xls and .csv files.')
+            if isinstance(load_from, string_types):
+                filename, file_extension = os.path.splitext(load_from)
+                if file_extension == '.odml':
+                    self.load_from_file(load_from)
+                elif file_extension == '.xls':
+                    self.load_from_xls_table(load_from)
+                elif file_extension == '.csv':
+                    self.load_from_csv_table(load_from)
+                else:
+                    raise IOError('Can not read file format "%s". odMLtables '
+                                  'supports only .odml, .xls and .csv files.')
+            elif isinstance(load_from, odml.doc.BaseDocument):
+                self.load_from_odmldoc(load_from)
+            elif callable(load_from):
+                self.load_from_function(load_from)
 
     def __create_odmldict(self, doc):
         """
@@ -101,7 +107,6 @@ class OdmlTable(object):
         attributes = ['author', 'date', 'repository', 'version']
         docdict = {att: getattr(doc, att) for att in attributes}
         return docdict
-
 
         # TODO: better exception
 
@@ -198,6 +203,7 @@ class OdmlTable(object):
         """
 
         self._odmldict = []
+        self._docdict = {}
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
@@ -250,13 +256,13 @@ class OdmlTable(object):
                 raise ValueError(err_msg)
 
             previous_dic = {"Path": "",
-                           "SectionType": "",
-                           "SectionDefinition": "",
-                           "PropertyDefinition": "",
-                           "Value": "",
-                           "DataUnit": "",
-                           "DataUncertainty": "",
-                           "odmlDatatype": ""}
+                            "SectionType": "",
+                            "SectionDefinition": "",
+                            "PropertyDefinition": "",
+                            "Value": "",
+                            "DataUnit": "",
+                            "DataUncertainty": "",
+                            "odmlDatatype": ""}
 
             header_end_row_id = row_id
 
@@ -269,11 +275,10 @@ class OdmlTable(object):
                     if col_n in header_title_order and header_title_order[col_n] is not None:
                         new_dic[header_title_order[col_n]] = row[col_n]
 
-                if 'PropertyName' in new_dic and new_dic['PropertyName']=='':
+                if 'PropertyName' in new_dic and new_dic['PropertyName'] == '':
                     new_dic['PropertyName'] = previous_dic['Path'].split(':')[1]
                     for key in self._PROPERTY_INF:
                         new_dic[key] = previous_dic[key]
-
 
                 # copy section info if not present for this row
                 if new_dic['Path'] == '':
@@ -300,11 +305,18 @@ class OdmlTable(object):
                     previous_dic['Value'].extend(new_dic['Value'])
                     continue
 
+                # explicitely converting empty cells ('') to None for compatiblity with loading
+                # from odml documents
+                for k, v in new_dic.items():
+                    if v == '':
+                        new_dic[k] = None
+                if new_dic['Value'] == ['']:
+                    new_dic['Value'] = []
+
                 self._odmldict.append(new_dic)
                 previous_dic = new_dic
 
         self._odmldict = self._sort_odmldict(self._odmldict)
-
 
     def _convert_to_python_type(self, value, dtype, datemode):
         if ('date' in dtype or 'time' in dtype) and (value != ''):
@@ -364,6 +376,7 @@ class OdmlTable(object):
         """
 
         self._odmldict = []
+        self._docdict = {}
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
@@ -382,8 +395,6 @@ class OdmlTable(object):
                                   ' Filename "%s"' % load_from)
 
             # get column ids of non-empty header cells
-            header_title_ids = {inv_header_titles[h]: id for id, h in
-                                enumerate(row) if h != ''}
             header_title_order = {id: inv_header_titles[h] for id, h in
                                   enumerate(row) if h != ''}
 
@@ -436,8 +447,13 @@ class OdmlTable(object):
                 value = new_dic['Value']
                 new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
 
+                # remove empty entries
+                for k, v in new_dic.items():
+                    if v == '':
+                        new_dic[k] = None
+
                 if (new_dic['Path'].split(':')[0] == ''
-                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+                        or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
                     # it is not the start of a new section
 
                     if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
@@ -448,7 +464,7 @@ class OdmlTable(object):
                             if key in new_dic:
                                 current_dic[key] = new_dic[key]
                             else:
-                                current_dic[key] = ''
+                                current_dic[key] = None
                         is_new_property = True
                 else:
                     is_new_property = True
@@ -504,7 +520,7 @@ class OdmlTable(object):
                 raise ValueError(errmsg)
                 # TODO: better exception
 
-    def change_header(self, **kwargs):
+    def change_header(self, *args, **kwargs):
         """
         Function to change the header of the table.
 
@@ -550,6 +566,13 @@ class OdmlTable(object):
                 => outcoming header: ['Path', 'odML Data Type', 'Value']
 
         """
+
+        if args:
+            if args[0] == 'full':
+                kwargs = {k: i + 1 for i, k in enumerate(self._header_titles.keys())}
+            elif args[0] == 'minimal':
+                kwargs = {k: i + 1 for i, k in enumerate(["Path", "PropertyName", "Value",
+                                                          "odmlDatatype"])}
 
         # sortieren nach values
         keys_sorted = sorted(kwargs, key=kwargs.get)
@@ -597,11 +620,11 @@ class OdmlTable(object):
         """
         if self._odmldict != None:
             for property_dict in self._odmldict:
-                if property_dict[
-                    'odmlDatatype'] not in self.odtypes.valid_dtypes:
-                    raise TypeError(
-                        'Non valid dtype "{0}" in odmldict. Valid types are {1}'
-                        ''.format(property_dict['odmlDatatype'], self.odtypes.valid_dtypes))
+                if property_dict['odmlDatatype'] and \
+                        property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
+                    raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'
+                                    ''.format(property_dict['odmlDatatype'],
+                                              self.odtypes.valid_dtypes))
 
     def _filter(self, filter_func):
         """
@@ -713,7 +736,6 @@ class OdmlTable(object):
                                                              'append'])))
         strict = mode == 'strict'
 
-
         for childsec2 in sec2.sections:
             sec_name = childsec2.name
             if not sec_name in sec1.sections:
@@ -745,7 +767,7 @@ class OdmlTable(object):
             if mode == 'strict':
                 if (len(prop1.value) != 1) or \
                         (prop1.value[0] not in
-                             list(self.odtypes._basedtypes.values())):
+                         list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
                                                                 prop1.value))
@@ -828,32 +850,20 @@ class OdmlDtypes(object):
     Class to handle odml data types, synonyms and default values.
 
     :param basedtypes_dict: Dictionary containing additional basedtypes to
-    use as keys and default values as values.
+            use as keys and default values as values.
             Default: None
     :param synonyms_dict: Dictionary containing additional synonyms to use as
-    keys and basedtypes to associate as values.
+            keys and basedtypes to associate as values.
             Default: None
     :return: None
     """
 
-    default_basedtypes = {'int': -1,
-                          'float': -1.0,
-                          'bool': False,
-                          'datetime': datetime.datetime(1900, 11, 11, 00, 00,
-                                                        00),
-                          'datetime.date': datetime.datetime(1900, 11,
-                                                             11).date(),
-                          'datetime.time': datetime.datetime(1900, 11, 11, 00,
-                                                             00, 00).time(),
-                          'str': '-',
-                          'url': 'file://-'}
-    default_synonyms = {'boolean': 'bool', 'binary': 'bool',
-                        'date': 'datetime.date', 'time': 'datetime.time',
-                        'integer': 'int', 'string': 'str', 'text': 'str',
-                        'person': 'str'}
+    default_basedtypes = [d.name for d in odml.DType]
+    default_synonyms = {'bool': 'boolean', 'datetime.date': 'date', 'datetime.time': 'time',
+                        'integer': 'int', 'str': 'string'}  # mapping synonym -> default type
 
     def __init__(self, basedtypes_dict=None, synonyms_dict=None):
-        self._basedtypes = self.default_basedtypes.copy()
+        self._basedtypes = copy.copy(self.default_basedtypes)
         self._synonyms = self.default_synonyms.copy()
         self._validDtypes = None
 
@@ -905,42 +915,22 @@ class OdmlDtypes(object):
     def basedtypes(self):
         return list(self._basedtypes)
 
-    def add_basedtypes(self, basedtype, default_value):
-        if basedtype in self._basedtypes:
-            raise ValueError('Basedtype "%s" already exists. Can not be added. '
-                             'To customize the default value use '
-                             '"customize_default".')
-        else:
-            self._basedtypes.update({basedtype: default_value})
-
-    @property
-    def default_values(self):
-        def_values = self._basedtypes.copy()
-        for syn, base in iteritems(self._synonyms):
-            def_values[syn] = self._basedtypes[base]
-        return def_values
-
-    def default_value(self, basedtype):
-        if basedtype in self.default_values:
-            return self.default_values[basedtype]
-        else:
-            raise ValueError(
-                '"%s" is not a basedtype. Valid basedtypes are %s' % (
-                    basedtype, self.basedtypes))
-
-    def set_default_value(self, basedtype, default_value):
-        if basedtype in self.basedtypes:
-            self._basedtypes[basedtype] = default_value
-        else:
-            raise ValueError('Can not set default value for basedtype "%s". '
-                             'This is not a basedtype. Valid basedtypes are '
-                             '%s' % (
-                                 basedtype, self.basedtypes))
-
     def to_odml_value(self, value, dtype):
-        # return default value of dtype if value is empty
-        if value == '':
-            return self.default_value(dtype)
+        """
+        Convert single value entry or list of value entries to odml compatible format
+        """
+        #     if not isinstance(value, list):
+        #         value = [value]
+        #
+        #     for i in range(len(value)):
+        #         value[i] = self._convert_single_value(value[i], dtype)
+        #
+        #     return value
+        #
+        #
+        # def _convert_single_value(self, value, dtype):
+        if dtype == '':
+            return value
 
         if dtype in self._synonyms:
             dtype = self._synonyms[dtype]
@@ -953,7 +943,7 @@ class OdmlDtypes(object):
                     result = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
                 except TypeError:
                     result = datetime.datetime(*value)
-        elif dtype == 'datetime.date':
+        elif dtype == 'date':
             if isinstance(value, datetime.date):
                 result = value
             else:
@@ -968,7 +958,7 @@ class OdmlDtypes(object):
                             'it has not format yyyy-mm-dd or dd-mm-yyyy' % value)
                 except TypeError:
                     result = datetime.datetime(*value).date()
-        elif dtype == 'datetime.time':
+        elif dtype == 'time':
             if isinstance(value, datetime.time):
                 result = value
             else:
@@ -980,15 +970,15 @@ class OdmlDtypes(object):
                     except ValueError:
                         result = datetime.time(*value[-3:])
 
-        elif dtype == 'url':
+        elif dtype == 'int':
+            result = int(value)
+        elif dtype == 'float':
+            result = float(value)
+        elif dtype == 'boolean':
+            result = bool(value)
+        elif dtype in ['string', 'text', 'url', 'person']:
             result = str(value)
-
-        elif dtype in self._basedtypes:
-            try:
-                result = eval('%s(%s)' % (dtype, value))
-            except Exception:
-                result = eval('%s("%s")' % (dtype, value))
         else:
-            raise TypeError('Unknown dtype {0}'.format(dtype))
+            result = value
 
         return result

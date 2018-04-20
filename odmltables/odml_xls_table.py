@@ -264,7 +264,6 @@ class OdmlXlsTable(OdmlTable):
                 row_dic['SectionName'] = row_dic['Path'].split('/')[-1]
                 row_dic_complete = row_dic.copy()
 
-
                 # removing unnecessary entries
                 if row_dic["Path"] == oldpath:
                     if not self.show_all_sections:
@@ -277,7 +276,6 @@ class OdmlXlsTable(OdmlTable):
                 #         for h in self._PROPERTY_INF:
                 #             row_dic[h] = ""
 
-
                 # handling row styles
                 if self._changing_point is 'properties':
                     _switch_row_style()
@@ -287,12 +285,16 @@ class OdmlXlsTable(OdmlTable):
                 # row_content: only those elements of row_dic, that will be visible in the table
                 row_content = [row_dic[h] if h != None else '' for h in self._header]
 
+                # generating row even when no value entry is present
+                if not row_dic['Value']:
+                    row_dic['Value'] = ['']
+
                 for v in row_dic['Value']:
                     stylestring = ["row{:d}col{:d}".format(r, c)
                                    for r, c in zip(self.row_style, self.column_style)]
                     # introduce highlighted values
                     if (self._highlight_defaults and
-                                row_dic['Value'] == self.odtypes.default_value(
+                            row_dic['Value'] == self.odtypes.default_value(
                                 row_dic['odmlDatatype'])):
                         stylestring[self._header.index('Value')] = 'highlight'
 
@@ -316,10 +318,10 @@ class OdmlXlsTable(OdmlTable):
                     # adjust section and property entries for next value
                     for h in self._header:
                         if (not self.show_all_properties
-                             and h in self._PROPERTY_INF + ['PropertyName']):
+                                and h in self._PROPERTY_INF + ['PropertyName']):
                             row_content[self._header.index(h)] = ''
                         elif (not self.show_all_sections
-                                 and h in self._SECTION_INF + ['SectionName', 'Path']):
+                              and h in self._SECTION_INF + ['SectionName', 'Path']):
                             row_content[self._header.index(h)] = ''
 
                 oldpath = row_dic_complete["Path"]

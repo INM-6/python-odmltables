@@ -126,7 +126,6 @@ class CompareSectionXlsTable(CompareSectionTable):
                     if len(str(cell_content)) > max_col_len[col_num]:
                         max_col_len[col_num] = len(str(cell_content))
 
-
                         #        if self.switch:
                         #                csvwriter.writerow([''] + properties)
                         #

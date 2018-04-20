@@ -8,8 +8,6 @@ Created on Fri Apr 17 08:11:32 2015
 import copy
 import os
 
-from future.utils import iteritems
-
 import odml
 from odmltables.odml_table import OdmlTable
 from odmltables.odml_table import OdmlDtypes
@@ -29,14 +27,15 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = ''
 
     def tearDown(self):
-        pass
+        for ext in ['.xls', '.odml', '.csv']:
+            if os.path.exists(self.filename + ext):
+                os.remove(self.filename + ext)
 
     def test_load_from_csv(self):
         self.filetype = 'csv'
         table = OdmlCsvTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] if dic[key] is not None
-        else '' for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
                             PropertyDefinition=6, Value=7,
@@ -50,8 +49,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = 'xls'
         table = OdmlXlsTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] if dic[key] is not None
-        else '' for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
                             PropertyDefinition=6, Value=7,
@@ -71,6 +69,34 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         dict_out = new_test_table._odmldict
 
         self.assertEquals(dict_in, dict_out)
+
+    def test_load_from_during_init(self):
+
+        def generate_doc():
+            doc = odml.Document()
+            doc.append(odml.Section('mysection'))
+            doc[0].append(odml.Property('myproperty', value=17))
+            return doc
+
+        # test loading from odml doc and odml doc generator
+        OdmlTable(generate_doc())
+        OdmlTable(generate_doc)
+
+        # saving to test load_from with filepath
+        # generate odml
+        table = OdmlTable(generate_doc)
+        table.write2odml(save_to=self.filename + '.odml')
+        # generate xls
+        table = OdmlXlsTable(generate_doc)
+        table.write2file(save_to=self.filename + '.xls')
+        # generate csv
+        table = OdmlCsvTable(generate_doc)
+        table.write2file(save_to=self.filename + '.csv')
+
+        # loading from files
+        OdmlTable(self.filename + '.odml')
+        OdmlTable(self.filename + '.xls')
+        OdmlTable(self.filename + '.csv')
 
 
 class TestLoadSaveOdml(unittest.TestCase):
@@ -150,8 +176,21 @@ class TestChangeHeader(unittest.TestCase):
         Tests simple changing of the header
         """
         self.test_table.change_header(Path=1, SectionType=2, Value=3)
-        self.assertEqual(self.test_table._header, ["Path", "SectionType",
-                                                   "Value"])
+        self.assertListEqual(self.test_table._header, ["Path", "SectionType", "Value"])
+
+    def test_shortcut_change(self):
+        self.test_table.change_header('full')
+        expected_entries = ['Path', 'SectionName', 'SectionType', 'SectionDefinition', 'PropertyName',
+                          'PropertyDefinition', 'Value', 'DataUnit', 'DataUncertainty',
+                          'odmlDatatype']
+        self.assertEqual(len(self.test_table._header), len(expected_entries))
+        for entry in expected_entries:
+            self.assertIn(entry, self.test_table._header)
+
+
+        self.test_table.change_header('minimal')
+        self.assertListEqual(self.test_table._header, ['Path', 'PropertyName', 'Value',
+                                                       'odmlDatatype'])
 
     def test_index_zero(self):
         """
@@ -223,7 +262,29 @@ class TestOdmlTable(unittest.TestCase):
                                              odmlDatatype="Datentyp")
         self.assertEqual(self.test_table._header_titles, expected)
 
-    def test_merge(self):
+    def test_merge_sections(self):
+        # set up 2 odmls with partially overlapping sections
+        doc1 = odml.Document(author='Me')
+        doc2 = odml.Document(author='You')
+
+        doc1.extend([odml.Section('MySection'), odml.Section('OurSection')])
+        doc2.extend([odml.Section('YourSection'), odml.Section('OurSection')])
+
+        # adding properties to sections, because odml is omitting sections without properties
+        for sec in doc1.sections + doc2.sections:
+            sec.append(odml.Property('prop'))
+
+        table1 = OdmlTable(load_from=doc1)
+        table2 = OdmlTable(load_from=doc2)
+
+        table1.merge(table2, mode='append')
+
+        result = table1.convert2odml()
+
+        expected = ['MySection', 'OurSection', 'YourSection']
+        self.assertListEqual([s.name for s in result.sections], expected)
+
+    def test_merge_append(self):
         doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
         # generate one additional Value, which is not present in doc2
@@ -251,8 +312,7 @@ class TestOdmlTable(unittest.TestCase):
 
         self.assertListEqual(self.test_table._odmldict, backup_table._odmldict)
 
-        expected = len(table2._odmldict) + 2  # only additional prop and
-        # section will be counted; additional value is overwritten
+        expected = len(table2._odmldict) + 2  # only additional prop and section will be counted
 
         self.assertEqual(len(self.test_table._odmldict), expected)
 
@@ -263,7 +323,7 @@ class TestOdmlTable(unittest.TestCase):
         old_name = doc1.sections[1].properties[0].name
         doc1.sections[1].remove(doc1.sections[1].properties[0])
         doc1.sections[1].append(odml.Property(name=old_name,
-                                                       value='myval', dtype=odml.DType.string))
+                                              value='myval', dtype=odml.DType.string))
 
         self.test_table.load_from_odmldoc(doc1)
 
@@ -387,21 +447,9 @@ class TestOdmlDtypes(unittest.TestCase):
         self.assertEqual(expected_synonyms, self.test_dtypes.synonyms)
 
     def test_valid_dtypes(self):
-        expected_dtypes = list(self.test_dtypes.default_basedtypes) + list(
-            self.test_dtypes.default_synonyms)
+        expected_dtypes = (list(self.test_dtypes.default_basedtypes) +
+                           list(self.test_dtypes.default_synonyms))
         self.assertListEqual(sorted(expected_dtypes), sorted(self.test_dtypes.valid_dtypes))
-
-    def test_default_values(self):
-        basedefaults = self.test_dtypes.default_basedtypes
-        syndefaults = dict([(syn, basedefaults[base]) for syn, base in
-                            iteritems(self.test_dtypes.default_synonyms)])
-        expected_defaults = basedefaults.copy()
-        expected_defaults.update(syndefaults)
-
-        self.assertEqual(expected_defaults, self.test_dtypes.default_values)
-
-        for dtype, expected_default in iteritems(expected_defaults):
-            self.assertEqual(expected_default, self.test_dtypes.default_value(dtype))
 
     def test_synonym_adder(self):
         basedtype, synonym = ('int', 'testsyn1')
@@ -410,24 +458,6 @@ class TestOdmlDtypes(unittest.TestCase):
         expected_synonyms = self.test_dtypes.default_synonyms.copy()
         expected_synonyms.update({synonym: basedtype})
         self.assertEqual(self.test_dtypes.synonyms, expected_synonyms)
-        self.assertEqual(self.test_dtypes.default_value('testsyn1'),
-                         self.test_dtypes.default_value('int'))
-
-    def test_basedtype_adder(self):
-        basedtype, default = 'testbasetype', 'testdefault'
-        self.test_dtypes.add_basedtypes(basedtype, default)
-
-        expected_basedtypes = self.test_dtypes.default_basedtypes.copy()
-        expected_basedtypes.update({basedtype: default})
-        self.assertListEqual(self.test_dtypes.basedtypes, list(expected_basedtypes))
-
-    def test_default_value_setter(self):
-        default_value = 1
-        self.test_dtypes.set_default_value('int', default_value)
-
-        self.test_dtypes.default_value('int')
-
-        self.assertEqual(self.test_dtypes.default_value('int'), default_value)
 
 
 if __name__ == '__main__':

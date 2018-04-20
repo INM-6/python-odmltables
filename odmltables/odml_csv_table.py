@@ -99,6 +99,10 @@ class OdmlCsvTable(OdmlTable):
                     else:
                         pass
 
+                # writing also rows when value is not present
+                if dic['Value'] == []:
+                    dic['Value'] = ['']
+
                 for v in dic['Value']:
                     if 'Value' in header_list:
                         row[header_list.index('Value')] = v

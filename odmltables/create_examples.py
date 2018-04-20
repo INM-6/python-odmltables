@@ -251,7 +251,6 @@ if __name__ == "__main__":
     #    myXlsTable.pattern = 'chessfield'
     #    myXlsTable.write2file(folder + 'chessfield.xls')
 
-
     #####################
     ##compare sections ##
     #####################
@@ -282,7 +281,6 @@ if __name__ == "__main__":
     #    compare_mice_csv.write2file(folder + 'mice_include_true.csv')
     #    compare_mice_csv.include_all = False
     #    compare_mice_csv.write2file(folder + 'mice_include_false.csv')
-
 
     # examples electrodes
     odml.tools.xmlparser.XMLWriter(create_electrode_example()).write_file(
