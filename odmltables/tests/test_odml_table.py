@@ -35,8 +35,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = 'csv'
         table = OdmlCsvTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] if dic[key] is not None
-        else '' for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
                             PropertyDefinition=6, Value=7,
@@ -50,7 +49,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = 'xls'
         table = OdmlXlsTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
                             PropertyDefinition=6, Value=7,
