@@ -108,7 +108,6 @@ class OdmlTable(object):
         docdict = {att: getattr(doc, att) for att in attributes}
         return docdict
 
-
         # TODO: better exception
 
     def load_from_file(self, load_from):
@@ -257,13 +256,13 @@ class OdmlTable(object):
                 raise ValueError(err_msg)
 
             previous_dic = {"Path": "",
-                           "SectionType": "",
-                           "SectionDefinition": "",
-                           "PropertyDefinition": "",
-                           "Value": "",
-                           "DataUnit": "",
-                           "DataUncertainty": "",
-                           "odmlDatatype": ""}
+                            "SectionType": "",
+                            "SectionDefinition": "",
+                            "PropertyDefinition": "",
+                            "Value": "",
+                            "DataUnit": "",
+                            "DataUncertainty": "",
+                            "odmlDatatype": ""}
 
             header_end_row_id = row_id
 
@@ -276,11 +275,10 @@ class OdmlTable(object):
                     if col_n in header_title_order and header_title_order[col_n] is not None:
                         new_dic[header_title_order[col_n]] = row[col_n]
 
-                if 'PropertyName' in new_dic and new_dic['PropertyName']=='':
+                if 'PropertyName' in new_dic and new_dic['PropertyName'] == '':
                     new_dic['PropertyName'] = previous_dic['Path'].split(':')[1]
                     for key in self._PROPERTY_INF:
                         new_dic[key] = previous_dic[key]
-
 
                 # copy section info if not present for this row
                 if new_dic['Path'] == '':
@@ -315,12 +313,10 @@ class OdmlTable(object):
                 if new_dic['Value'] == ['']:
                     new_dic['Value'] = []
 
-
                 self._odmldict.append(new_dic)
                 previous_dic = new_dic
 
         self._odmldict = self._sort_odmldict(self._odmldict)
-
 
     def _convert_to_python_type(self, value, dtype, datemode):
         if ('date' in dtype or 'time' in dtype) and (value != ''):
@@ -457,7 +453,7 @@ class OdmlTable(object):
                         new_dic[k] = None
 
                 if (new_dic['Path'].split(':')[0] == ''
-                    or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
+                        or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
                     # it is not the start of a new section
 
                     if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
@@ -573,10 +569,10 @@ class OdmlTable(object):
 
         if args:
             if args[0] == 'full':
-                kwargs = {k: i+1 for i, k in enumerate(self._header_titles.keys())}
+                kwargs = {k: i + 1 for i, k in enumerate(self._header_titles.keys())}
             elif args[0] == 'minimal':
-                kwargs = {k: i+1 for i, k in enumerate(["Path", "PropertyName", "Value",
-                                                       "odmlDatatype"])}
+                kwargs = {k: i + 1 for i, k in enumerate(["Path", "PropertyName", "Value",
+                                                          "odmlDatatype"])}
 
         # sortieren nach values
         keys_sorted = sorted(kwargs, key=kwargs.get)
@@ -740,7 +736,6 @@ class OdmlTable(object):
                                                              'append'])))
         strict = mode == 'strict'
 
-
         for childsec2 in sec2.sections:
             sec_name = childsec2.name
             if not sec_name in sec1.sections:
@@ -772,7 +767,7 @@ class OdmlTable(object):
             if mode == 'strict':
                 if (len(prop1.value) != 1) or \
                         (prop1.value[0] not in
-                             list(self.odtypes._basedtypes.values())):
+                         list(self.odtypes._basedtypes.values())):
                     raise ValueError('OdML property %s already contains '
                                      'non-default values %s' % (prop1.name,
                                                                 prop1.value))
@@ -865,7 +860,7 @@ class OdmlDtypes(object):
 
     default_basedtypes = [d.name for d in odml.DType]
     default_synonyms = {'bool': 'boolean', 'datetime.date': 'date', 'datetime.time': 'time',
-                        'integer': 'int', 'str': 'string'} # mapping synonym -> default type
+                        'integer': 'int', 'str': 'string'}  # mapping synonym -> default type
 
     def __init__(self, basedtypes_dict=None, synonyms_dict=None):
         self._basedtypes = self.default_basedtypes.copy()
@@ -924,16 +919,16 @@ class OdmlDtypes(object):
         """
         Convert single value entry or list of value entries to odml compatible format
         """
-    #     if not isinstance(value, list):
-    #         value = [value]
-    #
-    #     for i in range(len(value)):
-    #         value[i] = self._convert_single_value(value[i], dtype)
-    #
-    #     return value
-    #
-    #
-    # def _convert_single_value(self, value, dtype):
+        #     if not isinstance(value, list):
+        #         value = [value]
+        #
+        #     for i in range(len(value)):
+        #         value[i] = self._convert_single_value(value[i], dtype)
+        #
+        #     return value
+        #
+        #
+        # def _convert_single_value(self, value, dtype):
         if dtype == '':
             return value
 

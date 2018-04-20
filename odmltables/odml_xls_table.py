@@ -264,7 +264,6 @@ class OdmlXlsTable(OdmlTable):
                 row_dic['SectionName'] = row_dic['Path'].split('/')[-1]
                 row_dic_complete = row_dic.copy()
 
-
                 # removing unnecessary entries
                 if row_dic["Path"] == oldpath:
                     if not self.show_all_sections:
@@ -276,7 +275,6 @@ class OdmlXlsTable(OdmlTable):
                 #     if not self.show_all_properties:
                 #         for h in self._PROPERTY_INF:
                 #             row_dic[h] = ""
-
 
                 # handling row styles
                 if self._changing_point is 'properties':
@@ -296,7 +294,7 @@ class OdmlXlsTable(OdmlTable):
                                    for r, c in zip(self.row_style, self.column_style)]
                     # introduce highlighted values
                     if (self._highlight_defaults and
-                                row_dic['Value'] == self.odtypes.default_value(
+                            row_dic['Value'] == self.odtypes.default_value(
                                 row_dic['odmlDatatype'])):
                         stylestring[self._header.index('Value')] = 'highlight'
 
@@ -320,10 +318,10 @@ class OdmlXlsTable(OdmlTable):
                     # adjust section and property entries for next value
                     for h in self._header:
                         if (not self.show_all_properties
-                             and h in self._PROPERTY_INF + ['PropertyName']):
+                                and h in self._PROPERTY_INF + ['PropertyName']):
                             row_content[self._header.index(h)] = ''
                         elif (not self.show_all_sections
-                                 and h in self._SECTION_INF + ['SectionName', 'Path']):
+                              and h in self._SECTION_INF + ['SectionName', 'Path']):
                             row_content[self._header.index(h)] = ''
 
                 oldpath = row_dic_complete["Path"]

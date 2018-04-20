@@ -282,7 +282,6 @@ class TestOdmlTable(unittest.TestCase):
         expected = ['MySection', 'OurSection', 'YourSection']
         self.assertListEqual([s.name for s in result.sections], expected)
 
-
     def test_merge_append(self):
         doc1 = create_compare_test(sections=2, properties=2, levels=2)
 
@@ -322,7 +321,7 @@ class TestOdmlTable(unittest.TestCase):
         old_name = doc1.sections[1].properties[0].name
         doc1.sections[1].remove(doc1.sections[1].properties[0])
         doc1.sections[1].append(odml.Property(name=old_name,
-                                                       value='myval', dtype=odml.DType.string))
+                                              value='myval', dtype=odml.DType.string))
 
         self.test_table.load_from_odmldoc(doc1)
 
