@@ -210,7 +210,6 @@ class TestOdmlXlsTable(unittest.TestCase):
         self.assertListEqual(old_dict, new_dict)
 
     def test_saveload_empty_value(self):
-        filename = 'save_empty_value.xls'
         doc = odml.Document()
         doc.append(odml.Section('sec'))
         doc[0].append(odml.Property('prop', value=[]))
@@ -218,17 +217,15 @@ class TestOdmlXlsTable(unittest.TestCase):
         table = OdmlXlsTable()
         table.load_from_odmldoc(doc)
         table.change_header('full')
-        table.write2file(filename)
+        table.write2file(self.filename)
 
         table2 = OdmlTable()
-        table2.load_from_xls_table(filename)
+        table2.load_from_xls_table(self.filename)
 
         # comparing values which are written to xls by default
         self.assertEqual(len(table._odmldict), len(table2._odmldict))
         self.assertEqual(len(table._odmldict), 1)
-        for key, value in table2._odmldict[0].items():
-            self.assertEqual(table._odmldict[0][key], table2._odmldict[0][key])
-        os.remove(filename)
+        self.assertDictEqual(table._odmldict[0], table2._odmldict[0])
 
 
 class TestShowallOdmlXlsTable(unittest.TestCase):

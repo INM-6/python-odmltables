@@ -5,7 +5,8 @@ Created on Mon Apr 20 15:01:13 2015
 @author: pick
 """
 
-from odmltables.odml_csv_table import OdmlCsvTable
+import odml
+from odmltables.odml_csv_table import OdmlCsvTable, OdmlTable
 from .create_test_odmls import (create_showall_test_odml, create_2samerows_test_odml)
 import os
 import csv
@@ -22,7 +23,8 @@ class TestOdmlCsvTable(unittest.TestCase):
         self.filename = 'test.csv'
 
     def tearDown(self):
-        os.remove(self.filename)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def test_empty_rows(self):
         """
