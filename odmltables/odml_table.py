@@ -204,6 +204,7 @@ class OdmlTable(object):
         """
 
         self._odmldict = []
+        self._docdict = {}
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
@@ -379,6 +380,7 @@ class OdmlTable(object):
         """
 
         self._odmldict = []
+        self._docdict = {}
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
@@ -397,8 +399,6 @@ class OdmlTable(object):
                                   ' Filename "%s"' % load_from)
 
             # get column ids of non-empty header cells
-            header_title_ids = {inv_header_titles[h]: id for id, h in
-                                enumerate(row) if h != ''}
             header_title_order = {id: inv_header_titles[h] for id, h in
                                   enumerate(row) if h != ''}
 
