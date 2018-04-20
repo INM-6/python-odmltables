@@ -8,8 +8,6 @@ Created on Fri Apr 17 08:11:32 2015
 import copy
 import os
 
-from future.utils import iteritems
-
 import odml
 from odmltables.odml_table import OdmlTable
 from odmltables.odml_table import OdmlDtypes
@@ -166,27 +164,6 @@ class TestLoadSaveOdml(unittest.TestCase):
 
         os.remove(file1)
         os.remove(file2)
-
-    def test_saveload_empty_value(self):
-        filename = 'save_empty_value.xls'
-        doc = odml.Document()
-        doc.append(odml.Section('sec'))
-        doc[0].append(odml.Property('prop', value=[]))
-
-        table = OdmlXlsTable()
-        table.load_from_odmldoc(doc)
-        table.change_header('full')
-        table.write2file(filename)
-
-        table2 = OdmlTable()
-        table2.load_from_xls_table(filename)
-
-        # comparing values which are written to xls by default
-        self.assertEqual(len(table._odmldict), len(table2._odmldict))
-        self.assertEqual(len(table._odmldict), 1)
-        for key, value in table2._odmldict[0].items():
-            self.assertEqual(table._odmldict[0][key], table2._odmldict[0][key])
-        os.remove(filename)
 
 
 class TestChangeHeader(unittest.TestCase):

@@ -6,7 +6,8 @@ Created on Mon May  4 13:49:47 2015
 """
 
 import copy
-from odmltables.odml_xls_table import OdmlXlsTable
+import odml
+from odmltables.odml_xls_table import OdmlXlsTable, OdmlTable
 import unittest
 import os
 from odmltables.tests.create_test_odmls import (create_2samerows_test_odml, create_datatype_test_odml,
@@ -76,7 +77,8 @@ class TestOdmlXlsTable(unittest.TestCase):
         self.filename = 'test.xls'
 
     def tearDown(self):
-        os.remove(self.filename)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def test_xls_datatypes(self):
         """
@@ -206,6 +208,27 @@ class TestOdmlXlsTable(unittest.TestCase):
         new_dict = self.test_xls_table._odmldict
 
         self.assertListEqual(old_dict, new_dict)
+
+    def test_saveload_empty_value(self):
+        filename = 'save_empty_value.xls'
+        doc = odml.Document()
+        doc.append(odml.Section('sec'))
+        doc[0].append(odml.Property('prop', value=[]))
+
+        table = OdmlXlsTable()
+        table.load_from_odmldoc(doc)
+        table.change_header('full')
+        table.write2file(filename)
+
+        table2 = OdmlTable()
+        table2.load_from_xls_table(filename)
+
+        # comparing values which are written to xls by default
+        self.assertEqual(len(table._odmldict), len(table2._odmldict))
+        self.assertEqual(len(table._odmldict), 1)
+        for key, value in table2._odmldict[0].items():
+            self.assertEqual(table._odmldict[0][key], table2._odmldict[0][key])
+        os.remove(filename)
 
 
 class TestShowallOdmlXlsTable(unittest.TestCase):
