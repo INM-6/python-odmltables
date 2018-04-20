@@ -27,7 +27,9 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = ''
 
     def tearDown(self):
-        pass
+        for ext in ['.xls', '.odml', '.csv']:
+            if os.path.exists(self.filename + ext):
+                os.remove(self.filename + ext)
 
     def test_load_from_csv(self):
         self.filetype = 'csv'
@@ -84,18 +86,18 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         # saving to test load_from with filepath
         # generate odml
         table = OdmlTable(generate_doc)
-        table.write2odml(save_to='load_test.odml')
+        table.write2odml(save_to=self.filename + '.odml')
         # generate xls
         table = OdmlXlsTable(generate_doc)
-        table.write2file(save_to='load_test.xls')
+        table.write2file(save_to=self.filename + '.xls')
         # generate csv
         table = OdmlCsvTable(generate_doc)
-        table.write2file(save_to='load_test.csv')
+        table.write2file(save_to=self.filename + '.csv')
 
         # loading from files
-        OdmlTable('load_test.odml')
-        OdmlTable('load_test.xls')
-        OdmlTable('load_test.csv')
+        OdmlTable(self.filename + '.odml')
+        OdmlTable(self.filename + '.xls')
+        OdmlTable(self.filename + '.csv')
 
 
 class TestLoadSaveOdml(unittest.TestCase):
