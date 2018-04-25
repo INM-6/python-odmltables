@@ -173,7 +173,7 @@ class OdmlXlsTable(OdmlTable):
                 xlwt.easyxf(self.highlight_style.get_style_string())}
 
 
-        def _write_row(row_id, row_content, stylestrings):
+        def write_row(row_id, row_content, stylestrings):
             assert len(row_content) == len(stylestrings)
             xls_styles = [styles[rs] for rs in stylestrings]
             for col_id, cell_content in enumerate(row_content):
@@ -213,26 +213,7 @@ class OdmlXlsTable(OdmlTable):
             for k, v in sorted(self._docdict.items()):
                 row_content.extend([k,v])
             row_styles = ['document_info'] * len(row_content)
-            _write_row(0, row_content, row_styles)
-
-            # # add document information in first row
-            # sheet.write(row_id, 0, 'Document Information', styles["document_info"])
-            #
-            # for a, attribute in enumerate(sorted(self._docdict)):
-            #     style = styles["document_info"]
-            #     value = self._docdict[attribute]
-            #     if isinstance(value, datetime.date):
-            #         style.num_format_str = "DD-MM-YYYY"
-            #     else:
-            #         style.num_format_str = ""
-            #     sheet.write(row_id, 2 * a + 1, attribute, style)
-            #     sheet.write(row_id, 2 * a + 2, value, style)
-            #
-            #     # adjusting cell widths
-            #     if len(attribute) > max_col_len[2 * a + 1]:
-            #         max_col_len[2 * a + 1] = len(attribute)
-            #     if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
-            #         max_col_len[2 * a + 2] = len(str(value))
+            write_row(0, row_content, row_styles)
 
             row_id += 1
 
@@ -313,7 +294,7 @@ class OdmlXlsTable(OdmlTable):
                         if isinstance(v, bool):
                             v = 'True' if v else 'False'
                         row_content[self._header.index('Value')] = v
-                    _write_row(row_id, row_content, stylestring)
+                    write_row(row_id, row_content, stylestring)
                     row_id += 1
 
                     # continue with next property if values are not exported
