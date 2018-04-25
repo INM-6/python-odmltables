@@ -171,6 +171,30 @@ class OdmlXlsTable(OdmlTable):
                 xlwt.easyxf(self.second_marked_style.get_style_string()),
             "highlight":
                 xlwt.easyxf(self.highlight_style.get_style_string())}
+
+
+        def _write_row(row_id, row_content, stylestrings):
+            assert len(row_content) == len(stylestrings)
+            xls_styles = [styles[rs] for rs in stylestrings]
+            for col_id, cell_content in enumerate(row_content):
+                style = xls_styles[col_id]
+                if cell_content == None:
+                    cell_content = ''
+                if isinstance(cell_content, datetime.datetime):
+                    style.num_format_str = "DD-MM-YYYY HH:MM:SS"
+                elif isinstance(cell_content, datetime.date):
+                    style.num_format_str = "DD-MM-YYYY"
+                elif isinstance(cell_content, datetime.time):
+                    style.num_format_str = "HH:MM:SS"
+                else:
+                    style.num_format_str = ""
+
+                sheet.write(row_id, col_id, cell_content, style)
+
+                # finding longest string in the column
+                if len(unicode(cell_content)) > max_col_len[col_id]:
+                    max_col_len[col_id] = len(unicode(cell_content))
+
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheetname)
 
@@ -185,24 +209,30 @@ class OdmlXlsTable(OdmlTable):
                 max_col_len[i] = len(self._header_titles[h])
 
         if self._docdict:
-            # add document information in first row
-            sheet.write(row_id, 0, 'Document Information', styles["document_info"])
+            row_content = ['Document Information']
+            for k, v in sorted(self._docdict.items()):
+                row_content.extend([k,v])
+            row_styles = ['document_info'] * len(row_content)
+            _write_row(0, row_content, row_styles)
 
-            for a, attribute in enumerate(sorted(self._docdict)):
-                style = styles["document_info"]
-                value = self._docdict[attribute]
-                if isinstance(value, datetime.date):
-                    style.num_format_str = "DD-MM-YYYY"
-                else:
-                    style.num_format_str = ""
-                sheet.write(row_id, 2 * a + 1, attribute, style)
-                sheet.write(row_id, 2 * a + 2, value, style)
-
-                # adjusting cell widths
-                if len(attribute) > max_col_len[2 * a + 1]:
-                    max_col_len[2 * a + 1] = len(attribute)
-                if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
-                    max_col_len[2 * a + 2] = len(str(value))
+            # # add document information in first row
+            # sheet.write(row_id, 0, 'Document Information', styles["document_info"])
+            #
+            # for a, attribute in enumerate(sorted(self._docdict)):
+            #     style = styles["document_info"]
+            #     value = self._docdict[attribute]
+            #     if isinstance(value, datetime.date):
+            #         style.num_format_str = "DD-MM-YYYY"
+            #     else:
+            #         style.num_format_str = ""
+            #     sheet.write(row_id, 2 * a + 1, attribute, style)
+            #     sheet.write(row_id, 2 * a + 2, value, style)
+            #
+            #     # adjusting cell widths
+            #     if len(attribute) > max_col_len[2 * a + 1]:
+            #         max_col_len[2 * a + 1] = len(attribute)
+            #     if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
+            #         max_col_len[2 * a + 2] = len(str(value))
 
             row_id += 1
 
@@ -227,27 +257,7 @@ class OdmlXlsTable(OdmlTable):
         self.row_style = row_style_default
         self.column_style = column_style_default
 
-        def _write_row(row_id, row_content, stylestrings):
-            assert len(row_content) == len(stylestrings)
-            xls_styles = [styles[rs] for rs in stylestrings]
-            for col_id, cell_content in enumerate(row_content):
-                style = xls_styles[col_id]
-                if cell_content == None:
-                    cell_content = ''
-                if isinstance(cell_content, datetime.datetime):
-                    style.num_format_str = "DD-MM-YYYY HH:MM:SS"
-                elif isinstance(cell_content, datetime.date):
-                    style.num_format_str = "DD-MM-YYYY"
-                elif isinstance(cell_content, datetime.time):
-                    style.num_format_str = "HH:MM:SS"
-                else:
-                    style.num_format_str = ""
 
-                sheet.write(row_id, col_id, cell_content, style)
-
-                # finding longest string in the column
-                if len(unicode(cell_content)) > max_col_len[col_id]:
-                    max_col_len[col_id] = len(unicode(cell_content))
 
         def _switch_row_style():
             self.row_style = np.invert(self.row_style)
