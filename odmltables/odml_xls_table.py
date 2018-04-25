@@ -207,8 +207,8 @@ class OdmlXlsTable(OdmlTable):
             row_id += 1
 
         # write the header
-        for col, h in enumerate(self._header):
-            sheet.write(row_id, col, self._header_titles[h] if h in self._header_titles else "",
+        for col_id, h in enumerate(self._header):
+            sheet.write(row_id, col_id, self._header_titles[h] if h in self._header_titles else "",
                         styles['header'])
 
         row_id += 1
@@ -246,8 +246,8 @@ class OdmlXlsTable(OdmlTable):
                 sheet.write(row_id, col_id, cell_content, style)
 
                 # finding longest string in the column
-                if len(unicode(cell_content)) > max_col_len[col]:
-                    max_col_len[col] = len(unicode(cell_content))
+                if len(unicode(cell_content)) > max_col_len[col_id]:
+                    max_col_len[col_id] = len(unicode(cell_content))
 
         def _switch_row_style():
             self.row_style = np.invert(self.row_style)
