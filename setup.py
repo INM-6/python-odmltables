@@ -63,7 +63,8 @@ setup(
     entry_points={
         'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
     zip_safe=False,
-    keywords = ['odml', 'excel', 'metadata management']
+    keywords=['odml', 'excel', 'metadata management'],
+    include_package_data=True
     #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
     #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
 )
