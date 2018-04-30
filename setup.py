@@ -32,9 +32,6 @@ extras_require = {'docs': ['numpydoc>=0.5',
                   #           'libxml2 >= 2.9.2'],
                   }
 
-dependency_links = [
-    'https://github.com/G-Node/python-odml/tarball/master#egg=odml-1.1.1']
-
 setup(
     name="python-odmltables",
     version=VERSION,
@@ -42,7 +39,6 @@ setup(
     package_data={'odmltables': ['gui/graphics/*']},
     install_requires=install_requires,
     extras_require=extras_require,
-    # dependency_links=dependency_links,
 
     author="odMLtables authors and contributors",
     author_email="j.sprenger@fz-juelich.de",
