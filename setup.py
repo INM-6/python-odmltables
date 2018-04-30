@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import json
+import os
 import sys
 
-from odmltables import VERSION
 from setuptools import setup
+
+
+with open(os.path.join("odmltables", "info.json")) as infofile:
+    infodict = json.load(infofile)
+
+VERSION = infodict["VERSION"]
 
 long_description = open("README.rst").read()
 install_requires = ['xlrd >= 0.9.4',
