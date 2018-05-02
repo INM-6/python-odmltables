@@ -688,15 +688,11 @@ class FilterPage(QIWizardPage):
 
                 if not hasattr(valuetype, '__iter__'):
                     Qtw.QMessageBox.warning(self, 'List input required',
-                                            'To be able to use the "is in" '
-                                            'filter function you need to provide '
-                                            'a list '
-                                            'to compare to. You can define a list '
-                                            'by using '
-                                            'square brackets at the beginning and '
-                                            'end of your '
-                                            'list (eg. ["option1","option2"] or ['
-                                            '1,2,3,4])')
+                                            'To be able to use the "is in" filter function you '
+                                            'need to provide a list to compare to. You can define '
+                                            'a list by using square brackets at the beginning and '
+                                            'end of your list (eg. ["option1","option2"] or '
+                                            '[1,2,3,4])')
                     return
 
         filter = {}
@@ -855,37 +851,27 @@ class FilterPage(QIWizardPage):
         if ((os.path.splitext(self.settings.get_object('inputfilename'))[1]
              in ['.xls', '.csv']) and
                 (self.settings.get_object('CBcustominput').isChecked())):
-            inputheaderlabels = [str(l.text()) for l in
-                                 self.settings.get_object('headerlabels')]
+            inputheaderlabels = [str(l.text()) for l in self.settings.get_object('headerlabels')]
             inputcustomheaders = [str(cb.currentText()) for cb in
                                   self.settings.get_object('customheaders')]
-            inputcolumnnames = [title_translator[label] for label in
-                                inputcustomheaders]
-            self.table.change_header_titles(**dict(zip(inputcolumnnames,
-                                                       inputheaderlabels)))
+            inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
+            self.table.change_header_titles(**dict(zip(inputcolumnnames, inputheaderlabels)))
 
         # loading input file
-        if os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
-                '.xls':
-            self.table.load_from_xls_table(self.settings.get_object(
-                'inputfilename'))
-        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
-                '.csv':
-            self.table.load_from_csv_table(self.settings.get_object(
-                'inputfilename'))
-        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == \
-                '.odml':
+        if os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.xls':
+            self.table.load_from_xls_table(self.settings.get_object('inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.csv':
+            self.table.load_from_csv_table(self.settings.get_object('inputfilename'))
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.odml':
             self.table.load_from_file(self.settings.get_object('inputfilename'))
         else:
-            raise ValueError('Unknown input file extension '
-                             '"%s"' % os.path.splitext(
-                self.settings.get_object('inputfilename'))[1])
+            raise ValueError('Unknown input file extension "%s"'
+                             '' % os.path.splitext(self.settings.get_object('inputfilename'))[1])
 
         self.update_tree(self.table)
 
         self.filtered_table = copy.deepcopy(self.table)
-        self.settings.register('filtered_table', self.filtered_table,
-                               useconfig=False)
+        self.settings.register('filtered_table', self.filtered_table,  useconfig=False)
 
     def update_tree(self, table):
         self.odmltree.clear()
@@ -894,18 +880,13 @@ class FilterPage(QIWizardPage):
 
         self.odmltree.expandToDepth(0)
 
-    # ['Content','Value','DataUncertainty','DataUnit','odmlDatatype',
-    #                                 'Value', 'PropertyName','PropertyDefinition',
-    #                                 'SectionName','SectionType',
-    # 'SectionDefinition']
-
-
     def create_sectiontree(self, tree, table):
-        sections = {prop['Path'].strip('/').split(':')[0]: ['', '', '', '', '', '', '',
-                                               prop['Path'].strip('/'),
+        sections = {prop['Path'].strip('/').split(':')[0]: ['', '', '', '', '', '',
+                                               prop['Path'].split(':')[0].split('/')[-1],
                                                prop['SectionType'],
                                                prop['SectionDefinition']]
                     for prop in table._odmldict}
+
         self.replace_Nones(sections)
         for sec in sorted(sections):
             sec_names = sec.split('/')
@@ -924,10 +905,11 @@ class FilterPage(QIWizardPage):
                      [prop['Value'],
                       prop['DataUncertainty'],
                       prop['DataUnit'],
-                      prop['odmlDatatype'], '',
+                      prop['odmlDatatype'],
                       prop['Path'].split(':')[-1],
-                      prop['PropertyDefinition'], '', '']
+                      prop['PropertyDefinition'], '', '', '']
                  for prop in table._odmldict}
+
         self.replace_Nones(props)
         for prop in props:
             prop_path = prop.split('/')
@@ -942,10 +924,9 @@ class FilterPage(QIWizardPage):
                     prop_name = prop_path[i]
                     for val in values:
                         tmp_prop[0] = str(val)
-                        new_sec = Qtw.QTreeWidgetItem(parent_sec, [prop_name] + tmp_prop)
+                        Qtw.QTreeWidgetItem(parent_sec, [prop_name] + tmp_prop)
                         prop_name = ''
                         tmp_prop = [''] * len(tmp_prop)
-                    # parent_sec = new_sec
 
     def replace_Nones(self, data_dict):
         for value_list in list(data_dict.values()):
