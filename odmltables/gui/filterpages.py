@@ -558,16 +558,14 @@ class FilterPage(QIWizardPage):
             # moving lower widgets upward
             for row_id in list(range(location[0] + 1, nattributes + 1)):
                 for col_id in list(range(3)):
-                    item = self.grid_attributes.itemAtPosition(row_id,
-                                                               col_id)
+                    item = self.grid_attributes.itemAtPosition(row_id, col_id)
                     widget = item.widget() if hasattr(item, 'widget') else None
                     if widget:
                         widx = self.grid_attributes.indexOf(widget)
                         wloc = self.grid_attributes.getItemPosition(widx)
 
                         self.grid_attributes.removeWidget(widget)
-                        self.grid_attributes.addWidget(widget, wloc[0] - 1,
-                                                       wloc[1])
+                        self.grid_attributes.addWidget(widget, wloc[0] - 1, wloc[1])
 
             self.update_enabled_keys()
 
@@ -893,7 +891,6 @@ class FilterPage(QIWizardPage):
         self.odmltree.clear()
         self.create_sectiontree(self.odmltree, table)
         self.create_proptree(self.odmltree, table)
-        self.create_valuetree(self.odmltree, table)
 
         self.odmltree.expandToDepth(0)
 
@@ -942,28 +939,13 @@ class FilterPage(QIWizardPage):
                 else:
                     values = copy.deepcopy(props[prop][0])
                     tmp_prop = props[prop]
+                    prop_name = prop_path[i]
                     for val in values:
                         tmp_prop[0] = str(val)
-                        new_sec = Qtw.QTreeWidgetItem(parent_sec, [prop_path[i]] + tmp_prop)
+                        new_sec = Qtw.QTreeWidgetItem(parent_sec, [prop_name] + tmp_prop)
+                        prop_name = ''
                         tmp_prop = [''] * len(tmp_prop)
                     # parent_sec = new_sec
-
-    def create_valuetree(self, tree, table):
-        values = {prop['Path'].strip('/').replace(':', '/') + '/' + str(v):
-                      [value, '', '', '', '', '', '', '', '']
-                  for prop in table._odmldict for v, value in enumerate(prop['Value'])}
-        self.replace_Nones(values)
-        for value in sorted(values):
-            value_path = value.split('/')
-            parent_sec = tree.invisibleRootItem()
-            for i in list(range(len(value_path))):
-                child = self.find_child(parent_sec, value_path[i])
-                if child:
-                    parent_sec = child
-                if i == len(value_path) - 2:
-                    val = [unicode(v) for v in values[value]]
-                    new_sec = Qtw.QTreeWidgetItem(parent_sec, [''] + val)
-                    parent_sec = new_sec
 
     def replace_Nones(self, data_dict):
         for value_list in list(data_dict.values()):
