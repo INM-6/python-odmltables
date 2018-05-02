@@ -289,7 +289,6 @@ class OdmlXlsTable(OdmlTable):
 
                     # update value entry and write line
                     if 'Value' in self._header:
-                        v = self.odtypes.to_odml_value(v, row_dic['odmlDatatype'])
                         # explicitely replacing 0-1 representation by string representation
                         if isinstance(v, bool):
                             v = 'True' if v else 'False'
