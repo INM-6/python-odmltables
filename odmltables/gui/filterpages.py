@@ -245,7 +245,7 @@ class FilterPage(QIWizardPage):
 
         self.setTitle("Filter your data")
         self.setSubTitle("Create your filters and apply them to the "
-                         "odml-tables structure.")
+                         "odmltables structure.")
 
         self.filters = {}
 

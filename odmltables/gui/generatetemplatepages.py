@@ -306,8 +306,6 @@ class SaveFilePage(QIWizardPage):
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
 
-        print(self.outputfilename)
-
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
@@ -418,40 +416,34 @@ def setup_tutorodml():
     parent.append(odml.Property(name='MyFirstProperty',
                                 value='MyFirstValue',
                                 dtype='str',
-                                unit='',
-                                uncertainty='',
+                                unit=None,
+                                uncertainty=None,
                                 definition='<Enter a short definition of '
                                            'the property and the associated '
                                            'value described here>'))
-    parent.append(odml.Property(name='OneMoreProperty',
+    parent.append(odml.Property(name='MultiValuedProperty',
                                 value=[2.001, 4],
                                 dtype='float',
                                 unit='mm',
                                 uncertainty=0.02,
-                                definition='A section can have more than '
-                                           'one property attached and a '
-                                           'value can be of different type '
-                                           'than string.'))
+                                definition='A section can have multiple properties attached and '
+                                           'a property can contain multiple values.'))
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
-                                value=-1,
+                                value=None,
                                 dtype='int',
                                 unit='mV',
-                                uncertainty='',
-                                definition='This property contains an '
-                                           'empty/default value.'
-                                           'The integer value still '
-                                           'contains the default value '
-                                           '"-1", which can be highlighted '
-                                           'using odml-tables.'))
+                                uncertainty=None,
+                                definition='This property contains an empty value.'
+                                           'Empty values can be highlighted using odmltables.'))
 
     parent = doc['OneMoreSection']['MySubsection']
     parent.append(odml.Property(name='MyLastProperty',
                                 value=datetime.datetime.today().date(),
                                 dtype='date',
                                 unit='AD',
-                                uncertainty='',
+                                uncertainty=None,
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'
                                            ' "path to section" column.'
