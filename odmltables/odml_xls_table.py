@@ -171,63 +171,9 @@ class OdmlXlsTable(OdmlTable):
                 xlwt.easyxf(self.second_marked_style.get_style_string()),
             "highlight":
                 xlwt.easyxf(self.highlight_style.get_style_string())}
-        workbook = xlwt.Workbook()
-        sheet = workbook.add_sheet(self.sheetname)
 
-        oldpath = ""
-        row_id = 0
 
-        doclen = len(self._docdict) if self._docdict else 0
-
-        max_col_len = [1] * max(len(self._header), 2 * doclen + 1)
-        for i, h in enumerate(self._header):
-            if h != None:
-                max_col_len[i] = len(self._header_titles[h])
-
-        if self._docdict:
-            # add document information in first row
-            sheet.write(row_id, 0, 'Document Information', styles["document_info"])
-
-            for a, attribute in enumerate(sorted(self._docdict)):
-                style = styles["document_info"]
-                value = self._docdict[attribute]
-                if isinstance(value, datetime.date):
-                    style.num_format_str = "DD-MM-YYYY"
-                else:
-                    style.num_format_str = ""
-                sheet.write(row_id, 2 * a + 1, attribute, style)
-                sheet.write(row_id, 2 * a + 2, value, style)
-
-                # adjusting cell widths
-                if len(attribute) > max_col_len[2 * a + 1]:
-                    max_col_len[2 * a + 1] = len(attribute)
-                if value != None and (len(str(value)) > max_col_len[2 * a + 2]):
-                    max_col_len[2 * a + 2] = len(str(value))
-
-            row_id += 1
-
-        # write the header
-        for col, h in enumerate(self._header):
-            sheet.write(row_id, col, self._header_titles[h] if h in self._header_titles else "",
-                        styles['header'])
-
-        row_id += 1
-
-        # set default styles as bool values for simplicity
-        if self._pattern is "checkerboard":
-            row_style_default = np.array([0, 1] * (len(self._header)), dtype=bool)
-            row_style_default = row_style_default[:len(self._header)]
-        elif self._pattern is "alternating":
-            row_style_default = np.array([0] * len(self._header), dtype=bool)
-        else:
-            raise Exception("{} is not a valid pattern".format(self._pattern))
-        column_style_default = np.array([1 if h in self._marked_cols else 0 for h in self._header],
-                                        dtype=bool)
-
-        self.row_style = row_style_default
-        self.column_style = column_style_default
-
-        def _write_row(row_id, row_content, stylestrings):
+        def write_row(row_id, row_content, stylestrings):
             assert len(row_content) == len(stylestrings)
             xls_styles = [styles[rs] for rs in stylestrings]
             for col_id, cell_content in enumerate(row_content):
@@ -246,8 +192,53 @@ class OdmlXlsTable(OdmlTable):
                 sheet.write(row_id, col_id, cell_content, style)
 
                 # finding longest string in the column
-                if len(unicode(cell_content)) > max_col_len[col]:
-                    max_col_len[col] = len(unicode(cell_content))
+                if len(unicode(cell_content)) > max_col_len[col_id]:
+                    max_col_len[col_id] = len(unicode(cell_content))
+
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet(self.sheetname)
+
+        oldpath = ""
+        row_id = 0
+
+        doclen = len(self._docdict) if self._docdict else 0
+
+        max_col_len = [1] * max(len(self._header), 2 * doclen + 1)
+        for i, h in enumerate(self._header):
+            if h != None:
+                max_col_len[i] = len(self._header_titles[h])
+
+        if self._docdict:
+            row_content = ['Document Information']
+            for k, v in sorted(self._docdict.items()):
+                row_content.extend([k,v])
+            row_styles = ['document_info'] * len(row_content)
+            write_row(0, row_content, row_styles)
+
+            row_id += 1
+
+        # write the header
+        for col_id, h in enumerate(self._header):
+            sheet.write(row_id, col_id, self._header_titles[h] if h in self._header_titles else "",
+                        styles['header'])
+
+        row_id += 1
+
+        # set default styles as bool values for simplicity
+        if self._pattern is "checkerboard":
+            row_style_default = np.array([0, 1] * (len(self._header)), dtype=bool)
+            row_style_default = row_style_default[:len(self._header)]
+        elif self._pattern is "alternating":
+            row_style_default = np.array([0] * len(self._header), dtype=bool)
+        else:
+            raise Exception("{} is not a valid pattern".format(self._pattern))
+        column_style_default = np.array([1 if h in self._marked_cols else 0 for h in self._header],
+                                        dtype=bool)
+
+        self.row_style = row_style_default
+        self.column_style = column_style_default
+
+
 
         def _switch_row_style():
             self.row_style = np.invert(self.row_style)
@@ -292,20 +283,17 @@ class OdmlXlsTable(OdmlTable):
                 for v in row_dic['Value']:
                     stylestring = ["row{:d}col{:d}".format(r, c)
                                    for r, c in zip(self.row_style, self.column_style)]
-                    # introduce highlighted values
-                    if (self._highlight_defaults and
-                            row_dic['Value'] == self.odtypes.default_value(
-                                row_dic['odmlDatatype'])):
+                    # highlight empty values
+                    if self._highlight_defaults and row_dic['Value'] == []:
                         stylestring[self._header.index('Value')] = 'highlight'
 
                     # update value entry and write line
                     if 'Value' in self._header:
-                        v = self.odtypes.to_odml_value(v, row_dic['odmlDatatype'])
                         # explicitely replacing 0-1 representation by string representation
                         if isinstance(v, bool):
                             v = 'True' if v else 'False'
                         row_content[self._header.index('Value')] = v
-                    _write_row(row_id, row_content, stylestring)
+                    write_row(row_id, row_content, stylestring)
                     row_id += 1
 
                     # continue with next property if values are not exported

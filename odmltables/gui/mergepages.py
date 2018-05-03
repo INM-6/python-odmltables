@@ -173,21 +173,24 @@ class LoadFilePage(QIWizardPage):
             dir = self.settings.get_object('inputfilename1')
         elif self.settings.get_object('inputfilename2'):
             dir = self.settings.get_object('inputfilename2')
-
         if dir:
             dlg.setDirectory(os.path.dirname(dir))
 
-        dlg.setNameFilters(["%s files (*%s);;all files (*)"
-                      "" % (self.expected_extension.strip('.'),
-                            self.expected_extension)])
-        inputname = ''
         if dlg.exec_():
             inputname = str(dlg.selectedFiles()[0])
-            setattr(self, 'inputfilename%i' % input_id, inputname)
+            if ((os.path.splitext(inputname)[1] != self.expected_extension) and
+                    (os.path.splitext(inputname)[1] != '')):
+                Qtw.QMessageBox.warning(self, 'Wrong file format',
+                                        'The input file format is supposed to be "%s",'
+                                        ' but you selected "%s"'
+                                        '' % (self.expected_extension,
+                                              os.path.splitext(inputname)[1]))
+            else:
+                setattr(self, 'inputfilename%i' % input_id, inputname)
 
-        self.settings.register('inputfilename%i' % input_id, self,
-                               useconfig=False)
-        short_filename = shorten_path(inputname)
+
+        self.settings.register('inputfilename%i' % input_id, self, useconfig=False)
+        short_filename = shorten_path(getattr(self, 'inputfilename%i' % input_id))
         getattr(self, 'inputfile%i' % input_id).setText(short_filename)
 
         if self.inputfile1 and self.inputfilename2:

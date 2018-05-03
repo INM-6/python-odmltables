@@ -96,7 +96,11 @@ class OdmlTable(object):
         return odmldict
 
     def _sort_odmldict(self, odmldict):
-        return sorted(odmldict, key=lambda x: x['Path'])
+        # switching order of ':' and '/' in alphabet, to get properties listed first and
+        # subsections listed second
+        alphabet = ':/'
+        weight_func = lambda word: [alphabet.index(c) if c in alphabet else c for c in word]
+        return sorted(odmldict, key=lambda k: weight_func(k['Path']))
 
     def _split_path(self, dic):
         path, property_name = dic['Path'].split(':')
@@ -255,20 +259,27 @@ class OdmlTable(object):
                            " attributes: {0}").format(must_haves)
                 raise ValueError(err_msg)
 
-            previous_dic = {"Path": "",
-                            "SectionType": "",
-                            "SectionDefinition": "",
-                            "PropertyDefinition": "",
-                            "Value": "",
-                            "DataUnit": "",
-                            "DataUncertainty": "",
-                            "odmlDatatype": ""}
+            previous_dic = {"Path": None,
+                            "SectionType": None,
+                            "SectionDefinition": None,
+                            "PropertyDefinition": None,
+                            "Value": None,
+                            "DataUnit": None,
+                            "DataUncertainty": None,
+                            "odmlDatatype": None}
 
             header_end_row_id = row_id
 
             for row_id in range(header_end_row_id, worksheet.nrows):
                 row = worksheet.row_values(row_id)
-                new_dic = {}
+                new_dic = {"Path": None,
+                            "SectionType": None,
+                            "SectionDefinition": None,
+                            "PropertyDefinition": None,
+                            "Value": None,
+                            "DataUnit": None,
+                            "DataUncertainty": None,
+                            "odmlDatatype": None}
 
                 for col_n in list(range(len(row))):
                     # using only columns with header
