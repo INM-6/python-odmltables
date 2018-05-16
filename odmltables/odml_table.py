@@ -832,11 +832,11 @@ class OdmlTable(object):
                                  value=dic['Value'],
                                  dtype=dic['odmlDatatype'])
 
-            if 'PropertyDefinition' in self._header:
+            if 'PropertyDefinition' in dic:
                 prop.definition = dic['PropertyDefinition']
-            if 'DataUnit' in self._header:
+            if 'DataUnit' in dic:
                 prop.unit = dic['DataUnit']
-            if 'DataUncertainty' in self._header:
+            if 'DataUncertainty' in dic:
                 prop.uncertainty = dic['DataUncertainty']
 
             sec_path = dic['Path'].split(':')[0]
@@ -848,9 +848,9 @@ class OdmlTable(object):
                     current_sec.append(odml.Section(name=sec_pathlet))
                 current_sec = current_sec[sec_pathlet]
 
-            if 'SectionType' in self._header:
+            if 'SectionType' in dic:
                 current_sec.type = dic['SectionType']
-            if 'SectionDefinition' in self._header:
+            if 'SectionDefinition' in dic:
                 current_sec.definition = dic['SectionDefinition']
 
             current_sec.append(prop)
