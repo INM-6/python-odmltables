@@ -308,7 +308,7 @@ class OdmlTable(object):
                 # convert to python datatypes
                 dtype = new_dic['odmlDatatype']
                 value = self._convert_to_python_type(new_dic['Value'], dtype, workbook.datemode)
-                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
+                new_dic['Value'] = [value]
 
                 # same section, same property
                 if previous_dic['Path'] == new_dic['Path']:
@@ -316,16 +316,22 @@ class OdmlTable(object):
                     previous_dic['Value'].extend(new_dic['Value'])
                     continue
 
-                # explicitely converting empty cells ('') to None for compatiblity with loading
-                # from odml documents
-                for k, v in new_dic.items():
-                    if v == '':
-                        new_dic[k] = None
-                if new_dic['Value'] == ['']:
-                    new_dic['Value'] = []
+                # new property
+                else:
+                    # explicitely converting empty cells ('') to None for compatiblity with loading
+                    # from odml documents
+                    for k, v in new_dic.items():
+                        if v == '':
+                            new_dic[k] = None
+                    if new_dic['Value'] == ['']:
+                        new_dic['Value'] = []
 
-                self._odmldict.append(new_dic)
-                previous_dic = new_dic
+                    # converting values of this property
+                    new_dic['Value'] = self.odtypes.to_odml_value(new_dic['Value'],
+                                                                  new_dic['odmlDatatype'])
+
+                    self._odmldict.append(new_dic)
+                    previous_dic = new_dic
 
         self._odmldict = self._sort_odmldict(self._odmldict)
 
@@ -430,22 +436,19 @@ class OdmlTable(object):
                            "odmlDatatype": ""}
 
             for row_id, row in enumerate(csvreader):
-                is_new_property = False
+                is_new_property = True
                 new_dic = {}
-
-                # current_dic = {"Path": "",
-                #                "SectionType": "",
-                #                "SectionDefinition": "",
-                #                "PropertyDefinition": "",
-                #                "Value": "",
-                #                "DataUnit": "",
-                #                "DataUncertainty": "",
-                #                "odmlDatatype": ""}
 
                 for col_n in list(range(len(row))):
                     # using only columns with header
                     if col_n in header_title_order:
                         new_dic[header_title_order[col_n]] = row[col_n]
+                # listify all values for easy extension later
+                if 'Value' in new_dic:
+                    if new_dic['Value'] != '':
+                        new_dic['Value'] = [new_dic['Value']]
+                    else:
+                        new_dic['Value'] = []
 
                 # update path and remove section and property names
                 new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
@@ -453,35 +456,35 @@ class OdmlTable(object):
                 if 'SectionName' in new_dic:
                     new_dic.pop('SectionName')
 
-                # convert to python datatypes
-                dtype = new_dic['odmlDatatype']
-                value = new_dic['Value']
-                new_dic['Value'] = [self.odtypes.to_odml_value(value, dtype)]
-
                 # remove empty entries
                 for k, v in new_dic.items():
                     if v == '':
                         new_dic[k] = None
 
-                if (new_dic['Path'].split(':')[0] == ''
-                        or current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]):
-                    # it is not the start of a new section
+                # SAME SECTION: empty path -> reuse old path info
+                if new_dic['Path'].split(':')[0] == '':
+                    new_dic['Path'] = '{}:{}'.format(current_dic['Path'].split(':')[0],
+                                                     new_dic['Path'].split(':')[1])
+                    for sec_inf in self._SECTION_INF:
+                        new_dic[sec_inf] = current_dic[sec_inf]
 
-                    if new_dic['Path'] == '' or (current_dic['Path'] == new_dic['Path']):
+                # SAME PROPERTY: empty property name -> reuse old prop info
+                if new_dic['Path'].split(':')[1] == '':
+                    new_dic['Path'] = '{}:{}'.format(new_dic['Path'].split(':')[0],
+                                                     current_dic['Path'].split(':')[1])
+                    for sec_inf in self._PROPERTY_INF:
+                        new_dic[sec_inf] = current_dic[sec_inf]
+
+                # SAME SECTION
+                if current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]:
+                    # SAME PROPERTY
+                    if current_dic['Path'] == new_dic['Path']:
                         current_dic['Value'].extend(new_dic['Value'])
-                    else:
-                        # old section, new property
-                        for key in self._PROPERTY_INF:
-                            if key in new_dic:
-                                current_dic[key] = new_dic[key]
-                            else:
-                                current_dic[key] = None
-                        is_new_property = True
-                else:
-                    is_new_property = True
+                        is_new_property = False
 
-                if is_new_property and row_id > 0:
-                    self._odmldict.append(copy.deepcopy(current_dic))
+                if is_new_property:
+                    if row_id > 0:
+                        self._odmldict.append(copy.deepcopy(current_dic))
                     current_dic = new_dic
 
             # copy final property
@@ -489,6 +492,12 @@ class OdmlTable(object):
                 self._odmldict.append(copy.deepcopy(new_dic))
             else:
                 self._odmldict.append(copy.deepcopy(current_dic))
+
+            # value conversion for all properties
+            for current_dic in self._odmldict:
+                current_dic['Value'] = self.odtypes.to_odml_value(current_dic['Value'],
+                                                                  current_dic['odmlDatatype'])
+
         self._odmldict = self._sort_odmldict(self._odmldict)
 
     def change_header_titles(self, **kwargs):
@@ -930,18 +939,23 @@ class OdmlDtypes(object):
         """
         Convert single value entry or list of value entries to odml compatible format
         """
-        #     if not isinstance(value, list):
-        #         value = [value]
-        #
-        #     for i in range(len(value)):
-        #         value[i] = self._convert_single_value(value[i], dtype)
-        #
-        #     return value
-        #
-        #
-        # def _convert_single_value(self, value, dtype):
+        if value == '':
+            value = []
+        if not isinstance(value, list):
+            value = [value]
+
+        for i in range(len(value)):
+            value[i] = self._convert_single_value(value[i], dtype)
+
+        return value
+
+
+    def _convert_single_value(self, value, dtype):
         if dtype == '':
             return value
+        #
+        # if value == '':
+        #     return None
 
         if dtype in self._synonyms:
             dtype = self._synonyms[dtype]

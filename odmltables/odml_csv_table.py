@@ -67,12 +67,12 @@ class OdmlCsvTable(OdmlTable):
                 tmp_row['SectionName'] = tmp_row['Path'].split('/')[-1]
 
                 # removing section entries (if necessary)
-                if dic["Path"].split(':')[0] == oldpath:
+                if tmp_row["Path"].split(':')[0] == oldpath:
                     if not self.show_all_sections:
                         for h in self._SECTION_INF + ['SectionName', 'Path']:
                             tmp_row[h] = ""
                 else:
-                    oldpath = dic["Path"].split(':')[0]
+                    oldpath = tmp_row["Path"].split(':')[0]
                     # if a new section begins all property- and value-
                     # information should be written, even if its the same as
                     # in the line before, so oldvalinf and oldprop are reset
@@ -80,12 +80,12 @@ class OdmlCsvTable(OdmlTable):
 
                 # removing property entries (if neccessary)
 
-                if dic['Path'].split(':')[1] == oldprop:
+                if tmp_row['PropertyName'] == oldprop:
                     if not self.show_all_properties:
                         for h in self._PROPERTY_INF + ['PropertyName']:
                             tmp_row[h] = ""
                 else:
-                    oldprop = dic['Path'].split(':')[1]
+                    oldprop = tmp_row['PropertyName']
 
                 # eliminate those fields that wont show up in the table
 
@@ -100,10 +100,10 @@ class OdmlCsvTable(OdmlTable):
                         pass
 
                 # writing also rows when value is not present
-                if dic['Value'] == []:
-                    dic['Value'] = ['']
+                if tmp_row['Value'] == []:
+                    tmp_row['Value'] = ['']
 
-                for v in dic['Value']:
+                for v in tmp_row['Value']:
                     if 'Value' in header_list:
                         row[header_list.index('Value')] = v
                     write_row(row)
