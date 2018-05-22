@@ -7,4 +7,4 @@ dependencies:
 - sphinx_rtd_theme=0.1.9=py35_0
 - pip:
   - odml
-- sphinx-rtd-theme
+  - sphinx-rtd-theme
