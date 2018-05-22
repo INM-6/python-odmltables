@@ -23,6 +23,7 @@ from odmltables import VERSION
 sys.path.insert(0, os.path.abspath('../src'))
 sys.path.insert(0, os.path.abspath('../../python-odml/'))
 sys.path.insert(0, os.path.abspath('../odmltables'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
