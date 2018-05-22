@@ -2,11 +2,11 @@
 Tutorial
 ********
 
-At its core, odML-tables is a tool to convert hierarchical representations of metadata stored in the odML format to flat, tabluar formats. While the former is ideal to store, group, and structure large metadata collections, the latter is easier to visualize for the human eye and may be edited using powerful spreadsheet software. In either case, the data are structured as property-value pairs. Please refer to the documentation of odML for an in-depth tutorial of the format.
+At its core, odMLtables is a tool to convert hierarchical representations of metadata stored in the odML format to flat, tabluar formats. While the former is ideal to store, group, and structure large metadata collections, the latter is easier to visualize for the human eye and may be edited using powerful spreadsheet software. In either case, the data are structured as property-value pairs. Please refer to the documentation of odML for an in-depth tutorial of the format.
 
 In general, there are two types of tables you can create yet: First, a table that represents a plain flattened overview of the entire odML, referred to as an *flattened odML table*. Second, a table that compares a specific set of properties (keys) across sections of the odML, referred to as a *comparative odML table*. Note that only the flattened odML table can be converted back to the hierarchical odML format, while the comparative odML table is intended for visualization of a specific part of the metadata collection, only.
 
-In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow. For verification of your odml files you can view the content of an odml file using the `metadataSylesheet <http://www.g-node.org/projects/odml/tools/odml.xsl>`_ provided by the `G-Node <http://www.g-node.org/projects/odml/tools>`_.
+In this tutorial we will guide you through the creation of both table types using the odMLtables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odMLtables into a workflow. For verification of your odml files you can view the content of an odml file using the `metadataSylesheet <http://www.g-node.org/projects/odml/tools/odml.xsl>`_ provided by the `G-Node <http://www.g-node.org/projects/odml/tools>`_.
 
 
 Flattened odML table
@@ -14,7 +14,7 @@ Flattened odML table
 
 This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
 
-* **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required). 
+* **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required).
 * **SectionName** The name of the section (optional). This column is provided for better readibility only, since the section name is also encoded in the Path.
 * **SectionDefinition** The definition of the section (optional).
 * **SectionType** The type of the section (optional).
@@ -25,7 +25,7 @@ This table is basically just a flat version of the hierarchical odML file. Every
 * **DataUncertainty** The uncertainty of the value (optional).
 * **odmlDatatype** The odML data type of the value (required). Note that this may differ from the datatypes used to represent the value in Python or Excel.
 
-The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odML-tables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
+The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odMLtables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
 
 
 csv
@@ -335,7 +335,7 @@ Now you can save it directly as odML file::
 
     xlstable.write2odml('example1.odml')
 
-If you now open the odML file in the browser or save it again as in the tabular format, you will see that also values have appeared for the properties. These values are default values defined in the odML-tables OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odML. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
+If you now open the odML file in the browser or save it again as in the tabular format, you will see that also values have appeared for the properties. These values are default values defined in the odMLtables OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odML. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
 
 This new odML file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
@@ -410,7 +410,7 @@ Example 3: Creating an overview sheet / Filtering sections and properties
 In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
 This feature can be used to create a summary table to be included in a laboratory notebook.
 
-To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odML, which you can generate by executing the example3.py script in the example folder of the odml-tables package::
+To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odML, which you can generate by executing the example3.py script in the example folder of the odmltables package::
 
     'python example3.py'
 
@@ -424,7 +424,7 @@ This generates the file 'example3.xls', which should look like this:
 
 This example structure contains only the branch of an odML describing the animal and its development. The previously acquired information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data a subsection '/Animal/Development' exists, which contains those developmental properties that only consist of a single measurement value. In addition, several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
 
-For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we focus on the 'DevelopmentalAge' and 'Weight' properties. To get an odML-tables representation of the xls file we generate an OdmlXlsTable object and load the data from the xls file::
+For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we focus on the 'DevelopmentalAge' and 'Weight' properties. To get an odMLtables representation of the xls file we generate an OdmlXlsTable object and load the data from the xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object

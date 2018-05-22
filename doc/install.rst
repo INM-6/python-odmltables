@@ -4,7 +4,7 @@
 Prerequisites / Installation
 ****************************
 
-odML-tables is a pure Python package so that it should be easy to install on any system.
+odMLtables is a pure Python package so that it should be easy to install on any system.
 
 
 Dependencies
@@ -47,14 +47,14 @@ On Linux, to set up python-odmltables you navigate to your python-odmltables fol
     $ python setup.py install
 
 You can start the odmltables graphical wizard by calling
-    
-    odml-tables
-    
+
+    odmltables
+
 Alternatively, you may navigate to the python-odmltables folder and run
-    
+
     ./odmltables-gui
-    
-    
+
+
 Windows/Mac OS X
 ****************
 
@@ -62,15 +62,15 @@ On non-Linux operating systems we recommend using the Anaconda_ Python distribut
 
     $ conda create -n neuroscience python numpy scipy pip six
     $ source activate neuroscience
-    
+
 Then navigate to the folder where you downloaded python-odmltables and run:
 
     $ python setup.py install
 
-On Windows, to run the graphical wizard, execute odml-tables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
+On Windows, to run the graphical wizard, execute odmltables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
 
 Alternatively, on Windows or Max OS X you may navigate to the python-odmltables folder and run
-    
+
     python odmltables-gui.py
 
 

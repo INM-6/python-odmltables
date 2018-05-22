@@ -49,9 +49,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'odML-tables'
-authors = u'odML-tables authors and contributors'
-copyright = u'2015-2016, ' + authors
+project = u'odMLtables'
+authors = u'odMLtables authors and contributors'
+copyright = u'2015-2018, ' + authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -234,7 +234,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'odML-tables', u'odML-tables Documentation',
+    ('index', 'odMLtables', u'odMLtables Documentation',
      [authors], 1)
 ]
 
@@ -248,8 +248,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'odML-tables', u'odML-tables Documentation',
-   authors, 'odML-tables', 'odML-tables: Table-based editing of odML metadata collections.',
+  ('index', 'odMLtables', u'odMLtables Documentation',
+   authors, 'odMLtables', 'odMLtables: Table-based editing of odML metadata collections.',
    'Miscellaneous'),
 ]
 
