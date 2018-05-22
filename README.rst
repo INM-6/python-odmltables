@@ -3,7 +3,8 @@ python-odmltables
 =================
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
-odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata management structure using odML.
+odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata
+ management structure using [odML](_odml).
 In addition to the Python API, python-odmltables provides its main functionality also via a graphical user interface.
 
 
@@ -20,29 +21,16 @@ Code Status
 Dependencies
 ------------
 
-The following packages are required to use python-odmltables:
-
-    * Python_ >= 2.7
-    * numpy_ >= 1.8.2
-    * quantities_ >= 0.10.1
-    * odml_ >= 1.1
-    * xlrd >= 0.9.4
-    * xlwt >= 1.0.0
-    * future >= 0.16.0
-    * For building the documentation:
-        * numpydoc >= 0.5
-        * sphinx >= 1.2.2
-    * For running tests:
-        * nose >= 1.3.3
-    * For the graphical user interface:
-        * pyqt4 >= 4.11.4
-
+The packages required to use python-odmltables are listed in the [requirements]
+(requirements.txt). Additional packages are required when installing the [odmltables gui]
+(requirements_gui.txt) or building the [documentation generation](requirements_docs.txt) or
+running [odmltables tests](requirements_tests.txt).
 
 Release Versions
 ----------------
 Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip::
 
-    $ pip install --process-dependency-links python-odmltables
+    $ pip install python-odmltables
 
 
 Latest version
@@ -86,7 +74,7 @@ On Linux, to set up python-odmltables you navigate to your python-odmltables fol
 
 You can start the odmltables graphical wizard by calling::
 
-    $ odml-tables
+    $ odmltables
 
 Alternatively, you may navigate to the python-odmltables folder and run::
 
@@ -98,14 +86,23 @@ Windows/Mac OS X
 
 On non-Linux operating systems we recommend using the Anaconda_ Python distribution, and installing all dependencies in a `Conda environment`_, e.g.::
 
-    $ conda create -n neuroscience python numpy scipy pip six
-    $ source activate neuroscience
+    $ conda create -n metadataenv python numpy scipy pip six
+    $ source activate metadataenv
 
 Then navigate to the folder where you downloaded python-odmltables and run::
 
     $ python setup.py install
 
-On Windows, to run the graphical wizard, execute odml-tables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
+or::
+
+    $ pip install .
+
+For installing also the odmltables gui, please run::
+
+    $ pip install .[gui]
+
+On Windows, to run the graphical wizard, execute odml-tables.exe in the
+Anaconda/Envs/metadataenv/Scripts folder in your User directory.
 
 Alternatively, on Windows or Mac OS X you may navigate to the python-odmltables folder and run::
 
@@ -126,8 +123,6 @@ Bugs
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
 
 .. _`Python`: http://python.org/
-.. _`numpy`: http://www.numpy.org/
-.. _`quantities`: http://pypi.python.org/pypi/quantities
 .. _`odml`: http://www.g-node.org/projects/odml
 .. _`Anaconda`: http://continuum.io/downloads
 .. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments
