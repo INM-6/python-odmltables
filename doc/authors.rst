@@ -5,7 +5,7 @@ Authors and contributors
 ************************
 
 The following people have contributed code and/or ideas to the current version
-of odML-tables. The institutional affiliations are those at the time of the
+of odMLtables. The institutional affiliations are those at the time of the
 contribution, and may not be the current affiliation of a contributor.
 
 * Carlos Canova [1]
