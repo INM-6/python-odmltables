@@ -1,11 +1,11 @@
 
-python-odmltables
+odMLtables
 =================
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
 odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata
-management structure using [odML](odml_).
-In addition to the [Python](python_) API, python-odmltables provides its main functionality also
+management structure using odML_.
+In addition to the Python_ API, odMLtables provides its main functionality also
 via a graphical user interface.
 
 
@@ -25,10 +25,10 @@ Code Status
 Dependencies
 ------------
 
-The packages required to use python-odmltables are listed in the [requirements]
-(requirements.txt). Additional packages are required when installing the [odmltables gui]
+The packages required to use odMLtables are listed in the [requirements]
+(requirements.txt). Additional packages are required when installing the [odMLtables gui]
 (requirements_gui.txt) or building the [documentation generation](requirements_docs.txt) or
-running [odmltables tests](requirements_tests.txt).
+running [odMLtables tests](requirements_tests.txt).
 
 Release Versions
 ----------------
@@ -40,17 +40,18 @@ Official release versions are available at the [Python Package Index] (https://p
 Latest version
 --------------
 
-To install the latest version of odmltables you first need to download the odmltables source files and install it in a second step.
+To install the latest version of odMLtables you first need to download the odMLtables source files and install it in a second step.
 
 Download
 --------
 
-The latest version of python-odmltables is available on [GitHub] (https://github.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using::
+The latest version of odMLtables is available on [GitHub] (https://github
+.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using::
 
     $ cd /home/usr/toolbox/
     $ git clone https://github.com/INM-6/python-odmltables.git
 
-or alternatively download python-odmltables as ZIP file and unzip it to a folder.
+or alternatively download odMLtables as ZIP file and unzip it to a folder.
 
 
 Documentation
@@ -58,9 +59,9 @@ Documentation
 
 The odMLtables documentation is available on [Read the Docs]
  (https://odmltables.readthedocs.io/en/latest/).
- It is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and also locally be built in
+ It is based on Sphinx_ and also locally be built in
  multiple formats. E.g., to access  the   documentation in html format navigate to the
- documentation folder within odmltables and  compile  the html documentation::
+ documentation folder within odMLtables and  compile  the html documentation::
 
     $ cd /home/usr/toolbox/python-odmltables/doc
     $ make html
@@ -72,7 +73,7 @@ All output format available can be listed using::
 Installation
 ------------
 
-Installation guidelines are available in the official odmltables documentation
+Installation guidelines are available in the official odMLtables documentation
 [Read the Docs] (https://odmltables.readthedocs.io/en/latest/).
 
 
@@ -81,7 +82,8 @@ Bugs
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
 
 .. _`Python`: http://python.org/
-.. _`odml`: http://www.g-node.org/projects/odml
+.. _`odML`: http://www.g-node.org/projects/odml
+.. _`Sphinx`: http://www.sphinx-doc.org/en/stable/
 
 
 
