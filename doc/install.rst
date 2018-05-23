@@ -4,7 +4,7 @@
 Prerequisites / Installation
 ****************************
 
-odMLtables is a pure Python package so that it should be easy to install on any system.
+odMLtables is a pure [Python](python_) package so that it should be easy to install on any system.
 
 
 Dependencies
@@ -95,5 +95,6 @@ Bugs
 If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
 
 
+.. _`Python`: http://python.org/
 .. _Anaconda: http://continuum.io/downloads
 .. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments

@@ -4,8 +4,9 @@ python-odmltables
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
 odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata
- management structure using [odML](_odml).
-In addition to the Python API, python-odmltables provides its main functionality also via a graphical user interface.
+management structure using [odML](odml_).
+In addition to the [Python](python_) API, python-odmltables provides its main functionality also
+via a graphical user interface.
 
 
 Code Status
@@ -81,7 +82,6 @@ If you observe a bug in odMLtables please add a bug report at [the github bug tr
 
 .. _`Python`: http://python.org/
 .. _`odml`: http://www.g-node.org/projects/odml
-.. _`Anaconda`: http://continuum.io/downloads
-.. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments
+
 
 
