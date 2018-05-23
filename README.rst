@@ -25,14 +25,14 @@ Code Status
 Dependencies
 ------------
 
-The packages required to use odMLtables are listed in the :file:`requirements.txt`. Additional
-packages are required when installing the graphical user interface :file:`requirements_gui.txt` or
-building the documentation :file:`requirements_doc.txt` or running tests
-:file:`requirements_tests.txt`.
+The packages required to use odMLtables are listed in the :any:`requirements.txt`. Additional
+packages are required when installing the graphical user interface :any:`requirements_gui.txt` or
+building the documentation :any:`requirements_doc.txt` or running tests
+:any:`requirements_tests.txt`.
 
 Release Versions
 ----------------
-Official release versions are available at the [Python Package Index] (https://pypi.python.org/pypi/python-odmltables/) and can be installed using pip::
+Official release versions are available at the `Python Package Index`_ and can be installed using pip::
 
     $ pip install python-odmltables
 
@@ -45,8 +45,7 @@ To install the latest version of odMLtables you first need to download the odMLt
 Download
 --------
 
-The latest version of odMLtables is available on [GitHub] (https://github
-.com/INM-6/python-odmltables). You can either use git and download python-odmltables directly under Linux using::
+The latest version of odMLtables is available on GitHub_. You can either use git and download python-odmltables directly under Linux using::
 
     $ cd /home/usr/toolbox/
     $ git clone https://github.com/INM-6/python-odmltables.git
@@ -57,8 +56,7 @@ or alternatively download odMLtables as ZIP file and unzip it to a folder.
 Documentation
 -------------
 
-The odMLtables documentation is available on [Read the Docs]
- (https://odmltables.readthedocs.io/en/latest/).
+The odMLtables documentation is available on `Read the Docs`_.
  It is based on Sphinx_ and also locally be built in
  multiple formats. E.g., to access  the   documentation in html format navigate to the
  documentation folder within odMLtables and  compile  the html documentation::
@@ -74,16 +72,20 @@ Installation
 ------------
 
 Installation guidelines are available in the official odMLtables documentation
-[Read the Docs] (https://odmltables.readthedocs.io/en/latest/).
+`Read the Docs`_.
 
 
 Bugs
 ----
-If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
+If you observe a bug in odMLtables please add a bug report at the `GitHub issue tracker`_
 
 .. _`Python`: http://python.org/
 .. _`odML`: http://www.g-node.org/projects/odml
 .. _`Sphinx`: http://www.sphinx-doc.org/en/stable/
+.. _`Python Package Index`: https://pypi.python.org/pypi/python-odmltables/
+.. _`GitHub`: https://github.com/INM-6/python-odmltables
+.. _`Read the Docs`: https://odmltables.readthedocs.io/en/latest/
+.. _`GitHub issue tracker`: https://github.com/INM-6/python-odmltables/issues
 
 
 
