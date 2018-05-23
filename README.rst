@@ -25,7 +25,8 @@ Code Status
 Dependencies
 ------------
 
-The packages required to use odMLtables are listed in the [requirements](requirements.txt). Additional
+The packages required to use odMLtables are listed in the [requirements](/requirements.txt).
+Additional
 packages are required when installing the graphical user interface :any:`requirements_gui.txt` or
 building the documentation :any:`requirements_doc.txt` or running tests
 :any:`requirements_tests.txt`.
