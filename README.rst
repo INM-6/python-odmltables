@@ -16,6 +16,9 @@ Code Status
 .. image:: https://coveralls.io/repos/INM-6/python-odmltables/badge.png
    :target: https://coveralls.io/r/INM-6/python-odmltables
    :alt: Unit Test Coverage
+.. image:: https://readthedocs.org/projects/odmltables/badge/?version=latest
+   :target: https://odmltables.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 
 Dependencies
@@ -35,6 +38,7 @@ Official release versions are available at the [Python Package Index] (https://p
 
 Latest version
 --------------
+
 To install the latest version of odmltables you first need to download the odmltables source files and install it in a second step.
 
 Download
@@ -51,7 +55,11 @@ or alternatively download python-odmltables as ZIP file and unzip it to a folder
 Documentation
 -------------
 
-The documentation of odmltables is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and can be vizualized in multiple formats. E.g., to access the documentation in html format navigate to the documentation folder within odmltables and compile the html documentation::
+The odMLtables documentation is available on [Read the Docs]
+ (https://odmltables.readthedocs.io/en/latest/).
+ It is based on [sphinx] (http://www.sphinx-doc.org/en/stable/) and also locally be built in
+ multiple formats. E.g., to access  the   documentation in html format navigate to the
+ documentation folder within odmltables and  compile  the html documentation::
 
     $ cd /home/usr/toolbox/python-odmltables/doc
     $ make html
@@ -60,62 +68,11 @@ All output format available can be listed using::
 
     $ make -n
 
-
 Installation
 ------------
 
-Linux
-*****
-
-On Linux, to set up python-odmltables you navigate to your python-odmltables folder and install it via::
-
-    $ cd /home/usr/toolbox/python-odmltables/
-    $ python setup.py install
-
-You can start the odmltables graphical wizard by calling::
-
-    $ odmltables
-
-Alternatively, you may navigate to the python-odmltables folder and run::
-
-    $ ./odmltables-gui
-
-
-Windows/Mac OS X
-****************
-
-On non-Linux operating systems we recommend using the Anaconda_ Python distribution, and installing all dependencies in a `Conda environment`_, e.g.::
-
-    $ conda create -n metadataenv python numpy scipy pip six
-    $ source activate metadataenv
-
-Then navigate to the folder where you downloaded python-odmltables and run::
-
-    $ python setup.py install
-
-or::
-
-    $ pip install .
-
-For installing also the odmltables gui, please run::
-
-    $ pip install .[gui]
-
-On Windows, to run the graphical wizard, execute odml-tables.exe in the
-Anaconda/Envs/metadataenv/Scripts folder in your User directory.
-
-Alternatively, on Windows or Mac OS X you may navigate to the python-odmltables folder and run::
-
-    $ python odmltables-gui.py
-
-
-
-Anaconda environments
-*********************
-
-Anaconda environments require the following additional package::
-
-    $ conda install pyqt=4
+Installation guidelines are available in the official odmltables documentation
+[Read the Docs] (https://odmltables.readthedocs.io/en/latest/).
 
 
 Bugs
