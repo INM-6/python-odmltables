@@ -4,7 +4,7 @@
 Prerequisites / Installation
 ****************************
 
-odMLtables is a pure [Python](python_) package so that it should be easy to install on any system.
+odMLtables is a pure Python_ package so that it should be easy to install on any system.
 
 
 Dependencies
@@ -17,8 +17,7 @@ The following packages are required to use odMLtables:
 Download
 --------
 
-The latest version of odMLtables is available on [GitHub]
-(https://github.com/INM-6/python-odmltables). You can either use git and download odMLtables
+The latest version of odMLtables is available on GitHub_. You can either use git and download odMLtables
 directly under Linux using::
 
     cd /home/usr/toolbox/
@@ -83,7 +82,8 @@ Then navigate to the folder where you downloaded odMLtables and run::
 
     python setup.py install
 
-On Windows, to run the graphical wizard, execute odmltables.exe in the Anaconda/Envs/neuroscience/Scripts folder in your User directory.
+On Windows, to run the graphical wizard, execute the `odmltables.exe` in the
+`Anaconda/Envs/metadataenv/Scripts` in your `User` directory.
 
 Alternatively, on Windows or Max OS X you may navigate to the odMLtables folder and run::
 
@@ -92,9 +92,11 @@ Alternatively, on Windows or Max OS X you may navigate to the odMLtables folder 
 
 Bugs
 ----
-If you observe a bug in odMLtables please add a bug report at [the github bug tracker] (https://github.com/INM-6/python-odmltables/issues)
+If you observe a bug in odMLtables please add a bug report at `GitHub issue tracker`_
 
 
 .. _`Python`: http://python.org/
-.. _Anaconda: http://continuum.io/downloads
+.. _`GitHub`: https://github.com/INM-6/python-odmltables
+.. _`Anaconda`: http://continuum.io/downloads
 .. _`Conda environment`: http://conda.pydata.org/docs/faq.html#creating-new-environments
+.. _`GitHub issue tracker`: https://github.com/INM-6/python-odmltables/issues
