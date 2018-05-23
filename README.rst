@@ -25,14 +25,15 @@ Code Status
 Dependencies
 ------------
 
-The packages required to use odMLtables are listed in the :any:`requirements.txt`. Additional
+The packages required to use odMLtables are listed in the [requirements](requirements.txt). Additional
 packages are required when installing the graphical user interface :any:`requirements_gui.txt` or
 building the documentation :any:`requirements_doc.txt` or running tests
 :any:`requirements_tests.txt`.
 
 Release Versions
 ----------------
-Official release versions are available at the `Python Package Index`_ and can be installed using pip::
+Official release versions are available at the `Python Package Index`_ and can be installed using
+pip_::
 
     $ pip install python-odmltables
 
@@ -45,7 +46,8 @@ To install the latest version of odMLtables you first need to download the odMLt
 Download
 --------
 
-The latest version of odMLtables is available on GitHub_. You can either use git and download python-odmltables directly under Linux using::
+The latest version of odMLtables is available on GitHub_. You can either use git and download
+odMLtables directly under Linux using::
 
     $ cd /home/usr/toolbox/
     $ git clone https://github.com/INM-6/python-odmltables.git
@@ -80,6 +82,7 @@ Bugs
 If you observe a bug in odMLtables please add a bug report at the `GitHub issue tracker`_
 
 .. _`Python`: http://python.org/
+.. _`pip`: http://pypi.python.org/pypi/pip
 .. _`odML`: http://www.g-node.org/projects/odml
 .. _`Sphinx`: http://www.sphinx-doc.org/en/stable/
 .. _`Python Package Index`: https://pypi.python.org/pypi/python-odmltables/
