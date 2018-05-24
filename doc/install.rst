@@ -12,7 +12,19 @@ Dependencies
 
 The following packages are required to use odMLtables:
 
-.. include:: ../requirements.txt
+.. include:: requirements.rst
+
+For installation of the graphical user interface the additional requirements are:
+
+.. include:: requirements_gui.rst
+
+and for building the documentation locally you need
+
+.. include:: requirements_docs.rst
+
+and running the odMLtables tests requires
+
+.. include:: requirements_tests.rst
 
 Download
 --------

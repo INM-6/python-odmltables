@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import sys
+import glob
 import os
 
 
@@ -25,6 +26,24 @@ sys.path.insert(0, os.path.abspath('../../python-odml/'))
 sys.path.insert(0, os.path.abspath('../odmltables'))
 sys.path.insert(0, os.path.abspath('..'))
 from odmltables import VERSION
+
+# reformatting requirements files to be automatically included in docu
+requirement_files = glob.glob('../requirements*.txt')
+for requirement_file in requirement_files:
+    with open(requirement_file, 'r') as f:
+        lines = f.readlines()
+    # listify and increase readablility
+    for line_id in range(len(lines)):
+        lines[line_id] = '* ' + lines[line_id]
+        lines[line_id] = lines[line_id].replace(';', ' in case of ')
+    new_filename = '{}.rst'.format(os.path.splitext(os.path.basename(requirement_file))[0])
+    with open(new_filename, 'w+') as f:
+        f.writelines(lines)
+
+
+
+
+
 
 
 # -- General configuration ------------------------------------------------
