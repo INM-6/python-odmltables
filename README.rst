@@ -56,10 +56,9 @@ or alternatively download odMLtables as ZIP file and unzip it to a folder.
 Documentation
 -------------
 
-The odMLtables documentation is available on `Read the Docs`_.
- It is based on Sphinx_ and also locally be built in
- multiple formats. E.g., to access  the   documentation in html format navigate to the
- documentation folder within odMLtables and  compile  the html documentation::
+The odMLtables documentation is available on `Read the Docs`_. It is based on Sphinx_ and also
+locally be built in multiple formats. E.g., to access  the   documentation in html format
+navigate to the documentation folder within odMLtables and  compile  the html documentation::
 
     $ cd /home/usr/toolbox/python-odmltables/doc
     $ make html
