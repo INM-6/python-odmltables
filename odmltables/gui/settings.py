@@ -125,14 +125,17 @@ class Settings():
         elif hasattr(prop, 'text'):  # QLabel, QLineEdit
             return (str(prop.text()), str(type(prop)), 'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop, 'itemText') and hasattr(
-                prop, 'currentIndex'):  # QComboBox
-            return ([str(prop.itemText(c)) for c in list(range(prop.count()))],
-                    prop.currentIndex(), str(type(prop)), 'pyqt')
+                prop, 'currentIndex'):
+            indexes = prop.currentIndex()
+            if hasattr(indexes, 'row') and hasattr(indexes, 'column'):
+                indexes = [(i.row(), i.column()) for i in indexes]
+            return ([str(prop.itemText(c)) for c in list(range(prop.count()))], indexes,
+                    str(type(prop)),'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop,
                                                 'selectedIndexes'):  #
             # QListWidget
             return ([str(prop.item(c).text()) for c in list(range(prop.count()))],
-                    prop.selectedIndexes(), str(type(prop)), 'pyqt')
+                    [(p.row(),p.column()) for p in prop.selectedIndexes()], str(type(prop)), 'pyqt')
         elif type(prop) in self.basicdtypes:  # Basic datatypes
             return (prop, str(type(prop)), 'basic')
         elif type(prop) == list:  # List of objects
