@@ -6,8 +6,8 @@ import pickle
 from future.utils import iteritems
 from past.builtins import long
 from PyQt5.QtWidgets import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
-                         QListWidget,
-                         QListWidgetItem, QTableView, QPushButton)
+                             QListWidget,
+                             QListWidgetItem, QTableView, QPushButton)
 
 
 class Settings():
@@ -37,6 +37,7 @@ class Settings():
         if config_name in self.settings:
             # self.config = self.settings[config_name]
             self.config_name = config_name
+            self.config = {'attributes': {}, 'objects': {}}
             # self.configchanged = False
             print('Loading config "%s"' % config_name)
         else:
@@ -65,7 +66,8 @@ class Settings():
         return [n for n in list(self.settings) if n != '']
 
     def register(self, name, obj, useconfig=True):
-        if (useconfig and self.config and self.is_registered(name)):
+        if useconfig and self.config and (not self.is_registered(name)) and self.can_be_loaded(
+                name):
             self.update_from_config(name, obj)
 
         if hasattr(obj, name):
@@ -78,14 +80,6 @@ class Settings():
             else:
                 self.config['objects'][name] = obj
 
-                # self.configchanged = True
-
-    # def set_pageobjects(self, page):
-    #     for name in self.config:
-    #         if hasattr(page,name):
-    #             setattr(page,name,self.config[name])
-    #             # page_attr = getattr(page,name)
-
     def get_object(self, name):
         if name in self.config['attributes']:
             return getattr(self.config['attributes'][name], name)
@@ -93,6 +87,13 @@ class Settings():
             return self.config['objects'][name]
         else:
             raise ValueError('"%s" is not registered' % name)
+
+    def can_be_loaded(self, name):
+        if self.config_name:
+            return ((name in self.settings[self.config_name]['attributes'])
+                    or (name in self.settings[self.config_name]['objects']))
+        else:
+            return False
 
     def is_registered(self, name):
         return ((name in self.config['attributes'])
@@ -124,14 +125,17 @@ class Settings():
         elif hasattr(prop, 'text'):  # QLabel, QLineEdit
             return (str(prop.text()), str(type(prop)), 'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop, 'itemText') and hasattr(
-                prop, 'currentIndex'):  # QComboBox
-            return ([str(prop.itemText(c)) for c in list(range(prop.count()))],
-                    prop.currentIndex(), str(type(prop)), 'pyqt')
+                prop, 'currentIndex'):
+            indexes = prop.currentIndex()
+            if hasattr(indexes, 'row') and hasattr(indexes, 'column'):
+                indexes = [(i.row(), i.column()) for i in indexes]
+            return ([str(prop.itemText(c)) for c in list(range(prop.count()))], indexes,
+                    str(type(prop)),'pyqt')
         elif hasattr(prop, 'count') and hasattr(prop,
                                                 'selectedIndexes'):  #
             # QListWidget
             return ([str(prop.item(c).text()) for c in list(range(prop.count()))],
-                    prop.selectedIndexes(), str(type(prop)), 'pyqt')
+                    [(p.row(),p.column()) for p in prop.selectedIndexes()], str(type(prop)), 'pyqt')
         elif type(prop) in self.basicdtypes:  # Basic datatypes
             return (prop, str(type(prop)), 'basic')
         elif type(prop) == list:  # List of objects
@@ -143,7 +147,7 @@ class Settings():
 
     def _update_pyqt_object_from_config(self, obj, config_data, index=None):
 
-        if index:
+        if index is not None:
             obj = obj[index]
 
         if type(obj) == QPushButton:  # QPushButton
@@ -191,9 +195,6 @@ class Settings():
             setattr(parent, name, config_data[0])
 
     def _update_list(self, obj, prop, name, index=None):
-        # obj = [] if obj == {} else obj
-        # if type(obj) != list:
-        #     raise TypeError('Wrong Type of object')
         if any([p[-1] == 'pyqt' for p in prop]) and len(prop) != len(obj):
             raise IndexError('Wrong size of obj')
         else:
@@ -212,10 +213,6 @@ class Settings():
             if index not in obj:
                 obj[index] = {}
             obj = obj[index]
-        # elif element:
-        #     if element not in obj:
-        #         obj[element] = {}
-        #     obj=obj[element]
         for key, value in iteritems(prop):
             self.update_data(obj, prop[key], name=key, index=key)
 
@@ -233,38 +230,30 @@ class Settings():
 
     def update_from_config(self, name, obj):
         if not self.config_name:
-            # print('Can not get %s from config. No config loaded.'%name)
             return
-
-        # # break criteria: not a saved tuple
-        # if (type(self.get_object(name)) not in [tuple,list] or
-        #     len(self.get_object(name))==0 or
-        #     type(self.get_object(name)[0]) in self.basicdtypes):
-        #     print('Exiting update_from_config, because of invalid input)
-        # %s'%(str(self.get_object(name)))
-        #     return
 
         prop = self._get_saved_obj(name)
 
-        # # prop = self.get_object(name)
-        # if index != None:
-        #     prop = prop[index]
-        # elif element != None:
-        #     prop = prop[element]
+        if hasattr(obj, name):
+            o = getattr(obj, name)
+        else:
+            o = obj
 
-        if type(obj) != list and type(obj) != dict and type(prop) != dict:
+        if type(o) != list and type(o) != dict and type(prop) != dict:
             if (name in self.settings[self.config_name]['attributes']) and \
-                    (str(type(getattr(obj, name))) != prop[-2]):
+                    (str(type(getattr(o, name))) != prop[-2]):
                 raise TypeError('Object to fill has type %s but saved data '
-                                'fits to type %s' % (
-                                    type(getattr(obj, name)), prop[-2]))
+                                'fits to type %s' % (type(o), prop[-2]))
             if (name in self.settings[self.config_name]['objects']) and \
-                    (str(type(obj)) != prop[-2]):
+                    (str(type(o)) != prop[-2]):
                 raise TypeError('Object to fill has type %s but saved data '
-                                'fits to type %s' % (type(obj), prop[-2]))
+                                'fits to type %s' % (type(o), prop[-2]))
         self.update_data(obj, prop, name)
 
     def update_data(self, obj, prop, name, index=None):
+        # if this is an attribute, then consider the attribute as main object
+        if hasattr(obj, name):
+            obj = getattr(obj, name)
 
         if type(prop) == tuple and prop[-1] == 'pyqt':
             self._update_pyqt_object_from_config(obj, prop, index=index)
@@ -275,34 +264,6 @@ class Settings():
         elif type(prop) == dict:
             self._update_dict(obj, prop, index=index)
 
-        # # return (prop,type(prop))
-        # elif type(obj)==list: # List of objects
-        #     # list of strings can be generated
-        #     if type(obj[0])==str and prop[0][1] == str(type('')):
-        #         for o in list(range(len(obj))):
-        #             obj.pop(0)
-        #         for p, pro in enumerate(prop):
-        #             obj.append(prop[p][0])
-        #     # list of objects (has to have same length as saved list)
-        #     elif len(obj) == len(prop):
-        #         for i,item in enumerate(obj):
-        #             self.update_from_config(name,item,index=i)
-        # elif type(obj)==dict:
-        #     obj.clear()
-        #     for key in prop:
-        #         # obj[element] = None
-        #
-        #         obj[key] = self.update_from_config(name,obj,element=key)
-
         else:
             raise ValueError(
                 'Can not update object "%s" from config "%s"' % (obj, name))
-
-            # def reinflate_pyqt(self,conf):
-            #     conf = copy.deepcopy(conf)
-            #     for name, property in iteritems(conf['attributes']):
-            #         conf['attributes'][name] = self.reinflateprop(getattr(
-            # self.config['attributes'][name], name))
-            #     for name, property in iteritems(conf['objects']):
-            #         conf['objects'][name] = self.reinflateprop(self.config['objects'][name])
-            #     return conf

@@ -98,8 +98,8 @@ class OdmlTable(object):
     def _sort_odmldict(self, odmldict):
         # switching order of ':' and '/' in alphabet, to get properties listed first and
         # subsections listed second
-        alphabet = ':/'
-        weight_func = lambda word: [alphabet.index(c) if c in alphabet else c for c in word]
+        switch = {'/': ':', ':': '/'}
+        weight_func = lambda word: [switch[c] if c in switch else c for c in word]
         return sorted(odmldict, key=lambda k: weight_func(k['Path']))
 
     def _split_path(self, dic):
