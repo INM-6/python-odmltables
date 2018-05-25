@@ -37,6 +37,7 @@ class Settings():
         if config_name in self.settings:
             # self.config = self.settings[config_name]
             self.config_name = config_name
+            self.config = {'attributes': {}, 'objects': {}}
             # self.configchanged = False
             print('Loading config "%s"' % config_name)
         else:
@@ -65,7 +66,8 @@ class Settings():
         return [n for n in list(self.settings) if n != '']
 
     def register(self, name, obj, useconfig=True):
-        if (useconfig and self.config and self.is_registered(name)):
+        if useconfig and self.config and (not self.is_registered(name)) and self.can_be_loaded(
+                name):
             self.update_from_config(name, obj)
 
         if hasattr(obj, name):
@@ -93,6 +95,13 @@ class Settings():
             return self.config['objects'][name]
         else:
             raise ValueError('"%s" is not registered' % name)
+
+    def can_be_loaded(self, name):
+        if self.config_name:
+            return ((name in self.settings[self.config_name]['attributes'])
+                    or (name in self.settings[self.config_name]['objects']))
+        else:
+            return False
 
     def is_registered(self, name):
         return ((name in self.config['attributes'])
@@ -143,7 +152,7 @@ class Settings():
 
     def _update_pyqt_object_from_config(self, obj, config_data, index=None):
 
-        if index:
+        if index is not None:
             obj = obj[index]
 
         if type(obj) == QPushButton:  # QPushButton
@@ -252,19 +261,26 @@ class Settings():
         # elif element != None:
         #     prop = prop[element]
 
-        if type(obj) != list and type(obj) != dict and type(prop) != dict:
+        if hasattr(obj, name):
+            o = getattr(obj, name)
+        else:
+            o = obj
+
+        if type(o) != list and type(o) != dict and type(prop) != dict:
             if (name in self.settings[self.config_name]['attributes']) and \
-                    (str(type(getattr(obj, name))) != prop[-2]):
+                    (str(type(getattr(o, name))) != prop[-2]):
                 raise TypeError('Object to fill has type %s but saved data '
-                                'fits to type %s' % (
-                                    type(getattr(obj, name)), prop[-2]))
+                                'fits to type %s' % (type(o), prop[-2]))
             if (name in self.settings[self.config_name]['objects']) and \
-                    (str(type(obj)) != prop[-2]):
+                    (str(type(o)) != prop[-2]):
                 raise TypeError('Object to fill has type %s but saved data '
-                                'fits to type %s' % (type(obj), prop[-2]))
+                                'fits to type %s' % (type(o), prop[-2]))
         self.update_data(obj, prop, name)
 
     def update_data(self, obj, prop, name, index=None):
+        # if this is an attribute, then consider the attribute as main object
+        if hasattr(obj, name):
+            obj = getattr(obj, name)
 
         if type(prop) == tuple and prop[-1] == 'pyqt':
             self._update_pyqt_object_from_config(obj, prop, index=index)
