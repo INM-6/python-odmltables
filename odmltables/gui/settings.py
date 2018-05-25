@@ -6,8 +6,8 @@ import pickle
 from future.utils import iteritems
 from past.builtins import long
 from PyQt5.QtWidgets import (QLabel, QRadioButton, QLineEdit, QCheckBox, QComboBox,
-                         QListWidget,
-                         QListWidgetItem, QTableView, QPushButton)
+                             QListWidget,
+                             QListWidgetItem, QTableView, QPushButton)
 
 
 class Settings():
@@ -79,14 +79,6 @@ class Settings():
                     'non-attributes.')
             else:
                 self.config['objects'][name] = obj
-
-                # self.configchanged = True
-
-    # def set_pageobjects(self, page):
-    #     for name in self.config:
-    #         if hasattr(page,name):
-    #             setattr(page,name,self.config[name])
-    #             # page_attr = getattr(page,name)
 
     def get_object(self, name):
         if name in self.config['attributes']:
@@ -200,9 +192,6 @@ class Settings():
             setattr(parent, name, config_data[0])
 
     def _update_list(self, obj, prop, name, index=None):
-        # obj = [] if obj == {} else obj
-        # if type(obj) != list:
-        #     raise TypeError('Wrong Type of object')
         if any([p[-1] == 'pyqt' for p in prop]) and len(prop) != len(obj):
             raise IndexError('Wrong size of obj')
         else:
@@ -221,10 +210,6 @@ class Settings():
             if index not in obj:
                 obj[index] = {}
             obj = obj[index]
-        # elif element:
-        #     if element not in obj:
-        #         obj[element] = {}
-        #     obj=obj[element]
         for key, value in iteritems(prop):
             self.update_data(obj, prop[key], name=key, index=key)
 
@@ -242,24 +227,9 @@ class Settings():
 
     def update_from_config(self, name, obj):
         if not self.config_name:
-            # print('Can not get %s from config. No config loaded.'%name)
             return
 
-        # # break criteria: not a saved tuple
-        # if (type(self.get_object(name)) not in [tuple,list] or
-        #     len(self.get_object(name))==0 or
-        #     type(self.get_object(name)[0]) in self.basicdtypes):
-        #     print('Exiting update_from_config, because of invalid input)
-        # %s'%(str(self.get_object(name)))
-        #     return
-
         prop = self._get_saved_obj(name)
-
-        # # prop = self.get_object(name)
-        # if index != None:
-        #     prop = prop[index]
-        # elif element != None:
-        #     prop = prop[element]
 
         if hasattr(obj, name):
             o = getattr(obj, name)
@@ -291,34 +261,6 @@ class Settings():
         elif type(prop) == dict:
             self._update_dict(obj, prop, index=index)
 
-        # # return (prop,type(prop))
-        # elif type(obj)==list: # List of objects
-        #     # list of strings can be generated
-        #     if type(obj[0])==str and prop[0][1] == str(type('')):
-        #         for o in list(range(len(obj))):
-        #             obj.pop(0)
-        #         for p, pro in enumerate(prop):
-        #             obj.append(prop[p][0])
-        #     # list of objects (has to have same length as saved list)
-        #     elif len(obj) == len(prop):
-        #         for i,item in enumerate(obj):
-        #             self.update_from_config(name,item,index=i)
-        # elif type(obj)==dict:
-        #     obj.clear()
-        #     for key in prop:
-        #         # obj[element] = None
-        #
-        #         obj[key] = self.update_from_config(name,obj,element=key)
-
         else:
             raise ValueError(
                 'Can not update object "%s" from config "%s"' % (obj, name))
-
-            # def reinflate_pyqt(self,conf):
-            #     conf = copy.deepcopy(conf)
-            #     for name, property in iteritems(conf['attributes']):
-            #         conf['attributes'][name] = self.reinflateprop(getattr(
-            # self.config['attributes'][name], name))
-            #     for name, property in iteritems(conf['objects']):
-            #         conf['objects'][name] = self.reinflateprop(self.config['objects'][name])
-            #     return conf
