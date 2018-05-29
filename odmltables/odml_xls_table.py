@@ -3,6 +3,8 @@
 
 """
 
+__package__='odmltables'
+
 import datetime
 import xlwt
 import numpy as np

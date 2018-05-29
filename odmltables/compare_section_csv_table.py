@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 """
+__package__='odmltables'
 
 import csv
 import odml
