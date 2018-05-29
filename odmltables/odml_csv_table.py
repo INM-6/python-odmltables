@@ -3,6 +3,8 @@
 
 """
 
+__package__='odmltables'
+
 import csv
 
 from .odml_table import OdmlTable

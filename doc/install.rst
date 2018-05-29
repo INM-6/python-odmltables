@@ -20,11 +20,11 @@ For installation of the graphical user interface the additional requirements are
 
 and for building the documentation locally you need
 
-.. include:: requirements_docs.rst
+.. include:: requirements_doc.rst
 
 and running the odMLtables tests requires
 
-.. include:: requirements_tests.rst
+.. include:: requirements_test.rst
 
 
 Installation of released versions

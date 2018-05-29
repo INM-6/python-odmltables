@@ -2,6 +2,7 @@
 """
 
 """
+__package__='odmltables'
 
 import datetime
 import odml
