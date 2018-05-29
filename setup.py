@@ -10,15 +10,15 @@ with open("README.rst") as f:
     long_description = f.read()
 with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
-with open('requirements_docs.txt') as f:
-    docs_requires = f.read().splitlines()
-with open('requirements_tests.txt') as f:
-    tests_requires = f.read().splitlines()
+with open('requirements_doc.txt') as f:
+    doc_requires = f.read().splitlines()
+with open('requirements_test.txt') as f:
+    test_requires = f.read().splitlines()
 with open('requirements_gui.txt') as f:
     gui_requires = f.read().splitlines()
 
-extras_require = {'docs': docs_requires,
-                  'tests': tests_requires,
+extras_require = {'doc': doc_requires,
+                  'test': test_requires,
                   'gui': gui_requires
                   }
 
@@ -43,9 +43,6 @@ setup(
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
     download_url="https://github.com/INM-6/python-odmltables/archive/{0}.tar.gz".format(VERSION),
-    # keep this dependency link only until odml 1.4 release on PyPi
-    dependency_links=[
-        'git+https://github.com/g-node/python-odml.git@master#egg=odml-1.4'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
