@@ -14,6 +14,7 @@
 
 import sys
 import glob
+import subprocess
 import os
 
 
@@ -25,6 +26,12 @@ sys.path.insert(0, os.path.abspath('../src'))
 sys.path.insert(0, os.path.abspath('../../python-odml/'))
 sys.path.insert(0, os.path.abspath('../odmltables'))
 sys.path.insert(0, os.path.abspath('..'))
+
+# installing current odMLtables version
+bashCommand = "cd ..\npip install .[doc]"
+process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
 from odmltables import VERSION
 
 # reformatting requirements files to be automatically included in docu
