@@ -32,7 +32,8 @@ bashCommand = "pip install ../.[doc]"
 process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
-from odmltables import VERSION
+import odmltables
+VERSION = odmltables.VERSION
 
 # reformatting requirements files to be automatically included in docu
 requirement_files = glob.glob('../requirements*.txt')
