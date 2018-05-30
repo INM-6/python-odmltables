@@ -28,7 +28,7 @@ sys.path.insert(0, os.path.abspath('../odmltables'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # installing current odMLtables version
-bashCommand = "cd ..\npip install .[doc]"
+bashCommand = "pip install ../.[doc]"
 process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
