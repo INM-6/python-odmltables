@@ -40,7 +40,7 @@ requirement_files = glob.glob('../requirements*.txt')
 for requirement_file in requirement_files:
     with open(requirement_file, 'r') as f:
         lines = f.readlines()
-    # listify and increase readablility
+    # listify and increase readability
     for line_id in range(len(lines)):
         lines[line_id] = '* ' + lines[line_id]
         lines[line_id] = lines[line_id].replace(';', ' in case of ')
