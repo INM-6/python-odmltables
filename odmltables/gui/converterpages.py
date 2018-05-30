@@ -1069,13 +1069,15 @@ class SaveFilePage(QIWizardPage):
             self.buttonshow.setEnabled(True)
 
     def show_file(self):
-        system = os.name
-        if system == 'posix':
+        platform = sys.platform
+        if platform.startswith('linux'):
             subprocess.Popen(["nohup", "see", self.outputfilename])
-            # os.system('see %s'%self.outputfilename)
-        elif system == 'nt':
+        elif platform == 'darwin':
+            subprocess.Popen(["open", self.outputfilename])
+        elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
-            # os.system("start %s"%self.outputfilename)
+        else:
+            raise ValueError('Unknown operating platform "{}".'.format(platform))
 
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or
