@@ -74,6 +74,7 @@ odmltables/gui/graphics/*.tex.backup
 odmltables/gui/testfiles/*
 doc/build/*
 doc/_build/*
+doc/requirements*.rst
 
 # Project specific exclude of table formats
 *.csv
