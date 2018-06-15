@@ -2,6 +2,7 @@
 
 import copy
 import os
+import sys
 import subprocess
 
 from future.utils import iteritems
@@ -90,8 +91,8 @@ class LoadFilePage(QIWizardPage):
 
     def handlebuttonbrowse(self):
         dlg = Qtw.QFileDialog()
-        dlg.setNameFilters(["%s files (*%s)"
-                      "" % ('odml', '.odml')])
+        dlg.setNameFilters(["%s files (*%s)" % ('odml', '.odml'),
+                            "%s files (*%s)" % ('xml', '.xml')])
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)
@@ -116,16 +117,16 @@ class LoadFilePage(QIWizardPage):
             return 0
 
         elif self.settings.get_object('inputfilename').split('.')[-1] \
-                not in ['xls', 'csv', 'odml']:
+                not in ['xls', 'csv', 'odml', 'xml']:
             Qtw.QMessageBox.warning(self, 'Wrong input format',
-                                    'The input file has to be an ".xls", ".csv" or '
-                                    '".odml" file.')
+                                    'The input file has to be an ".xls", ".csv", '
+                                    '".odml" or ".xml" file.')
             return 0
 
         return 1
 
     def nextId(self):
-        if ((self.inputfilename[-5:] != '.odml') and
+        if (((self.inputfilename[-5:] != '.odml') or (self.inputfilename[-4:] != '.xml')) and
                 (self.settings.get_object('CBcustominput').isChecked())):
             return self.wizard().PageCustomInputHeader
 
@@ -862,7 +863,7 @@ class FilterPage(QIWizardPage):
             self.table.load_from_xls_table(self.settings.get_object('inputfilename'))
         elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.csv':
             self.table.load_from_csv_table(self.settings.get_object('inputfilename'))
-        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] == '.odml':
+        elif os.path.splitext(self.settings.get_object('inputfilename'))[1] in ['.odml', '.xml']:
             self.table.load_from_file(self.settings.get_object('inputfilename'))
         else:
             raise ValueError('Unknown input file extension "%s"'

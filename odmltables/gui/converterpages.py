@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
+import sys
 import os
 import subprocess
 import xlwt
@@ -139,7 +140,8 @@ class LoadFilePage(QIWizardPage):
                 or self.rbuttonodml.isChecked()):
             if str(self.inputfilename[-4:]) in ['.xls', '.csv']:
                 self.rbuttonodml.setChecked(True)
-            elif str(self.inputfilename[-5:]) in ['.odml']:
+            elif (str(self.inputfilename[-5:]) in ['.odml']
+                  or str(self.inputfilename[-4:]) in ['.xml']):
                 self.rbuttonxls.setChecked(True)
 
     def validatePage(self):
@@ -160,12 +162,10 @@ class LoadFilePage(QIWizardPage):
             return 0
 
         elif self.settings.get_object('inputfilename').split('.')[-1] not in \
-                ['xls', 'csv', 'odml']:
+                ['xls', 'csv', 'odml', 'xml']:
             Qtw.QMessageBox.warning(self, 'Wrong input format',
-                                    'The input file has '
-                                    'to be an ".xls", '
-                                    '".csv" or ".odml" '
-                                    'file.')
+                                    'The input file has to be an ".xls", ".csv", ".odml" or '
+                                    '".xml" file.')
             return 0
 
         return 1
@@ -466,8 +466,7 @@ class HeaderOrderPage(QIWizardPage):
             Qtw.QMessageBox.warning(self, self.tr("Incomplete odml"),
                                     self.tr("You need to include the headers %s "
                                             " in your table if you want to be "
-                                            "able to"
-                                            " generate an odml from the table." % (
+                                            "able to generate an odml from the table." % (
                                                 missing_headers)))
 
         return 1
@@ -561,8 +560,7 @@ class CustomColumnNamesPage(QIWizardPage):
 
     def validatePage(self):
         # get manually entered labels
-        customlabels = [le.text() for le in self.settings.get_object(
-            'customheaderlabels')]
+        customlabels = [le.text() for le in self.settings.get_object('customheaderlabels')]
 
         if any([label == '' for label in customlabels]):
             Qtw.QMessageBox.warning(self, self.tr("Empty header name"),
@@ -1197,7 +1195,7 @@ def convert(settings):
         table.load_from_xls_table(settings.get_object('inputfilename'))
     elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.csv':
         table.load_from_csv_table(settings.get_object('inputfilename'))
-    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.odml':
+    elif os.path.splitext(settings.get_object('inputfilename'))[1] in ['.odml', '.xml']:
         table.load_from_file(settings.get_object('inputfilename'))
     else:
         raise ValueError('Unknown input file extension "%s"'
@@ -1294,8 +1292,7 @@ def convert(settings):
                 'CBhighlightdefaults').isChecked()
 
     # saving file
-    if os.path.splitext(settings.get_object('outputfilename'))[1] in [
-        '.xls', '.csv']:
+    if os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls', '.csv']:
         table.write2file(settings.get_object('outputfilename'))
-    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
+    elif os.path.splitext(settings.get_object('outputfilename'))[1] in ['.odml', '.xml']:
         table.write2odml(settings.get_object('outputfilename'))

@@ -91,8 +91,8 @@ class ChooseFilePage(QIWizardPage):
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
-        dlg.setNameFilters(["%s files (*%s)"
-                            "" % ('odml', '.odml')])
+        dlg.setNameFilters(["%s files (*%s)" % ('odml', '.odml'),
+                            "%s files (*%s)" % ('xml', '.xml')])
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)

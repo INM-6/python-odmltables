@@ -161,6 +161,7 @@ class LoadFilePage(QIWizardPage):
             raise ValueError('Wrong browser.')
 
         self.expected_extension = '.odml'
+        self.accepted_extensions = ['.odml', '.xml']
 
         dlg = Qtw.QFileDialog()
         dlg.setFileMode(Qtw.QFileDialog.AnyFile)
@@ -178,12 +179,12 @@ class LoadFilePage(QIWizardPage):
 
         if dlg.exec_():
             inputname = str(dlg.selectedFiles()[0])
-            if ((os.path.splitext(inputname)[1] != self.expected_extension) and
+            if ((os.path.splitext(inputname)[1] not in self.accepted_extensions) and
                     (os.path.splitext(inputname)[1] != '')):
                 Qtw.QMessageBox.warning(self, 'Wrong file format',
                                         'The input file format is supposed to be "%s",'
                                         ' but you selected "%s"'
-                                        '' % (self.expected_extension,
+                                        '' % (self.accepted_extensions,
                                               os.path.splitext(inputname)[1]))
             else:
                 setattr(self, 'inputfilename%i' % input_id, inputname)
