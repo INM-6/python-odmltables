@@ -20,7 +20,9 @@ class OdmltablesWizard(QWizard):
         super(OdmltablesWizard, self).__init__(parent)
 
         self.wizname = wizname
-        self.settingsfile = wizname.replace(' ', '').lower() + '.conf'
+        self.settingsfile = os.path.join(os.path.expanduser("~"),
+                                         '.odmltables',
+                                         wizname.replace(' ', '').lower() + '.conf')
 
         # initialize settings
         self.settings = Settings(self.settingsfile)
