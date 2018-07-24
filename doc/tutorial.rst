@@ -21,7 +21,7 @@ Flattened odML table
 This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
 
 * **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required).
-* **SectionName** The name of the section (optional). This column is provided for better readibility only, since the section name is also encoded in the Path.
+* **SectionName** The name of the section (optional). This column is provided for better readability only, since the section name is also encoded in the Path.
 * **SectionDefinition** The definition of the section (optional).
 * **SectionType** The type of the section (optional).
 * **PropertyName** The name of the property the value belongs to (required).
@@ -40,12 +40,12 @@ csv
 There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
 
 
-Creating your first table
-+++++++++++++++++++++++++
+Converting from odML to table
++++++++++++++++++++++++++++++
 
 To create a csv table from an odML file you have to import the class :class:`odml_csv_table.OdmlCsvTable` and create an instance of that class::
 
-    from odml_csv_table import OdmlCsvTable
+    from odmltables import OdmlCsvTable
 
     myFirstTable = OdmlCsvTable()
 
@@ -83,7 +83,8 @@ You can not only load the odML from an odML-file, as shown in the example above.
 Changing the table header
 +++++++++++++++++++++++++
 
-The next step is to change the header to match you specific requirements for the table. In particular, you can choose which of the possible table columns (see above) will be in the table, their order, and also what the column headers are.
+The next step is to change the header to match your specific requirements for the table. In
+particular, you can choose which of the possible table columns (see above) will be in the table, their order, and also what the column headers are.
 
 .. warning::
    If you miss out one of the columns 'Path', 'Property Name', 'Value' and 'odML Data Type' in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back.
@@ -103,17 +104,10 @@ The table should now look exactly as the old one, with the only difference that 
                                PropertyName=4,
                                Value=5)
 
-As you can see, in this function you can not only decide which columns to show, but also their order, by giving them numbers starting from 1. If, for some reason, you want to have an empty column inside your table, you will have to set the option ``odml_table.OdmlTable.allow_empty_columns`` to True ::
+As you can see, in this function you can not only decide which columns to show, but also their order, by giving them numbers starting from 1.
+To include all possible headers, set the header to `full`::
 
-    myFirstTable.allow_empty_columns = True
-
-After this command, a code like the one below should work fine::
-
-    myFirstTable.change_header(Path=1,
-                               PropertyName=3,
-                               Value=4,
-                               SectionDefinition=7,
-                               DataUncertainty=8)
+    myFirstTable.change_header('full')
 
 
 Avoiding unnessaccery entries
