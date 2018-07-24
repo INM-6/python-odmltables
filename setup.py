@@ -2,8 +2,6 @@
 
 import sys
 import warnings
-
-from odmltables import VERSION
 from setuptools import setup, find_packages
 
 with open("README.rst") as f:
@@ -28,11 +26,13 @@ if sys.version_info.major < 3:
                   'installing the odmltables gui, eg. using "conda install -c anaconda '
                   '\'pyqt>=5\'"')
 
+VERSION = open('./odmltables/VERSION.txt', 'r').read()
+
 setup(
-    name="python-odmltables",
+    name="odmltables",
     version=VERSION,
     packages=find_packages(),
-    package_data={'odmltables': ['gui/graphics/*']},
+    package_data={'odmltables': ['gui/graphics/*', 'VERSION.txt']},
     install_requires=install_requires,
     extras_require=extras_require,
 
@@ -54,7 +54,10 @@ setup(
     entry_points={
         'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
     zip_safe=False,
-    keywords=['odml', 'excel', 'metadata management']
-    #     data_files = [('/usr/share/applications', ['odmltables.desktop']),
-    #                   ('/usr/share/pixmaps', ['logo/odMLtables.png'])]
+    keywords=['odml', 'excel', 'metadata management'],
+    # Extension('foo', ['foo.c'], include_dirs=['.']),
+    # data_files = [
+    #               # ('/usr/share/applications', ['odmltables.desktop']),
+    #               # ('/usr/share/pixmaps', ['logo/odMLtables.png']),
+    #               ('.', ['odmltables/VERSION.txt'])]
 )
