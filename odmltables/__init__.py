@@ -1,7 +1,7 @@
 import os.path
 
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VERSION.txt')) as version_file:
-    version = version_file.read().strip()
+    VERSION = version_file.read().strip()
 
 
 # -*- coding: utf-8 -*-
