@@ -20,6 +20,8 @@ from .generatetemplatewiz import GenerateTemplateWizard
 from .mergewiz import MergeWizard
 from .wizutils import get_graphic_path
 
+from odmltables import VERSION
+
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     """ handle all exceptions """
@@ -112,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtWidgets.QLabel("Welcome to the graphical\nodMLtables interface!")
+        label = QtGui.QLabel("odMLtables version {}".format(VERSION))
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
