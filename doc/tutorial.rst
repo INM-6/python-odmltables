@@ -343,7 +343,7 @@ This new odML file can now be used for multiple repetitions of the experiment an
 Example 2: Manual enrichment of odML
 ------------------------------------
 
-In this example you are going to manually add data to an already existing odML document (see :ref:`example1`). In the best case, this odML document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odML in terms of a complete description of the data and experiment. However, in principle the manual enrichment method presented here can also be used to start from an empty template odML, and all metadata is manually entered.
+In this example you are going to manually add data to an already existing odML document (see :ref:`example1`). In the best case, this odML document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odML in terms of a complete description of the data and experiment. However, in principle the manual enrichment method presented here can also be used to start from a new odML table, and all metadata is manually entered.
 
 We start from the odML generated in :ref:`example1`. If you don't have the resulting file, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
 
