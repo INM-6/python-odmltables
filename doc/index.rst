@@ -17,7 +17,7 @@ The odML_ file format and library API provides a means to store hierarchical met
 Currently, odMLtables supports:
 
 - converting metadata collections between the hierarchical odML format and table-based representations (i.e., xls, csv)
-- creating an empty template for starting a new metadata collection
+- creating a new table for starting a metadata collection
 - comparing sections within a metadata collections
 - filtering metadata collections to extract a specific subcollection
 - merging multiple metadata collections into one file
