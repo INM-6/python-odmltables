@@ -137,8 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.comparebutton = self.generate_button('Compare entries within\nan '
                                                   'odml',
                                                   "comparetable.svg")
-        self.generatebutton = self.generate_button('Generate empty '
-                                                   'template\ntable',
+        self.generatebutton = self.generate_button('Generate new table',
                                                    "createtemplate.svg")
         self.filterbutton = self.generate_button('Filter content of odml\n',
                                                  "filterodml.svg")
