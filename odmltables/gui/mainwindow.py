@@ -150,7 +150,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
         icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
-                                                  'logo', "odML-tables_100x100.png")))
+                                                  'logo', "odMLtables_100x100.png")))
 
 
         grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)

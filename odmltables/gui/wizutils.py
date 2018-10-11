@@ -37,7 +37,7 @@ class OdmltablesWizard(QWizard):
         self.setOption(self.HaveHelpButton, True)
         self.setPixmap(QWizard.LogoPixmap,
                        QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
-                                            'logo', "odML-tables_100x100.png")))
+                                            'logo', "odMLtables_100x100.png")))
 
         # set up help messages
         self._lastHelpMsg = ''
