@@ -114,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("odMLtables version {}".format(VERSION))
+        label = QtWidgets.QLabel("odMLtables version {}".format(VERSION))
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
