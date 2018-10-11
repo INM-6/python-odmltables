@@ -152,6 +152,9 @@ class MainWindow(QtGui.QMainWindow):
         icon = QtGui.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
+        icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
+                                                  'logo', "odMLtables_100x100.png")))
+
         icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
                                                   'logo',
                                                   "odML-tables_100x100.png")))
