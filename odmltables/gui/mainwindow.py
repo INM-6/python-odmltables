@@ -21,6 +21,8 @@ from .generatetemplatewiz import GenerateTemplateWizard
 from .mergewiz import MergeWizard
 from .wizutils import get_graphic_path
 
+from odmltables import VERSION
+
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     """ handle all exceptions """
@@ -115,7 +117,7 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the graphical\nodMLtables interface!")
+        label = QtGui.QLabel("odMLtables version {}".format(VERSION))
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
@@ -140,8 +142,7 @@ class MainWindow(QtGui.QMainWindow):
         self.comparebutton = self.generate_button('Compare entries within\nan '
                                                   'odml',
                                                   "comparetable.svg")
-        self.generatebutton = self.generate_button('Generate empty '
-                                                   'template\ntable',
+        self.generatebutton = self.generate_button('Generate new table',
                                                    "createtemplate.svg")
         self.filterbutton = self.generate_button('Filter content of odml\n',
                                                  "filterodml.svg")
@@ -151,6 +152,9 @@ class MainWindow(QtGui.QMainWindow):
         icon = QtGui.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
+        icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
+                                                  'logo', "odMLtables_100x100.png")))
+
         icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
                                                   'logo',
                                                   "odML-tables_100x100.png")))

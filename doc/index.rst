@@ -10,14 +10,14 @@ odML-tables - Table-based editing of odML metadata collections
 Synopsis
 =========
 
-*odML-tables* is a tool to support working with metadata collections for electrophysiological data. 
+*odML-tables* is a tool to support working with metadata collections for electrophysiological data.
 
 The odML_ file format and library API provides a means to store hierarchical metadata collections for electrophysiological data. Such collections typically consist of a large number of key-value pairs organized by a hierarchy of sections (see `Grewe et al, 2011, Frontiers in Neuroinformatics 5, 16`_). However, for editing and viewing metadata the use of standard spreadsheet software offering a flat tabular representation of a selected subset of metadata is desireable (cf., `Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`_). *odML-tables* provides a set of library functions as well as a graphical user interface that offers to swtich between hierarchical and flat representations of their metadata collection, and provides functions that assist in working with these files.
 
 Currently, odML-tables supports:
 
 - converting metadata collections between the hierarchical odML format and table-based representations (i.e., xls, csv)
-- creating an empty template for starting a new metadata collection
+- creating a new table for starting a metadata collection
 - comparing sections within a metadata collections
 - filtering metadata collections to extract a specific subcollection
 - merging multiple metadata collections into one file
