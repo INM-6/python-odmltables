@@ -211,18 +211,19 @@ class LoadFilePage(QIWizardPage):
                                     'modes: "strict merge" or "append merge".')
             return
 
-        self.expected_extension = '.odml'
+        self.expected_extensions = ['.odml', '.xml']
 
         dlg = Qtw.QFileDialog()
         dlg.setFileMode(Qtw.QFileDialog.AnyFile)
         dlg.setAcceptMode(Qtw.QFileDialog.AcceptSave)
         dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
-        dlg.setDefaultSuffix(self.expected_extension.strip('.'))
+        dlg.setDefaultSuffix(self.expected_extensions[0].strip('.'))
         dlg.setDirectory(os.path.dirname(self.settings.get_object('inputfilename1')))
 
-        dlg.setNameFilters(["%s files (*%s);;all files (*)"
-                      "" % (self.expected_extension.strip('.'),
-                            self.expected_extension)])
+        filternames = ["%s files (*%s)" % (ext.strip('.'), ext) for ext in
+                       self.expected_extensions]
+        filternames += ["all files (*)"]
+        dlg.setNameFilters(filternames)
 
         self.outputfilename = ''
         if dlg.exec_():
@@ -242,14 +243,13 @@ class LoadFilePage(QIWizardPage):
         self.outputfile.setText(short_filename)
 
         if ((os.path.splitext(self.outputfilename)[
-                 1] != self.expected_extension) and
+                 1] not in self.expected_extensions) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtw.QMessageBox.warning(self, 'Wrong file format',
                                     'The output file format is supposed to be "%s",'
                                     ' but you selected "%s"'
-                                    '' % (self.expected_extension,
+                                    '' % (self.expected_extensions,
                                           os.path.splitext(self.outputfilename)[1]))
-            self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
             success = self.convert(self.settings)

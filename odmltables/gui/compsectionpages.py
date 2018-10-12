@@ -396,8 +396,10 @@ class SaveTablePage(QIWizardPage):
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
-        dlg.setNameFilters(["%s files (*%s);;all files (*)"
-                           "" % (self.expected_extension.strip('.'), self.expected_extension)])
+        filternames = ["%s files (*%s)" % (ext.strip('.'), ext) for ext in
+                       [self.expected_extension]]
+        filternames += ["all files (*)"]
+        dlg.setNameFilters(filternames)
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])

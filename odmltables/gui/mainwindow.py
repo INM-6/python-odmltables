@@ -114,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("odMLtables version {}".format(VERSION))
+        label = QtWidgets.QLabel("odMLtables version {}".format(VERSION))
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
@@ -149,11 +149,9 @@ class MainWindow(QtWidgets.QMainWindow):
         icon = QtWidgets.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
-        icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
-                                                  'logo',
-                                                  "odML-tables_100x100.png")))
-        # QtGui.QPixmap(os.path.join('..', '..', 'logo',
-        #                                     "odML-tables_100x100.png"))
+        icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
+                                                  'logo', "odMLtables_100x100.png")))
+
 
         grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
         grid.addWidget(self.comparebutton, 1, 1)
@@ -174,6 +172,7 @@ class MainWindow(QtWidgets.QMainWindow):
         button.setIconSize(QtCore.QSize(120, 60))
         button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         button.setFixedWidth(200)
+        button.setFixedHeight(100)
         button.clicked.connect(self.startWizard)
 
         button.setStyleSheet(

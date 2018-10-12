@@ -113,8 +113,7 @@ class LoadFilePage(QIWizardPage):
             self.settings.register('RBoutputodml', self.rbuttonodml)
             self.settings.register('CBcustominput', self.cbcustominput)
             self.settings.register('inputfilename', self, useconfig=False)
-            short_filename = shorten_path(self.settings.get_object(
-                'inputfilename'))
+            short_filename = shorten_path(self.settings.get_object('inputfilename'))
             self.inputfile.setText(short_filename)
             # self.settings.get_object('RBoutputxls')
 
@@ -1004,17 +1003,17 @@ class SaveFilePage(QIWizardPage):
         self.outputfile.setText(short_filename)
 
         if self.settings.get_object('RBoutputxls').isChecked():
-            self.expected_extension = '.xls'
+            self.expected_extensions = ['.xls']
         elif self.settings.get_object('RBoutputcsv').isChecked():
-            self.expected_extension = '.csv'
+            self.expected_extensions = ['.csv']
         elif self.settings.get_object('RBoutputodml').isChecked():
-            self.expected_extension = '.odml'
+            self.expected_extensions = ['.odml', '.xml']
         else:
             raise ValueError('Can not save file without selection of '
                              'output format.')
 
-        self.topLabel.setText("Where do you want to save your "
-                              "%s file?" % self.expected_extension.strip('.'))
+        self.topLabel.setText("Where do you want to save your %s file?"
+                              % '/'.join([ext.strip('.') for ext in self.expected_extensions]))
 
         self.configlist.addItems(self.settings.get_all_config_names())
         self.issaved = False
@@ -1024,17 +1023,19 @@ class SaveFilePage(QIWizardPage):
         dlg.setFileMode(Qtw.QFileDialog.AnyFile)
         dlg.setAcceptMode(Qtw.QFileDialog.AcceptSave)
         dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
-        dlg.setDefaultSuffix(self.expected_extension.strip('.'))
+        dlg.setDefaultSuffix(self.expected_extensions[0].strip('.'))
 
         inputfilename = self.settings.get_object('inputfilename')
         dirname = os.path.dirname(inputfilename)
         suggested_filename = os.path.splitext(os.path.basename(
-            inputfilename))[0] + self.expected_extension
+            inputfilename))[0] + self.expected_extensions[0]
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
-        dlg.setNameFilters(["%s files (*%s);;all files (*)"
-                           "" % (self.expected_extension.strip('.'), self.expected_extension)])
+        filternames = ["%s files (*%s)" % (ext.strip('.'), ext) for ext in
+                       self.expected_extensions]
+        filternames += ['all files (*)']
+        dlg.setNameFilters(filternames)
         # filenames = []
 
         if dlg.exec_():
@@ -1044,17 +1045,17 @@ class SaveFilePage(QIWizardPage):
             # extending filename if no extension is present
         if (self.outputfilename != '' and
                     os.path.splitext(self.outputfilename)[1] == ''):
-            self.outputfilename += self.expected_extension
+            self.outputfilename += self.expected_extensions[0]
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
         if ((os.path.splitext(self.outputfilename)[
-                 1] != self.expected_extension) and
+                 1] not in self.expected_extensions) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
             Qtw.QMessageBox.warning(self, 'Wrong file format',
                                     'The output file format is supposed to be "%s",'
                                     ' but you selected "%s"'
-                                    '' % (self.expected_extension,
+                                    '' % (' or '.join(self.expected_extension),
                                           os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
