@@ -536,9 +536,9 @@ class OdmlTable(object):
             if k in self._header_titles:
                 self._header_titles[k] = kwargs[k]
             else:
-                errmsg = "{0} is not in the header_title-dictionary".format(k)
+                errmsg = "{0} is not in the header_title-dictionary. Valid keywords are {1}." \
+                         "".format(k, ', '.join(self._header_titles.keys()))
                 raise ValueError(errmsg)
-                # TODO: better exception
 
     def change_header(self, *args, **kwargs):
         """
@@ -612,8 +612,8 @@ class OdmlTable(object):
         if keys_sorted[0] in self._header_titles:
             header[kwargs[keys_sorted[0]] - 1] = keys_sorted[0]
         else:
-            raise KeyError(keys_sorted[0], "not in header_titles")
-            # TODO: better Exception
+            raise KeyError(" {} not in header_titles. Available header titles are: {}."
+                           "".format(keys_sorted[0], ', '.join(self._header_titles.keys())))
 
         # check if there are two keys with the same value
         for index, key in enumerate(keys_sorted[1:]):
@@ -628,8 +628,8 @@ class OdmlTable(object):
                 if key in self._header_titles:
                     header[kwargs[key] - 1] = key
                 else:
-                    raise KeyError(key, "not in header_titles")
-                    # TODO: better Exception
+                    raise KeyError("{} not in header_titles. Available header titles are: {}."
+                                   "".format(key, ', '.join(self._header_titles.keys())))
 
         self._header = header
 
