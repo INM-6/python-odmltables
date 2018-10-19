@@ -466,7 +466,8 @@ class OdmlTable(object):
                     new_dic['Path'] = '{}:{}'.format(current_dic['Path'].split(':')[0],
                                                      new_dic['Path'].split(':')[1])
                     for sec_inf in self._SECTION_INF:
-                        new_dic[sec_inf] = current_dic[sec_inf]
+                        if sec_inf in current_dic:
+                            new_dic[sec_inf] = current_dic[sec_inf]
 
                 # SAME PROPERTY: empty property name -> reuse old prop info
                 if new_dic['Path'].split(':')[1] == '':
@@ -842,7 +843,7 @@ class OdmlTable(object):
             sec_path = dic['Path'].split(':')[0]
             current_sec = doc
             # build section tree for this property
-            for sec_pathlet in sec_path.split('/')[1:]:
+            for sec_pathlet in sec_path.strip('/').split('/'):
                 # append new section if not present yet
                 if sec_pathlet not in current_sec.sections:
                     current_sec.append(odml.Section(name=sec_pathlet))
