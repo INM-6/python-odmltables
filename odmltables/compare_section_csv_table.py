@@ -37,8 +37,7 @@ class CompareSectionCsvTable(CompareSectionTable):
 
             else:
                 csvwriter.writerow([''] + sections)
-
-                for i in list(range(len(table[0]))):
-                    csvwriter.writerow([properties[i]] + [table[j][i]
-                                                          for j in
-                                                          list(range(len(table)))])
+                if table:
+                    for i in list(range(len(table[0]))):
+                        cells = [properties[i]] + [table[j][i] for j in list(range(len(table)))]
+                        csvwriter.writerow(cells)
