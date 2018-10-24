@@ -7,6 +7,7 @@ Created on Fri Apr 17 08:11:32 2015
 
 import copy
 import os
+import datetime
 
 import odml
 from odmltables.odml_table import OdmlTable
@@ -334,6 +335,20 @@ class TestOdmlTable(unittest.TestCase):
         self.assertEqual(len(self.test_table._odmldict[0]['Value']), 1)
         self.assertEqual(self.test_table._odmldict[0]['Value'][0],
                          doc2.sections[0].properties[0].value[0])
+
+
+    def test_merge_update_docprops(self):
+        doc1 = odml.Document(author='me', repository='somewhere', version=1.1,
+                             date=None)
+        doc2 = odml.Document(author='', repository='anywhere', version=1.1,
+                             date=datetime.date.today())
+        self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2)
+
+        self.assertEqual(self.test_table._docdict['author'], doc1.author)
+        self.assertEqual(self.test_table._docdict['repository'], doc1.repository)
+        self.assertEqual(self.test_table._docdict['version'], doc1.version)
+        self.assertEqual(self.test_table._docdict['date'], doc2.date)
 
 
 class TestFilter(unittest.TestCase):

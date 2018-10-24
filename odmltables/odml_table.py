@@ -735,13 +735,18 @@ class OdmlTable(object):
 
         self._merge_odml_sections(doc1, doc2, overwrite_values=overwrite_values, **kwargs)
 
-        # TODO: What should happen to the document properties?
-        """
-        'author'
-        'date'
-        'version'
-        'repository'
-        """
+        def update_docprop(prop):
+            if hasattr(doc1, prop) and hasattr(doc2, prop):
+                values = [getattr(doc1, prop), getattr(doc2, prop)]
+                # use properties of basic document, unless this does not exist
+                common_value = values[0]
+                if not common_value and values[1]:
+                    common_value = values[1]
+
+            setattr(doc1, prop, common_value)
+
+        for docprop in ['author', 'date', 'version', 'repository']:
+            update_docprop(docprop)
 
         # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
@@ -775,8 +780,7 @@ class OdmlTable(object):
 
     def convert2odml(self):
         """
-        Generates odml representation of odmldict and return it as odml
-        document.
+        Generates odml representation of odmldict and returns it as odml document.
         :return:
         """
         doc = odml.Document()
@@ -784,6 +788,9 @@ class OdmlTable(object):
         parent = ''
 
         self.consistency_check()
+
+        for doc_attr_name, doc_attr_value in self._docdict.items():
+            setattr(doc, doc_attr_name, doc_attr_value)
 
         for dic in self._odmldict:
             # build property object
