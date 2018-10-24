@@ -7,6 +7,7 @@ Created on Fri Apr 17 08:11:32 2015
 
 import copy
 import os
+import datetime
 
 import odml
 from odmltables.odml_table import OdmlTable
@@ -277,74 +278,77 @@ class TestOdmlTable(unittest.TestCase):
         table1 = OdmlTable(load_from=doc1)
         table2 = OdmlTable(load_from=doc2)
 
-        table1.merge(table2, mode='append')
+        table1.merge(table2, strict=False)
 
         result = table1.convert2odml()
 
         expected = ['MySection', 'OurSection', 'YourSection']
         self.assertListEqual([s.name for s in result.sections], expected)
 
-    def test_merge_append(self):
-        doc1 = create_compare_test(sections=2, properties=2, levels=2)
+    def test_merge_append_identical_value(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value=['value 1', 'value 2']))
 
-        # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].value.append('42')
-
-        # generate one additional Property, which is not present in doc2
-        doc1.sections[0].append(odml.Property(name='Doc1Property2', value=5))
-
-        # generate one additional Section, which is not present in doc2
-        new_prop = odml.Property(name='Doc1Property2', value=10)
-        new_sec = odml.Section(name='Doc1Section')
-        new_sec.append(new_prop)
-        doc1.sections[0].append(new_sec)
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value=['value 2', 'value 3']))
 
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=False)
 
-        doc2 = create_compare_test(sections=3, properties=3, levels=3)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 3)
+        expected = doc1.sections[0].properties[0].value + doc2.sections[0].properties[0].value
+        expected = list(set(expected))
+        # comparing as set to disregard item order
+        self.assertEqual(set(self.test_table._odmldict[0]['Value']), set(expected))
 
-        backup_table = copy.deepcopy(self.test_table)
 
-        self.test_table.merge(doc2, mode='append')
-        backup_table.merge(table2, mode='append')
+    def test_merge_overwrite_values_false(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value='first value'))
 
-        self.assertListEqual(self.test_table._odmldict, backup_table._odmldict)
-
-        expected = len(table2._odmldict) + 2  # only additional prop and section will be counted
-
-        self.assertEqual(len(self.test_table._odmldict), expected)
-
-    def test_strict_merge_error(self):
-        doc1 = create_compare_test(sections=2, properties=2, levels=2)
-
-        # add property with same name but different content
-        old_name = doc1.sections[1].properties[0].name
-        doc1.sections[1].remove(doc1.sections[1].properties[0])
-        doc1.sections[1].append(odml.Property(name=old_name,
-                                              value='myval', dtype=odml.DType.string))
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value='second value'))
 
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=False)
 
-        doc2 = create_compare_test(sections=3, properties=3, levels=3)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 2)
+        self.assertEqual(self.test_table._odmldict[0]['Value'],
+                         doc1.sections[0].properties[0].value + doc2.sections[0].properties[0].value)
 
-        with self.assertRaises(ValueError):
-            self.test_table.merge(doc2, mode='strict')
+    def test_merge_overwrite_values_true(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value='first value'))
 
-    def test_strict_merge(self):
-        doc1 = create_compare_test(sections=0, properties=1, levels=2)
-        doc1.sections[0].properties[0].value[0] = -1
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value='second value'))
+
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=True)
 
-        doc2 = create_compare_test(sections=0, properties=1, levels=2)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
-        self.test_table.merge(doc2, mode='strict')
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 1)
+        self.assertEqual(self.test_table._odmldict[0]['Value'][0],
+                         doc2.sections[0].properties[0].value[0])
 
-        self.assertListEqual(table2._odmldict, self.test_table._odmldict)
+
+    def test_merge_update_docprops(self):
+        doc1 = odml.Document(author='me', repository='somewhere', version=1.1,
+                             date=None)
+        doc2 = odml.Document(author='', repository='anywhere', version=1.1,
+                             date=datetime.date.today())
+        self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2)
+
+        self.assertEqual(self.test_table._docdict['author'], doc1.author)
+        self.assertEqual(self.test_table._docdict['repository'], doc1.repository)
+        self.assertEqual(self.test_table._docdict['version'], doc1.version)
+        self.assertEqual(self.test_table._docdict['date'], doc2.date)
 
 
 class TestFilter(unittest.TestCase):

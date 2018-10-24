@@ -20,3 +20,4 @@ from odmltables.odml_table import OdmlTable
 from odmltables.odml_csv_table import OdmlCsvTable
 from odmltables.odml_xls_table import OdmlXlsTable
 from odmltables.compare_section_csv_table import CompareSectionCsvTable
+from odmltables.compare_section_xls_table import CompareSectionXlsTable

@@ -47,8 +47,8 @@ class LoadFilePage(QIWizardPage):
         vbox.addWidget(topLabel)
 
         # Add first horizontal box
-        self.buttonbrowse1 = self.generate_toolbutton("Browse for basic\nodml"
-                                                      "file", 'odmlA.svg')
+        self.buttonbrowse1 = self.generate_toolbutton("Browse for odML"
+                                                      "file A", '')
         self.buttonbrowse1.clicked.connect(self.browse2open, 1)
         self.inputfile1 = Qtw.QLabel(self.inputfilename1)
         self.inputfile1.setWordWrap(True)
@@ -65,9 +65,8 @@ class LoadFilePage(QIWizardPage):
         # vbox.addWidget(topLabel)
 
         # Add second horizontal box
-        self.buttonbrowse2 = self.generate_toolbutton("Browse for second,\n"
-                                                      "extending file",
-                                                      'odmlB.svg')
+        self.buttonbrowse2 = self.generate_toolbutton("Browse for odML file B",
+                                                      '')
         self.buttonbrowse2.clicked.connect(self.browse2open, 2)
         self.inputfile2 = Qtw.QLabel(self.inputfilename2)
         self.inputfile2.setWordWrap(True)
@@ -83,27 +82,17 @@ class LoadFilePage(QIWizardPage):
         horizontalLine = Qtw.QFrame()
         horizontalLine.setFrameStyle(Qtw.QFrame.HLine)
         horizontalLine.setSizePolicy(Qtw.QSizePolicy.Expanding, Qtw.QSizePolicy.Minimum)
-        vbox.addWidget(horizontalLine)
+        # vbox.addWidget(horizontalLine)
 
         # adding merge mode part
-        vbox.addWidget(Qtw.QLabel('Select a mode for merging the two files'))
-        self.rbstrict = Qtw.QRadioButton('strict merge')
-        self.rbstrict.setIcon(Qtg.QIcon(os.path.join(graphic_path,'mergestrict.svg')))
-        self.rbstrict.setIconSize(QSize(100, 100))
-        self.rbappend = Qtw.QRadioButton('append')
-        self.rbappend.setIcon(Qtg.QIcon(os.path.join(graphic_path,'mergeappend.svg')))
-        self.rbappend.setIconSize(QSize(100, 100))
+        self.rboverwrite = Qtw.QRadioButton('overwrite values of file A with values of file B')
 
-        self.settings.register('rbstrict', self.rbstrict)
-        self.settings.register('rbappend', self.rbappend)
-
-        self.rbstrict.setChecked(True)
+        self.settings.register('rboverwrite', self.rboverwrite)
 
         hbox3 = Qtw.QHBoxLayout()
-        hbox3.addWidget(self.rbstrict)
 
         hbox3.addSpacing(20)
-        hbox3.addWidget(self.rbappend)
+        hbox3.addWidget(self.rboverwrite)
         vbox.addLayout(hbox3)
 
         # adding second separator
@@ -204,12 +193,6 @@ class LoadFilePage(QIWizardPage):
                                     'You need to provide two inputfiles to be '
                                     'merged')
             return
-        elif ((not self.rbstrict.isChecked()) and
-                  (not self.rbappend.isChecked())):
-            Qtw.QMessageBox.warning(self, 'No merge mode selected',
-                                    'You need to select one of the two merge '
-                                    'modes: "strict merge" or "append merge".')
-            return
 
         self.expected_extensions = ['.odml', '.xml']
 
@@ -291,22 +274,15 @@ class LoadFilePage(QIWizardPage):
         table2.load_from_file(settings.get_object('inputfilename2'))
 
         # extracting merge mode from selections
-        mode = None
-        if settings.get_object('rbstrict').isChecked():
-            mode = 'strict'
-        elif settings.get_object('rbappend').isChecked():
-            mode = 'append'
+        overwrite = settings.get_object('rboverwrite').isChecked()
 
         # merging inputfiles
         try:
-            table1.merge(table2, mode=mode)
+            table1.merge(table2, overwrite_values=overwrite)
         except ValueError as e:
             message = e.message if hasattr(e, 'message') else (str(e))
             Qtw.QMessageBox.warning(self, 'Error while merging files',
-                                    'Value error: %s. Can not merge into non-default values in '
-                                    'merge mode "strict". Data could be lost in the process. '
-                                    'Please fix your odml files or change to merge mode "append".'
-                                    '' % (message))
+                                    'Value error: %s.' % (message))
             return False
         except:
             Qtw.QMessageBox.warning(self, 'Unexpected error:', sys.exc_info()[0])
