@@ -14,7 +14,7 @@ version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml
 `1.1 <https://github.com/G-Node/odml-terminologies/blob/master/v1.1/odml.xsl>`_ provided by
 the `G-Node <http://www.g-node.org/projects/odml>`_.
 
-In addition to this tutorial giving detailed step-by-step instructions on how to use odMLtables, there is also an interactive, more specific tutorial dealing with a number of scenarios in which odMLtables can be used. You can run the tutorial directy on binder [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/INM-6/python-odmltables/interactive_example?filepath=tutorials%2FScenarios.ipynb)
+In addition to this tutorial giving detailed step-by-step instructions on how to use odMLtables, there is also an interactive, more specific tutorial dealing with a number of scenarios in which odMLtables can be used. You can run the tutorial directy on binder [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/INM-6/python-odmltables/tutorial?filepath=tutorials%2FScenarios.ipynb)
 
 Flattened odML table
 ====================
