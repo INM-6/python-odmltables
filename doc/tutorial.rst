@@ -43,7 +43,7 @@ The required columns are the minimum number of columns required in order to conv
 csv
 ---
 
-There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
+There are different formats you can save your tabular representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
 
 
 Converting from odML to table
