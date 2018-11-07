@@ -17,7 +17,7 @@ the `G-Node <http://www.g-node.org/projects/odml>`_.
 In addition to this tutorial giving detailed step-by-step instructions on how to use odMLtables, there is also an interactive, more specific tutorial dealing with a number of scenarios in which odMLtables can be used. You can run the tutorial directy on binder
 
 .. image:: https://mybinder.org/badge.svg
-  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tree/tutorial?filepath=tutorials%2FScenarios.ipynb
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2FScenarios.ipynb
   :alt: Binder Link
 
 Flattened odML table
