@@ -49,7 +49,7 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             sections.append(sect.name)
-            for prop in sect.iterproperties():
+            for prop in sect.properties:
                 if prop.name not in properties:
                     properties.append(prop.name)
         sec_num = len(sections)
