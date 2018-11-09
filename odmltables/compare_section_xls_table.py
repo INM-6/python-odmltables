@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-
-"""
 __package__='odmltables'
 
 import datetime
-import odml
 import xlwt
 
 from .compare_section_table import CompareSectionTable
