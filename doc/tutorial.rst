@@ -14,12 +14,16 @@ version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml
 `1.1 <https://github.com/G-Node/odml-terminologies/blob/master/v1.1/odml.xsl>`_ provided by
 the `G-Node <http://www.g-node.org/projects/odml>`_.
 
-Interactive  Tutorial
-=====================
-In addition to the detailed step-by-step instructions presented here, there is also an interactive tutorial available as jupyter notebook. This is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios for odMLtables. You can run the tutorial directy on binder by clicking the following link below
+Interactive  Tutorials
+======================
+In addition to the detailed step-by-step instructions presented here, there are also two interactive tutorials available as jupyter notebooks. Both tutorials can be directly executed the provided links to binder. The first notebook |notebook1| is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios for odMLtables. The second |notebook2| shows the usage of odMLtables for handling large metadata collections from two published experimental datasets.
 
-.. image:: https://mybinder.org/badge.svg
-  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2FScenarios.ipynb
+.. |notebook1|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2FScenarios.ipynb
+  :alt: Binder Link
+
+.. |notebook2|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-2_experimental_data%2Fdemo_complex_experiment.ipynb
   :alt: Binder Link
 
 Flattened odML table
