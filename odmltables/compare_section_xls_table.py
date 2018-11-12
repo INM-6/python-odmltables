@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 __package__='odmltables'
 
+import os.path
 import datetime
 import xlwt
 
@@ -56,6 +57,9 @@ class CompareSectionXlsTable(CompareSectionTable):
 
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheet_name)
+
+        if os.path.splitext(save_to)[-1] == '':
+            save_to += '.xls'
 
         max_col_len = []
 
@@ -122,6 +126,10 @@ class CompareSectionXlsTable(CompareSectionTable):
                     sheet.write(row_num + 1, col_num + 1, cell_content, style)
                     if len(str(cell_content)) > max_col_len[col_num]:
                         max_col_len[col_num] = len(str(cell_content))
+
+        # adjust width of he columns
+        for col_id, col_len in enumerate(max_col_len):
+            sheet.col(col_id).width = (256 * (col_len+1))
 
                         #        if self.switch:
                         #                csvwriter.writerow([''] + properties)
