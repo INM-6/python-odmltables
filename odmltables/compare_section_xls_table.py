@@ -71,6 +71,8 @@ class CompareSectionXlsTable(CompareSectionTable):
 
             for row_num, sec in enumerate(sections):
                 sheet.write(row_num + 1, 0, sec, headerstyle)
+                if len(str(sec)) > max_col_len[0]:
+                    max_col_len[0] = len(str(sec))
 
             for row_num, row in enumerate(table):
                 for col_num, elem in enumerate(row):
@@ -103,6 +105,8 @@ class CompareSectionXlsTable(CompareSectionTable):
 
             for row_num, prop in enumerate(properties):
                 sheet.write(row_num + 1, 0, prop, headerstyle)
+                if len(str(prop)) > max_col_len[0]:
+                    max_col_len[0] = len(str(prop))
 
             for col_num, col in enumerate(table):
                 for row_num, elem in enumerate(col):
