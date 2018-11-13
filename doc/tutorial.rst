@@ -16,7 +16,10 @@ the `G-Node <http://www.g-node.org/projects/odml>`_.
 
 Interactive  Tutorials
 ======================
-In addition to the detailed step-by-step instructions presented here, there are also two interactive tutorials available as jupyter notebooks. Both tutorials can be directly executed the provided links to binder. The first notebook |notebook1| is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios for odMLtables. The second |notebook2| shows the usage of odMLtables for handling large metadata collections from two published experimental datasets.
+In addition to the detailed step-by-step instructions presented here, there are also two interactive tutorials available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
+
+.. _binder: https://mybinder.org/
+.. _jupyter notebooks: http://jupyter.org/
 
 .. |notebook1|  image:: https://mybinder.org/badge.svg
   :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2FScenarios.ipynb
