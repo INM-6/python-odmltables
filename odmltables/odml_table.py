@@ -718,10 +718,12 @@ class OdmlTable(object):
                             comparison_func=lambda x, y: x.startswith(y),
                             Path=del_prop['Path'])
 
-    def merge(self, odmltable, mode='append'):
+    def merge(self, odmltable, overwrite_values=False, **kwargs):
         """
         Merge odmltable into current odmltable.
-        :param odmltable: OdmlTable object or Odml document object
+        :param odmltable: OdmlTable object or odML document object
+        :param strict: Bool value to indicate whether the attributes of affected child Properties
+                except their ids and values have to be identical to be merged. Default is True.
         :return:
         """
         if hasattr(odmltable, 'convert2odml'):
@@ -731,80 +733,42 @@ class OdmlTable(object):
             doc2 = odmltable
         doc1 = self.convert2odml()
 
-        # TODO: include value merge in section merge
-        self._merge_odml_sections(doc1, doc2, mode=mode)
-        # self._merge_odml_values(doc1, doc2, mode=mode)
+        self._merge_odml_sections(doc1, doc2, overwrite_values=overwrite_values, **kwargs)
 
-        # TODO: What should happen to the document properties?
-        """
-        'author'
-        'date'
-        'version'
-        'repository'
-        """
+        def update_docprop(prop):
+            if hasattr(doc1, prop) and hasattr(doc2, prop):
+                values = [getattr(doc1, prop), getattr(doc2, prop)]
+                # use properties of basic document, unless this does not exist
+                common_value = values[0]
+                if not common_value and values[1]:
+                    common_value = values[1]
+
+            setattr(doc1, prop, common_value)
+
+        for docprop in ['author', 'date', 'version', 'repository']:
+            update_docprop(docprop)
 
         # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
 
-    def _merge_odml_sections(self, sec1, sec2, mode='append'):
+    def _merge_odml_sections(self, sec1, sec2, overwrite_values=False, **kwargs):
         """
         Merging subsections of odml sections
         """
-
-        if mode not in ['strict', 'append']:
-            raise ValueError('Merge mode "%s" does not exist. '
-                             'Valid modes are %s' % ((mode, ['strict',
-                                                             'append'])))
-        strict = mode == 'strict'
 
         for childsec2 in sec2.sections:
             sec_name = childsec2.name
             if not sec_name in sec1.sections:
                 sec1.append(childsec2)
             else:
-                sec1[sec_name].merge(childsec2, strict=strict)
+                # this merges odml sections and properties, but always appends values
+                sec1[sec_name].merge(childsec2, **kwargs)
 
-            # # merge properties
-            # if hasattr(sec1, 'properties') and hasattr(sec2, 'properties'):
-            #     for prop2 in sec2.properties:
-            #         if prop2.name not in sec1.properties:
-            #             sec1.properties.append(prop2)
-
-    # TODO adjust function to new value model
-    def _merge_odml_values(self, doc1, doc2, mode='append'):
-        """
-        Merging values of odml documents, which contain the IDENTICAL
-        sections and properties and only differ in the odml values
-        """
-        if mode not in ['strict', 'append']:
-            raise ValueError('Merge mode "%s" does not exist. '
-                             'Valid modes are %s' % ((mode, ['strict',
-                                                             'append'])))
-
-        for prop2 in doc2.iterproperties():
-            path = prop2.get_path()
-            prop1 = doc1.get_property_by_path(path)
-
-            if mode == 'strict':
-                if (len(prop1.value) != 1) or \
-                        (prop1.value[0] not in
-                         list(self.odtypes._basedtypes.values())):
-                    raise ValueError('OdML property %s already contains '
-                                     'non-default values %s' % (prop1.name,
-                                                                prop1.value))
-
-            if mode in ['append', 'strict']:
-                # removing old values, but keeping first element, because a
-                # property needs to contain at least one value at any time
-                if prop1 != prop2:  # properties can be identical, when section
-                    #  was copied. Then no value transfer is necessary.
-                    for val in prop1.value[1:]:
-                        prop1.remove(val)
-                    # adding new values (which is at least one, see comment
-                    # above)
-                    for val in prop2.value:
-                        prop1.value.append(val)
-                    prop1.remove(prop1.value[0])
+        if overwrite_values:
+            for prop_source in sec2.iterproperties():
+                prop_path = prop_source.get_path()
+                prop_destination = sec1.get_property_by_path(prop_path)
+                prop_destination.value = prop_source.value
 
     def write2file(self, save_to):
         """
@@ -816,8 +780,7 @@ class OdmlTable(object):
 
     def convert2odml(self):
         """
-        Generates odml representation of odmldict and return it as odml
-        document.
+        Generates odml representation of odmldict and returns it as odml document.
         :return:
         """
         doc = odml.Document()
@@ -825,6 +788,9 @@ class OdmlTable(object):
         parent = ''
 
         self.consistency_check()
+
+        for doc_attr_name, doc_attr_value in self._docdict.items():
+            setattr(doc, doc_attr_name, doc_attr_value)
 
         for dic in self._odmldict:
             # build property object
