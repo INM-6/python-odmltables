@@ -22,6 +22,7 @@ class CompareSectionTable():
     """
 
     def __init__(self):
+        self.show_odml_warnings = False
         self._odmldoc = None
         self._sel_fun = lambda x: True
         self.include_all = True
@@ -86,7 +87,7 @@ class CompareSectionTable():
         :type load_from: string
 
         """
-        self._odmldoc = odml.load(load_from)
+        self._odmldoc = odml.load(load_from, show_warnings=self.show_odml_warnings)
 
     def choose_sections_startwith(self, startwith):
         """
