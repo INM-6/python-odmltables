@@ -22,7 +22,7 @@ In addition to the detailed step-by-step instructions presented here, there are 
 .. _jupyter notebooks: http://jupyter.org/
 
 .. |notebook1|  image:: https://mybinder.org/badge.svg
-  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2FScenarios.ipynb
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
   :alt: Binder Link
 
 .. |notebook2|  image:: https://mybinder.org/badge.svg
