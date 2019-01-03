@@ -298,7 +298,7 @@ class TestOdmlTable(unittest.TestCase):
         self.test_table.merge(doc2, overwrite_values=False)
 
         self.assertEqual(len(self.test_table._odmldict[0]['Value']), 3)
-        expected = doc1.sections[0].properties[0].value + doc2.sections[0].properties[0].value
+        expected = doc1.sections[0].properties[0].values + doc2.sections[0].properties[0].values
         expected = list(set(expected))
         # comparing as set to disregard item order
         self.assertEqual(set(self.test_table._odmldict[0]['Value']), set(expected))
@@ -318,7 +318,7 @@ class TestOdmlTable(unittest.TestCase):
 
         self.assertEqual(len(self.test_table._odmldict[0]['Value']), 2)
         self.assertEqual(self.test_table._odmldict[0]['Value'],
-                         doc1.sections[0].properties[0].value + doc2.sections[0].properties[0].value)
+                         doc1.sections[0].properties[0].values + doc2.sections[0].properties[0].values)
 
     def test_merge_overwrite_values_true(self):
         doc1 = odml.Document()
@@ -334,7 +334,7 @@ class TestOdmlTable(unittest.TestCase):
 
         self.assertEqual(len(self.test_table._odmldict[0]['Value']), 1)
         self.assertEqual(self.test_table._odmldict[0]['Value'][0],
-                         doc2.sections[0].properties[0].value[0])
+                         doc2.sections[0].properties[0].values[0])
 
 
     def test_merge_update_docprops(self):

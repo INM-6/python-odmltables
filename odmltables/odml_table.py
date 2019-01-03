@@ -87,7 +87,7 @@ class OdmlTable(object):
                      'SectionType': p.parent.type,
                      'SectionDefinition': p.parent.definition,
                      'PropertyDefinition': p.definition,
-                     'Value': p.value,
+                     'Value': p.values,
                      'DataUnit': p.unit,
                      'DataUncertainty': p.uncertainty,
                      'odmlDatatype': p.dtype}
@@ -769,7 +769,7 @@ class OdmlTable(object):
             for prop_source in sec2.iterproperties():
                 prop_path = prop_source.get_path()
                 prop_destination = sec1.get_property_by_path(prop_path)
-                prop_destination.value = prop_source.value
+                prop_destination.values = prop_source.values
 
     def write2file(self, save_to):
         """
