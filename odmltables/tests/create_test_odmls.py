@@ -182,18 +182,20 @@ def create_compare_test(sections=3, properties=3, levels=1):
                 append_children(parent, level + 1)
                 if (i != 2):
                     for j in list(range(properties)):
-                        parent.append(odml.Property(name='Property' + str(j + 1), value=i + j))
+                        parent.append(odml.Property(name='Property' + str(j + 1),
+                                                    values=[i + j]))
                 else:
                     for j in list(range(properties - 2)):
-                        parent.append(odml.Property(name='Property' + str(j + 1), value=i + j))
-                    parent.append(
-                        odml.Property(name='Property' + str(properties), value=i + properties - 1))
+                        parent.append(odml.Property(name='Property' + str(j + 1),
+                                                    values=[i + j]))
+                    parent.append(odml.Property(name='Property' + str(properties),
+                                                values=[i + properties - 1]))
 
     append_children(doc, 0)
 
     doc.append(odml.Section(name='One more Section'))
     parent = doc['One more Section']
-    parent.append(odml.Property(name='Property2', value=11))
+    parent.append(odml.Property(name='Property2', values=[11]))
 
     return doc
 
