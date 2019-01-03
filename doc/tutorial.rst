@@ -14,6 +14,20 @@ version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml
 `1.1 <https://github.com/G-Node/odml-terminologies/blob/master/v1.1/odml.xsl>`_ provided by
 the `G-Node <http://www.g-node.org/projects/odml>`_.
 
+Interactive  Tutorials
+======================
+In addition to the detailed step-by-step instructions presented here, there are also two interactive tutorials available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables sources (:any:`tutorials/tutorial-1_scenarios/demo_scenarios.ipynb`) folder. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
+
+.. _binder: https://mybinder.org/
+.. _jupyter notebooks: http://jupyter.org/
+
+.. |notebook1|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
+  :alt: Binder Link
+
+.. |notebook2|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-2_experimental_data%2Fdemo_complex_experiment.ipynb
+  :alt: Binder Link
 
 Flattened odML table
 ====================
@@ -37,7 +51,7 @@ The required columns are the minimum number of columns required in order to conv
 csv
 ---
 
-There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
+There are different formats you can save your tabular representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
 
 
 Converting from odML to table

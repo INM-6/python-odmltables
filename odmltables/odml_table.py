@@ -39,6 +39,7 @@ class OdmlTable(object):
 
     def __init__(self, load_from=None):
 
+        self.show_odml_warnings = False
         self._odmldict = None
         self._docdict = None
         self.odtypes = OdmlDtypes()
@@ -122,7 +123,7 @@ class OdmlTable(object):
         :type load_from: string
 
         """
-        doc = odml.load(load_from)
+        doc = odml.load(load_from, show_warnings=self.show_odml_warnings)
         self._odmldict = self.__create_odmldict(doc)
         self._docdict = self._create_documentdict(doc)
 

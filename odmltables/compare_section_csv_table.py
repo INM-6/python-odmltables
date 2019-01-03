@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-"""
+
 __package__='odmltables'
 
+import os.path
 import csv
-import odml
 
 from .compare_section_table import CompareSectionTable
 
@@ -22,6 +21,10 @@ class CompareSectionCsvTable(CompareSectionTable):
         """
         saves the table as a csv-file
         """
+
+        # add csv extension if none present
+        if os.path.splitext(save_to)[-1] == '':
+            save_to += '.csv'
 
         properties, sections, table = self._build_table()
 

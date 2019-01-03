@@ -209,8 +209,7 @@ class ChooseSectionsPage(QIWizardPage):
     def initializePage(self):
 
         # load sections and properties from the selected file
-        odmldoc = odml.tools.xmlparser.load(self.settings.get_object(
-            "inputfilename"))
+        odmldoc = odml.load(self.settings.get_object("inputfilename"))
         for section in odmldoc.itersections():
             self.sections.append([section.name,
                                   section.get_path(),
