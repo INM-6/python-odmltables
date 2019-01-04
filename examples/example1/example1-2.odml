@@ -1,78 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet  type="text/xsl" href="odmlTerms.xsl"?>
 <?xml-stylesheet  type="text/xsl" href="odml.xsl"?>
-<odML version="1">
+<odML version="1.1">
+  <id>f7e52375-6c03-43f8-9928-8db08c017c59</id>
   <section>
-    <property>
-      <definition>ID of the animal used for this experiment</definition>
-      <value>-<unit></unit><type>string</type></value>
-      <name>AnimalID</name>
-    </property>
-    <property>
-      <definition>Species of the animal</definition>
-      <value>-<unit></unit><type>string</type></value>
-      <name>Species</name>
-    </property>
-    <property>
-      <definition>Sex of the animal</definition>
-      <value>-<unit></unit><type>string</type></value>
-      <name>Sex</name>
-    </property>
-    <property>
-      <definition>Birthdate of the animal </definition>
-      <value>1900-11-11<unit></unit><type>date</type></value>
-      <name>Birthdate</name>
-    </property>
-    <property>
-      <definition>ID of the litter</definition>
-      <value>-<unit></unit><type>string</type></value>
-      <name>Litter</name>
-    </property>
-    <property>
-      <definition>Occurrence of seizures (observed / not observed)</definition>
-      <value>-<unit></unit><type>string</type></value>
-      <name>Seizures</name>
-    </property>
+    <id>6a3c0435-49e5-4e5b-83f1-7312f8eb7b8b</id>
     <name>Animal</name>
     <section>
-      <property>
-        <definition>Name of the surgeon</definition>
-        <value>-<unit></unit><type>string</type></value>
-        <name>Surgeon</name>
-      </property>
-      <property>
-        <definition>Date of surgery conduction</definition>
-        <value>1900-11-11<unit></unit><type>date</type></value>
-        <name>Date</name>
-      </property>
-      <property>
-        <definition>Weight of the animal</definition>
-        <value>-1.0<unit>g</unit><type>float</type></value>
-        <name>Weight</name>
-      </property>
-      <property>
-        <definition>Quality of the surgery (good / ok / bad)</definition>
-        <value>-<unit></unit><type>string</type></value>
-        <name>Quality</name>
-      </property>
-      <property>
-        <definition>Type of anaesthetic</definition>
-        <value>-<unit></unit><type>string</type></value>
-        <name>Anaesthetic</name>
-      </property>
-      <property>
-        <definition>Name of painkiller, if used</definition>
-        <value>-<unit></unit><type>string</type></value>
-        <name>Painkiller</name>
-      </property>
-      <property>
-        <definition>URL or folder containing surgery protocol</definition>
-        <value>file://-<unit></unit><type>url</type></value>
-        <name>Link</name>
-      </property>
+      <id>4fe43460-3503-4038-9b10-6eb7b799171a</id>
       <name>Surgery</name>
-      <type>undefined</type>
+      <property>
+        <id>6ee637bc-9ac6-49fd-bccd-7473a510efa1</id>
+        <name>Anaesthetic</name>
+        <value></value>
+        <definition>Type of anaesthetic</definition>
+        <type>string</type>
+      </property>
+      <property>
+        <id>9e807e83-bc57-48b7-9ae6-4416cda61507</id>
+        <name>Date</name>
+        <value></value>
+        <definition>Date of surgery conduction</definition>
+        <type>date</type>
+      </property>
+      <property>
+        <id>a1cae3a1-3c4d-4260-a447-175d499e3ff7</id>
+        <name>Link</name>
+        <value></value>
+        <definition>URL or folder containing surgery protocol</definition>
+        <type>url</type>
+      </property>
+      <property>
+        <id>06d3c62a-1977-4d16-aa90-f812c48993b6</id>
+        <name>Painkiller</name>
+        <value></value>
+        <definition>Name of painkiller, if used</definition>
+        <type>string</type>
+      </property>
+      <property>
+        <id>550e5b49-f768-48b4-857d-ae75f3b23909</id>
+        <name>Quality</name>
+        <value></value>
+        <definition>Quality of the surgery (good / ok / bad)</definition>
+        <type>string</type>
+      </property>
+      <property>
+        <id>3e809b3d-e5a3-4b92-819e-6af2da33c4cc</id>
+        <name>Surgeon</name>
+        <value></value>
+        <definition>Name of the surgeon</definition>
+        <type>string</type>
+      </property>
+      <property>
+        <id>fe44db5d-1bb2-4869-9c3e-d62550e3dfa7</id>
+        <name>Weight</name>
+        <value></value>
+        <unit>g</unit>
+        <definition>Weight of the animal</definition>
+        <type>float</type>
+      </property>
     </section>
-    <type>undefined</type>
+    <property>
+      <id>de8a4ecd-a1cc-4eb2-8329-99c953f8e1ce</id>
+      <name>AnimalID</name>
+      <value></value>
+      <definition>ID of the animal used for this experiment</definition>
+      <type>string</type>
+    </property>
+    <property>
+      <id>5a188a66-8d53-4f72-957d-8ef7f84889ee</id>
+      <name>Birthdate</name>
+      <value></value>
+      <definition>Birthdate of the animal </definition>
+      <type>date</type>
+    </property>
+    <property>
+      <id>e564cf81-2bc3-49b3-9747-64dccdc879b0</id>
+      <name>Litter</name>
+      <value></value>
+      <definition>ID of the litter</definition>
+      <type>string</type>
+    </property>
+    <property>
+      <id>abcbde29-9bad-4d87-8aa8-6ead4a9e0252</id>
+      <name>Seizures</name>
+      <value></value>
+      <definition>Occurrence of seizures (observed / not observed)</definition>
+      <type>string</type>
+    </property>
+    <property>
+      <id>7e20ad2c-c27c-47ee-a830-269062ddacdf</id>
+      <name>Sex</name>
+      <value></value>
+      <definition>Sex of the animal</definition>
+      <type>string</type>
+    </property>
+    <property>
+      <id>a475d395-326c-4cbf-a224-b3e3324f710d</id>
+      <name>Species</name>
+      <value></value>
+      <definition>Species of the animal</definition>
+      <type>string</type>
+    </property>
   </section>
 </odML>

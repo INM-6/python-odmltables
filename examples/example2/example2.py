@@ -28,17 +28,17 @@ def run_example():
 
 def automatic_enrichment():
     # mimic automatized enrichment prior to manual enrichment
-    doc = odml.tools.xmlparser.load('../example1/example1-2.odml')
+    doc = odml.fileio.load('../example1/example1-2.odml')
     animal_props = doc['Animal'].properties
 
-    animal_props['AnimalID'].value.data = '2A'
-    animal_props['Species'].value.data = 'Meriones unguiculatus'
-    animal_props['Sex'].value.data = 'female'
-    animal_props['Birthdate'].value.data = datetime.datetime.today().date() - datetime.timedelta(100)
-    animal_props['Litter'].value.data = '1A-01'
-    animal_props['Seizures'].value.data = 'not observed'
+    animal_props['AnimalID'].values = '2A'
+    animal_props['Species'].values = 'Meriones unguiculatus'
+    animal_props['Sex'].values = 'female'
+    animal_props['Birthdate'].values = datetime.datetime.today().date() - datetime.timedelta(100)
+    animal_props['Litter'].values = '1A-01'
+    animal_props['Seizures'].values = 'not observed'
 
-    odml.tools.xmlparser.XMLWriter(doc).write_file(pre_enriched_file)
+    odml.fileio.save(doc, pre_enriched_file)
 
     return doc
 
@@ -47,13 +47,13 @@ def manual_enrichment():
     doc = automatic_enrichment()
     surgery_props = doc['Animal']['Surgery'].properties
 
-    surgery_props['Surgeon'].value.data = 'Surgeon1'
-    surgery_props['Date'].value.data = datetime.datetime.today().date()
-    surgery_props['Weight'].value.data = 100.0
-    surgery_props['Quality'].value.data = 'good'
-    surgery_props['Anaesthetic'].value.data = 'urethane'
-    surgery_props['Painkiller'].value.data = ''
-    surgery_props['Link'].value.data = '../../surgery/protocols/protocol1.pdf'
+    surgery_props['Surgeon'].values = 'Surgeon1'
+    surgery_props['Date'].values = datetime.datetime.today().date()
+    surgery_props['Weight'].values = 100.0
+    surgery_props['Quality'].values = 'good'
+    surgery_props['Anaesthetic'].values = 'urethane'
+    surgery_props['Painkiller'].values = ''
+    surgery_props['Link'].values = '../../surgery/protocols/protocol1.pdf'
 
     xlstable = odml_xls_table.OdmlXlsTable()
     xlstable.load_from_odmldoc(doc)
