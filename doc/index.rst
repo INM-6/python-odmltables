@@ -32,6 +32,7 @@ Contents:
     install
     tutorial
     modules
+    whatisnew
     authors
 
 Indices and tables
