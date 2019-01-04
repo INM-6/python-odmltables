@@ -8,7 +8,7 @@ Main features:
   * odMLtables gui is installable via pip
   * command line arguments for specifying files for odMLtables wizards
   * Python 3 compatibility
-  * Jupyter `tutorial notebooks`_
+  * Jupyter tutorial notebooks
   * Extended documentation
 
 Other features:
@@ -18,5 +18,3 @@ Other features:
 Updates:
   * Minimal odML version 1.4.2
   * PyQt5
-
-.. _`tutorial notebooks`: ../../../tutorials/
