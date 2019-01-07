@@ -2,57 +2,57 @@
 <?xml-stylesheet  type="text/xsl" href="odmlTerms.xsl"?>
 <?xml-stylesheet  type="text/xsl" href="odml.xsl"?>
 <odML version="1.1">
-  <id>f7e52375-6c03-43f8-9928-8db08c017c59</id>
+  <id>78c00ffd-881f-4e00-b999-4d6c22744884</id>
   <section>
-    <id>6a3c0435-49e5-4e5b-83f1-7312f8eb7b8b</id>
+    <id>0cdfdebe-7bd1-49e2-b2d6-9fb6be99d8e8</id>
     <name>Animal</name>
     <section>
-      <id>4fe43460-3503-4038-9b10-6eb7b799171a</id>
+      <id>241a1dba-83a3-4064-89d6-926939bd751e</id>
       <name>Surgery</name>
       <property>
-        <id>6ee637bc-9ac6-49fd-bccd-7473a510efa1</id>
+        <id>26afa401-5f09-424f-9608-aead03bf2c88</id>
         <name>Anaesthetic</name>
         <value></value>
         <definition>Type of anaesthetic</definition>
         <type>string</type>
       </property>
       <property>
-        <id>9e807e83-bc57-48b7-9ae6-4416cda61507</id>
+        <id>7c6cec3c-330a-4f03-a633-19722da9d512</id>
         <name>Date</name>
         <value></value>
         <definition>Date of surgery conduction</definition>
         <type>date</type>
       </property>
       <property>
-        <id>a1cae3a1-3c4d-4260-a447-175d499e3ff7</id>
+        <id>a8bac013-36ed-4331-b300-e150c3970522</id>
         <name>Link</name>
         <value></value>
         <definition>URL or folder containing surgery protocol</definition>
         <type>url</type>
       </property>
       <property>
-        <id>06d3c62a-1977-4d16-aa90-f812c48993b6</id>
+        <id>2ea17762-9713-4126-8bf8-36412c7fe3c0</id>
         <name>Painkiller</name>
         <value></value>
         <definition>Name of painkiller, if used</definition>
         <type>string</type>
       </property>
       <property>
-        <id>550e5b49-f768-48b4-857d-ae75f3b23909</id>
+        <id>db15a30c-1cb9-4aa9-88af-3b3a132062b3</id>
         <name>Quality</name>
         <value></value>
         <definition>Quality of the surgery (good / ok / bad)</definition>
         <type>string</type>
       </property>
       <property>
-        <id>3e809b3d-e5a3-4b92-819e-6af2da33c4cc</id>
+        <id>351d5f54-e144-47d9-bb1b-39411ad59bbd</id>
         <name>Surgeon</name>
         <value></value>
         <definition>Name of the surgeon</definition>
         <type>string</type>
       </property>
       <property>
-        <id>fe44db5d-1bb2-4869-9c3e-d62550e3dfa7</id>
+        <id>f61542d8-23cd-49ee-9090-201f4a1bbc62</id>
         <name>Weight</name>
         <value></value>
         <unit>g</unit>
@@ -61,42 +61,42 @@
       </property>
     </section>
     <property>
-      <id>de8a4ecd-a1cc-4eb2-8329-99c953f8e1ce</id>
+      <id>44c2de81-1d99-49bc-84ef-53fc7c327d09</id>
       <name>AnimalID</name>
       <value></value>
       <definition>ID of the animal used for this experiment</definition>
       <type>string</type>
     </property>
     <property>
-      <id>5a188a66-8d53-4f72-957d-8ef7f84889ee</id>
+      <id>ca47031e-ce5e-45e2-ab6e-0a8c54f330a0</id>
       <name>Birthdate</name>
       <value></value>
       <definition>Birthdate of the animal </definition>
       <type>date</type>
     </property>
     <property>
-      <id>e564cf81-2bc3-49b3-9747-64dccdc879b0</id>
+      <id>323e0428-ab68-4738-ba25-26c98feabd34</id>
       <name>Litter</name>
       <value></value>
       <definition>ID of the litter</definition>
       <type>string</type>
     </property>
     <property>
-      <id>abcbde29-9bad-4d87-8aa8-6ead4a9e0252</id>
+      <id>82b37ab4-1b36-40bb-b725-06a33f3b4fd2</id>
       <name>Seizures</name>
       <value></value>
       <definition>Occurrence of seizures (observed / not observed)</definition>
       <type>string</type>
     </property>
     <property>
-      <id>7e20ad2c-c27c-47ee-a830-269062ddacdf</id>
+      <id>b5956ac0-6652-4370-9d69-3a98427c53a3</id>
       <name>Sex</name>
       <value></value>
       <definition>Sex of the animal</definition>
       <type>string</type>
     </property>
     <property>
-      <id>a475d395-326c-4cbf-a224-b3e3324f710d</id>
+      <id>836c9e7d-9890-426d-8eea-76f50dd12d7c</id>
       <name>Species</name>
       <value></value>
       <definition>Species of the animal</definition>

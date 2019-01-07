@@ -1,14 +1,14 @@
 Path to Section,Property Name,Value,Data Unit,odML Data Type,Property Definition
-/Animal,AnimalID,-,,string,ID of the animal used for this experiment
-,Species,-,,string,Species of the animal
-,Sex,-,,string,Sex of the animal
-,Birthdate,11-11-1900,,date,Birthdate of the animal 
-,Litter,-,,string,ID of the litter
-,Seizures,-,,string,Occurrence of seizures (observed / not observed)
-/Animal/Surgery,Surgeon,-,,string,Name of the surgeon
-,Date,11-11-1900,,date,Date of surgery conduction
-,Weight,-1,g,float,Weight of the animal
-,Quality,-,,string,Quality of the surgery (good / ok / bad)
-,Anaesthetic,-,,string,Type of anaesthetic
-,Painkiller,-,,string,"Name of painkiller, if used"
-,Link,file://-,,url,URL or folder containing surgery protocol
+/Animal,AnimalID,,,string,ID of the animal used for this experiment
+,Species,,,string,Species of the animal
+,Sex,,,string,Sex of the animal
+,Birthdate,,,date,Birthdate of the animal
+,Litter,,,string,ID of the litter
+,Seizures,,,string,Occurrence of seizures (observed / not observed)
+/Animal/Surgery,Surgeon,,,string,Name of the surgeon
+,Date,,,date,Date of surgery conduction
+,Weight,,g,float,Weight of the animal
+,Quality,,,string,Quality of the surgery (good / ok / bad)
+,Anaesthetic,,,string,Type of anaesthetic
+,Painkiller,,,string,"Name of painkiller, if used"
+,Link,,,url,URL or folder containing surgery protocol
