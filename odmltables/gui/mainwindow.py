@@ -10,8 +10,7 @@ import os
 import sys
 import traceback
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 # import wizards
 from .compsectionwiz import CompSectionWizard
@@ -20,6 +19,8 @@ from .filterwiz import FilterWizard
 from .generatetemplatewiz import GenerateTemplateWizard
 from .mergewiz import MergeWizard
 from .wizutils import get_graphic_path
+
+from odmltables import VERSION
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -32,8 +33,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     ## KeyboardInterrupt is a special case.
     ## We don't raise the error dialog when it occurs.
     if issubclass(exc_type, KeyboardInterrupt):
-        if QtGui.qApp:
-            QtGui.qApp.quit()
+        if QtWidgets.qApp:
+            QtWidgets.qApp.quit()
         return
 
     filename, lineid, func, line = traceback.extract_tb(exc_traceback).pop()
@@ -51,9 +52,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
                 "<br><br>"
                 "For a detailed error report see log file at <i>%s</i>"
                 "</html>" % (
-                error.replace('<', '').replace('>', ''), error_logfile))
+                    error.replace('<', '').replace('>', ''), error_logfile))
 
-    QtGui.QMessageBox.critical(None,
+    QtWidgets.QMessageBox.critical(None,
                                "Unexpected Error in odMLtables",
                                msg_text)
 
@@ -69,12 +70,10 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         myfile.writelines(['################### %s ###################\n' % now,
                            complete_error, '\n'])
 
-    # sys.exit(1)
+        # sys.exit(1)
 
 
-
-
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -85,7 +84,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def initUI(self):
 
-        centralWidget = QtGui.QWidget()
+        centralWidget = QtWidgets.QWidget()
         w, h = 450, 450
         self.setFixedSize(w, h)
         self.setCentralWidget(centralWidget)
@@ -102,12 +101,12 @@ class MainWindow(QtGui.QMainWindow):
         # (255,128,0) # for button background
         centralWidget.setPalette(p)
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        titlebox = QtGui.QHBoxLayout()
+        titlebox = QtWidgets.QHBoxLayout()
         vbox.addLayout(titlebox)
 
-        subtitlebox = QtGui.QVBoxLayout()
+        subtitlebox = QtWidgets.QVBoxLayout()
         titlebox.addLayout(subtitlebox)
         subtitlebox.addSpacing(8)
 
@@ -115,7 +114,7 @@ class MainWindow(QtGui.QMainWindow):
         # title_font.setFamily("Verdana")
         title_font.setBold(True)
         title_font.setPointSize(14)
-        label = QtGui.QLabel("Welcome to the graphical\nodMLtables interface!")
+        label = QtWidgets.QLabel("odMLtables version {}".format(VERSION))
         label.setFont(title_font)
         pal = QtGui.QPalette(label.palette())
         pal.setColor(QtGui.QPalette.WindowText, QtGui.QColor(QtCore.Qt.black))
@@ -124,12 +123,12 @@ class MainWindow(QtGui.QMainWindow):
 
         subtitlebox.addSpacing(5)
 
-        subtitle = QtGui.QLabel('Select one of the actions below')
+        subtitle = QtWidgets.QLabel('Select one of the actions below')
         subtitle.setPalette(pal)
         subtitlebox.addWidget(subtitle)
         # subtitlebox.addSpacing(10)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
         vbox.addLayout(grid)
@@ -140,22 +139,19 @@ class MainWindow(QtGui.QMainWindow):
         self.comparebutton = self.generate_button('Compare entries within\nan '
                                                   'odml',
                                                   "comparetable.svg")
-        self.generatebutton = self.generate_button('Generate empty '
-                                                   'template\ntable',
+        self.generatebutton = self.generate_button('Generate new table',
                                                    "createtemplate.svg")
         self.filterbutton = self.generate_button('Filter content of odml\n',
                                                  "filterodml.svg")
         self.mergebutton = self.generate_button('Merge contents of odmls\n',
                                                 "mergeodml.svg")
 
-        icon = QtGui.QLabel()
+        icon = QtWidgets.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         # use full ABSOLUTE path to the image, not relative
-        icon.setPixmap(QtGui.QPixmap(os.path.join(os.getcwd(), '..', '..',
-                                                  'logo',
-                                                  "odML-tables_100x100.png")))
-        # QtGui.QPixmap(os.path.join('..', '..', 'logo',
-        #                                     "odML-tables_100x100.png"))
+        icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
+                                                  'logo', "odMLtables_100x100.png")))
+
 
         grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
         grid.addWidget(self.comparebutton, 1, 1)
@@ -170,24 +166,25 @@ class MainWindow(QtGui.QMainWindow):
 
     def generate_button(self, text, graphic_name):
         graphic_path = get_graphic_path()
-        button = QtGui.QToolButton()
+        button = QtWidgets.QToolButton()
         button.setText(self.tr(text))
         button.setIcon(QtGui.QIcon(os.path.join(graphic_path, graphic_name)))
         button.setIconSize(QtCore.QSize(120, 60))
         button.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         button.setFixedWidth(200)
+        button.setFixedHeight(100)
         button.clicked.connect(self.startWizard)
 
         button.setStyleSheet(
-                            'QToolButton {'
-                            'background-color:#FF9955;'
-                            'border: 2px solid #404040;'
-                            'border-radius: 5px;'
-                            'color: black};'  # 'FF7F2A'
+            'QToolButton {'
+            'background-color:#FF9955;'
+            'border: 2px solid #404040;'
+            'border-radius: 5px;'
+            'color: black};'  # 'FF7F2A'
 
-                            'QToolButton:hover{'
-                            'background-color:red};'
-                             )
+            'QToolButton:hover{'
+            'background-color:red};'
+        )
         return button
 
     def startWizard(self):

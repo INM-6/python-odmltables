@@ -25,6 +25,7 @@ def setup_example():
 
     # turn off color of table cells
     basic_style = XlsStyle(backcolor='white', fontcolor='black', fontstyle='')
+    xlstable.highlight_defaults = False
     xlstable.highlight_style = basic_style
     xlstable.header_style = basic_style
     xlstable.first_style = basic_style

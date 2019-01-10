@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from PyQt4.QtGui import (QWizard, QPixmap, QMessageBox)
-from PyQt4.QtCore import (pyqtSlot)
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import (QWizard, QMessageBox)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt
 
 try:
     import odmltables
@@ -20,7 +20,9 @@ class OdmltablesWizard(QWizard):
         super(OdmltablesWizard, self).__init__(parent)
 
         self.wizname = wizname
-        self.settingsfile = wizname.replace(' ', '').lower() + '.conf'
+        self.settingsfile = os.path.join(os.path.expanduser("~"),
+                                         '.odmltables',
+                                         wizname.replace(' ', '').lower() + '.conf')
 
         # initialize settings
         self.settings = Settings(self.settingsfile)
@@ -34,10 +36,8 @@ class OdmltablesWizard(QWizard):
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
         self.setPixmap(QWizard.LogoPixmap,
-                       QPixmap(os.path.join('..', '..', 'logo',
-                                            "odML-tables_100x100.png")))
-        # self.setPixmap(QWizard.WatermarkPixmap, QPixmap(os.path.join('..',
-        # 'logo',"odML-tables_100x100.png")))
+                       QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
+                                            'logo', "odMLtables_100x100.png")))
 
         # set up help messages
         self._lastHelpMsg = ''
@@ -79,4 +79,3 @@ def get_graphic_path():
                                  'gui',
                                  'graphics')
     return data_path
-

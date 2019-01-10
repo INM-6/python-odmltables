@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import copy
+import sys
 import os
 import subprocess
 import xlwt
 
 from future.utils import iteritems
 
-from PyQt4.QtCore import Qt
-import PyQt4.QtGui as Qtg
+from PyQt5.QtCore import Qt
+import PyQt5.QtWidgets as Qtw
+import PyQt5.QtGui as Qtg
 
 from .pageutils import QIWizardPage, clearLayout, get_property, get_rgb, shorten_path
 from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
@@ -24,7 +26,7 @@ class LoadFilePage(QIWizardPage):
         self.settings.register('inputfilename', self, useconfig=False)
 
         # Set up layout
-        self.layout = Qtg.QVBoxLayout()
+        self.layout = Qtw.QVBoxLayout()
         self.setLayout(self.layout)
 
     def initializePage(self):
@@ -36,34 +38,34 @@ class LoadFilePage(QIWizardPage):
         vbox = self.layout
 
         # Adding input part
-        topLabel = Qtg.QLabel(self.tr("Choose a file to load"))
+        topLabel = Qtw.QLabel(self.tr("Choose a file to load"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         # vbox.addSpacing(10)
 
         # Add first horizontal box
-        self.buttonbrowse = Qtg.QPushButton("Browse")
+        self.buttonbrowse = Qtw.QPushButton("Browse")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
-        self.inputfile = Qtg.QLabel(self.inputfilename)
+        self.inputfile = Qtw.QLabel(self.inputfilename)
         self.inputfile.setWordWrap(True)
-        hbox1 = Qtg.QHBoxLayout()
+        hbox1 = Qtw.QHBoxLayout()
         hbox1.addWidget(self.buttonbrowse)
         hbox1.addWidget(self.inputfile)
 
         hbox1.addStretch()
         vbox.addLayout(hbox1)
 
-        self.cbcustominput = Qtg.QCheckBox('I changed the column names in the'
-                                       ' input table.')
+        self.cbcustominput = Qtw.QCheckBox('I changed the column names in the'
+                                           ' input table.')
         self.cbcustominput.setEnabled(False)
         self.settings.register('CBcustominput', self.cbcustominput)
         vbox.addWidget(self.cbcustominput)
         vbox.addStretch()
 
         # adding configuration selection
-        configlabel = Qtg.QLabel('Load a configuration from a previous run')
+        configlabel = Qtw.QLabel('Load a configuration from a previous run')
         vbox.addWidget(configlabel)
-        self.configselection = Qtg.QComboBox()
+        self.configselection = Qtw.QComboBox()
         self.configselection.addItems(self.settings.get_all_config_names())
         self.configselection.insertItem(0, '-- No configuration --')
         self.configselection.setCurrentIndex(0)
@@ -71,27 +73,27 @@ class LoadFilePage(QIWizardPage):
         vbox.addWidget(self.configselection)
 
         # adding separator
-        horizontalLine = Qtg.QFrame()
-        horizontalLine.setFrameStyle(Qtg.QFrame.HLine)
-        horizontalLine.setSizePolicy(Qtg.QSizePolicy.Expanding, Qtg.QSizePolicy.Minimum)
+        horizontalLine = Qtw.QFrame()
+        horizontalLine.setFrameStyle(Qtw.QFrame.HLine)
+        horizontalLine.setSizePolicy(Qtw.QSizePolicy.Expanding, Qtw.QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
 
         # Adding output part
-        bottomLabel = Qtg.QLabel(self.tr("Select an output format"))
+        bottomLabel = Qtw.QLabel(self.tr("Select an output format"))
         bottomLabel.setWordWrap(True)
         vbox.addWidget(bottomLabel)
         vbox.addWidget(bottomLabel)
 
         # Add second horizontal box
-        self.rbuttonxls = Qtg.QRadioButton(self.tr("xls"))
-        self.rbuttoncsv = Qtg.QRadioButton(self.tr("csv"))
-        self.rbuttonodml = Qtg.QRadioButton(self.tr("odml"))
+        self.rbuttonxls = Qtw.QRadioButton(self.tr("xls"))
+        self.rbuttoncsv = Qtw.QRadioButton(self.tr("csv"))
+        self.rbuttonodml = Qtw.QRadioButton(self.tr("odml"))
 
         self.settings.register('RBoutputxls', self.rbuttonxls)
         self.settings.register('RBoutputcsv', self.rbuttoncsv)
         self.settings.register('RBoutputodml', self.rbuttonodml)
 
-        hbox2 = Qtg.QHBoxLayout()
+        hbox2 = Qtw.QHBoxLayout()
         hbox2.addWidget(self.rbuttonxls)
         hbox2.addSpacing(50)
         hbox2.addWidget(self.rbuttoncsv)
@@ -111,13 +113,12 @@ class LoadFilePage(QIWizardPage):
             self.settings.register('RBoutputodml', self.rbuttonodml)
             self.settings.register('CBcustominput', self.cbcustominput)
             self.settings.register('inputfilename', self, useconfig=False)
-            short_filename = shorten_path(self.settings.get_object(
-                    'inputfilename'))
+            short_filename = shorten_path(self.settings.get_object('inputfilename'))
             self.inputfile.setText(short_filename)
             # self.settings.get_object('RBoutputxls')
 
     def handlebuttonbrowse(self):
-        dlg = Qtg.QFileDialog()
+        dlg = Qtw.QFileDialog()
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)
@@ -138,33 +139,32 @@ class LoadFilePage(QIWizardPage):
                 or self.rbuttonodml.isChecked()):
             if str(self.inputfilename[-4:]) in ['.xls', '.csv']:
                 self.rbuttonodml.setChecked(True)
-            elif str(self.inputfilename[-5:]) in ['.odml']:
+            elif (str(self.inputfilename[-5:]) in ['.odml']
+                  or str(self.inputfilename[-4:]) in ['.xml']):
                 self.rbuttonxls.setChecked(True)
 
     def validatePage(self):
         if not any((self.settings.get_object('RBoutputxls').isChecked(),
                     self.settings.get_object('RBoutputcsv').isChecked(),
                     self.settings.get_object('RBoutputodml').isChecked())):
-            Qtg.QMessageBox.warning(self, 'Select a format', 'You need to select a '
-                                                         'table format to '
-                                                         'continue.')
+            Qtw.QMessageBox.warning(self, 'Select a format', 'You need to select a '
+                                                             'table format to '
+                                                             'continue.')
             return 0
 
         if ((not self.settings.is_registered('inputfilename')) or
                 (not self.settings.get_object('inputfilename'))):
-            Qtg.QMessageBox.warning(self, 'Select an input file',
-                                'You need to select'
-                                ' an input file to '
-                                'continue.')
+            Qtw.QMessageBox.warning(self, 'Select an input file',
+                                    'You need to select'
+                                    ' an input file to '
+                                    'continue.')
             return 0
 
         elif self.settings.get_object('inputfilename').split('.')[-1] not in \
-                ['xls', 'csv', 'odml']:
-            Qtg.QMessageBox.warning(self, 'Wrong input format',
-                                'The input file has '
-                                'to be an ".xls", '
-                                '".csv" or ".odml" '
-                                'file.')
+                ['xls', 'csv', 'odml', 'xml']:
+            Qtw.QMessageBox.warning(self, 'Wrong input format',
+                                    'The input file has to be an ".xls", ".csv", ".odml" or '
+                                    '".xml" file.')
             return 0
 
         return 1
@@ -202,7 +202,7 @@ class CustomInputHeaderPage(QIWizardPage):
                          "input file. Select the corresponding odml columns.")
 
         # Set up layout
-        self.vbox = Qtg.QVBoxLayout()
+        self.vbox = Qtw.QVBoxLayout()
         self.setLayout(self.vbox)
         # self.vbox = QVBoxLayout()
         # self.layout.addLayout(self.vbox)
@@ -210,19 +210,19 @@ class CustomInputHeaderPage(QIWizardPage):
     def initializePage(self):
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
         # Adding input part
-        topLabel = Qtg.QLabel(self.tr("Provide the column types used in the input "
-                                  "table"))
+        topLabel = Qtw.QLabel(self.tr("Provide the column types used in the input "
+                                      "table"))
         topLabel.setWordWrap(True)
         vbox.addSpacing(20)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
 
-        self.grid = Qtg.QGridLayout()
+        self.grid = Qtw.QGridLayout()
         vbox.addLayout(self.grid)
 
         # self.setLayout(vbox)
@@ -244,8 +244,8 @@ class CustomInputHeaderPage(QIWizardPage):
 
         for h, header in enumerate(inputxlsheaders):
             # set up individual row for header association
-            h_label = Qtg.QLabel(header)
-            dd_list = Qtg.QComboBox()
+            h_label = Qtw.QLabel(header)
+            dd_list = Qtw.QComboBox()
             dd_list.addItems(header_names)
             # Preselect fitting header name if possible
             if header in header_names:
@@ -268,12 +268,12 @@ class CustomInputHeaderPage(QIWizardPage):
         for h in self.customheaders:
             header_name = h.currentText()
             if header_name in header_names:
-                Qtg.QMessageBox.warning(self,
+                Qtw.QMessageBox.warning(self,
                                         self.tr("Non-unique headers"),
                                         self.tr("Header assignment has"
-                                            " to be unique. '%s' has been"
-                                            " assigned multiple times" %
-                                            header_name))
+                                                " to be unique. '%s' has been"
+                                                " assigned multiple times" %
+                                                header_name))
                 return 0
             header_names.append(header_name)
 
@@ -282,12 +282,12 @@ class CustomInputHeaderPage(QIWizardPage):
                              'odML Data Type']
         for mand_head in mandatory_headers:
             if mand_head not in header_names:
-                Qtg.QMessageBox.warning(self,
+                Qtw.QMessageBox.warning(self,
                                         self.tr("Incomplete headers"),
                                         self.tr("You need to have the mandatory"
-                                            " headers %s in you table to be"
-                                            " able to reconstruct an odml"
-                                            "" % mandatory_headers))
+                                                " headers %s in you table to be"
+                                                " able to reconstruct an odml"
+                                                "" % mandatory_headers))
                 return 0
         return 1
 
@@ -308,21 +308,20 @@ class HeaderOrderPage(QIWizardPage):
                          "the order using the buttons to the right")
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         self.setLayout(vbox)
 
-
-        topLabel = Qtg.QLabel(self.tr("Select the columns for the output table"))
+        topLabel = Qtw.QLabel(self.tr("Select the columns for the output table"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
 
-        hbox0 = Qtg.QHBoxLayout()
+        hbox0 = Qtw.QHBoxLayout()
         hbox0.addStretch()
-        hbox0.addWidget(Qtg.QLabel('available columns'))
+        hbox0.addWidget(Qtw.QLabel('available columns'))
         hbox0.addStretch()
         hbox0.addSpacing(90)
-        hbox0.addWidget(Qtg.QLabel('selected columns'))
+        hbox0.addWidget(Qtw.QLabel('selected columns'))
         hbox0.addStretch()
         hbox0.addSpacing(30)
 
@@ -333,23 +332,23 @@ class HeaderOrderPage(QIWizardPage):
         self.header_names = list(odtables._header_titles.values())
 
         # generating selection lists
-        self.header_list = Qtg.QListWidget()
+        self.header_list = Qtw.QListWidget()
         self.header_list.setSelectionMode(3)
         self.header_list.itemDoubleClicked.connect(self.itemdoubleclicked)
-        self.selection_list = Qtg.QListWidget()
+        self.selection_list = Qtw.QListWidget()
         self.selection_list.setSelectionMode(3)
         self.selection_list.itemDoubleClicked.connect(self.itemdoubleclicked)
 
-        toright = Qtg.QToolButton()
+        toright = Qtw.QToolButton()
         toright.setArrowType(Qt.RightArrow)
         toright.clicked.connect(self.toright)
-        toleft = Qtg.QToolButton()
+        toleft = Qtw.QToolButton()
         toleft.setArrowType(Qt.LeftArrow)
         toleft.clicked.connect(self.toleft)
 
-        hbox = Qtg.QHBoxLayout()
+        hbox = Qtw.QHBoxLayout()
         hbox.addWidget(self.header_list)
-        vboxbuttons = Qtg.QVBoxLayout()
+        vboxbuttons = Qtw.QVBoxLayout()
         vboxbuttons.addStretch()
         vboxbuttons.addWidget(toright)
         vboxbuttons.addSpacing(30)
@@ -366,11 +365,11 @@ class HeaderOrderPage(QIWizardPage):
         self.mandatory_headers = copy.deepcopy(default_selection_list)
         for i, h in enumerate(self.header_names):
             if h not in default_selection_list:
-                item = Qtg.QListWidgetItem()
+                item = Qtw.QListWidgetItem()
                 item.setText(h)
                 self.header_list.addItem(item)
             else:
-                item = Qtg.QListWidgetItem()
+                item = Qtw.QListWidgetItem()
                 item.setText(h)
 
                 self.selection_list.addItem(item)
@@ -378,14 +377,14 @@ class HeaderOrderPage(QIWizardPage):
         hbox.addWidget(self.selection_list)
 
         # adding up and down buttons
-        up = Qtg.QToolButton()
+        up = Qtw.QToolButton()
         up.setArrowType(Qt.UpArrow)
         up.clicked.connect(self.up)
-        down = Qtg.QToolButton()
+        down = Qtw.QToolButton()
         down.setArrowType(Qt.DownArrow)
         down.clicked.connect(self.down)
 
-        vboxbuttons2 = Qtg.QVBoxLayout()
+        vboxbuttons2 = Qtw.QVBoxLayout()
         vboxbuttons2.addStretch()
         vboxbuttons2.addWidget(up)
         vboxbuttons2.addSpacing(30)
@@ -405,8 +404,8 @@ class HeaderOrderPage(QIWizardPage):
         # sort rows in descending order in order to compensate shifting
         # due to takeItem
         rows = sorted(
-                [index.row() for index in self.header_list.selectedIndexes()],
-                reverse=True)
+            [index.row() for index in self.header_list.selectedIndexes()],
+            reverse=True)
         for row in rows:
             self.selection_list.addItem(self.header_list.takeItem(row))
 
@@ -445,17 +444,17 @@ class HeaderOrderPage(QIWizardPage):
 
         # check number of selected headers
         if self.settings.get_object('LWselectedcolumns').count() < 1:
-            Qtg.QMessageBox.warning(self, self.tr("No header selected"),
+            Qtw.QMessageBox.warning(self, self.tr("No header selected"),
                                     self.tr("You need to select at least one header"
-                                        " to generate a table representation "
-                                        "of an odml."))
+                                            " to generate a table representation "
+                                            "of an odml."))
             return 0
 
         selectedheaderstrings = []
         for itemid in list(range(self.settings.get_object(
                 'LWselectedcolumns').count())):
             selectedheaderstrings.append(self.settings.get_object(
-                    'LWselectedcolumns').item(itemid).text())
+                'LWselectedcolumns').item(itemid).text())
 
         missing_headers = []
         for mand_header in self.mandatory_headers:
@@ -463,12 +462,11 @@ class HeaderOrderPage(QIWizardPage):
                 missing_headers.append(mand_header)
 
         if missing_headers != []:
-            Qtg.QMessageBox.warning(self, self.tr("Incomplete odml"),
+            Qtw.QMessageBox.warning(self, self.tr("Incomplete odml"),
                                     self.tr("You need to include the headers %s "
-                                        " in your table if you want to be "
-                                        "able to"
-                                        " generate an odml from the table." % (
-                                            missing_headers)))
+                                            " in your table if you want to be "
+                                            "able to generate an odml from the table." % (
+                                                missing_headers)))
 
         return 1
 
@@ -478,7 +476,7 @@ class CustomColumnNamesPage(QIWizardPage):
         super(CustomColumnNamesPage, self).__init__(parent)
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         self.setLayout(vbox)
 
         self.setTitle("Customize the output table")
@@ -487,16 +485,16 @@ class CustomColumnNamesPage(QIWizardPage):
 
     def initializePage(self):
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
-        topLabel = Qtg.QLabel(self.tr("Customize header names of output table"))
+        topLabel = Qtw.QLabel(self.tr("Customize header names of output table"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
 
-        self.grid = Qtg.QGridLayout()
+        self.grid = Qtw.QGridLayout()
         vbox.addLayout(self.grid)
 
         # Adding input part
@@ -505,7 +503,7 @@ class CustomColumnNamesPage(QIWizardPage):
         for itemid in list(range(self.settings.get_object(
                 'LWselectedcolumns').count())):
             selectedheaderstrings.append(self.settings.get_object(
-                    'LWselectedcolumns').item(itemid).text())
+                'LWselectedcolumns').item(itemid).text())
 
         # show marking option only for xls output
         enable_marking = False
@@ -522,26 +520,26 @@ class CustomColumnNamesPage(QIWizardPage):
 
         self.customheaderlabels = []
         self.columnmarkings = False
-        headerlabel = Qtg.QLabel('Odml Header')
+        headerlabel = Qtw.QLabel('Odml Header')
         headerlabel.setStyleSheet('font: bold 14px')
         self.grid.addWidget(headerlabel, 0, 0)
-        customlabel = Qtg.QLabel('Customized Label')
+        customlabel = Qtw.QLabel('Customized Label')
         customlabel.setStyleSheet('font: bold 14px')
         self.grid.addWidget(customlabel, 0, 1)
         if enable_marking:
-            markinglabel = Qtg.QLabel('Highlight Column')
+            markinglabel = Qtw.QLabel('Highlight Column')
             markinglabel.setStyleSheet('font: bold 14px')
             self.grid.addWidget(markinglabel, 0, 2)
 
         for h, selheaderstr in enumerate(selectedheaderstrings):
-            label = Qtg.QLabel(selheaderstr)
-            customheader = Qtg.QLineEdit()
+            label = Qtw.QLabel(selheaderstr)
+            customheader = Qtw.QLineEdit()
             customheader.setText(selheaderstr)
             self.customheaderlabels.append(customheader)
             self.grid.addWidget(label, h + 1, 0)
             self.grid.addWidget(customheader, h + 1, 1)
             if enable_marking:
-                cbmarking = Qtg.QCheckBox()
+                cbmarking = Qtw.QCheckBox()
                 self.grid.addWidget(cbmarking, h + 1, 2)
                 if self.columnmarkings == False:
                     self.columnmarkings = []
@@ -551,7 +549,7 @@ class CustomColumnNamesPage(QIWizardPage):
         try:
             self.settings.register('customheaderlabels',
                                    self.customheaderlabels)
-            self.settings.register('columnmarkings', self.columnmarkings)
+            self.settings.register('columnmarkings', self)
         except IndexError:
             self.settings.register('customheaderlabels',
                                    self.customheaderlabels,
@@ -561,11 +559,10 @@ class CustomColumnNamesPage(QIWizardPage):
 
     def validatePage(self):
         # get manually entered labels
-        customlabels = [le.text() for le in self.settings.get_object(
-                'customheaderlabels')]
+        customlabels = [le.text() for le in self.settings.get_object('customheaderlabels')]
 
         if any([label == '' for label in customlabels]):
-            Qtg.QMessageBox.warning(self, self.tr("Empty header name"),
+            Qtw.QMessageBox.warning(self, self.tr("Empty header name"),
                                     self.tr(
                                         "You need to provide a unique, "
                                         "non empty "
@@ -575,7 +572,7 @@ class CustomColumnNamesPage(QIWizardPage):
 
         for l, label in enumerate(customlabels):
             if label in customlabels[:l] + customlabels[l + 1:]:
-                Qtg.QMessageBox.warning(self, self.tr("Ambiguous header name"),
+                Qtw.QMessageBox.warning(self, self.tr("Ambiguous header name"),
                                         self.tr(
                                             "You used '%s' as label for "
                                             "multiple "
@@ -604,26 +601,26 @@ class ColorPatternPage(QIWizardPage):
                          "the xls table")
 
         # Set up layout
-        self.vbox = Qtg.QVBoxLayout()
+        self.vbox = Qtw.QVBoxLayout()
         self.setLayout(self.vbox)
 
     def initializePage(self):
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
         # adding pattern selection part
-        topLabel = Qtg.QLabel(self.tr("Which color pattern shall be used?"))
+        topLabel = Qtw.QLabel(self.tr("Which color pattern shall be used?"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
 
-        self.rbalternating = Qtg.QRadioButton('alternating')
-        self.rbcheckerboard = Qtg.QRadioButton('checkerboard')
-        self.rbnopattern = Qtg.QRadioButton('no pattern')
+        self.rbalternating = Qtw.QRadioButton('alternating')
+        self.rbcheckerboard = Qtw.QRadioButton('checkerboard')
+        self.rbnopattern = Qtw.QRadioButton('no pattern')
 
-        patterngroup = Qtg.QButtonGroup(vbox)
+        patterngroup = Qtw.QButtonGroup(vbox)
         patterngroup.addButton(self.rbalternating)
         patterngroup.addButton(self.rbcheckerboard)
         patterngroup.addButton(self.rbnopattern)
@@ -642,16 +639,16 @@ class ColorPatternPage(QIWizardPage):
         vbox.addSpacing(40)
 
         # adding style switch part
-        self.bottomLabel = Qtg.QLabel(self.tr("When shall the style switch? "
-                                          "Beginning of a new"))
+        self.bottomLabel = Qtw.QLabel(self.tr("When shall the style switch? "
+                                              "Beginning of a new"))
         self.bottomLabel.setWordWrap(True)
         # self.bottomLabel.setEnabled(False)
         vbox.addWidget(self.bottomLabel)
         vbox.addSpacing(20)
 
-        self.rbsection = Qtg.QRadioButton('Section')
-        self.rbproperty = Qtg.QRadioButton('Property')
-        self.rbvalue = Qtg.QRadioButton('Value')
+        self.rbsection = Qtw.QRadioButton('Section')
+        self.rbproperty = Qtw.QRadioButton('Property')
+        self.rbvalue = Qtw.QRadioButton('Value')
 
         self.rbsection.setChecked(True)
 
@@ -663,7 +660,7 @@ class ColorPatternPage(QIWizardPage):
         self.settings.register('RBproperty', self.rbproperty)
         self.settings.register('RBvalue', self.rbvalue)
 
-        changegroup = Qtg.QButtonGroup(vbox)
+        changegroup = Qtw.QButtonGroup(vbox)
         changegroup.addButton(self.rbsection)
         changegroup.addButton(self.rbproperty)
         changegroup.addButton(self.rbvalue)
@@ -694,23 +691,23 @@ class ChangeStylePage(QIWizardPage):
                          "in the xls table")
 
         # Set up layout
-        self.vbox = Qtg.QVBoxLayout()
+        self.vbox = Qtw.QVBoxLayout()
         self.setLayout(self.vbox)
 
     def initializePage(self):
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
         # adding pattern selection part
-        topLabel = Qtg.QLabel(self.tr("Click on a field to choose the style for "
-                                  "this field"))
+        topLabel = Qtw.QLabel(self.tr("Click on a field to choose the style for "
+                                      "this field"))
         topLabel.setWordWrap(True)
         vbox.addWidget(topLabel)
         vbox.addSpacing(20)
 
-        hbox = Qtg.QHBoxLayout()
+        hbox = Qtw.QHBoxLayout()
         hbox.setAlignment(Qt.AlignCenter)
 
         texts = ['Header', 'Standard\nRow 1', 'Standard\nRow 2',
@@ -732,26 +729,26 @@ class ChangeStylePage(QIWizardPage):
 
         self.tablebuttons = [None] * len(texts)
 
-        gridtable = Qtg.QGridLayout()
+        gridtable = Qtw.QGridLayout()
         for i in list(range(len(self.tablebuttons))):
-            self.tablebuttons[i] = Qtg.QPushButton()
+            self.tablebuttons[i] = Qtw.QPushButton()
             self.tablebuttons[i].setText(texts[i])
             self.tablebuttons[i].setStyleSheet(default_styles[i])
             self.tablebuttons[i].setStyleSheet(
-                    self.tablebuttons[i].styleSheet() + common_default)
+                self.tablebuttons[i].styleSheet() + common_default)
             self.tablebuttons[i].setAutoFillBackground(True)
             self.tablebuttons[i].clicked.connect(self.updatesettings)
             gridtable.addWidget(self.tablebuttons[i], *positions[i])
 
-        self.cbhighlightdefaults = Qtg.QCheckBox('Highlight default values')
+        self.cbhighlightdefaults = Qtw.QCheckBox('Highlight default values')
         self.cbhighlightdefaults.setChecked(True)
 
         # add spacer for invisible 'default value' button
-        self.spacer = Qtg.QSpacerItem(10, 0)
+        self.spacer = Qtw.QSpacerItem(10, 0)
 
         gridtable.setSpacing(0)
 
-        vstretcher = Qtg.QVBoxLayout()
+        vstretcher = Qtw.QVBoxLayout()
         vstretcher.addStretch(1)
         vstretcher.addLayout(gridtable)
         vstretcher.addSpacerItem(self.spacer)
@@ -762,31 +759,31 @@ class ChangeStylePage(QIWizardPage):
         hbox.addLayout(vstretcher)
 
         # adding separator
-        verticalLine = Qtg.QFrame()
-        verticalLine.setFrameStyle(Qtg.QFrame.VLine)
-        verticalLine.setSizePolicy(Qtg.QSizePolicy.Minimum, Qtg.QSizePolicy.Expanding)
+        verticalLine = Qtw.QFrame()
+        verticalLine.setFrameStyle(Qtw.QFrame.VLine)
+        verticalLine.setSizePolicy(Qtw.QSizePolicy.Minimum, Qtw.QSizePolicy.Expanding)
 
         hbox.addWidget(verticalLine)
 
         self.cbbgcolor = ColorListWidget()
         self.cbfontcolor = ColorListWidget()
 
-        self.cbboldfont = Qtg.QCheckBox('bold')
+        self.cbboldfont = Qtw.QCheckBox('bold')
         self.cbboldfont.setStyleSheet('font:bold')
 
-        self.cbitalicfont = Qtg.QCheckBox('italic')
+        self.cbitalicfont = Qtw.QCheckBox('italic')
         self.cbitalicfont.setStyleSheet('font:italic')
 
-        gridsettings = Qtg.QGridLayout()
-        self.settingstitle = Qtg.QLabel()
+        gridsettings = Qtw.QGridLayout()
+        self.settingstitle = Qtw.QLabel()
         self.settingstitle.setText('-')
         self.settingstitle.setStyleSheet('font:bold 16px')
         gridsettings.addWidget(self.settingstitle, 0, 0, 1, 1)
-        gridsettings.addWidget(Qtg.QLabel('Backgroundcolor'), 1, 0)
+        gridsettings.addWidget(Qtw.QLabel('Backgroundcolor'), 1, 0)
         gridsettings.addWidget(self.cbbgcolor, 1, 1)
-        gridsettings.addWidget(Qtg.QLabel('Fontcolor'), 2, 0)
+        gridsettings.addWidget(Qtw.QLabel('Fontcolor'), 2, 0)
         gridsettings.addWidget(self.cbfontcolor, 2, 1)
-        gridsettings.addWidget(Qtg.QLabel('Fontstyle'), 3, 0)
+        gridsettings.addWidget(Qtw.QLabel('Fontstyle'), 3, 0)
         gridsettings.addWidget(self.cbboldfont, 3, 1)
         gridsettings.addWidget(self.cbitalicfont, 4, 1)
         gridsettings.setSpacing(0)
@@ -858,8 +855,8 @@ class ChangeStylePage(QIWizardPage):
                 new_style_value = 'rgb%s;' % (
                     str(self.cbfontcolor.get_current_rgb()))
             self.currentbutton.setStyleSheet(
-                    self.removestyle(self.currentbutton.styleSheet(), to_update)
-                    + '; %s:%s' % (to_update, new_style_value))
+                self.removestyle(self.currentbutton.styleSheet(), to_update)
+                + '; %s:%s' % (to_update, new_style_value))
 
         # updates from checkboxes
         elif sender in [self.cbboldfont, self.cbitalicfont]:
@@ -899,7 +896,7 @@ class ChangeStylePage(QIWizardPage):
         else:
             height = self.tablebuttons[5].height()
         self.spacer.changeSize(self.tablebuttons[5].width(), height,
-                               Qtg.QSizePolicy.Fixed, Qtg.QSizePolicy.Fixed)
+                               Qtw.QSizePolicy.Fixed, Qtw.QSizePolicy.Fixed)
         self.layout().invalidate()
 
 
@@ -914,11 +911,11 @@ class SaveFilePage(QIWizardPage):
                          "in future runs of the gui.")
 
         # Set up layout
-        self.vbox = Qtg.QVBoxLayout()
+        self.vbox = Qtw.QVBoxLayout()
         self.setLayout(self.vbox)
 
     def add_new_conf(self, configlist):
-        item = Qtg.QListWidgetItem()
+        item = Qtw.QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setText('<Click here enter a new configuration name>')
         configlist.insertItem(-1, item)
@@ -930,18 +927,18 @@ class SaveFilePage(QIWizardPage):
 
     def deleteconfname(self):
         if self.configlist.currentItem() == None:
-            Qtg.QMessageBox.warning(self, 'No configuration selected',
-                                'You need to select a configuration in'
-                                ' order to delete it.')
+            Qtw.QMessageBox.warning(self, 'No configuration selected',
+                                    'You need to select a configuration in'
+                                    ' order to delete it.')
         else:
             conf_name = str(self.configlist.currentItem().text())
             quit_msg = "Are you sure you want to delete the configuration " \
                        "'%s'?" % (conf_name)
-            reply = Qtg.QMessageBox.question(self, 'Message',
-                                             quit_msg, Qtg.QMessageBox.Yes,
-                                             Qtg.QMessageBox.No)
+            reply = Qtw.QMessageBox.question(self, 'Message',
+                                             quit_msg, Qtw.QMessageBox.Yes,
+                                             Qtw.QMessageBox.No)
 
-            if reply == Qtg.QMessageBox.Yes:
+            if reply == Qtw.QMessageBox.Yes:
                 self.configlist.takeItem(self.configlist.currentRow())
                 self.settings.delete_config(conf_name)
             else:
@@ -950,32 +947,32 @@ class SaveFilePage(QIWizardPage):
     def initializePage(self):
 
         # Set up layout
-        vbox = Qtg.QVBoxLayout()
+        vbox = Qtw.QVBoxLayout()
         clearLayout(self.layout())
         self.layout().addLayout(vbox)
 
         # adding pattern selection part
-        self.topLabel = Qtg.QLabel(self.tr("Where do you want to save your file?"))
+        self.topLabel = Qtw.QLabel(self.tr("Where do you want to save your file?"))
         self.topLabel.setWordWrap(True)
         vbox.addWidget(self.topLabel)
         # vbox.addSpacing(40)
 
         # Add first horizontal box
-        self.buttonbrowse = Qtg.QPushButton("Save file")
+        self.buttonbrowse = Qtw.QPushButton("Save file")
         self.buttonbrowse.clicked.connect(self.handlebuttonbrowse)
         self.buttonbrowse.setFocus()
         self.outputfilename = ''
-        self.outputfile = Qtg.QLabel(self.outputfilename)
+        self.outputfile = Qtw.QLabel(self.outputfilename)
         self.outputfile.setWordWrap(True)
-        self.buttonshow = Qtg.QPushButton("Open file")
+        self.buttonshow = Qtw.QPushButton("Open file")
         self.buttonshow.clicked.connect(self.show_file)
         self.buttonshow.setEnabled(False)
-        self.buttonsaveconfig = Qtg.QPushButton("Save configuration")
+        self.buttonsaveconfig = Qtw.QPushButton("Save configuration")
         self.buttonsaveconfig.clicked.connect(self.saveconfig)
-        self.buttondeleteconfig = Qtg.QPushButton("Delete configuration")
+        self.buttondeleteconfig = Qtw.QPushButton("Delete configuration")
         self.buttondeleteconfig.clicked.connect(self.deleteconfname)
 
-        hbox = Qtg.QHBoxLayout()
+        hbox = Qtw.QHBoxLayout()
         hbox.addWidget(self.buttonbrowse)
         hbox.addWidget(self.outputfile)
         hbox.addStretch()
@@ -986,14 +983,14 @@ class SaveFilePage(QIWizardPage):
         vbox.addStretch()
 
         # adding separator
-        horizontalLine = Qtg.QFrame()
-        horizontalLine.setFrameStyle(Qtg.QFrame.HLine)
-        horizontalLine.setSizePolicy(Qtg.QSizePolicy.Expanding, Qtg.QSizePolicy.Minimum)
+        horizontalLine = Qtw.QFrame()
+        horizontalLine.setFrameStyle(Qtw.QFrame.HLine)
+        horizontalLine.setSizePolicy(Qtw.QSizePolicy.Expanding, Qtw.QSizePolicy.Minimum)
         vbox.addWidget(horizontalLine)
-        vbox.addWidget(Qtg.QLabel('You can save the configuration used in '
-                              'this run'))
-        grid = Qtg.QGridLayout()
-        self.configlist = Qtg.QListWidget()
+        vbox.addWidget(Qtw.QLabel('You can save the configuration used in '
+                                  'this run'))
+        grid = Qtw.QGridLayout()
+        self.configlist = Qtw.QListWidget()
         self.configlist.itemActivated.connect(self.newconfname)
         self.add_new_conf(self.configlist)
         grid.addWidget(self.configlist, 0, 0, 1, 2)
@@ -1006,38 +1003,39 @@ class SaveFilePage(QIWizardPage):
         self.outputfile.setText(short_filename)
 
         if self.settings.get_object('RBoutputxls').isChecked():
-            self.expected_extension = '.xls'
+            self.expected_extensions = ['.xls']
         elif self.settings.get_object('RBoutputcsv').isChecked():
-            self.expected_extension = '.csv'
+            self.expected_extensions = ['.csv']
         elif self.settings.get_object('RBoutputodml').isChecked():
-            self.expected_extension = '.odml'
+            self.expected_extensions = ['.odml', '.xml']
         else:
             raise ValueError('Can not save file without selection of '
                              'output format.')
 
-        self.topLabel.setText("Where do you want to save your "
-                              "%s file?" % self.expected_extension.strip('.'))
+        self.topLabel.setText("Where do you want to save your %s file?"
+                              % '/'.join([ext.strip('.') for ext in self.expected_extensions]))
 
         self.configlist.addItems(self.settings.get_all_config_names())
         self.issaved = False
 
     def handlebuttonbrowse(self):
-        dlg = Qtg.QFileDialog()
-        dlg.setFileMode(Qtg.QFileDialog.AnyFile)
-        dlg.setAcceptMode(Qtg.QFileDialog.AcceptSave)
-        dlg.setLabelText(Qtg.QFileDialog.Accept, "Generate File")
-        dlg.setDefaultSuffix(self.expected_extension.strip('.'))
+        dlg = Qtw.QFileDialog()
+        dlg.setFileMode(Qtw.QFileDialog.AnyFile)
+        dlg.setAcceptMode(Qtw.QFileDialog.AcceptSave)
+        dlg.setLabelText(Qtw.QFileDialog.Accept, "Generate File")
+        dlg.setDefaultSuffix(self.expected_extensions[0].strip('.'))
 
         inputfilename = self.settings.get_object('inputfilename')
         dirname = os.path.dirname(inputfilename)
         suggested_filename = os.path.splitext(os.path.basename(
-                inputfilename))[0] + self.expected_extension
+            inputfilename))[0] + self.expected_extensions[0]
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
-        dlg.setFilter("%s files (*%s);;all files (*)"
-                      "" % (self.expected_extension.strip('.'),
-                            self.expected_extension))
+        filternames = ["%s files (*%s)" % (ext.strip('.'), ext) for ext in
+                       self.expected_extensions]
+        filternames += ['all files (*)']
+        dlg.setNameFilters(filternames)
         # filenames = []
 
         if dlg.exec_():
@@ -1047,18 +1045,18 @@ class SaveFilePage(QIWizardPage):
             # extending filename if no extension is present
         if (self.outputfilename != '' and
                     os.path.splitext(self.outputfilename)[1] == ''):
-            self.outputfilename += self.expected_extension
+            self.outputfilename += self.expected_extensions[0]
         short_filename = shorten_path(self.outputfilename)
         self.outputfile.setText(short_filename)
 
         if ((os.path.splitext(self.outputfilename)[
-                 1] != self.expected_extension) and
+                 1] not in self.expected_extensions) and
                 (os.path.splitext(self.outputfilename)[1] != '')):
-            Qtg.QMessageBox.warning(self, 'Wrong file format',
-                                'The output file format is supposed to be "%s",'
-                                ' but you selected "%s"'
-                                '' % (self.expected_extension,
-                                      os.path.splitext(self.outputfilename)[1]))
+            Qtw.QMessageBox.warning(self, 'Wrong file format',
+                                    'The output file format is supposed to be "%s",'
+                                    ' but you selected "%s"'
+                                    '' % (' or '.join(self.expected_extension),
+                                          os.path.splitext(self.outputfilename)[1]))
             self.handlebuttonbrowse()
 
         elif self.outputfilename != '':
@@ -1070,34 +1068,36 @@ class SaveFilePage(QIWizardPage):
             self.buttonshow.setEnabled(True)
 
     def show_file(self):
-        system = os.name
-        if system == 'posix':
+        platform = sys.platform
+        if platform.startswith('linux'):
             subprocess.Popen(["nohup", "see", self.outputfilename])
-            # os.system('see %s'%self.outputfilename)
-        elif system == 'nt':
+        elif platform == 'darwin':
+            subprocess.Popen(["open", self.outputfilename])
+        elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
-            # os.system("start %s"%self.outputfilename)
+        else:
+            raise ValueError('Unknown operating platform "{}".'.format(platform))
 
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or
                 (str(self.configlist.currentItem().text()) in
                      ['', '<Click here enter a new configuration name>'])):
-            Qtg.QMessageBox.warning(self, 'No configuration name selected',
-                                'You need to select a name for your '
-                                'configuration if you want to save it or '
-                                'define a new one (<Click here enter a new '
-                                'configuration name>)')
+            Qtw.QMessageBox.warning(self, 'No configuration name selected',
+                                    'You need to select a name for your '
+                                    'configuration if you want to save it or '
+                                    'define a new one (<Click here enter a new '
+                                    'configuration name>)')
         else:
             config_name = str(self.configlist.currentItem().text())
             curritem = self.configlist.currentItem()
             if self.configlist.currentRow() != 0:
                 self.configlist.item(0).setText(
-                        '<Click here enter a new configuration name>')
+                    '<Click here enter a new configuration name>')
             elif config_name in self.settings.get_all_config_names():
-                Qtg.QMessageBox.warning(self, 'Configuration already exists',
-                                    'You need to chose a new name for your '
-                                    'configuration.'
-                                    'The name "%s" already exists' %
+                Qtw.QMessageBox.warning(self, 'Configuration already exists',
+                                        'You need to chose a new name for your '
+                                        'configuration.'
+                                        'The name "%s" already exists' %
                                         config_name)
             else:
                 curritem.setFlags((Qt.ItemIsSelectable | Qt.ItemIsEnabled))
@@ -1109,14 +1109,14 @@ class SaveFilePage(QIWizardPage):
         if self.issaved == False:
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
-            reply = Qtg.QMessageBox.question(self, 'Message',
-                                             quit_msg, Qtg.QMessageBox.Yes, Qtg.QMessageBox.No)
-            if reply == Qtg.QMessageBox.No:
+            reply = Qtw.QMessageBox.question(self, 'Message',
+                                             quit_msg, Qtw.QMessageBox.Yes, Qtw.QMessageBox.No)
+            if reply == Qtw.QMessageBox.No:
                 return 0
         return 1
 
 
-class ColorListWidget(Qtg.QComboBox):
+class ColorListWidget(Qtw.QComboBox):
     _xlwt_rgbcolors = [
         (0, 0, 0), (255, 255, 255), (255, 0, 0), (0, 255, 0), (0, 0, 255),
         (255, 255, 0),
@@ -1178,19 +1178,16 @@ def convert(settings):
     else:
         raise ValueError('Unknown output file extension "%s"'
                          '' % os.path.splitext(settings.get_object(
-                'outputfilename'))[1])
+            'outputfilename'))[1])
 
     # setting xls_table or csv_table headers if necessary
     title_translator = {v: k for k, v in iteritems(table._header_titles)}
     if ((os.path.splitext(settings.get_object('inputfilename'))[1]
          in ['.xls', '.csv']) and
             (settings.get_object('CBcustominput').isChecked())):
-        inputheaderlabels = [str(l.text())
-                             for l in settings.get_object('headerlabels')]
-        inputcustomheaders = [str(cb.currentText())
-                              for cb in settings.get_object('customheaders')]
-        inputcolumnnames = [title_translator[label]
-                            for label in inputcustomheaders]
+        inputheaderlabels = [str(l.text()) for l in settings.get_object('headerlabels')]
+        inputcustomheaders = [str(cb.currentText()) for cb in settings.get_object('customheaders')]
+        inputcolumnnames = [title_translator[label] for label in inputcustomheaders]
         table.change_header_titles(**dict(zip(inputcolumnnames,
                                               inputheaderlabels)))
 
@@ -1199,22 +1196,20 @@ def convert(settings):
         table.load_from_xls_table(settings.get_object('inputfilename'))
     elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.csv':
         table.load_from_csv_table(settings.get_object('inputfilename'))
-    elif os.path.splitext(settings.get_object('inputfilename'))[1] == '.odml':
+    elif os.path.splitext(settings.get_object('inputfilename'))[1] in ['.odml', '.xml']:
         table.load_from_file(settings.get_object('inputfilename'))
     else:
         raise ValueError('Unknown input file extension "%s"'
-                         '' % os.path.splitext(settings.get_object(
-                'inputfilename'))[1])
+                         '' % os.path.splitext(settings.get_object('inputfilename'))[1])
 
     # setting custom header selection and custom header titles if necessary
-    if (os.path.splitext(settings.get_object('outputfilename'))[1]
-        in ['.xls', '.csv']):
+    if (os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls', '.csv']):
 
         # setting custom header columns
         output_headers = [title_translator[str(settings.get_object(
-                'LWselectedcolumns').item(index).text())] for index in
+            'LWselectedcolumns').item(index).text())] for index in
                           list(range(settings.get_object(
-                                  'LWselectedcolumns').count()))]
+                              'LWselectedcolumns').count()))]
         table.change_header(**dict(zip(output_headers,
                                        list(range(1, len(output_headers) + 1)))))
 
@@ -1224,7 +1219,7 @@ def convert(settings):
                               for le in
                               settings.get_object('customheaderlabels')]
         table.change_header_titles(
-                **dict(zip(output_headers, customoutputlabels)))
+            **dict(zip(output_headers, customoutputlabels)))
 
         # adding extra layout specifications to xls output files
         if os.path.splitext(settings.get_object('outputfilename'))[1] == '.xls':
@@ -1265,7 +1260,7 @@ def convert(settings):
                 rgb_tuple = get_rgb(get_property(style_button.styleSheet(),
                                                  'background-color'))
                 index = settings.get_object(
-                        'CBbgcolor').xlwt_rgbcolors.index(rgb_tuple)
+                    'CBbgcolor').xlwt_rgbcolors.index(rgb_tuple)
                 bgcolor = settings.get_object('CBbgcolor').xlwt_colornames[
                     index].split(',')[0]
 
@@ -1273,9 +1268,9 @@ def convert(settings):
                 rgb_tuple = get_rgb(get_property(style_button.styleSheet(),
                                                  'color'))
                 index = settings.get_object(
-                        'CBfontcolor').xlwt_rgbcolors.index(rgb_tuple)
+                    'CBfontcolor').xlwt_rgbcolors.index(rgb_tuple)
                 fontcolor = settings.get_object(
-                        'CBfontcolor').xlwt_colornames[index].split(',')[0]
+                    'CBfontcolor').xlwt_colornames[index].split(',')[0]
 
                 # get font properties
                 font_properties = ''
@@ -1295,11 +1290,10 @@ def convert(settings):
 
             # setting highlight defaults
             table.highlight_defaults = settings.get_object(
-                    'CBhighlightdefaults').isChecked()
+                'CBhighlightdefaults').isChecked()
 
     # saving file
-    if os.path.splitext(settings.get_object('outputfilename'))[1] in [
-        '.xls', '.csv']:
+    if os.path.splitext(settings.get_object('outputfilename'))[1] in ['.xls', '.csv']:
         table.write2file(settings.get_object('outputfilename'))
-    elif os.path.splitext(settings.get_object('outputfilename'))[1] == '.odml':
+    elif os.path.splitext(settings.get_object('outputfilename'))[1] in ['.odml', '.xml']:
         table.write2odml(settings.get_object('outputfilename'))

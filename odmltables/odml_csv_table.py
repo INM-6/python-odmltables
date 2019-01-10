@@ -3,6 +3,8 @@
 
 """
 
+__package__='odmltables'
+
 import csv
 
 from .odml_table import OdmlTable
@@ -62,14 +64,17 @@ class OdmlCsvTable(OdmlTable):
                 # will be changed
                 tmp_row = dic.copy()
 
-                # removing section entries (if necessary)
+                # inflate dictionary to fit to column headers
+                tmp_row['Path'], tmp_row['PropertyName'] = tmp_row['Path'].split(':')
+                tmp_row['SectionName'] = tmp_row['Path'].split('/')[-1]
 
-                if dic["Path"] == oldpath:
+                # removing section entries (if necessary)
+                if tmp_row["Path"].split(':')[0] == oldpath:
                     if not self.show_all_sections:
-                        for h in self._SECTION_INF:
+                        for h in self._SECTION_INF + ['SectionName', 'Path']:
                             tmp_row[h] = ""
                 else:
-                    oldpath = dic["Path"]
+                    oldpath = tmp_row["Path"].split(':')[0]
                     # if a new section begins all property- and value-
                     # information should be written, even if its the same as
                     # in the line before, so oldvalinf and oldprop are reset
@@ -77,20 +82,37 @@ class OdmlCsvTable(OdmlTable):
 
                 # removing property entries (if neccessary)
 
-                if dic["PropertyName"] == oldprop:
+                if tmp_row['PropertyName'] == oldprop:
                     if not self.show_all_properties:
-                        for h in self._PROPERTY_INF:
+                        for h in self._PROPERTY_INF + ['PropertyName']:
                             tmp_row[h] = ""
                 else:
-                    oldprop = dic["PropertyName"]
+                    oldprop = tmp_row['PropertyName']
 
                 # eliminate those fields that wont show up in the table
 
                 row = {header_list.index(self._header_titles[h]): tmp_row[h]
                        for h in self._header if h is not None}
 
-                # check if row is empty, otherwise write it to the csv-file
-                if not (list(row.values()) == ['' for r in row]):
-                    csvwriter.writerow(row)
-                else:
-                    pass
+                def write_row(row):
+                    # check if row is empty, otherwise write it to the csv-file
+                    if not (list(row.values()) == ['' for r in row]):
+                        csvwriter.writerow(row)
+                    else:
+                        pass
+
+                # writing also rows when value is not present
+                if tmp_row['Value'] == []:
+                    tmp_row['Value'] = ['']
+
+                for v in tmp_row['Value']:
+                    if 'Value' in header_list:
+                        row[header_list.index('Value')] = v
+                    write_row(row)
+                    # empty entries for further values to be added
+                    for h in self._header:
+                        if ((not self.show_all_properties
+                             and h in self._PROPERTY_INF + ['PropertyName']) or
+                                (not self.show_all_sections
+                                 and h in self._SECTION_INF + ['SectionName', 'Path'])):
+                            row[header_list.index(self._header_titles[h])] = ''

@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
+__package__='odmltables'
 
-"""
-
+import os.path
 import datetime
-import odml
 import xlwt
 
 from .compare_section_table import CompareSectionTable
@@ -51,7 +49,7 @@ class CompareSectionXlsTable(CompareSectionTable):
         """
         headerstyle = xlwt.easyxf(self.header_style.get_style_string())
         missing_val_style = xlwt.easyxf(
-                self.missing_value_style.get_style_string())
+            self.missing_value_style.get_style_string())
         row_styles = [xlwt.easyxf(self.first_style.get_style_string()),
                       xlwt.easyxf(self.second_style.get_style_string())]
 
@@ -59,6 +57,9 @@ class CompareSectionXlsTable(CompareSectionTable):
 
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet(self.sheet_name)
+
+        if os.path.splitext(save_to)[-1] == '':
+            save_to += '.xls'
 
         max_col_len = []
 
@@ -70,6 +71,8 @@ class CompareSectionXlsTable(CompareSectionTable):
 
             for row_num, sec in enumerate(sections):
                 sheet.write(row_num + 1, 0, sec, headerstyle)
+                if len(str(sec)) > max_col_len[0]:
+                    max_col_len[0] = len(str(sec))
 
             for row_num, row in enumerate(table):
                 for col_num, elem in enumerate(row):
@@ -102,6 +105,8 @@ class CompareSectionXlsTable(CompareSectionTable):
 
             for row_num, prop in enumerate(properties):
                 sheet.write(row_num + 1, 0, prop, headerstyle)
+                if len(str(prop)) > max_col_len[0]:
+                    max_col_len[0] = len(str(prop))
 
             for col_num, col in enumerate(table):
                 for row_num, elem in enumerate(col):
@@ -126,54 +131,8 @@ class CompareSectionXlsTable(CompareSectionTable):
                     if len(str(cell_content)) > max_col_len[col_num]:
                         max_col_len[col_num] = len(str(cell_content))
 
+        # adjust width of he columns
+        for col_id, col_len in enumerate(max_col_len):
+            sheet.col(col_id).width = (256 * (col_len+1))
 
-                    #        if self.switch:
-                    #                csvwriter.writerow([''] + properties)
-                    #
-                    #                for i, line in enumerate(table):
-                    #                    csvwriter.writerow([sections[i]] +
-                        # line)
-                    #
-                    #            else:
-                    #                csvwriter.writerow([''] + sections)
-                    #
-                    #                for i in list(range(len(table[0]))):
-                    #                    csvwriter.writerow([properties[i]] +
-                        #  [table[j][i]
-                    #                                       for j in list(range(
-                        # len(table)))])
-                    #
-                    #        for col, h in enumerate(header):
-                    #            sheet.write(0, col, h, headerstyle)
-                    #            max_col_len.append(len(h))
-                    #
-                    #        for row, dic in enumerate(table):
-                    #            for col, h in enumerate(header):
-                    #                if h in table[dic]:
-                    #                    cell_content = table[dic][h]
-                    #                    style = row_styles[row % 2] if col >
-                        #  0 else headerstyle
-                    #                    if isinstance(cell_content,
-                        # datetime.datetime):
-                    #                        style.num_format_str =
-                        # "DD-MM-YYYY HH:MM:SS"
-                    #                    elif isinstance(cell_content,
-                        # datetime.date):
-                    #                        style.num_format_str = "DD-MM-YYYY"
-                    #                    elif isinstance(cell_content,
-                        # datetime.time):
-                    #                        style.num_format_str = "HH:MM:SS"
-                    #                    else:
-                    #                        style.num_format_str = ""
-                    #                else:
-                    #                    cell_content = ""
-                    #                    style = missing_val_style
-                    #
-                    #                sheet.write(row+1, col, cell_content, style)
-                    #                if len(str(cell_content)) > max_col_len[col]:
-                    #                    max_col_len[col] = len(str(cell_content))
-                    #
-                    #        # adjust width of he columns
-                    #        for col in list(range(len(header))):
-                    #            sheet.col(col).width = (256 * (max_col_len[col]+1))
         workbook.save(save_to)

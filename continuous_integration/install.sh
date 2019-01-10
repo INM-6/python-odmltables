@@ -34,6 +34,9 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
     conda install libgfortran=1
 
+    # remove this once odml1.4 is on pypi
+    conda install -c conda-forge rdflib
+
 elif [[ "$DISTRIB" == "conda_min" ]]; then
     # Deactivate the travis-provided virtual environment and setup a
     # conda-based environment instead
@@ -54,6 +57,9 @@ elif [[ "$DISTRIB" == "conda_min" ]]; then
         numpy=$NUMPY_VERSION xlwt=$XLWT_VERSION xlrd=$XLRD_VERSION
     source activate testenv
 
+    # remove this once odml1.4 is on pypi
+    conda install -c conda-forge rdflib
+
     if [[ "$COVERAGE" == "true" ]]; then
         pip install coveralls
     fi
@@ -70,7 +76,10 @@ elif [[ "$DISTRIB" == "ubuntu" ]]; then
     pip install xlrd==$XLRD_VERSION
     pip install lxml
     pip install pyyaml
- 
+    pip install rdflib
+
+    #TODO: remove pip installations which are already covered by setup.py
+
 fi
 
 

@@ -1,0 +1,24 @@
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows}
+\usetikzlibrary{arrows,calc,decorations.markings,math,arrows.meta}
+\usetikzlibrary{positioning}
+\usepackage{graphicx}
+
+
+
+\begin{document}
+\begin{tikzpicture}
+	\definecolor{back}{rgb}{0.95,0.95,0.95}
+	\node [fill=back](table) {\tikz{
+	\fill [gray,scale=.35] (-2,1.5) rectangle (3,2);
+	\begin{scope}[scale=0.35]
+	  \draw[xstep=1,ystep=0.5] (-2,-2) grid (3,2);
+	\end{scope}
+	}};
+	
+	\draw[-{Latex[scale=1]},line width=0.7mm] (-2,0) -- (table.west) {};
+
+\end{tikzpicture}
+\end{document}

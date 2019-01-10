@@ -2,45 +2,63 @@
 Tutorial
 ********
 
-At its core, odML-tables is a tool to convert hierarchical representations of metadata stored in the odML format to flat, tabluar formats. While the former is ideal to store, group, and structure large metadata collections, the latter is easier to visualize for the human eye and may be edited using powerful spreadsheet software. In either case, the data are structured as property-value pairs. Please refer to the documentation of odML for an in-depth tutorial of the format.
+At its core, odMLtables is a tool to convert hierarchical representations of metadata stored in the odML format to flat, tabluar formats. While the former is ideal to store, group, and structure large metadata collections, the latter is easier to visualize for the human eye and may be edited using powerful spreadsheet software. In either case, the data are structured as property-value pairs. Please refer to the documentation of odML for an in-depth tutorial of the format.
 
 In general, there are two types of tables you can create yet: First, a table that represents a plain flattened overview of the entire odML, referred to as an *flattened odML table*. Second, a table that compares a specific set of properties (keys) across sections of the odML, referred to as a *comparative odML table*. Note that only the flattened odML table can be converted back to the hierarchical odML format, while the comparative odML table is intended for visualization of a specific part of the metadata collection, only.
 
-In this tutorial we will guide you through the creation of both table types using the odML-tables libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will present a concrete example of how to embed odML-tables into a workflow. For verification of your odml files you can view the content of an odml file using the `metadataSylesheet <http://www.g-node.org/projects/odml/tools/odml.xsl>`_ provided by the `G-Node <http://www.g-node.org/projects/odml/tools>`_.
+In this tutorial we will guide you through the creation of both table types using the odMLtables
+libary API using both, the comma-separated value (csv) and Excel (xls) formats. Finally, we will
+present a concrete example of how to embed odMLtables into a workflow. For verification of your
+odml files you can view the content of an odml file using the metadataSylesheet for odML file
+version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml.xsl>`_ and
+`1.1 <https://github.com/G-Node/odml-terminologies/blob/master/v1.1/odml.xsl>`_ provided by
+the `G-Node <http://www.g-node.org/projects/odml>`_.
 
+
+In addition to the detailed step-by-step instructions presented here, there are also two **interactive tutorials** available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables sources (:any:`tutorials/tutorial-1_scenarios/demo_scenarios.ipynb`) folder. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
+
+.. _binder: https://mybinder.org/
+.. _jupyter notebooks: http://jupyter.org/
+
+.. |notebook1|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
+  :alt: Binder Link
+
+.. |notebook2|  image:: https://mybinder.org/badge.svg
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-2_experimental_data%2Fdemo_complex_experiment.ipynb
+  :alt: Binder Link
 
 Flattened odML table
 ====================
 
 This table is basically just a flat version of the hierarchical odML file. Every row of the table represents a property-value relationship of the odML (as you will see later, that does not mean you have to print every value). The columns represent information about each individual value. Possible columns are:
 
-* **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required). 
-* **SectionName** The name of the section (optional). This column is provided for better readibility only, since the section name is also encoded in the Path.
+* **Path** The path to the section next to the value. Every value belongs to exactly one property, and every property to exactly one section. Thus, the path to the section and the property name uniquely identify the origin of the value (required).
+* **SectionName** The name of the section (optional). This column is provided for better readability only, since the section name is also encoded in the Path.
 * **SectionDefinition** The definition of the section (optional).
 * **SectionType** The type of the section (optional).
 * **PropertyName** The name of the property the value belongs to (required).
 * **PropertyDefinition** The definition of the property (optional).
 * **Value** The metadata value itself. Every row must have a value (required).
-* **ValueDefinition** The definition of the value (optional).
 * **DataUnit** The unit of measurement of the value (optional).
 * **DataUncertainty** The uncertainty of the value (optional).
 * **odmlDatatype** The odML data type of the value (required). Note that this may differ from the datatypes used to represent the value in Python or Excel.
 
-The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odML-tables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
+The required columns are the minimum number of columns required in order to convert the table back to a hierarchical odML representation. These also represent the default columns used by odMLtables: 'Path', 'Property Name', 'Value' and 'odML Data Type'.
 
 
 csv
 ---
 
-There are different formats you can save your tabluar representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
+There are different formats you can save your tabular representation to, at the moment those are csv (comma-separated value) or xls (Excel). Since xls provides more possibilities concerning the appearance of the table we will start with the easier csv format.
 
 
-Creating your first table
-+++++++++++++++++++++++++
+Converting from odML to table
++++++++++++++++++++++++++++++
 
 To create a csv table from an odML file you have to import the class :class:`odml_csv_table.OdmlCsvTable` and create an instance of that class::
 
-    from odml_csv_table import OdmlCsvTable
+    from odmltables import OdmlCsvTable
 
     myFirstTable = OdmlCsvTable()
 
@@ -78,7 +96,8 @@ You can not only load the odML from an odML-file, as shown in the example above.
 Changing the table header
 +++++++++++++++++++++++++
 
-The next step is to change the header to match you specific requirements for the table. In particular, you can choose which of the possible table columns (see above) will be in the table, their order, and also what the column headers are.
+The next step is to change the header to match your specific requirements for the table. In
+particular, you can choose which of the possible table columns (see above) will be in the table, their order, and also what the column headers are.
 
 .. warning::
    If you miss out one of the columns 'Path', 'Property Name', 'Value' and 'odML Data Type' in your table, it cannot be converted back to an odML-file. Also, if you change the names of the columns you will have to use the same settings to convert it back.
@@ -98,17 +117,10 @@ The table should now look exactly as the old one, with the only difference that 
                                PropertyName=4,
                                Value=5)
 
-As you can see, in this function you can not only decide which columns to show, but also their order, by giving them numbers starting from 1. If, for some reason, you want to have an empty column inside your table, you will have to set the option ``odml_table.OdmlTable.allow_empty_columns`` to True ::
+As you can see, in this function you can not only decide which columns to show, but also their order, by giving them numbers starting from 1.
+To include all possible headers, set the header to `full`::
 
-    myFirstTable.allow_empty_columns = True
-
-After this command, a code like the one below should work fine::
-
-    myFirstTable.change_header(Path=1,
-                               PropertyName=3,
-                               Value=4,
-                               SectionDefinition=7,
-                               DataUncertainty=8)
+    myFirstTable.change_header('full')
 
 
 Avoiding unnessaccery entries
@@ -271,7 +283,7 @@ All source files can be found in the examples folder of the python-odmltables pa
 Example 1: Generating a template odML
 -------------------------------------
 
-In this example you will learn how to generate an odML template file starting from an empty xls file. First you need to create an empty xls file 'example1.xls' using your preferred spreadsheet software and fill the first row with the header titles. In principle only four header title are necessary to generate an odML from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important later in understanding of the metadata structure. The table should now look like this:
+In this example you will learn how to generate an odML template file starting from an empty xls file. First you need to create an empty xls file 'example1.xls' using your preferred spreadsheet software and fill the first row with the header titles. In principle only four header titles are necessary to generate an odML from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important later in understanding of the metadata structure. The table should now look like this:
 
 |
 
@@ -323,7 +335,7 @@ If you now enter all the information discussed above in the xls table, this shou
 |
 
 
-For the conversion of the xls file to an odML template file, you need to generate an OdmlXlsTable object and load the your xls file::
+For the conversion of the xls file to an odML template file, you need to generate an OdmlXlsTable object and load the xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object
@@ -336,21 +348,19 @@ Now you can save it directly as odML file::
 
     xlstable.write2odml('example1.odml')
 
-If you now open the odML file in the browser or save it again as in the tabular format, you will see that also values have appeared for the properties. These values are default values defined in the odML-tables OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odML. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
-
 This new odML file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
 
 Example 2: Manual enrichment of odML
 ------------------------------------
 
-In this example you are going to manually add data to an already existing odML document (see :ref:`example1`). In the best case, this odML document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odML in terms of a complete description of the data and experiment. However, in principle the manual enrichment method presented here can also be used to start from an empty template odML, and all metadata is manually entered.
+In this example you are going to manually add data to an already existing odML document (see :ref:`example1`). In the best case, this odML document was already automatically enriched with digitally accessible values by custom, automatic enrichment routines. Then only few non-digitally available data need to be entered manually to complete the odML in terms of a complete description of the data and experiment. However, in principle the manual enrichment method presented here can also be used to start from a new odML table, and all metadata is manually entered.
 
 We start from the odML generated in :ref:`example1`. If you don't have the resulting file, you can instead use :file:`odml_tables/examples/example1/example1-2.odml` or generate an already pre-enriched odml (:file:`odml_tables/examples/example2/example2-1.odml`) by running::
 
     'python example2.py'
 
-To generate an OdmlTables object, load the odML and save it again as xls file::
+To generate an xls representation of the odML, load the odML and save it again using :class:`odml.odml_xls_table.OdmlXlsTable`::
 
     import odmltables.odml_xls_table as odml_xls_table
 
@@ -411,7 +421,7 @@ Example 3: Creating an overview sheet / Filtering sections and properties
 In this example you are going to create an overview xls table of containing only a selection of properties of the original xls document.
 This feature can be used to create a summary table to be included in a laboratory notebook.
 
-To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odML, which you can generate by executing the example3.py script in the example folder of the odml-tables package::
+To apply the filter function we first need to generate a metadata collection. Here we are going to start from an xls representation of an odML, which you can generate by executing the example3.py script in the example folder of the odmltables package::
 
     'python example3.py'
 
@@ -425,7 +435,7 @@ This generates the file 'example3.xls', which should look like this:
 
 This example structure contains only the branch of an odML describing the animal and its development. The previously acquired information about the animal are saved in properties directly attached to the '/Animal' section. To capture the developmental data a subsection '/Animal/Development' exists, which contains those developmental properties that only consist of a single measurement value. In addition, several 'dev_measures_x' subsections are attached to the 'Animal/Development' section, which each contain a set of values measured on one day. These sections are copies of the '/Animal/Development/dev_measures_template' section. Typically the template section is copied for each day of measurement and values are entered manually (eg. in this xls sheet).
 
-For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we focus on the 'DevelopmentalAge' and 'Weight' properties. To get an odML-tables representation of the xls file we generate an OdmlXlsTable object and load the data from the xls file::
+For practical purposes it can be necessary to create an overview sheet containing only a subset of these developmental measures, eg. for printing them and adding them to the laboratory notebook. Here we focus on the 'DevelopmentalAge' and 'Weight' properties. To get an odMLtables representation of the xls file we generate an OdmlXlsTable object and load the data from the xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object
@@ -471,7 +481,7 @@ Graphical Frontend
 
 The use of the Python API as described above gives you full flexibility over the conversion processes that may be required for your project. Also, it allows you to implement workflows to initiate automated conversion steps to compile metadata from multiple sources, and merge it with manually entered metadata, as described in `Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`_.
 
-However, many of the functions outlined above are also accessible via a graphical front-end that allows to comfortably perform some of the most frequent steps in viewing and manipulating odML-based metadata collections, including conversion to flattened table structures or filtering. Please see the installation instructions to learn how to start the graphical front-end.
+However, many of the functions outlined above are also accessible via a graphical front-end that allows to comfortably perform some of the most frequent steps in viewing and manipulating odML-based metadata collections, including conversion to flattened table structures or filtering. Please see the installation instructions to learn how to run the graphical front-end.
 
 
 .. _`Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`: http://dx.doi.org/10.3389/fninf.2016.00026

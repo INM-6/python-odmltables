@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import (QApplication)
+from PyQt5.QtWidgets import (QApplication)
 
 from .generatetemplatepages import HeaderOrderPage, SaveFilePage
 from .wizutils import OdmltablesWizard
@@ -31,10 +31,10 @@ class GenerateTemplateWizard(OdmltablesWizard):
                                              "into "
                                              " an odml file.")
         msgs[self.PageSaveFile] = self.tr(
-                "Select a location to save you file by "
-                "clicking on the browse button.")
+            "Select a location to save you file by "
+            "clicking on the browse button.")
         msgs[self.NUM_PAGES + 1] = self.tr(
-                "Sorry, for this page there is no help available.")
+            "Sorry, for this page there is no help available.")
         return msgs
 
 

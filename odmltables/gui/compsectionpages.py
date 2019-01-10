@@ -5,15 +5,16 @@ Created on Tue Mar 29 09:31:26 2016
 @author: pick
 """
 import os
+import sys
 import subprocess
 
-from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QMessageBox,
+from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QMessageBox,
                          QLineEdit, QPushButton, QLabel, QGroupBox,
                          QGridLayout, QTreeWidget, QTreeWidgetItem,
                          QToolButton, QFileDialog, QCheckBox, QComboBox,
                          QFrame, QSizePolicy, QRadioButton)
 
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 from .pageutils import QIWizardPage, clearLayout, shorten_path
 import odml
@@ -90,8 +91,8 @@ class ChooseFilePage(QIWizardPage):
 
     def handlebuttonbrowse(self):
         dlg = QFileDialog()
-        dlg.setFilter("%s files (*%s)"
-                      "" % ('odml', '.odml'))
+        dlg.setNameFilters(["%s files (*%s)" % ('odml', '.odml'),
+                            "%s files (*%s)" % ('xml', '.xml')])
         fn = self.settings.get_object('inputfilename')
         if fn:
             dlg.selectFile(fn)
@@ -208,8 +209,7 @@ class ChooseSectionsPage(QIWizardPage):
     def initializePage(self):
 
         # load sections and properties from the selected file
-        odmldoc = odml.tools.xmlparser.load(self.settings.get_object(
-                "inputfilename"))
+        odmldoc = odml.load(self.settings.get_object("inputfilename"))
         for section in odmldoc.itersections():
             self.sections.append([section.name,
                                   section.get_path(),
@@ -253,9 +253,9 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.section_tree)
         for row in rows:
             self.selection_tree.addTopLevelItem(
-                    self.section_tree.takeTopLevelItem(row))
+                self.section_tree.takeTopLevelItem(row))
             self.selected_sections.append(self.sections.pop(
-                    self.sections.index(self.filtered_sections[row])))
+                self.sections.index(self.filtered_sections[row])))
             self.filtered_sections.pop(row)
 
     def toleft(self):
@@ -266,7 +266,7 @@ class ChooseSectionsPage(QIWizardPage):
         rows = self._get_selected_rows(self.selection_tree)
         for row in rows:
             self.section_tree.addTopLevelItem(
-                    self.selection_tree.takeTopLevelItem(row))
+                self.selection_tree.takeTopLevelItem(row))
             item = self.selected_sections.pop(row)
             self.sections.append(item)
             self.filtered_sections.append(item)
@@ -391,13 +391,14 @@ class SaveTablePage(QIWizardPage):
         inputfilename = self.settings.get_object('inputfilename')
         dirname = os.path.dirname(inputfilename)
         suggested_filename = os.path.splitext(os.path.basename(
-                inputfilename))[0] + self.expected_extension
+            inputfilename))[0] + self.expected_extension
         dlg.setDirectory(dirname)
         dlg.selectFile(suggested_filename)
 
-        dlg.setFilter("%s files (*%s);;all files (*)"
-                      "" % (self.expected_extension.strip('.'),
-                            self.expected_extension))
+        filternames = ["%s files (*%s)" % (ext.strip('.'), ext) for ext in
+                       [self.expected_extension]]
+        filternames += ["all files (*)"]
+        dlg.setNameFilters(filternames)
 
         if dlg.exec_():
             self.outputfilename = str(dlg.selectedFiles()[0])
@@ -413,13 +414,15 @@ class SaveTablePage(QIWizardPage):
             self.buttonshow.setEnabled(True)
 
     def show_file(self):
-        system = os.name
-        if system == 'posix':
+        platform = sys.platform
+        if platform.startswith('linux'):
             subprocess.Popen(["nohup", "see", self.outputfilename])
-            # os.system('see %s'%self.outputfilename)
-        elif system == 'nt':
+        elif platform == 'darwin':
+            subprocess.Popen(["open", self.outputfilename])
+        elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
-            # os.system("start %s"%self.outputfilename)
+        else:
+            raise ValueError('Unknown operating platform "{}".'.format(platform))
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()
@@ -454,7 +457,7 @@ class SaveTablePage(QIWizardPage):
             quit_msg = "Are you sure you want to exit the program without " \
                        "saving your file?"
             reply = QMessageBox.question(self, 'Message',
-                             quit_msg, QMessageBox.Yes, QMessageBox.No)
+                                         quit_msg, QMessageBox.Yes, QMessageBox.No)
             if reply == QMessageBox.No:
                 return 0
         return 1

@@ -7,7 +7,7 @@ Created on Wed Feb  3 13:12:21 2016
 
 import sys
 import argparse
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from .settings import Settings
 from .compsectionpages import ChooseFilePage, ChooseSectionsPage, SaveTablePage

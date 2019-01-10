@@ -7,9 +7,7 @@ Created on Fri Apr 17 08:11:32 2015
 
 import copy
 import os
-import unittest
-
-from future.utils import iteritems
+import datetime
 
 import odml
 from odmltables.odml_table import OdmlTable
@@ -17,34 +15,34 @@ from odmltables.odml_table import OdmlDtypes
 from odmltables.odml_csv_table import OdmlCsvTable
 from odmltables.odml_xls_table import OdmlXlsTable
 
-from .create_test_odmls import create_small_test_odml
-from .create_test_odmls import create_showall_test_odml
-from .create_test_odmls import create_compare_test
+from .create_test_odmls import (create_small_test_odml, create_showall_test_odml,
+                                create_compare_test)
+
+import unittest
 
 
 class TestLoadOdmlFromTable(unittest.TestCase):
-
     def setUp(self):
         self.test_table = OdmlTable()
         self.filename = 'testtable'
         self.filetype = ''
 
     def tearDown(self):
-        pass
+        for ext in ['.xls', '.odml', '.csv']:
+            if os.path.exists(self.filename + ext):
+                os.remove(self.filename + ext)
 
     def test_load_from_csv(self):
         self.filetype = 'csv'
         table = OdmlCsvTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] if dic[key] is not None
-                    else '' for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
-                            PropertyDefinition=6, Value=7, ValueDefinition=8,
+                            PropertyDefinition=6, Value=7,
                             DataUnit=9, DataUncertainty=10, odmlDatatype=11)
         table.write2file(self.filename + '.' + self.filetype)
-        self.test_table.load_from_csv_table(self.filename + '.' +
-                                            self.filetype)
+        self.test_table.load_from_csv_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
         self.assertEquals(dict_in, dict_out)
 
@@ -52,18 +50,15 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         self.filetype = 'xls'
         table = OdmlXlsTable()
         table.load_from_function(create_small_test_odml)
-        dict_in = [{key: dic[key] if dic[key] is not None
-                    else '' for key in dic} for dic in table._odmldict]
+        dict_in = table._odmldict
         table.change_header(Path=1, SectionName=2, SectionType=3,
                             SectionDefinition=4, PropertyName=5,
-                            PropertyDefinition=6, Value=7, ValueDefinition=8,
-                            DataUnit=9, DataUncertainty=10, odmlDatatype=11)
+                            PropertyDefinition=6, Value=7,
+                            DataUnit=8, DataUncertainty=9, odmlDatatype=10)
         table.write2file(self.filename + '.' + self.filetype)
-        self.test_table.load_from_xls_table(self.filename + '.' +
-                                            self.filetype)
+        self.test_table.load_from_xls_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
         self.assertEquals(dict_in, dict_out)
-
 
     def test_load_from_file(self):
         self.filetype = 'odml'
@@ -71,10 +66,39 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.load_from_function(create_small_test_odml)
         dict_in = copy.deepcopy(table._odmldict)
         table.write2odml(self.filename + '.' + self.filetype)
-        new_test_table = OdmlTable(self.filename + '.' +  self.filetype)
+        new_test_table = OdmlTable(self.filename + '.' + self.filetype)
         dict_out = new_test_table._odmldict
 
-        self.assertEquals(dict_in,dict_out)
+        self.assertEquals(dict_in, dict_out)
+
+    def test_load_from_during_init(self):
+
+        def generate_doc():
+            doc = odml.Document()
+            doc.append(odml.Section('mysection'))
+            doc[0].append(odml.Property('myproperty', value=17))
+            return doc
+
+        # test loading from odml doc and odml doc generator
+        OdmlTable(generate_doc())
+        OdmlTable(generate_doc)
+
+        # saving to test load_from with filepath
+        # generate odml
+        table = OdmlTable(generate_doc)
+        table.write2odml(save_to=self.filename + '.odml')
+        # generate xls
+        table = OdmlXlsTable(generate_doc)
+        table.write2file(save_to=self.filename + '.xls')
+        # generate csv
+        table = OdmlCsvTable(generate_doc)
+        table.write2file(save_to=self.filename + '.csv')
+
+        # loading from files
+        OdmlTable(self.filename + '.odml')
+        OdmlTable(self.filename + '.xls')
+        OdmlTable(self.filename + '.csv')
+
 
 class TestLoadSaveOdml(unittest.TestCase):
     """
@@ -84,16 +108,13 @@ class TestLoadSaveOdml(unittest.TestCase):
     def setUp(self):
         self.test_table = OdmlTable()
         self.expected_odmldict = [{'PropertyDefinition': None,
-                                   'SectionName': 'section1',
-                                   'PropertyName': 'property1',
-                                   'Value': 'bla',
+                                   'Value': ['bla'],
                                    'odmlDatatype': 'text',
                                    'DataUnit': None,
-                                   'SectionType': 'undefined',
-                                   'ValueDefinition': None,
+                                   'SectionType': None,
                                    'DataUncertainty': None,
                                    'SectionDefinition': None,
-                                   'Path': '/section1'}]
+                                   'Path': '/section1:property1'}]
 
     def test_load_from_file(self):
         """
@@ -134,8 +155,7 @@ class TestLoadSaveOdml(unittest.TestCase):
 
         self.test_table.change_header(Path=1, SectionName=2, SectionType=3,
                                       SectionDefinition=4, PropertyName=5,
-                                      PropertyDefinition=6, Value=7,
-                                      ValueDefinition=8, DataUnit=9,
+                                      PropertyDefinition=6, Value=7, DataUnit=9,
                                       DataUncertainty=10, odmlDatatype=11)
         self.test_table.write2odml(file2)
 
@@ -149,7 +169,6 @@ class TestLoadSaveOdml(unittest.TestCase):
 
 
 class TestChangeHeader(unittest.TestCase):
-
     def setUp(self):
         self.test_table = OdmlTable()
 
@@ -158,8 +177,21 @@ class TestChangeHeader(unittest.TestCase):
         Tests simple changing of the header
         """
         self.test_table.change_header(Path=1, SectionType=2, Value=3)
-        self.assertEqual(self.test_table._header, ["Path", "SectionType",
-                                                   "Value"])
+        self.assertListEqual(self.test_table._header, ["Path", "SectionType", "Value"])
+
+    def test_shortcut_change(self):
+        self.test_table.change_header('full')
+        expected_entries = ['Path', 'SectionName', 'SectionType', 'SectionDefinition', 'PropertyName',
+                          'PropertyDefinition', 'Value', 'DataUnit', 'DataUncertainty',
+                          'odmlDatatype']
+        self.assertEqual(len(self.test_table._header), len(expected_entries))
+        for entry in expected_entries:
+            self.assertIn(entry, self.test_table._header)
+
+
+        self.test_table.change_header('minimal')
+        self.assertListEqual(self.test_table._header, ['Path', 'PropertyName', 'Value',
+                                                       'odmlDatatype'])
 
     def test_index_zero(self):
         """
@@ -185,15 +217,6 @@ class TestChangeHeader(unittest.TestCase):
         self.test_table.change_header(Path=1, SectionType=3, Value=4)
         self.assertEqual(self.test_table._header, ["Path", None, "SectionType",
                                                    "Value"])
-
-    # def test_empty_cols_forbidden(self):
-    #     """
-    #     Test change_header leaving empty columns, while this is forbidden
-    #     """
-    #     self.test_table.allow_empty_columns = False
-    #     # TODO: exception
-    #     with self.assertRaises(Exception):
-    #         self.test_table.change_header(Path=1, SectionType=3, Value=4)
 
     def test_same_indizes(self):
         """
@@ -231,7 +254,6 @@ class TestOdmlTable(unittest.TestCase):
                     "PropertyName": "Eigenschaft",
                     "PropertyDefinition": "Property Definition",
                     "Value": "Wert",
-                    "ValueDefinition": "Value Definition",
                     "DataUnit": "Einheit",
                     "DataUncertainty": "Data Uncertainty",
                     "odmlDatatype": "Datentyp"}
@@ -241,92 +263,92 @@ class TestOdmlTable(unittest.TestCase):
                                              odmlDatatype="Datentyp")
         self.assertEqual(self.test_table._header_titles, expected)
 
-    # def test_change_allow_free_cols(self):
-    #     """
-    #     set allow_free_columns
-    #     """
-    #
-    #     # self.test_table.allow_empty_columns = True
-    #     # self.assertEqual(self.test_table._allow_empty_columns, True)
-    #     # self.test_table.allow_empty_columns = False
-    #     # self.assertEqual(self.test_table._allow_empty_columns, False)
-    #     # # TODO: Exception
-    #     # with self.assertRaises(Exception):
-    #     #     self.test_table.allow_empty_columns = 4
-    #
-    # def test_forbid_free_cols(self):
-    #     """
-    #     test forbidding free columns while there are already free columns in
-    #     the header
-    #     """
-    #
-    #     self.test_table.allow_empty_columns = True
-    #     self.test_table.change_header(Path=1, PropertyDefinition=3, Value=4)
-    #     # TODO: Exception aendern
-    #     with self.assertRaises(Exception):
-    #         self.test_table.allow_empty_columns = False
+    def test_merge_sections(self):
+        # set up 2 odmls with partially overlapping sections
+        doc1 = odml.Document(author='Me')
+        doc2 = odml.Document(author='You')
 
-    def test_merge(self):
-        doc1 = create_compare_test(sections=2,properties=2,levels=2)
+        doc1.extend([odml.Section('MySection'), odml.Section('OurSection')])
+        doc2.extend([odml.Section('YourSection'), odml.Section('OurSection')])
 
-        # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
-                                                         dtype='str'))
+        # adding properties to sections, because odml is omitting sections without properties
+        for sec in doc1.sections + doc2.sections:
+            sec.append(odml.Property('prop'))
 
-        # generate one additional Property, which is not present in doc2
-        doc1.sections[0].append(odml.Property(name='Doc1Property2',value=5))
+        table1 = OdmlTable(load_from=doc1)
+        table2 = OdmlTable(load_from=doc2)
 
-        #generate one additional Section, which is not present in doc2
-        new_prop = odml.Property(name='Doc1Property2',value=10)
-        new_sec = odml.Section(name='Doc1Section')
-        new_sec.append(new_prop)
-        doc1.sections[0].append(new_sec)
+        table1.merge(table2, strict=False)
+
+        result = table1.convert2odml()
+
+        expected = ['MySection', 'OurSection', 'YourSection']
+        self.assertListEqual([s.name for s in result.sections], expected)
+
+    def test_merge_append_identical_value(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value=['value 1', 'value 2']))
+
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value=['value 2', 'value 3']))
 
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=False)
 
-        doc2 = create_compare_test(sections=3,properties=3,levels=3)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
-
-        backup_table = copy.deepcopy(self.test_table)
-
-        self.test_table.merge(doc2, mode='overwrite')
-        backup_table.merge(table2, mode='overwrite')
-
-        self.assertListEqual(self.test_table._odmldict, backup_table._odmldict)
-
-        expected = len(table2._odmldict) + 2 # only additional prop and
-        # section will be counted; additional value is overwritten
-
-        self.assertEqual(len(self.test_table._odmldict),expected)
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 3)
+        expected = doc1.sections[0].properties[0].values + doc2.sections[0].properties[0].values
+        expected = list(set(expected))
+        # comparing as set to disregard item order
+        self.assertEqual(set(self.test_table._odmldict[0]['Value']), set(expected))
 
 
-    def test_strict_merge_error(self):
-        doc1 = create_compare_test(sections=2,properties=2,levels=2)
+    def test_merge_overwrite_values_false(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value='first value'))
 
-        # generate one additional Value, which is not present in doc2
-        doc1.sections[1].properties[0].append(odml.Value(data='testvalue',
-                                                         dtype='str'))
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value='second value'))
 
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=False)
 
-        doc2 = create_compare_test(sections=3,properties=3,levels=3)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 2)
+        self.assertEqual(self.test_table._odmldict[0]['Value'],
+                         doc1.sections[0].properties[0].values + doc2.sections[0].properties[0].values)
 
-        self.assertRaises(ValueError,self.test_table.merge,doc2,mode='strict')
+    def test_merge_overwrite_values_true(self):
+        doc1 = odml.Document()
+        doc1.append(odml.Section('first sec'))
+        doc1.sections[0].append(odml.Property('first prop', value='first value'))
 
-    def test_strict_merge(self):
-        doc1 = create_compare_test(sections=0,properties=1,levels=2)
-        doc1.sections[0].properties[0].values[0].data = -1
+        doc2 = odml.Document()
+        doc2.append(odml.Section('first sec'))
+        doc2.sections[0].append(odml.Property('first prop', value='second value'))
+
         self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2, overwrite_values=True)
 
-        doc2 = create_compare_test(sections=0,properties=1,levels=2)
-        table2 = OdmlTable()
-        table2.load_from_odmldoc(doc2)
-        self.test_table.merge(doc2, mode='strict')
+        self.assertEqual(len(self.test_table._odmldict[0]['Value']), 1)
+        self.assertEqual(self.test_table._odmldict[0]['Value'][0],
+                         doc2.sections[0].properties[0].values[0])
 
-        self.assertListEqual(table2._odmldict,self.test_table._odmldict)
+
+    def test_merge_update_docprops(self):
+        doc1 = odml.Document(author='me', repository='somewhere', version=1.1,
+                             date=None)
+        doc2 = odml.Document(author='', repository='anywhere', version=1.1,
+                             date=datetime.date.today())
+        self.test_table.load_from_odmldoc(doc1)
+        self.test_table.merge(doc2)
+
+        self.assertEqual(self.test_table._docdict['author'], doc1.author)
+        self.assertEqual(self.test_table._docdict['repository'], doc1.repository)
+        self.assertEqual(self.test_table._docdict['version'], doc1.version)
+        self.assertEqual(self.test_table._docdict['date'], doc2.date)
 
 
 class TestFilter(unittest.TestCase):
@@ -347,27 +369,29 @@ class TestFilter(unittest.TestCase):
             self.test_table.filter()
 
         with self.assertRaises(ValueError):
-            self.test_table.filter(mode='wrongmode',Property='Property')
+            self.test_table.filter(mode='wrongmode', Property='Property')
 
     def test_filter_mode_and(self):
         """
         testing mode='and' setting of filter function
         """
 
-        self.test_table.filter(mode='and',invert=False,SectionName='Section2',PropertyName='Property2')
+        self.test_table.filter(mode='and', invert=False, SectionName='Section2',
+                               PropertyName='Property2')
         num_props_new = len(self.test_table._odmldict)
 
-        self.assertEqual(4,num_props_new)
+        self.assertEqual(4, num_props_new)
 
     def test_filter_mode_or(self):
         """
         testing mode='or' setting of filter function
         """
 
-        self.test_table.filter(mode='or',invert=False,SectionName='Section2',PropertyName='Property2')
+        self.test_table.filter(mode='or', invert=False, SectionName='Section2',
+                               PropertyName='Property2')
         num_props_new = len(self.test_table._odmldict)
 
-        self.assertEqual(17,num_props_new)
+        self.assertEqual(17, num_props_new)
 
     def test_filter_invert(self):
         """
@@ -375,21 +399,28 @@ class TestFilter(unittest.TestCase):
         """
 
         num_props_original = len(self.test_table._odmldict)
-        self.test_table.filter(mode='or',invert=True,SectionName='Section2',PropertyName='Property2')
+        self.test_table.filter(mode='or', invert=True, SectionName='Section2',
+                               PropertyName='Property2')
         num_props_new = len(self.test_table._odmldict)
 
-        self.assertEqual(num_props_original-17,num_props_new)
+        self.assertEqual(num_props_original - 17, num_props_new)
 
     def test_filter_recursive(self):
         """
         testing recursive setting of filter function
         """
 
-        self.test_table.filter(mode='and',recursive=True,invert=True,SectionName='Section2')
+        # total_number of properties
+        doc = self.test_table.convert2odml()
+        tot_props = len(list(doc.iterproperties()))
+        sec2s = list(doc.itersections(filter_func=lambda x: x.name == 'Section2'))
+        sec2_props = sum([len(list(sec.properties)) for sec in sec2s])
+
+        # removing all sections with name 'Section2' independent of location in odml tree
+        self.test_table.filter(mode='and', recursive=True, invert=True, SectionName='Section2')
         num_props_new = len(self.test_table._odmldict)
 
-        self.assertEqual(16,num_props_new)
-
+        self.assertEqual(tot_props - sec2_props, num_props_new)
 
     def test_filter_comparison_func_false(self):
         """
@@ -397,11 +428,11 @@ class TestFilter(unittest.TestCase):
         """
 
         num_props_original = len(self.test_table._odmldict)
-        self.test_table.filter(comparison_func=lambda x,y:True,PropertyName='')
-        self.assertEqual(len(self.test_table._odmldict),num_props_original)
+        self.test_table.filter(comparison_func=lambda x, y: True, PropertyName='')
+        self.assertEqual(len(self.test_table._odmldict), num_props_original)
 
-        self.test_table.filter(comparison_func=lambda x,y:False,PropertyName='')
-        self.assertEqual(len(self.test_table._odmldict),0)
+        self.test_table.filter(comparison_func=lambda x, y: False, PropertyName='')
+        self.assertEqual(len(self.test_table._odmldict), 0)
 
 
 class TestOdmlDtypes(unittest.TestCase):
@@ -413,52 +444,24 @@ class TestOdmlDtypes(unittest.TestCase):
         self.test_dtypes = OdmlDtypes()
 
     def test_defaults(self):
-
         expected_basedtypes = list(self.test_dtypes.default_basedtypes)
         self.assertListEqual(sorted(expected_basedtypes), sorted(self.test_dtypes.basedtypes))
 
         expected_synonyms = self.test_dtypes.default_synonyms
-        self.assertEqual(expected_synonyms,self.test_dtypes.synonyms)
+        self.assertEqual(expected_synonyms, self.test_dtypes.synonyms)
 
     def test_valid_dtypes(self):
-        expected_dtypes = list(self.test_dtypes.default_basedtypes) + list(self.test_dtypes.default_synonyms)
+        expected_dtypes = (list(self.test_dtypes.default_basedtypes) +
+                           list(self.test_dtypes.default_synonyms))
         self.assertListEqual(sorted(expected_dtypes), sorted(self.test_dtypes.valid_dtypes))
 
-    def test_default_values(self):
-        basedefaults = self.test_dtypes.default_basedtypes
-        syndefaults = dict([(syn,basedefaults[base]) for syn,base in iteritems(self.test_dtypes.default_synonyms)])
-        expected_defaults = basedefaults.copy()
-        expected_defaults.update(syndefaults)
-
-        self.assertEqual(expected_defaults,self.test_dtypes.default_values)
-
-        for dtype,expected_default in iteritems(expected_defaults):
-            self.assertEqual(expected_default,self.test_dtypes.default_value(dtype))
-
     def test_synonym_adder(self):
-        basedtype, synonym = ('int','testsyn1')
-        self.test_dtypes.add_synonym(basedtype,synonym)
+        basedtype, synonym = ('int', 'testsyn1')
+        self.test_dtypes.add_synonym(basedtype, synonym)
 
         expected_synonyms = self.test_dtypes.default_synonyms.copy()
-        expected_synonyms.update({synonym:basedtype})
+        expected_synonyms.update({synonym: basedtype})
         self.assertEqual(self.test_dtypes.synonyms, expected_synonyms)
-        self.assertEqual(self.test_dtypes.default_value('testsyn1'),self.test_dtypes.default_value('int'))
-
-    def test_basedtype_adder(self):
-        basedtype, default = 'testbasetype', 'testdefault'
-        self.test_dtypes.add_basedtypes(basedtype,default)
-
-        expected_basedtypes = self.test_dtypes.default_basedtypes.copy()
-        expected_basedtypes.update({basedtype:default})
-        self.assertListEqual(self.test_dtypes.basedtypes, list(expected_basedtypes))
-
-    def test_default_value_setter(self):
-        default_value = 1
-        self.test_dtypes.set_default_value('int',default_value)
-
-        self.test_dtypes.default_value('int')
-
-        self.assertEqual(self.test_dtypes.default_value('int'),default_value)
 
 
 if __name__ == '__main__':

@@ -54,6 +54,9 @@ coverage.xml
 # Django stuff:
 *.log
 
+# Jupyter Notebooks:
+*.ipynb_checkpoints
+
 # PyCharm project files:
 .idea/
 
@@ -74,6 +77,8 @@ odmltables/gui/graphics/*.tex.backup
 odmltables/gui/testfiles/*
 doc/build/*
 doc/_build/*
+doc/requirements*.rst
+tutorials/tutorial-1_scenarios/complete_workflow
 
 # Project specific exclude of table formats
 *.csv

@@ -4,8 +4,9 @@ import os
 import re
 import xlwt
 
-from PyQt4.QtGui import QWizardPage, QWidgetItem, QSpacerItem, QComboBox, QColor
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import QWizardPage, QWidgetItem, QSpacerItem, QComboBox
+from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt
 
 
 class QIWizardPage(QWizardPage):
@@ -111,12 +112,12 @@ def get_property(style, property):
 
 def get_rgb(style_string):
     rgbregex = re.compile(
-            " *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{"
-            "1,3})\) *")
+        " *rgb\( {0,2}(?P<r>\d{1,3}), {0,2}(?P<g>\d{1,3}), {0,2}(?P<b>\d{"
+        "1,3})\) *")
     match = rgbregex.match(style_string)
     if match:
         groups = match.groupdict()
         return tuple([int(groups['r']), int(groups['g']), int(groups['b'])])
     else:
         raise ValueError(
-                'No rgb identification possible from "%s"' % style_string)
+            'No rgb identification possible from "%s"' % style_string)

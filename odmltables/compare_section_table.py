@@ -22,6 +22,7 @@ class CompareSectionTable():
     """
 
     def __init__(self):
+        self.show_odml_warnings = False
         self._odmldoc = None
         self._sel_fun = lambda x: True
         self.include_all = True
@@ -49,7 +50,7 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             sections.append(sect.name)
-            for prop in sect.iterproperties():
+            for prop in sect.properties:
                 if prop.name not in properties:
                     properties.append(prop.name)
         sec_num = len(sections)
@@ -58,12 +59,12 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             for prop in sect.properties:
-                table[sec_ind][properties.index(prop.name)] = prop.values[
-                    0].data
-                if len(prop.values) > 1:
-                    warnings.warn('Property %s contains %i values. Only '
-                                  'showing first one in comparison table'
-                                  '' % (prop.name, len(prop.values)))
+                val = prop.values
+                if val:
+                    table[sec_ind][properties.index(prop.name)] = val[0]
+                    if len(prop.values) > 1:
+                        warnings.warn('Property %s contains %i values. Only showing first one in '
+                                      'comparison table' % (prop.name, len(prop.values)))
             sec_ind += 1
 
         if self.include_all:
@@ -86,7 +87,7 @@ class CompareSectionTable():
         :type load_from: string
 
         """
-        self._odmldoc = odml.tools.xmlparser.load(load_from)
+        self._odmldoc = odml.load(load_from, show_warnings=self.show_odml_warnings)
 
     def choose_sections_startwith(self, startwith):
         """
