@@ -14,8 +14,8 @@ Code Status
 .. image:: https://travis-ci.org/INM-6/python-odmltables.png?branch=master
    :target: https://travis-ci.org/INM-6/python-odmltables
    :alt: Unit Test Status
-.. image:: https://coveralls.io/repos/INM-6/python-odmltables/badge.png
-   :target: https://coveralls.io/r/INM-6/python-odmltables
+.. image:: https://coveralls.io/repos/github/INM-6/python-odmltables/badge.svg?branch=master
+   :target: https://coveralls.io/github/INM-6/python-odmltables?branch=master
    :alt: Unit Test Coverage
 .. image:: https://readthedocs.org/projects/odmltables/badge/?version=latest
    :target: https://odmltables.readthedocs.io/en/latest/?badge=latest
