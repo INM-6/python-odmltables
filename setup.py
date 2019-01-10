@@ -56,8 +56,12 @@ setup(
     zip_safe=False,
     keywords=['odml', 'excel', 'metadata management'],
     # Extension('foo', ['foo.c'], include_dirs=['.']),
-    # data_files = [
-    #               # ('/usr/share/applications', ['odmltables.desktop']),
-    #               # ('/usr/share/pixmaps', ['logo/odMLtables.png']),
-    #               ('.', ['odmltables/VERSION.txt'])]
+    data_files=[
+                  # ('/usr/share/applications', ['odmltables.desktop']),
+                  # ('/usr/share/pixmaps', ['logo/odMLtables.png']),
+                  ('.', ['odmltables/VERSION.txt',
+                         'requirements.txt',
+                         'requirements_doc.txt',
+                         'requirements_gui.txt',
+                         'requirements_test.txt'])]
 )
