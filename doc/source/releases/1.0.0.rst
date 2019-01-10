@@ -1,0 +1,20 @@
+==============================
+odMLtables 1.0.0 release notes
+==============================
+
+January 2019
+
+Main features:
+  * odMLtables gui is installable via pip
+  * command line arguments for specifying files for odMLtables wizards
+  * Python 3 compatibility
+  * Jupyter tutorial notebooks
+  * Extended documentation
+
+Other features:
+  * `xml` as file extension for odML files
+  * many bug fixes in all wizards
+
+Updates:
+  * Minimal odML version 1.4.2
+  * PyQt5

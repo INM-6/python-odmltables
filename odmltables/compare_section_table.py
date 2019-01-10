@@ -59,12 +59,12 @@ class CompareSectionTable():
 
         for sect in self._odmldoc.itersections(filter_func=self._sel_fun):
             for prop in sect.properties:
-                val = prop.value
+                val = prop.values
                 if val:
                     table[sec_ind][properties.index(prop.name)] = val[0]
-                    if len(prop.value) > 1:
+                    if len(prop.values) > 1:
                         warnings.warn('Property %s contains %i values. Only showing first one in '
-                                      'comparison table' % (prop.name, len(prop.value)))
+                                      'comparison table' % (prop.name, len(prop.values)))
             sec_ind += 1
 
         if self.include_all:

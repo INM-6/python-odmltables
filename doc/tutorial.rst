@@ -14,9 +14,8 @@ version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml
 `1.1 <https://github.com/G-Node/odml-terminologies/blob/master/v1.1/odml.xsl>`_ provided by
 the `G-Node <http://www.g-node.org/projects/odml>`_.
 
-Interactive  Tutorials
-======================
-In addition to the detailed step-by-step instructions presented here, there are also two interactive tutorials available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables sources (:any:`tutorials/tutorial-1_scenarios/demo_scenarios.ipynb`) folder. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
+
+In addition to the detailed step-by-step instructions presented here, there are also two **interactive tutorials** available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables sources (:any:`tutorials/tutorial-1_scenarios/demo_scenarios.ipynb`) folder. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
 
 .. _binder: https://mybinder.org/
 .. _jupyter notebooks: http://jupyter.org/
@@ -284,7 +283,7 @@ All source files can be found in the examples folder of the python-odmltables pa
 Example 1: Generating a template odML
 -------------------------------------
 
-In this example you will learn how to generate an odML template file starting from an empty xls file. First you need to create an empty xls file 'example1.xls' using your preferred spreadsheet software and fill the first row with the header titles. In principle only four header title are necessary to generate an odML from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important later in understanding of the metadata structure. The table should now look like this:
+In this example you will learn how to generate an odML template file starting from an empty xls file. First you need to create an empty xls file 'example1.xls' using your preferred spreadsheet software and fill the first row with the header titles. In principle only four header titles are necessary to generate an odML from an xls table ('Path to Section', 'Property Name', 'Value' and 'odML Data Type'). Here we use two additional header titles ('Data Unit', 'Property Definition') as this information is important later in understanding of the metadata structure. The table should now look like this:
 
 |
 
@@ -336,7 +335,7 @@ If you now enter all the information discussed above in the xls table, this shou
 |
 
 
-For the conversion of the xls file to an odML template file, you need to generate an OdmlXlsTable object and load the your xls file::
+For the conversion of the xls file to an odML template file, you need to generate an OdmlXlsTable object and load the xls file::
 
     import odmltables.odml_xls_table as odxlstable
     # create OdmlXlsTable object
@@ -348,8 +347,6 @@ For the conversion of the xls file to an odML template file, you need to generat
 Now you can save it directly as odML file::
 
     xlstable.write2odml('example1.odml')
-
-If you now open the odML file in the browser or save it again as in the tabular format, you will see that also values have appeared for the properties. These values are default values defined in the odMLtables OdmlDtypes class, which are automatically inserted into empty value cells to get a well defined odML. The default values can be customized via the OdmlDtypes class (:class:`odml_table.OdmlDtypes`).
 
 This new odML file can now be used for multiple repetitions of the experiment and provides a standardized frame for recording metadata in this experiment.
 
@@ -363,7 +360,7 @@ We start from the odML generated in :ref:`example1`. If you don't have the resul
 
     'python example2.py'
 
-To generate an OdmlTables object, load the odML and save it again as xls file::
+To generate an xls representation of the odML, load the odML and save it again using :class:`odml.odml_xls_table.OdmlXlsTable`::
 
     import odmltables.odml_xls_table as odml_xls_table
 
@@ -484,7 +481,7 @@ Graphical Frontend
 
 The use of the Python API as described above gives you full flexibility over the conversion processes that may be required for your project. Also, it allows you to implement workflows to initiate automated conversion steps to compile metadata from multiple sources, and merge it with manually entered metadata, as described in `Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`_.
 
-However, many of the functions outlined above are also accessible via a graphical front-end that allows to comfortably perform some of the most frequent steps in viewing and manipulating odML-based metadata collections, including conversion to flattened table structures or filtering. Please see the installation instructions to learn how to start the graphical front-end.
+However, many of the functions outlined above are also accessible via a graphical front-end that allows to comfortably perform some of the most frequent steps in viewing and manipulating odML-based metadata collections, including conversion to flattened table structures or filtering. Please see the installation instructions to learn how to run the graphical front-end.
 
 
 .. _`Zehl et al, 2016, Frontiers in Neuroinformatics 10, 26`: http://dx.doi.org/10.3389/fninf.2016.00026
