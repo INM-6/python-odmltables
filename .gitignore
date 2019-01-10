@@ -78,6 +78,7 @@ odmltables/gui/testfiles/*
 doc/build/*
 doc/_build/*
 doc/requirements*.rst
+tutorials/tutorial-1_scenarios/complete_workflow
 
 # Project specific exclude of table formats
 *.csv
