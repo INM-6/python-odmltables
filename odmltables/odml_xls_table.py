@@ -286,7 +286,8 @@ class OdmlXlsTable(OdmlTable):
                     stylestring = ["row{:d}col{:d}".format(r, c)
                                    for r, c in zip(self.row_style, self.column_style)]
                     # highlight empty values
-                    if self._highlight_defaults and row_dic['Value'] == []:
+                    if self._highlight_defaults and (row_dic['Value'] == []
+                                                     or row_dic['Value'] == ['']):
                         stylestring[self._header.index('Value')] = 'highlight'
 
                     # update value entry and write line
