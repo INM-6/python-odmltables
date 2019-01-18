@@ -13,7 +13,8 @@ contribution, and may not be the current affiliation of a contributor.
 * Julia Sprenger [1]
 * Michael Denker [1]
 * Lyuba Zehl [1]
+* Michael Sonntag [2]
 
 1. Institute of Neuroscience and Medicine (INM-6), Computational and Systems Neuroscience & Institute for Advanced Simulation (IAS-6), Theoretical Neuroscience, Jülich Research Centre and JARA, Jülich, Germany
-
+2. Department of Biology II, Ludwig-Maximilians-Universität München, Martinsried, Germany
 If we've somehow missed you off the list we're very sorry - please let us know.
