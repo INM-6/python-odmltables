@@ -723,8 +723,8 @@ class OdmlTable(object):
         """
         Merge odmltable into current odmltable.
         :param odmltable: OdmlTable object or odML document object
-        :param strict: Bool value to indicate whether the attributes of affected child Properties
-                except their ids and values have to be identical to be merged. Default is True.
+        :param overwrite_values: Bool value to indicate whether values of should be merged 
+        (appended) or overwritten by the entries of the other odmltable object. Default is False.
         :return:
         """
         if hasattr(odmltable, 'convert2odml'):
@@ -749,7 +749,6 @@ class OdmlTable(object):
         for docprop in ['author', 'date', 'version', 'repository']:
             update_docprop(docprop)
 
-        # TODO: Check what happens to original odmldict...
         self.load_from_odmldoc(doc1)
 
     def _merge_odml_sections(self, sec1, sec2, overwrite_values=False, **kwargs):
