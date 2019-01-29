@@ -148,9 +148,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         icon = QtWidgets.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
-        # use full ABSOLUTE path to the image, not relative
-        icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
-                                                  'logo', "odMLtables_100x100.png")))
+        logo_filename = "odMLtables_100x100.png"
+        logo_dirs = [os.path.join(os.path.dirname(__file__), '..', '..', 'logo'),
+                     os.path.join(sys.prefix, 'share/pixmaps')]
+        for logo_dir in logo_dirs:
+            filepath = os.path.join(logo_dir, logo_filename)
+            if os.path.exists(filepath):
+                icon.setPixmap(QtGui.QPixmap(filepath))
 
 
         grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)

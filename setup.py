@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, os, glob
 import warnings
 from setuptools import setup, find_packages
 
@@ -59,6 +59,8 @@ setup(
     data_files=[
                   # ('/usr/share/applications', ['odmltables.desktop']),
                   # ('/usr/share/pixmaps', ['logo/odMLtables.png']),
+                  ('share/pixmaps', glob.glob(os.path.join("logo", "*"))),
+                  # ('share/pixmaps', ['logo/odMLtables.png']),
                   ('.', ['odmltables/VERSION.txt',
                          'requirements.txt',
                          'requirements_doc.txt',

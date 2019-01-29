@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 from PyQt5.QtWidgets import (QWizard, QMessageBox)
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import pyqtSlot, Qt
@@ -35,9 +35,13 @@ class OdmltablesWizard(QWizard):
         # images won't show in Windows 7 if style not set
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
-        self.setPixmap(QWizard.LogoPixmap,
-                       QPixmap(os.path.join(os.path.dirname(__file__), '..', '..',
-                                            'logo', "odMLtables_100x100.png")))
+        logo_filename = "odMLtables_100x100.png"
+        logo_dirs = [os.path.join(os.path.dirname(__file__), '..', '..', 'logo'),
+                     os.path.join(sys.prefix, 'share/pixmaps')]
+        for logo_dir in logo_dirs:
+            filepath = os.path.join(logo_dir, logo_filename)
+            if os.path.exists(filepath):
+                self.setPixmap(QWizard.LogoPixmap, QPixmap(filepath))
 
         # set up help messages
         self._lastHelpMsg = ''
