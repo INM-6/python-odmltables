@@ -33,7 +33,11 @@ Release Versions
 Official release versions are available at the `Python Package Index`_ and can be installed using
 pip_::
 
-    $ pip install python-odmltables
+    $ pip install odmltables
+
+The graphical user interface can be installed using::
+
+    $ pip install odmltables[gui]
 
 
 Latest version
