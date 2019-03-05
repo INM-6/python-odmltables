@@ -475,7 +475,8 @@ class OdmlTable(object):
                     new_dic['Path'] = '{}:{}'.format(new_dic['Path'].split(':')[0],
                                                      current_dic['Path'].split(':')[1])
                     for sec_inf in self._PROPERTY_INF:
-                        new_dic[sec_inf] = current_dic[sec_inf]
+                        if sec_inf in current_dic:
+                            new_dic[sec_inf] = current_dic[sec_inf]
 
                 # SAME SECTION
                 if current_dic['Path'].split(':')[0] == new_dic['Path'].split(':')[0]:
@@ -723,8 +724,9 @@ class OdmlTable(object):
         """
         Merge odmltable into current odmltable.
         :param odmltable: OdmlTable object or odML document object
-        :param overwrite_values: Bool value to indicate whether values of should be merged 
-        (appended) or overwritten by the entries of the other odmltable object. Default is False.
+        :param overwrite_values: Bool value to indicate whether values of odML Properties should
+            be merged (appended) or overwritten by the entries of the other odmltable object.
+            Default is False.
         :return:
         """
         if hasattr(odmltable, 'convert2odml'):
