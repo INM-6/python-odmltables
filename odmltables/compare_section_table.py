@@ -4,6 +4,7 @@
 """
 
 import warnings
+import datetime
 import odml
 
 
@@ -62,7 +63,11 @@ class CompareSectionTable():
                 val = prop.values
                 if val:
                     table[sec_ind][properties.index(prop.name)] = val[0]
+                    if prop.unit and not isinstance(val[0], (datetime.date, datetime.time,
+                                                             datetime.datetime)):
+                        table[sec_ind][properties.index(prop.name)] = '{}{}'.format(val[0], prop.unit)
                     if len(prop.values) > 1:
+                        table[sec_ind][properties.index(prop.name)] += ', ...'
                         warnings.warn('Property %s contains %i values. Only showing first one in '
                                       'comparison table' % (prop.name, len(prop.values)))
             sec_ind += 1
