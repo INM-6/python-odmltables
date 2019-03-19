@@ -62,12 +62,23 @@ class CompareSectionTable():
             for prop in sect.properties:
                 val = prop.values
                 if val:
-                    table[sec_ind][properties.index(prop.name)] = val[0]
-                    if prop.unit and not isinstance(val[0], (datetime.date, datetime.time,
-                                                             datetime.datetime)):
-                        table[sec_ind][properties.index(prop.name)] = '{}{}'.format(val[0], prop.unit)
+                    # for formatting reasons uncertainties and units are ignored for datetimes
+                    if isinstance(val[0], (datetime.date, datetime.time, datetime.datetime)):
+                        table[sec_ind][properties.index(prop.name)] = val[0]
+                    else:
+                        value, uncertainty, unit = str(val[0]), '', ''
+                        if len(prop.values) > 1:
+                            value += ', ...'
+                        if prop.uncertainty:
+                            uncertainty = '+-{})'.format(prop.uncertainty)
+                            value = '({}'.format(value)
+                        if prop.unit:
+                            unit = prop.unit
+                        table[sec_ind][properties.index(prop.name)] = '{}{}{}'.format(value,
+                                                                                      uncertainty,
+                                                                                      unit)
                     if len(prop.values) > 1:
-                        table[sec_ind][properties.index(prop.name)] += ', ...'
+                        # table[sec_ind][properties.index(prop.name)] += ', ...'
                         warnings.warn('Property %s contains %i values. Only showing first one in '
                                       'comparison table' % (prop.name, len(prop.values)))
             sec_ind += 1
