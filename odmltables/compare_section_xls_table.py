@@ -94,8 +94,8 @@ class CompareSectionXlsTable(CompareSectionTable):
                             style.num_format_str = ""
 
                     sheet.write(row_num + 1, col_num + 1, cell_content, style)
-                    if len(str(cell_content)) > max_col_len[col_num]:
-                        max_col_len[col_num] = len(str(cell_content))
+                    if len(str(cell_content)) > max_col_len[col_num+1]:
+                        max_col_len[col_num+1] = len(str(cell_content))
 
         else:
 
@@ -128,8 +128,8 @@ class CompareSectionXlsTable(CompareSectionTable):
                             style.num_format_str = ""
 
                     sheet.write(row_num + 1, col_num + 1, cell_content, style)
-                    if len(str(cell_content)) > max_col_len[col_num]:
-                        max_col_len[col_num] = len(str(cell_content))
+                    if len(str(cell_content)) > max_col_len[col_num+1]:
+                        max_col_len[col_num+1] = len(str(cell_content))
 
         # adjust width of he columns
         for col_id, col_len in enumerate(max_col_len):
