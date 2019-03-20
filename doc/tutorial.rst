@@ -21,11 +21,11 @@ In addition to the detailed step-by-step instructions presented here, there are 
 .. _jupyter notebooks: http://jupyter.org/
 
 .. |notebook1|  image:: https://mybinder.org/badge.svg
-  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/master?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
   :alt: Binder Link
 
 .. |notebook2|  image:: https://mybinder.org/badge.svg
-  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/tutorial?filepath=tutorials%2Ftutorial-2_experimental_data%2Fdemo_complex_experiment.ipynb
+  :target: https://mybinder.org/v2/gh/juliasprenger/python-odmltables/master?filepath=tutorials%2Ftutorial-2_experimental_data%2Fdemo_complex_experiment.ipynb
   :alt: Binder Link
 
 Flattened odML table
