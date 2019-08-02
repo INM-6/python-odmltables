@@ -104,6 +104,8 @@ class CompareSectionTable():
 
         """
         self._odmldoc = odml.load(load_from, show_warnings=self.show_odml_warnings)
+        # resolve links and includes
+        self._odmldoc.finalize()
 
     def choose_sections_startwith(self, startwith):
         """

@@ -210,6 +210,8 @@ class ChooseSectionsPage(QIWizardPage):
 
         # load sections and properties from the selected file
         odmldoc = odml.load(self.settings.get_object("inputfilename"))
+        # resolve links and includes
+        odmldoc.finalize()
         for section in odmldoc.itersections():
             self.sections.append([section.name,
                                   section.get_path(),
