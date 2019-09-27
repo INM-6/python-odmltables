@@ -124,6 +124,8 @@ class OdmlTable(object):
 
         """
         doc = odml.load(load_from, show_warnings=self.show_odml_warnings)
+        # resolve links and includes
+        doc.finalize()
         self._odmldict = self.__create_odmldict(doc)
         self._docdict = self._create_documentdict(doc)
 

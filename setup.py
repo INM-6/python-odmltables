@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys, os, glob
@@ -26,7 +27,7 @@ if sys.version_info.major < 3:
                   'installing the odmltables gui, eg. using "conda install -c anaconda '
                   '\'pyqt>=5\'"')
 
-VERSION = open('./odmltables/VERSION.txt', 'r').read()
+VERSION = open('./odmltables/VERSION.txt', 'r').read().strip()
 
 setup(
     name="odmltables",
@@ -56,14 +57,10 @@ setup(
     zip_safe=False,
     keywords=['odml', 'excel', 'metadata management'],
     # Extension('foo', ['foo.c'], include_dirs=['.']),
-    data_files=[
-                  # ('/usr/share/applications', ['odmltables.desktop']),
-                  # ('/usr/share/pixmaps', ['logo/odMLtables.png']),
-                  ('share/pixmaps', glob.glob(os.path.join("logo", "*"))),
-                  # ('share/pixmaps', ['logo/odMLtables.png']),
-                  ('.', ['odmltables/VERSION.txt',
-                         'requirements.txt',
-                         'requirements_doc.txt',
-                         'requirements_gui.txt',
-                         'requirements_test.txt'])]
+    data_files=[('share/pixmaps', glob.glob(os.path.join("logo", "*"))),
+                ('.', ['odmltables/VERSION.txt',
+                       'requirements.txt',
+                       'requirements_doc.txt',
+                       'requirements_gui.txt',
+                       'requirements_test.txt'])]
 )
