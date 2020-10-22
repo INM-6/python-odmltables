@@ -44,7 +44,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_csv_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_xls(self):
         self.filetype = 'xls'
@@ -58,7 +58,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_xls_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_file(self):
         self.filetype = 'odml'
@@ -69,14 +69,14 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         new_test_table = OdmlTable(self.filename + '.' + self.filetype)
         dict_out = new_test_table._odmldict
 
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_during_init(self):
 
         def generate_doc():
             doc = odml.Document()
             doc.append(odml.Section('mysection'))
-            doc[0].append(odml.Property('myproperty', value=17))
+            doc[0].append(odml.Property('myproperty', values=17))
             return doc
 
         # test loading from odml doc and odml doc generator
@@ -111,7 +111,7 @@ class TestLoadSaveOdml(unittest.TestCase):
                                    'Value': ['bla'],
                                    'odmlDatatype': 'text',
                                    'DataUnit': None,
-                                   'SectionType': None,
+                                   'SectionType': 'n.s.',
                                    'DataUncertainty': None,
                                    'SectionDefinition': None,
                                    'Path': '/section1:property1'}]
@@ -125,7 +125,7 @@ class TestLoadSaveOdml(unittest.TestCase):
         odml.tools.xmlparser.XMLWriter(doc).write_file(filename)
         self.test_table.load_from_file(filename)
         os.remove(filename)
-        self.assertEqual(self.test_table._odmldict, self.expected_odmldict)
+        self.assertDictEqual(self.test_table._odmldict[0], self.expected_odmldict[0])
 
     def test_load_from_function(self):
         """
@@ -288,11 +288,11 @@ class TestOdmlTable(unittest.TestCase):
     def test_merge_append_identical_value(self):
         doc1 = odml.Document()
         doc1.append(odml.Section('first sec'))
-        doc1.sections[0].append(odml.Property('first prop', value=['value 1', 'value 2']))
+        doc1.sections[0].append(odml.Property('first prop', values=['value 1', 'value 2']))
 
         doc2 = odml.Document()
         doc2.append(odml.Section('first sec'))
-        doc2.sections[0].append(odml.Property('first prop', value=['value 2', 'value 3']))
+        doc2.sections[0].append(odml.Property('first prop', values=['value 2', 'value 3']))
 
         self.test_table.load_from_odmldoc(doc1)
         self.test_table.merge(doc2, overwrite_values=False)
@@ -307,11 +307,11 @@ class TestOdmlTable(unittest.TestCase):
     def test_merge_overwrite_values_false(self):
         doc1 = odml.Document()
         doc1.append(odml.Section('first sec'))
-        doc1.sections[0].append(odml.Property('first prop', value='first value'))
+        doc1.sections[0].append(odml.Property('first prop', values='first value'))
 
         doc2 = odml.Document()
         doc2.append(odml.Section('first sec'))
-        doc2.sections[0].append(odml.Property('first prop', value='second value'))
+        doc2.sections[0].append(odml.Property('first prop', values='second value'))
 
         self.test_table.load_from_odmldoc(doc1)
         self.test_table.merge(doc2, overwrite_values=False)
@@ -323,11 +323,11 @@ class TestOdmlTable(unittest.TestCase):
     def test_merge_overwrite_values_true(self):
         doc1 = odml.Document()
         doc1.append(odml.Section('first sec'))
-        doc1.sections[0].append(odml.Property('first prop', value='first value'))
+        doc1.sections[0].append(odml.Property('first prop', values='first value'))
 
         doc2 = odml.Document()
         doc2.append(odml.Section('first sec'))
-        doc2.sections[0].append(odml.Property('first prop', value='second value'))
+        doc2.sections[0].append(odml.Property('first prop', values='second value'))
 
         self.test_table.load_from_odmldoc(doc1)
         self.test_table.merge(doc2, overwrite_values=True)

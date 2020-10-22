@@ -19,10 +19,10 @@ def create_2samerows_test_odml():
     doc.append(odml.Section(name='section2'))
 
     parent = doc['section1']
-    parent.append(odml.Property(name='property1', value=[1, 2, 2]))
+    parent.append(odml.Property(name='property1', values=[1, 2, 2]))
 
     parent = doc['section2']
-    parent.append(odml.Property(name='property1', value=2))
+    parent.append(odml.Property(name='property1', values=2))
 
     return doc
 
@@ -41,32 +41,32 @@ def create_showall_test_odml():
 
     parent = doc['section1']
     parent.append(odml.Property(name='property1', definition='prop1',
-                                value=['value1', 'value2', 'value3'],
+                                values=['value1', 'value2', 'value3'],
                                 dtype=odml.DType.string,
                                 unit='g',
                                 uncertainty=1))
 
     parent.append(odml.Property(name='property2', definition='prop2',
-                                value='value1',
+                                values='value1',
                                 dtype=odml.DType.text,
                                 unit='g',
                                 uncertainty=1))
     parent.append(odml.Property(name='property3', definition='prop3',
-                                value='value1',
+                                values='value1',
                                 dtype=odml.DType.text,
                                 unit='g',
                                 uncertainty=1))
 
     parent = doc['section2']
     parent.append(odml.Property(name='property1', definition='prop1',
-                                value='value1',
+                                values='value1',
                                 dtype=odml.DType.string,
                                 unit='g',
                                 uncertainty=1))
 
     parent = doc['section3']
     parent.append(odml.Property(name='property1', definition='prop1',
-                                value=['value1', 'value2'],
+                                values=['value1', 'value2'],
                                 dtype=odml.DType.string,
                                 unit='g',
                                 uncertainty=1
@@ -87,7 +87,7 @@ def create_small_test_odml():
     parent = doc['section1']
 
     parent.append(odml.Property(name='property1',
-                                value='bla',
+                                values='bla',
                                 dtype=odml.DType.text))
 
     return doc
@@ -123,11 +123,11 @@ def create_datatype_test_odml():
     parent = doc['numbers']
 
     parent.append(odml.Property(name='Integer',
-                                value=int_values,
+                                values=int_values,
                                 definition='contains different int-values'))
 
     parent.append(odml.Property(name='Float',
-                                value=float_values,
+                                values=float_values,
                                 definition='contains different float-values'))
 
     parent = doc['texts']
@@ -137,33 +137,33 @@ def create_datatype_test_odml():
 
     parent = doc['texts']['datetime']
     parent.append(odml.Property(name='Datetime',
-                                value=datetime_value,
+                                values=datetime_value,
                                 dtype=odml.DType.datetime))
     parent.append(odml.Property(name='Date',
-                                value=date_value,
+                                values=date_value,
                                 dtype=odml.DType.date))
 
     parent.append(odml.Property(name='Time',
-                                value=time_value,
+                                values=time_value,
                                 dtype=odml.DType.time))
 
     parent = doc['texts']['string-like']
 
     parent.append(odml.Property(name='String',
-                                value='this is a string',
+                                values='this is a string',
                                 dtype=odml.DType.string))
     parent.append(odml.Property(name='Text',
-                                value=text_value,
+                                values=text_value,
                                 dtype=odml.DType.text))
 
     parent.append(odml.Property(name='Person',
-                                value='Jana Pick',
+                                values='Jana Pick',
                                 dtype=odml.DType.person))
 
     parent = doc['other']
 
     parent.append(odml.Property(name='Boolean',
-                                value=bool_values,
+                                values=bool_values,
                                 dtype=odml.DType.boolean))
     return doc
 
@@ -233,13 +233,13 @@ def create_complex_test_odml():
     # ADDING PROPERTIES
     parent = doc['MySection']
     parent.append(odml.Property(name='MyFirstProperty',
-                                value='MyFirstValue',
+                                values='MyFirstValue',
                                 dtype='str',
                                 definition='<Enter a short definition of '
                                            'the property and the associated '
                                            'value described here>'))
     parent.append(odml.Property(name='OneMoreProperty',
-                                value=[2.001, 4],
+                                values=[2.001, 4],
                                 dtype='float',
                                 unit='mm',
                                 uncertainty=0.02,
@@ -250,7 +250,7 @@ def create_complex_test_odml():
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
-                                value=-1,
+                                values=-1,
                                 dtype='int',
                                 definition='This property contains an '
                                            'empty/default value.'
@@ -261,7 +261,7 @@ def create_complex_test_odml():
 
     parent = doc['OneMoreSection']['MySubsection']
     parent.append(odml.Property(name='MyLastProperty',
-                                value=datetime.datetime.today().date(),
+                                values=datetime.datetime.today().date(),
                                 dtype='date',
                                 definition='You can define the hierarchical'
                                            ' location of a section via the'

@@ -800,7 +800,7 @@ class OdmlTable(object):
             # build property object
             prop_name = self._split_path(dic)[-1]
             prop = odml.Property(name=prop_name,
-                                 value=dic['Value'],
+                                 values=dic['Value'],
                                  dtype=dic['odmlDatatype'])
 
             if 'PropertyDefinition' in dic:
@@ -833,7 +833,7 @@ class OdmlTable(object):
         writes the loaded odmldict (e.g. from an csv-file) to an odml-file
         """
         doc = self.convert2odml()
-        odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)
+        odml.tools.xmlparser.XMLWriter(doc).write_file(save_to, local_style=True)
 
 
 class OdmlDtypes(object):

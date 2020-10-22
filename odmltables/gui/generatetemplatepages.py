@@ -419,7 +419,7 @@ def setup_tutorodml():
     # ADDING PROPERTIES
     parent = doc['MySection']
     parent.append(odml.Property(name='MyFirstProperty',
-                                value='MyFirstValue',
+                                values='MyFirstValue',
                                 dtype='str',
                                 unit=None,
                                 uncertainty=None,
@@ -427,7 +427,7 @@ def setup_tutorodml():
                                            'the property and the associated '
                                            'value described here>'))
     parent.append(odml.Property(name='MultiValuedProperty',
-                                value=[2.001, 4],
+                                values=[2.001, 4],
                                 dtype='float',
                                 unit='mm',
                                 uncertainty=0.02,
@@ -436,7 +436,7 @@ def setup_tutorodml():
 
     parent = doc['OneMoreSection']
     parent.append(odml.Property(name='MyEmptyProperty',
-                                value=None,
+                                values=None,
                                 dtype='int',
                                 unit='mV',
                                 uncertainty=None,
@@ -445,7 +445,7 @@ def setup_tutorodml():
 
     parent = doc['OneMoreSection']['MySubsection']
     parent.append(odml.Property(name='MyLastProperty',
-                                value=datetime.datetime.today().date(),
+                                values=datetime.datetime.today().date(),
                                 dtype='date',
                                 unit='AD',
                                 uncertainty=None,
