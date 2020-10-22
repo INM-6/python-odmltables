@@ -833,7 +833,7 @@ class OdmlTable(object):
         writes the loaded odmldict (e.g. from an csv-file) to an odml-file
         """
         doc = self.convert2odml()
-        odml.tools.xmlparser.XMLWriter(doc).write_file(save_to)
+        odml.tools.xmlparser.XMLWriter(doc).write_file(save_to, local_style=True)
 
 
 class OdmlDtypes(object):
