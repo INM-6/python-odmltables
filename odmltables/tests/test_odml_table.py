@@ -44,7 +44,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_csv_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_xls(self):
         self.filetype = 'xls'
@@ -58,7 +58,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         table.write2file(self.filename + '.' + self.filetype)
         self.test_table.load_from_xls_table(self.filename + '.' + self.filetype)
         dict_out = self.test_table._odmldict
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_file(self):
         self.filetype = 'odml'
@@ -69,7 +69,7 @@ class TestLoadOdmlFromTable(unittest.TestCase):
         new_test_table = OdmlTable(self.filename + '.' + self.filetype)
         dict_out = new_test_table._odmldict
 
-        self.assertEquals(dict_in, dict_out)
+        self.assertEqual(dict_in, dict_out)
 
     def test_load_from_during_init(self):
 
@@ -125,7 +125,7 @@ class TestLoadSaveOdml(unittest.TestCase):
         odml.tools.xmlparser.XMLWriter(doc).write_file(filename)
         self.test_table.load_from_file(filename)
         os.remove(filename)
-        self.assertEqual(self.test_table._odmldict, self.expected_odmldict)
+        self.assertDictEqual(self.test_table._odmldict[0], self.expected_odmldict[0])
 
     def test_load_from_function(self):
         """
