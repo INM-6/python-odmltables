@@ -111,7 +111,7 @@ class TestLoadSaveOdml(unittest.TestCase):
                                    'Value': ['bla'],
                                    'odmlDatatype': 'text',
                                    'DataUnit': None,
-                                   'SectionType': None,
+                                   'SectionType': 'n.s.',
                                    'DataUncertainty': None,
                                    'SectionDefinition': None,
                                    'Path': '/section1:property1'}]
