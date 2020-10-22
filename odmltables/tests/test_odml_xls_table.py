@@ -217,7 +217,7 @@ class TestOdmlXlsTable(unittest.TestCase):
     def test_saveload_empty_value(self):
         doc = odml.Document()
         doc.append(odml.Section('sec'))
-        doc[0].append(odml.Property('prop', value=[]))
+        doc[0].append(odml.Property('prop', values=[]))
 
         table = OdmlXlsTable()
         table.load_from_odmldoc(doc)

@@ -800,7 +800,7 @@ class OdmlTable(object):
             # build property object
             prop_name = self._split_path(dic)[-1]
             prop = odml.Property(name=prop_name,
-                                 value=dic['Value'],
+                                 values=dic['Value'],
                                  dtype=dic['odmlDatatype'])
 
             if 'PropertyDefinition' in dic:

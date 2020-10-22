@@ -38,16 +38,16 @@ def create_odmltable_example():
 
     parent.append(odml.Property(name='Species',
                                 definition='Binomial species name',
-                                value=species,
+                                values=species,
                                 dtype=odml.DType.string))
 
     parent.append(odml.Property(name='Gender',
                                 definition='Gender (male or female)',
-                                value=gender,
+                                values=gender,
                                 dtype=odml.DType.string))
 
     parent.append(odml.Property(name='Weight',
-                                value=weight,
+                                values=weight,
                                 dtype=odml.DType.float,
                                 unit='kg',
                                 uncertainty=5))
@@ -55,17 +55,17 @@ def create_odmltable_example():
     parent = doc['Subject']['Training']
     parent.append(odml.Property(name='PeriodStart',
                                 definition='start date of training',
-                                value=start_date,
+                                values=start_date,
                                 dtype=odml.DType.date))
 
     parent.append(odml.Property(name='PeriodEnd',
                                 definition='end date of training',
-                                value=end_date,
+                                values=end_date,
                                 dtype=odml.DType.date))
 
     parent.append(odml.Property(name='Duration',
                                 definition='Duration of the training',
-                                value=duration,
+                                values=duration,
                                 dtype=odml.DType.int,
                                 unit='work days'))
     return doc
@@ -88,11 +88,11 @@ def create_electrode_example():
 
     parent = doc['Multielectrode Array']
 
-    parent.append(odml.Property(name='Type', value=electrode_type))
+    parent.append(odml.Property(name='Type', values=electrode_type))
 
     parent.append(odml.Section(name='Electrodes'))
     parent = doc['Multielectrode Array']['Electrodes']
-    parent.append(odml.Property(name='count', value=count))
+    parent.append(odml.Property(name='count', values=count))
 
     for i in list(range(count)):
         parent = doc['Multielectrode Array']
@@ -101,16 +101,16 @@ def create_electrode_example():
         parent = doc['Multielectrode Array'][sec_name]
         parent.append(odml.Property(name='ID',
                                     definition='Electrode ID',
-                                    value=electrode_id[i]))
+                                    values=electrode_id[i]))
         parent.append(odml.Property(name='Impedance',
                                     definition='Pre-implantation impedance',
-                                    value=impedance[i]))
+                                    values=impedance[i]))
         parent.append(odml.Property(name='Length',
                                     definition='Length',
-                                    value=length[i]))
+                                    values=length[i]))
         parent.append(odml.Property(name='SUAIDs',
                                     definition='ID of single units',
-                                    value=suaids[i]))
+                                    values=suaids[i]))
 
     return doc
 
@@ -131,11 +131,11 @@ def create_mice_example():
 
         doc.append(odml.Section(name=sec_name))
         parent = doc[sec_name]
-        parent.append(odml.Property(name='weight', value=weight[i]))
-        parent.append(odml.Property(name='body length', value=body[i]))
-        parent.append(odml.Property(name='tail length', value=tail[i]))
-        parent.append(odml.Property(name='fur', value=(2 * i >= fur)))
-        parent.append(odml.Property(name='eye opening', value=(2 * i >= eye)))
+        parent.append(odml.Property(name='weight', values=weight[i]))
+        parent.append(odml.Property(name='body length', values=body[i]))
+        parent.append(odml.Property(name='tail length', values=tail[i]))
+        parent.append(odml.Property(name='fur', values=(2 * i >= fur)))
+        parent.append(odml.Property(name='eye opening', values=(2 * i >= eye)))
 
     return doc
 
