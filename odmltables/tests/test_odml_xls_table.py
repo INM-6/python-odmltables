@@ -28,24 +28,24 @@ class TestOdmlXlsTableAttributes(unittest.TestCase):
 
     def test_change_pattern(self):
         self.test_xls_table.pattern = 'alternating'
-        self.assertEquals(self.test_xls_table.pattern, 'alternating')
+        self.assertEqual(self.test_xls_table.pattern, 'alternating')
         self.test_xls_table.pattern = 'checkerboard'
-        self.assertEquals(self.test_xls_table.pattern, 'checkerboard')
+        self.assertEqual(self.test_xls_table.pattern, 'checkerboard')
         self.test_xls_table.pattern = 'alternating'
-        self.assertEquals(self.test_xls_table.pattern, 'alternating')
+        self.assertEqual(self.test_xls_table.pattern, 'alternating')
         with self.assertRaises(Exception):
             # TODO: exception??
             self.test_xls_table.pattern = 'something'
 
     def test_change_changingpoint(self):
         self.test_xls_table.changing_point = 'sections'
-        self.assertEquals(self.test_xls_table.changing_point, 'sections')
+        self.assertEqual(self.test_xls_table.changing_point, 'sections')
         self.test_xls_table.changing_point = 'properties'
-        self.assertEquals(self.test_xls_table.changing_point, 'properties')
+        self.assertEqual(self.test_xls_table.changing_point, 'properties')
         self.test_xls_table.changing_point = 'values'
-        self.assertEquals(self.test_xls_table.changing_point, 'values')
+        self.assertEqual(self.test_xls_table.changing_point, 'values')
         self.test_xls_table.changing_point = None
-        self.assertEquals(self.test_xls_table.changing_point, None)
+        self.assertEqual(self.test_xls_table.changing_point, None)
         with self.assertRaises(Exception):
             # TODO: exception??
             self.test_xls_table.changing_point = 'something'
@@ -161,7 +161,7 @@ class TestOdmlXlsTable(unittest.TestCase):
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
-                    self.assertEquals(value, expected[row][col])
+                    self.assertEqual(value, expected[row][col])
 
     def test_empty_rows(self):
         """
@@ -192,7 +192,7 @@ class TestOdmlXlsTable(unittest.TestCase):
                     if expected[row][col] is None:  # skip undefined entries
                         continue
                     c_value = worksheet.cell(row, col).value
-                    self.assertEquals(c_value, expected[row][col])
+                    self.assertEqual(c_value, expected[row][col])
 
     def test_write_read(self):
         self.test_xls_table.load_from_function(create_complex_test_odml)
@@ -295,7 +295,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
-                    self.assertEquals(value, expected[row][col])
+                    self.assertEqual(value, expected[row][col])
 
         # with open(self.filename, 'r') as xlsfile:
         #     xlsreader = xls.reader(xlsfile)
@@ -340,7 +340,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
-                    self.assertEquals(value, expected[row][col])
+                    self.assertEqual(value, expected[row][col])
 
     def test_ft(self):
         """
@@ -378,7 +378,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
-                    self.assertEquals(value, expected[row][col])
+                    self.assertEqual(value, expected[row][col])
 
     def test_tf(self):
         """
@@ -416,7 +416,7 @@ class TestShowallOdmlXlsTable(unittest.TestCase):
                     if cell.ctype == 3:
                         # if its a date, convert it to a tuple
                         value = xlrd.xldate_as_tuple(value, 0)
-                    self.assertEquals(value, expected[row][col])
+                    self.assertEqual(value, expected[row][col])
 
 
 if __name__ == '__main__':
