@@ -1,0 +1,10 @@
+==============================
+odMLtables 1.0.1 release notes
+==============================
+
+October 2020
+
+Main features:
+  * Improved compatibility with odML 1.5.1 and numpy 1.19.2
+  * style sheets for odML visualization are by default integrated in exported files
+
