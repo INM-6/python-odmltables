@@ -27,6 +27,9 @@ if sys.version_info.major < 3:
                   'installing the odmltables gui, eg. using "conda install -c anaconda '
                   '\'pyqt>=5\'"')
 
+if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
+    raise EnvironmentError('odMLtables requires Python version 3.6 or later.')
+
 VERSION = open('./odmltables/VERSION.txt', 'r').read().strip()
 
 setup(
@@ -43,7 +46,7 @@ setup(
     long_description=long_description,
     license="BSD",
     url='https://github.com/INM-6/python-odmltables',
-    download_url="https://github.com/INM-6/python-odmltables/archive/{0}.tar.gz".format(VERSION),
+    download_url="https://github.com/INM-6/python-odmltables/archive/{}.tar.gz".format(VERSION),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',

@@ -14,15 +14,15 @@ addons:
 
 python:
   - 3.6
-      
+
 env:
   matrix:
     # This environment tests for python 3 packages with conda
     - DISTRIB="conda" PYTHON_VERSION="3.6"
       NUMPY_VERSION="1.13.3" XLWT_VERSION="1.3.0" XLRD_VERSION="1.1.0"
       COVERAGE="true"
-    # This environment tests for python 2 packages with conda
-    - DISTRIB="conda_min" PYTHON_VERSION="2.7"
+    # This environment tests for python 3.9 packages with conda
+    - DISTRIB="conda_min" PYTHON_VERSION="3.9"
       NUMPY_VERSION="1.13.3" XLWT_VERSION="1.3.0" XLRD_VERSION="1.1.0"
       COVERAGE="true"
     # basic Ubuntu build environment
