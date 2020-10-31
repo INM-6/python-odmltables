@@ -259,7 +259,7 @@ class OdmlTable(object):
             # check, if all of the needed information are in the table
             if any([(m not in self._header) for m in must_haves]):
                 err_msg = ("your table has to contain all of the following " +
-                           " attributes: {0}").format(must_haves)
+                           f" attributes: {must_haves}")
                 raise ValueError(err_msg)
 
             previous_dic = {"Path": None,
@@ -298,8 +298,7 @@ class OdmlTable(object):
                 if new_dic['Path'] == '':
                     for key in self._SECTION_INF:
                         new_dic[key] = previous_dic[key]
-                    new_dic['Path'] = '{}:{}'.format(previous_dic['Path'].split(':')[0],
-                                                     new_dic['PropertyName'])
+                    new_dic['Path'] = f"{previous_dic['Path'].split(':')[0]}:{new_dic['PropertyName']}"
                 else:
                     # update path and remove section and property names
                     new_dic['Path'] = new_dic['Path'] + ':' + new_dic['PropertyName']
@@ -425,8 +424,7 @@ class OdmlTable(object):
 
             # check, if all of the needed information are in the table
             if any([(m not in self._header) for m in must_haves]):
-                err_msg = ("your table has to contain all of the following " +
-                           " attributes: {0}").format(must_haves)
+                err_msg = (f"Your table has to contain all of the following attributes: {must_haves}")
                 raise ValueError(err_msg)
 
             current_dic = {"Path": "",
@@ -466,16 +464,14 @@ class OdmlTable(object):
 
                 # SAME SECTION: empty path -> reuse old path info
                 if new_dic['Path'].split(':')[0] == '':
-                    new_dic['Path'] = '{}:{}'.format(current_dic['Path'].split(':')[0],
-                                                     new_dic['Path'].split(':')[1])
+                    new_dic['Path'] = f"{current_dic['Path'].split(':')[0]}:{new_dic['Path'].split(':')[1]}"
                     for sec_inf in self._SECTION_INF:
                         if sec_inf in current_dic:
                             new_dic[sec_inf] = current_dic[sec_inf]
 
                 # SAME PROPERTY: empty property name -> reuse old prop info
                 if new_dic['Path'].split(':')[1] == '':
-                    new_dic['Path'] = '{}:{}'.format(new_dic['Path'].split(':')[0],
-                                                     current_dic['Path'].split(':')[1])
+                    new_dic['Path'] = f"{new_dic['Path'].split(':')[0]}:{current_dic['Path'].split(':')[1]}"
                     for sec_inf in self._PROPERTY_INF:
                         if sec_inf in current_dic:
                             new_dic[sec_inf] = current_dic[sec_inf]
@@ -541,8 +537,8 @@ class OdmlTable(object):
             if k in self._header_titles:
                 self._header_titles[k] = kwargs[k]
             else:
-                errmsg = "{0} is not in the header_title-dictionary. Valid keywords are {1}." \
-                         "".format(k, ', '.join(self._header_titles.keys()))
+                errmsg = f"{k} is not in the header_title-dictionary. " \
+                         f"Valid keywords are {', '.join(self._header_titles.keys())}."
                 raise ValueError(errmsg)
 
     def change_header(self, *args, **kwargs):
@@ -604,8 +600,7 @@ class OdmlTable(object):
 
         # check if first element is in range
         if kwargs[keys_sorted[0]] <= 0:
-            errmsg = ("Your smallest argument is {}, but the columns start" +
-                      " at 1").format(kwargs[keys_sorted[0]])
+            errmsg = f"Your smallest argument is {kwargs[keys_sorted[0]]}, but the columns start at 1"
             raise ValueError(errmsg)
             # TODO: better Exception
 
@@ -617,24 +612,22 @@ class OdmlTable(object):
         if keys_sorted[0] in self._header_titles:
             header[kwargs[keys_sorted[0]] - 1] = keys_sorted[0]
         else:
-            raise KeyError(" {} not in header_titles. Available header titles are: {}."
-                           "".format(keys_sorted[0], ', '.join(self._header_titles.keys())))
+            raise KeyError(f"{keys_sorted[0]} not in header_titles. "
+                           f"Available header titles are: {', '.join(self._header_titles.keys())}.")
 
         # check if there are two keys with the same value
         for index, key in enumerate(keys_sorted[1:]):
             if kwargs[keys_sorted[index]] == kwargs[keys_sorted[index - 1]]:
-                errmsg = "The keys {0} and {1} both have the value {2}" \
-                    .format(keys_sorted[index - 1],
-                            keys_sorted[index],
-                            kwargs[keys_sorted[index]])
+                errmsg = f"The keys {keys_sorted[index - 1]} and {keys_sorted[index]} both have the " \
+                         f"value {kwargs[keys_sorted[index]]}"
                 raise KeyError(errmsg)
                 # TODO: better exception
             else:
                 if key in self._header_titles:
                     header[kwargs[key] - 1] = key
                 else:
-                    raise KeyError("{} not in header_titles. Available header titles are: {}."
-                                   "".format(key, ', '.join(self._header_titles.keys())))
+                    raise KeyError(f"{key} not in header_titles. "
+                                   f"Available header titles are: {', '.join(self._header_titles.keys())}.")
 
         self._header = header
 
@@ -647,9 +640,8 @@ class OdmlTable(object):
             for property_dict in self._odmldict:
                 if property_dict['odmlDatatype'] and \
                         property_dict['odmlDatatype'] not in self.odtypes.valid_dtypes:
-                    raise TypeError('Non valid dtype "{0}" in odmldict. Valid types are {1}'
-                                    ''.format(property_dict['odmlDatatype'],
-                                              self.odtypes.valid_dtypes))
+                    raise TypeError(f'Non valid dtype "{property_dict["odmlDatatype"]}" in odmldict.'
+                                    f' Valid types are {self.odtypes.valid_dtypes}')
 
     def _filter(self, filter_func):
         """

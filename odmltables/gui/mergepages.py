@@ -251,7 +251,7 @@ class LoadFilePage(QIWizardPage):
         elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
         else:
-            raise ValueError('Unknown operating platform "{}".'.format(platform))
+            raise ValueError(f'Unknown operating platform "{platform}".')
 
     def validatePage(self):
         if self.issaved == False:

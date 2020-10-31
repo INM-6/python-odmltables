@@ -424,7 +424,7 @@ class SaveTablePage(QIWizardPage):
         elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
         else:
-            raise ValueError('Unknown operating platform "{}".'.format(platform))
+            raise ValueError(f'Unknown operating platform "{platform}".')
 
     def _saveXlsTable(self):
         table = odmltables.compare_section_xls_table.CompareSectionXlsTable()

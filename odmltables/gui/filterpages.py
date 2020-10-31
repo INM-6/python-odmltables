@@ -819,11 +819,11 @@ class FilterPage(QIWizardPage):
             [eval(value) for value in list(filter['kwargs'].values())]
         except:
             Qtw.QMessageBox.warning(self, 'Non-interpretable value',
-                                'Can not interpret list of values "{}". There is a non-valid '
+                                f'Can not interpret list of values {filter["kwargs"].values()}. There is a non-valid '
                                 'python object contained. To generate a string put your '
                                 'text into quotation marks. To define a list '
-                                'use square brackets.'.format(str(filter['kwargs'].values())))
-            raise ValueError('Can not interpret values "{}"'.format(str(filter['kwargs'].values())))
+                                'use square brackets.')
+            raise ValueError(f'Can not interpret values "{filter["kwargs"].values()}"')
 
         try:
             self.filtered_table.filter(mode=filter['mode'],
@@ -1111,7 +1111,7 @@ class SaveFilePage(QIWizardPage):
         elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
         else:
-            raise ValueError('Unknown operating platform "{}".'.format(platform))
+            raise ValueError(f'Unknown operating platform "{platform}".')
 
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or

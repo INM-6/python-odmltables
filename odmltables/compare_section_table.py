@@ -70,13 +70,11 @@ class CompareSectionTable():
                         if len(prop.values) > 1:
                             value += ', ...'
                         if prop.uncertainty:
-                            uncertainty = '+-{})'.format(prop.uncertainty)
-                            value = '({}'.format(value)
+                            uncertainty = f'+-{prop.uncertainty})'
+                            value = f'({value}'
                         if prop.unit:
                             unit = prop.unit
-                        table[sec_ind][properties.index(prop.name)] = '{}{}{}'.format(value,
-                                                                                      uncertainty,
-                                                                                      unit)
+                        table[sec_ind][properties.index(prop.name)] = f'{value}{uncertainty}{unit}'
                     if len(prop.values) > 1:
                         # table[sec_ind][properties.index(prop.name)] += ', ...'
                         warnings.warn('Property %s contains %i values. Only showing first one in '
