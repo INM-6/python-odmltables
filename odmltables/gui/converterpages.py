@@ -1076,7 +1076,7 @@ class SaveFilePage(QIWizardPage):
         elif platform.startswith('win'):
             subprocess.Popen(["start", self.outputfilename])
         else:
-            raise ValueError('Unknown operating platform "{}".'.format(platform))
+            raise ValueError(f'Unknown operating platform "{platform}".')
 
     def saveconfig(self):
         if ((self.configlist.currentItem() == None) or

@@ -115,9 +115,7 @@ class OdmlXlsTable(OdmlTable):
             try:
                 self._highlight_defaults = bool(mode)
             except:
-                raise TypeError('Mode "{}" can not be'
-                                'converted to boolean.'
-                                ''.format(str(mode)))
+                raise TypeError(f'Mode "{mode}" can not be converted to boolean.')
 
     def mark_columns(self, *args):
         """
@@ -158,8 +156,8 @@ class OdmlXlsTable(OdmlTable):
 
         valid_changing_points = ['sections', 'properties', 'values', None]
         if not self._changing_point in valid_changing_points:
-            raise Exception("Invalid argument for changing_point: Your changing_point must"
-                            " be one of {}".format(str(valid_changing_points)))
+            raise Exception(f"Invalid argument for changing_point: Your changing_point must be one "
+                            f"of {valid_changing_points}")
 
         styles = {"document_info": xlwt.easyxf(
             self.document_info_style.get_style_string()),
@@ -233,7 +231,7 @@ class OdmlXlsTable(OdmlTable):
         elif self._pattern is "alternating":
             row_style_default = np.array([0] * len(self._header), dtype=bool)
         else:
-            raise Exception("{} is not a valid pattern".format(self._pattern))
+            raise Exception(f"{self._pattern} is not a valid pattern")
         column_style_default = np.array([1 if h in self._marked_cols else 0 for h in self._header],
                                         dtype=bool)
 
@@ -283,7 +281,7 @@ class OdmlXlsTable(OdmlTable):
                     row_dic['Value'] = ['']
 
                 for v in row_dic['Value']:
-                    stylestring = ["row{:d}col{:d}".format(r, c)
+                    stylestring = [f"row{r:d}col{c:d}"
                                    for r, c in zip(self.row_style, self.column_style)]
                     # highlight empty values
                     if self._highlight_defaults and (row_dic['Value'] == []

@@ -28,8 +28,6 @@ class XlsStyle():
         returns a style_string that can be used to create a cell-style with
         xlwt.easyxf
         """
-        s = ("font: {0} , color {1}; pattern: pattern solid," +
-             " fore_colour {2};").format(self.fontstyle, self.fontcolor,
-                                         self.backcolor)
+        s = (f"font: {self.fontstyle} , color {self.fontcolor}; pattern: pattern solid, fore_colour {self.backcolor};")
 
         return s

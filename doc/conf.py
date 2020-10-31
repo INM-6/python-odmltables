@@ -44,7 +44,7 @@ for requirement_file in requirement_files:
     for line_id in range(len(lines)):
         lines[line_id] = '* ' + lines[line_id]
         lines[line_id] = lines[line_id].replace(';', ' in case of ')
-    new_filename = '{}.rst'.format(os.path.splitext(os.path.basename(requirement_file))[0])
+    new_filename = f'{os.path.splitext(os.path.basename(requirement_file))[0]}.rst'
     with open(new_filename, 'w+') as f:
         f.writelines(lines)
 
