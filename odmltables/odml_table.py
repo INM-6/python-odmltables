@@ -399,6 +399,8 @@ class OdmlTable(object):
         # create a inverted header_titles dictionary for an inverted lookup
         inv_header_titles = {v: k for (k, v) in list(self._header_titles.items())}
 
+        row_id = None
+
         with open(load_from, 'r') as csvfile:
             csvreader = csv.reader(csvfile)
 
@@ -489,10 +491,11 @@ class OdmlTable(object):
                     current_dic = new_dic
 
             # copy final property
-            if row_id == 0:
-                self._odmldict.append(copy.deepcopy(new_dic))
-            else:
-                self._odmldict.append(copy.deepcopy(current_dic))
+            if not (row_id is None):
+                if row_id == 0:
+                    self._odmldict.append(copy.deepcopy(new_dic))
+                else:
+                    self._odmldict.append(copy.deepcopy(current_dic))
 
             # value conversion for all properties
             for current_dic in self._odmldict:
