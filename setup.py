@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
+import sys
+
+# XXX This if statement lets you actually build the package
+if not 'sdist' in sys.argv:
+    sys.exit('\n*** This packages has moved. Please install `odmltables` using pip, '
+            '`python-odmltables` is no longer maintained. ***\n')
 
 from setuptools import setup
 
 long_description = open("README.rst").read()
+
 install_requires = ['xlrd >= 0.9.4',
                     'xlwt >= 1.0.0',
                     'lxml >= 3.6.1',
@@ -15,8 +22,6 @@ extras_require = {'docs': ['numpydoc>=0.5',
                            'sphinx>=1.2.2'],
                   'tests': ['nose>=1.3.3'],
                   'gui': ['pyqt4>=4.0.0'],
-                  # 'basics':['gcc >= 4.8.5',
-                  #           'libxml2 >= 2.9.2'],
                   }
 
 dependency_links = [
@@ -24,7 +29,7 @@ dependency_links = [
 
 setup(
     name="python-odmltables",
-    version='0.1.1',
+    version='0.1.2',
     packages=['odmltables', 'odmltables.wizard', 'odmltables.tests'],
     package_data={'odmltables': ['wizard/graphics/*']},
     install_requires=install_requires,
