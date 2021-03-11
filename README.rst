@@ -1,6 +1,9 @@
 
 python-odmltables
 =================
+NOTE: This package is deprecated. Please install the odmltables package instead.
+
+Legacy information:
 An interface to convert odML structures to and from table-like representations, such as spreadsheets.
 
 odMLtables provides a set of functions to simplify the setup, maintenance and usage of a metadata management structure using odML. 
