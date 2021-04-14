@@ -694,8 +694,13 @@ class OdmlTable(object):
                     raise ValueError('Key "%s" is missing in property dictionary %s'
                                      '' % (filter_key, dict_prop))
 
+                # this fails because left is a list, right is an int
                 if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
+                # for singleton lists, we could just check the first element
+                # though this works for now, a real fix would be better
+                elif type(dict_prop[filter_key]) == list and len(dict_prop[filter_key]) == 1:
+                    keep_property = comparison_func(dict_prop[filter_key][0], filter_value)
                 else:
                     keep_property = False
 
