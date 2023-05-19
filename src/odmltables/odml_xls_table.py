@@ -225,10 +225,10 @@ class OdmlXlsTable(OdmlTable):
         row_id += 1
 
         # set default styles as bool values for simplicity
-        if self._pattern is "checkerboard":
+        if self._pattern == "checkerboard":
             row_style_default = np.array([0, 1] * (len(self._header)), dtype=bool)
             row_style_default = row_style_default[:len(self._header)]
-        elif self._pattern is "alternating":
+        elif self._pattern == "alternating":
             row_style_default = np.array([0] * len(self._header), dtype=bool)
         else:
             raise Exception(f"{self._pattern} is not a valid pattern")
@@ -268,9 +268,9 @@ class OdmlXlsTable(OdmlTable):
                 #             row_dic[h] = ""
 
                 # handling row styles
-                if self._changing_point is 'properties':
+                if self._changing_point == 'properties':
                     _switch_row_style()
-                elif self._changing_point is 'sections' and (row_dic["Path"] != oldpath):
+                elif self._changing_point == 'sections' and (row_dic["Path"] != oldpath):
                     _switch_row_style()
 
                 # row_content: only those elements of row_dic, that will be visible in the table
@@ -301,7 +301,7 @@ class OdmlXlsTable(OdmlTable):
                     if 'Value' not in self._header:
                         break
 
-                    if self._changing_point is 'values':
+                    if self._changing_point == 'values':
                         _switch_row_style()
 
                     # adjust section and property entries for next value

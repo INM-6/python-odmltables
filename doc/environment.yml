@@ -1,11 +1,14 @@
 name: odmltables
+channels:
+  - conda-forge
+  - free
+  - anaconda
 dependencies:
-- python=3.7
-- setuptools
-- snowballstemmer
-- sphinx
-- sphinx_rtd_theme
-- pip
-- pip:
-  - odml
-  - sphinx-rtd-theme
+  - python ==3.11
+  - setuptools
+  - snowballstemmer
+  - sphinx
+  - sphinx_rtd_theme
+  - pip
+  - pip:
+    - odml

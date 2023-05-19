@@ -12,7 +12,7 @@ import PyQt5.QtGui as Qtg
 from PyQt5.QtCore import Qt
 
 import odml
-from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
+from .. import odml_xls_table, odml_table
 from .pageutils import QIWizardPage, clearLayout, shorten_path
 
 mandatory_headers = ['Path to Section',

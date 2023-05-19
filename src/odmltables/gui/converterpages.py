@@ -12,7 +12,7 @@ import PyQt5.QtWidgets as Qtw
 import PyQt5.QtGui as Qtg
 
 from .pageutils import QIWizardPage, clearLayout, get_property, get_rgb, shorten_path
-from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
+from .. import odml_csv_table, odml_xls_table, xls_style, odml_table
 
 
 class LoadFilePage(QIWizardPage):

@@ -74,7 +74,7 @@ odmltables/gui/graphics/*.dvi
 odmltables/gui/graphics/*.ps
 odmltables/gui/graphics/*.txt
 odmltables/gui/graphics/*.tex.backup
-odmltables/gui/testfiles/*
+src/odmltables/gui/testfiles/*
 doc/build/*
 doc/_build/*
 doc/requirements*.rst

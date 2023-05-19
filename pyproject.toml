@@ -1,0 +1,79 @@
+[project]
+name = "odmltables"
+version = "1.0.1dev"
+authors = [
+    {name = "odMLtables authors and contributors"},
+    {email = "julia.sprenger@rwth-aachen.de"}
+]
+description = "Interface to convert odML structures to and from table-like representations"
+readme = "README.rst"
+requires-python = ">=3.6"
+license = {text = "BSD 3-Clause License"}
+keywords = ["odml", "excel", "metadata management"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+    "xlrd >= 0.9.4",
+    "xlwt >= 1.0.0",
+    "numpy >= 1.8.2",
+    "quantities >= 0.10.1",
+    "odml >= 1.4.2",
+    "future >= 0.16.0",
+    "argparse >= 1.0.0",
+]
+
+[project.urls]
+documentation = "http://odmltables.readthedocs.io/"
+repository = "https://github.com/INM-6/python-odmltables"
+download = "http://pypi.python.org/pypi/odmltables"
+
+
+[build-system]
+requires = ["setuptools>=62.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+odmltables = ["gui/graphics/*", "logo/*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+    "integration",
+]
+pythonpath = [
+  "src"
+]
+
+[project.gui-scripts]
+odmltables = "odmltables.gui.main:parse_args"
+
+[project.optional-dependencies]
+
+doc = [
+    "numpydoc>=0.5.0",
+    "sphinx>=1.2.2",
+]
+
+gui = ["PyQt5>=5.0.0"]
+
+test = ["pytest>=3.0.0"]
