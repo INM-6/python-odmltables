@@ -1,6 +1,4 @@
 name: odmltables
-channels:
-  - free
 dependencies:
   - python=3.11
   - setuptools
@@ -10,3 +8,4 @@ dependencies:
   - pip
   - pip:
     - odml
+    - sphinx_rtd_theme
