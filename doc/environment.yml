@@ -1,12 +1,10 @@
 name: odmltables
+channels:
+  - conda-forge
+  - free
+  - anaconda
 dependencies:
   - python ==3.11
-  - zlib
-  - libgcc-ng
-  - ncurses
-  - libuuid
-  - sqlite
-  - xz
   - setuptools
   - snowballstemmer
   - sphinx
