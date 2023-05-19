@@ -2,13 +2,14 @@
 """
 Created on Tue Jan 26 12:57:46 2016
 
-@author: zehl
+@author: Lyuba Zehl, Julia Sprenger
 """
 
 import datetime
 import os
 import sys
 import traceback
+from importlib.resources import files, as_file
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
@@ -149,13 +150,10 @@ class MainWindow(QtWidgets.QMainWindow):
         icon = QtWidgets.QLabel()
         # icon.setGeometry(10, 10, 4, 100)
         logo_filename = "odMLtables_100x100.png"
-        logo_dirs = [os.path.join(os.path.dirname(__file__), '..', '..', 'logo'),
-                     os.path.join(sys.prefix, 'share/pixmaps')]
-        for logo_dir in logo_dirs:
-            filepath = os.path.join(logo_dir, logo_filename)
+        logo_dir_object = files('odmltables.logo').joinpath(logo_filename)
+        with as_file(logo_dir_object) as filepath:
             if os.path.exists(filepath):
-                icon.setPixmap(QtGui.QPixmap(filepath))
-
+                icon.setPixmap(QtGui.QPixmap(str(filepath)))
 
         grid.addWidget(self.convertbutton, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
         grid.addWidget(self.comparebutton, 1, 1)

@@ -16,7 +16,7 @@ except NameError:
 from PyQt5.QtCore import Qt
 import PyQt5.QtWidgets as Qtw
 
-from odmltables import odml_table
+from .. import odml_table
 from .pageutils import QIWizardPage, clearLayout, shorten_path
 
 
