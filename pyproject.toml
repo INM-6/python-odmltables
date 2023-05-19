@@ -58,7 +58,6 @@ minversion = "7.0"
 addopts = "-ra -q"
 testpaths = [
     "tests",
-    "integration",
 ]
 pythonpath = [
   "src"
