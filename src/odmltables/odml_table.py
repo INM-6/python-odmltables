@@ -2,14 +2,14 @@
 """
 
 """
-import os
-import re
 import copy
-import odml
 import csv
 import datetime
-import xlrd
+import os
+import re
 
+import odml
+import xlrd
 from future.utils import iteritems
 from six import string_types
 
@@ -720,12 +720,14 @@ class OdmlTable(object):
     def merge(self, odmltable, overwrite_values=False, **kwargs):
         """
         Merge odmltable into current odmltable.
+
         :param odmltable: OdmlTable object or odML document object
         :param overwrite_values: Bool value to indicate whether values of odML Properties should
-            be merged (appended) or overwritten by the entries of the other odmltable object.
-            Default is False.
-        :return:
+               be merged (appended) or overwritten by the entries of the other odmltable object.
+               Default is False.
+        :return: None
         """
+
         if hasattr(odmltable, 'convert2odml'):
             doc2 = odmltable.convert2odml()
         else:

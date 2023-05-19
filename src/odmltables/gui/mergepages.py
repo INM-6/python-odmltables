@@ -8,7 +8,7 @@ import PyQt5.QtGui as Qtg
 import PyQt5.QtWidgets as Qtw
 from PyQt5.QtCore import QSize, Qt
 
-from odmltables import odml_table, odml_xls_table, odml_csv_table, xls_style
+from .. import odml_table
 from .pageutils import QIWizardPage, shorten_path
 from .wizutils import get_graphic_path
 

@@ -11,8 +11,8 @@ from odmltables.odml_xls_table import OdmlXlsTable, OdmlTable
 import unittest
 import os
 from odmltables.tests.create_test_odmls import (create_2samerows_test_odml,
-                                                create_datatype_test_odml,
-                                                create_complex_test_odml, create_showall_test_odml)
+                                                    create_datatype_test_odml,
+                                                    create_complex_test_odml, create_showall_test_odml)
 
 import xlrd
 
