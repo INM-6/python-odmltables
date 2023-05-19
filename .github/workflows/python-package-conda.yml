@@ -1,6 +1,13 @@
-name: Python Package using Conda
+name: Run Pytest
 
-on: [push]
+on:
+  pull_request:
+    branches: [master]
+    types: [synchronize, opened, reopened, ready_for_review]
+
+  # run checks on any change of master, including merge of PRs
+  push:
+    branches: [master]
 
 jobs:
   build-linux:
