@@ -13,10 +13,9 @@
 # serve to show the default.
 
 import sys
-import glob
 import subprocess
 import os
-
+import tomllib
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,7 +23,7 @@ import os
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../src'))
 sys.path.insert(0, os.path.abspath('../../python-odml/'))
-sys.path.insert(0, os.path.abspath('../odmltables'))
+sys.path.insert(0, os.path.abspath('../src/odmltables'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # installing current odMLtables version
@@ -33,25 +32,25 @@ process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
 import odmltables
+
 VERSION = odmltables.VERSION
 
 # reformatting requirements files to be automatically included in docu
-requirement_files = glob.glob('../requirements*.txt')
-for requirement_file in requirement_files:
-    with open(requirement_file, 'r') as f:
-        lines = f.readlines()
-    # listify and increase readability
-    for line_id in range(len(lines)):
-        lines[line_id] = '* ' + lines[line_id]
-        lines[line_id] = lines[line_id].replace(';', ' in case of ')
-    new_filename = f'{os.path.splitext(os.path.basename(requirement_file))[0]}.rst'
-    with open(new_filename, 'w+') as f:
-        f.writelines(lines)
+with open("../pyproject.toml", "rb") as f:
+    data = tomllib.load(f)
 
+def format_dependencies(dependency_list):
+    # format a list of dependencies into a block text list
+    formatted_dependencies = '\n* '.join(dependency_list).replace(';', ' in case of ')
+    return formatted_dependencies
 
+dependencies = data["project"]["dependencies"]
+with open('requirements.rst', 'w+') as f:
+    f.write(format_dependencies(dependencies))
 
-
-
+for option, optional_dependencies in data["project"]["optional-dependencies"].items():
+    with open(f'requirements_{option}.rst', 'w+') as f:
+        f.write(format_dependencies(optional_dependencies))
 
 
 # -- General configuration ------------------------------------------------
