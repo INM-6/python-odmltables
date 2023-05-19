@@ -26,4 +26,4 @@ jobs:
         pip install .[test,gui]
     - name: Test with pytest
       run: |
-        pytest --coverage src/odmltables
+        pytest --cov=src/odmltables src/odmltables/
