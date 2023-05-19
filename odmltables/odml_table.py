@@ -696,6 +696,11 @@ class OdmlTable(object):
 
                 if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
+                # for comparison of Value entries  we need to compare to the first entry as those 
+                are by default wrapped in a list
+                elif filter_key == 'Value' and len(dict_prop[filter_key]) == 1:
+                    assert type(dict_prop[filter_key]) == list
+                    keep_property = comparison_func(dict_prop[filter_key][0], filter_value)
                 else:
                     keep_property = False
 
