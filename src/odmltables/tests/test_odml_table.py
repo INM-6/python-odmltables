@@ -371,6 +371,16 @@ class TestFilter(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.test_table.filter(mode='wrongmode', Property='Property')
 
+    def test_filter_single_value_comparison(self):
+        """
+        test for single value comparison
+        """
+
+        search_value = self.test_table._odmldict[0]['Value'][0]
+        # searching for a single value
+        self.test_table.filter(Value=search_value)
+        self.assertEqual(1, len(self.test_table._odmldict))
+
     def test_filter_mode_and(self):
         """
         testing mode='and' setting of filter function
