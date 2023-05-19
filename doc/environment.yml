@@ -1,6 +1,12 @@
 name: odmltables
 dependencies:
   - python ==3.11
+  - zlib
+  - libgcc-ng
+  - ncurses
+  - libuuid
+  - sqlite
+  - xz
   - setuptools
   - snowballstemmer
   - sphinx
