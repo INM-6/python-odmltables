@@ -17,7 +17,7 @@ def run_example():
 
 def setup_example():
     # We are using the same csv table as used in the tutorial
-    filename = '../../doc/source/csv/example1-2.csv'
+    filename = 'example1-2.csv'
 
     xlstable = odml_xls_table.OdmlXlsTable()
     xlstable.load_from_csv_table(filename)

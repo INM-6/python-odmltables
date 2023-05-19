@@ -1,7 +1,6 @@
 import datetime
 
 import odml
-from odml import DType
 import odmltables.odml_xls_table as odml_xls_table
 
 

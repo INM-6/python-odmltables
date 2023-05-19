@@ -2,7 +2,6 @@ import os
 import datetime
 import odml.base
 import odmltables.odml_xls_table as odml_xls_table
-from odmltables.xls_style import XlsStyle
 
 pre_enriched_file = 'example2-1.odml'
 
