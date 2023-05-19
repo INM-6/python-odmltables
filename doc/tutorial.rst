@@ -15,10 +15,11 @@ version `1.0 <https://github.com/G-Node/odml-terminologies/blob/master/v1.0/odml
 the `G-Node <http://www.g-node.org/projects/odml>`_.
 
 
-In addition to the detailed step-by-step instructions presented here, there are also two **interactive tutorials** available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables sources (:any:`tutorials/tutorial-1_scenarios/demo_scenarios.ipynb`) folder. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
+In addition to the detailed step-by-step instructions presented here, there are also two **interactive tutorials** available as `jupyter notebooks`_. Both tutorials can be directly executed using binder_ or run locally from the odmltables `tutorial folder`_. The first notebook (|notebook1|) is giving a quick overview on how odMLtables can be used in a metadata workflow by presenting a number of small application scenarios. The second notebook (|notebook2|) shows the usage of odMLtables for handling large metadata collections and is based on two published experimental datasets.
 
 .. _binder: https://mybinder.org/
 .. _jupyter notebooks: http://jupyter.org/
+.. _tutorial folder: https://github.com/INM-6/python-odmltables/tree/master/tutorials
 
 .. |notebook1|  image:: https://mybinder.org/badge.svg
   :target: https://mybinder.org/v2/gh/inm-6/python-odmltables/master?filepath=tutorials%2Ftutorial-1_scenarios%2Fdemo_scenarios.ipynb
