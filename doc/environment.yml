@@ -1,6 +1,6 @@
 name: odmltables
 dependencies:
-- python=3.7
+- python=3.11
 - setuptools
 - snowballstemmer
 - sphinx
@@ -8,4 +8,3 @@ dependencies:
 - pip
 - pip:
   - odml
-  - sphinx-rtd-theme
