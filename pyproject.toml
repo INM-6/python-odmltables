@@ -5,7 +5,7 @@ authors = [
     {name = "odMLtables authors and contributors"},
     {email = "julia.sprenger@rwth-aachen.de"}
 ]
-description = "Interface to convert odML structures to and from table-like representations"
+description = "An interface to convert odML structues to and from table-like representations, such as spreadsheets"
 readme = "README.rst"
 requires-python = ">=3.6"
 license = {text = "BSD 3-Clause License"}
