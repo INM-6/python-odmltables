@@ -9,10 +9,9 @@ import sys
 import subprocess
 
 from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QMessageBox,
-                         QLineEdit, QPushButton, QLabel, QGroupBox,
-                         QGridLayout, QTreeWidget, QTreeWidgetItem,
-                         QToolButton, QFileDialog, QCheckBox, QComboBox,
-                         QFrame, QSizePolicy, QRadioButton)
+                             QLineEdit, QPushButton, QLabel, QGroupBox,
+                             QGridLayout, QTreeWidget, QTreeWidgetItem,
+                             QToolButton, QFileDialog, QCheckBox, QRadioButton)
 
 from PyQt5.QtCore import Qt
 

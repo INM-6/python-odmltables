@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os, sys
+import os
+from importlib.resources import files, as_file
+
 from PyQt5.QtWidgets import (QWizard, QMessageBox)
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import pyqtSlot, Qt
 
 try:
     import odmltables
-
     have_odmltables = True
 except:
     have_odmltables = False
@@ -36,12 +37,10 @@ class OdmltablesWizard(QWizard):
         self.setWizardStyle(self.ModernStyle)
         self.setOption(self.HaveHelpButton, True)
         logo_filename = "odMLtables_100x100.png"
-        logo_dirs = [os.path.join(os.path.dirname(__file__), '..', '..', 'logo'),
-                     os.path.join(sys.prefix, 'share/pixmaps')]
-        for logo_dir in logo_dirs:
-            filepath = os.path.join(logo_dir, logo_filename)
+        logo_dir_object = files('odmltables.logo').joinpath(logo_filename)
+        with as_file(logo_dir_object) as filepath:
             if os.path.exists(filepath):
-                self.setPixmap(QWizard.LogoPixmap, QPixmap(filepath))
+                self.setPixmap(QWizard.LogoPixmap, QPixmap(str(filepath)))
 
         # set up help messages
         self._lastHelpMsg = ''
