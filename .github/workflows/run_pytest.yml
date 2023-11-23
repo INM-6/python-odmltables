@@ -1,0 +1,29 @@
+name: Run Pytest
+
+on:
+  pull_request:
+    branches: [master]
+    types: [synchronize, opened, reopened, ready_for_review]
+
+  # run checks on any change of master, including merge of PRs
+  push:
+    branches: [master]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.11'
+    - name: Install package and dependencies
+      run: |
+        pip install .[test,gui]
+    - name: Test with pytest
+      run: |
+        pytest --cov=src/odmltables src/odmltables/
