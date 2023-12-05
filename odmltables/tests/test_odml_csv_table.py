@@ -76,6 +76,24 @@ class TestOdmlCsvTable(unittest.TestCase):
         self.assertEqual(len(table._odmldict), 1)
         self.assertDictEqual(table._odmldict[0], table2._odmldict[0])
 
+    def test_saveload_bool(self):
+        doc = odml.Document()
+        doc.append(odml.Section('sec'))
+        doc[0].append(odml.Property('prop', values=[False]))
+
+        table = OdmlCsvTable()
+        table.load_from_odmldoc(doc)
+        table.change_header('full')
+        table.write2file(self.filename)
+
+        table2 = OdmlTable()
+        table2.load_from_csv_table(self.filename)
+
+        # comparing values which are written to xls by default
+        self.assertEqual(len(table._odmldict), len(table2._odmldict))
+        self.assertEqual(len(table._odmldict), 1)
+        self.assertDictEqual(table._odmldict[0], table2._odmldict[0])
+
     def test_saveload_empty_header(self):
         doc = odml.Document()
 

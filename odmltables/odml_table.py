@@ -8,6 +8,7 @@ import copy
 import odml
 import csv
 import datetime
+import warnings
 import xlrd
 
 from future.utils import iteritems
@@ -696,8 +697,8 @@ class OdmlTable(object):
 
                 if comparison_func(dict_prop[filter_key], filter_value):
                     keep_property = True
-                # for comparison of Value entries  we need to compare to the first entry as those 
-                are by default wrapped in a list
+                # for comparison of Value entries  we need to compare to
+                # the first entry as those are by default wrapped in a list
                 elif filter_key == 'Value' and len(dict_prop[filter_key]) == 1:
                     assert type(dict_prop[filter_key]) == list
                     keep_property = comparison_func(dict_prop[filter_key][0], filter_value)
@@ -971,7 +972,15 @@ class OdmlDtypes(object):
         elif dtype == 'float':
             result = float(value)
         elif dtype == 'boolean':
-            result = bool(value)
+            # strip whitespace and convert to lower case
+            value = value.strip().lower()
+            if value in ('y', 'yes', 't', 'true', 'on', '1'):
+                result = True
+            elif value in ('n', 'no', 'f', 'false', 'off', '0'):
+                result = False
+            else:
+                warnings.warn("invalid truth value %r, replacing with None" % (value,))
+                result = None
         elif dtype in ['string', 'text', 'url', 'person']:
             result = str(value)
         else:
