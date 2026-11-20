@@ -56,7 +56,7 @@ setup(
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering'],
     entry_points={
-        'gui_scripts': ['odmltables = odmltables.gui.main:parse_args []']},
+        'gui_scripts': ['odmltables = odmltables.gui.main:parse_args']},
     zip_safe=False,
     keywords=['odml', 'excel', 'metadata management'],
     # Extension('foo', ['foo.c'], include_dirs=['.']),
